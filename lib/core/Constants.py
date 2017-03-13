@@ -21,9 +21,9 @@ BANNER = Style.BRIGHT + Fore.GREEN + """
 CONF_EXT = '.conf'
 MANDATORY_TOOL_OPTIONS  = ( 'name', 'category', 'description', 'command')
 SPECIFIC_TOOL_OPTIONS   = { 'http': {'server': 'server_list',
-						  		  'techno': 'techno_list',
-						  		  'cms'   : 'cms_list',
-						 		  'ssl'   : ''},
+						  		     'techno': 'techno_list',
+						  		     'cms'   : 'cms_list',
+						 		     'ssl'   : ''},
 				  		    'ftp' : {} 
 				 	 	  }
 

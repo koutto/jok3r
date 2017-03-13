@@ -207,6 +207,17 @@ class Toolbox(object):
 		return False
 
 
+	def removeToolbox(self, output):
+		"""
+		Remove all tools in the toolbox
+		@Args 		output: 		Instance of CLIOutput
+		@Returns	None
+		"""
+		print
+		for service_name in self.tools.keys():
+			self.removeToolboxForService(output, service_name)
+
+
 	def removeToolboxForService(self, output, service_name):
 		"""
 		Remove all tools for a given service
@@ -238,8 +249,6 @@ class Toolbox(object):
 			return False
 
 
-
-
 	def installToolbox(self, output):
 		"""
 		Install tools in the toolbox.
@@ -264,6 +273,12 @@ class Toolbox(object):
 
 
 	def installToolboxForService(self, output, service_name):
+		"""
+		Install tools in the toolbox for a given service
+		@Args 		output: 		Instance of CLIOutput
+					service_name:	Name of the service section (must exist into the toolbox)
+		@Returns 	None
+		"""
 		if service_name not in self.tools.keys():
 			return
 
@@ -288,6 +303,7 @@ class Toolbox(object):
 		"""
 		Update tools in the toolbox		
 		@Args		output: Instance of CLIOutput
+		@Returns	None
 		"""
 		print
 		for service_name in self.tools.keys():
@@ -295,6 +311,12 @@ class Toolbox(object):
 
 
 	def updateToolboxForService(self, output, service_name):
+		"""
+		Update tools in the toolbox for a given service
+		@Args 		output: 		Instance of CLIOutput
+					service_name:	Name of the service section (must exist into the toolbox)
+		@Returns 	None
+		"""
 		if service_name not in self.tools.keys():
 			return
 

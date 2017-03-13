@@ -97,9 +97,11 @@ class ArgumentsParser(object):
 		toolbox.add_argument('--update-all', help='Update every tool for all services',
 						   action='store_true', dest='update_all', default=False)
 		toolbox.add_argument('--uninstall-tool', help='Uninstall a given tool',
-						   action='store', dest='uninstall_tool', type=str, metavar='<tool>', default=None)
+						   action='store', dest='uninstall_tool', type=str, metavar='<tool_name>', default=None)
 		toolbox.add_argument('--uninstall-toolbox', help='Uninstall all tools into the toolbox for a given service',
 						   action='store', dest='uninstall_toolbox', type=str, metavar='<service>', default=None)
+		toolbox.add_argument('--uninstall-all', help='Uninstall the whole toolbox',
+						   action='store_true', dest='uninstall_all', default=False)
 		toolbox.add_argument('--list-services', help='List supported services', 
 			 			   action='store_true', dest='list_services', default=False)
 		toolbox.add_argument('--list-categories', help='List tools categories for a given service',
@@ -231,6 +233,7 @@ class ArgumentsParser(object):
 
 		if self.args.list_services 	or \
 		   self.args.install_all 	or \
+		   self.args.uninstall_all 	or \
 		   self.args.update_all:
 			self.contparsing = False
 			return

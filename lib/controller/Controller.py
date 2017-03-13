@@ -66,6 +66,11 @@ class Controller(object):
             self.settings.toolbox.removeToolboxForService(self.output, service)
             sys.exit(0)
 
+        if self.arguments.args.uninstall_all:
+            self.output.printInfo('Selected mode: Uninstall the whole toolbox')
+            self.settings.toolbox.removeToolbox(self.output)
+            sys.exit(0)
+
         if self.arguments.args.list_services:
             self.output.printInfo('Selected mode: List supported services')
             self.settings.toolbox.printListSupportedServices(self.output)
