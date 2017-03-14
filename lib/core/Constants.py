@@ -23,9 +23,15 @@ MANDATORY_TOOL_OPTIONS  = ( 'name', 'category', 'description', 'command')
 SPECIFIC_TOOL_OPTIONS   = { 'http': {'server': 'server_list',
 						  		     'techno': 'techno_list',
 						  		     'cms'   : 'cms_list',
-						 		     'ssl'   : ''},
+						 		     'ssl'   : '',
+                                     'webdav': ''},
 				  		    'ftp' : {} 
 				 	 	  }
 
-PROTOCOL = { 'http':    'tcp',
-             'ftp':     'tcp' }
+PROTOCOL = { 'ftp':     'tcp', 
+             'ssh':     'tcp',
+             'telnet':  'tcp',
+             'smtp':    'tcp',
+             'http':    'tcp',
+             'smb':     'tcp',
+             'snmp':    'udp' }

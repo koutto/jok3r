@@ -109,7 +109,7 @@ class ArgumentsParser(object):
 
 		# Target
 		target = self.parser.add_argument_group('Target')
-		target.add_argument('-u', '--url', help='Target URL', action='store', dest='url', metavar='<url>', type=str, default=None)
+		target.add_argument('-u', '--url', help='Target URL', action='store', dest='url', metavar='<url>', type=str, default='')
 		target.add_argument('--ip', help='Target IP', action='store', dest='ip', metavar='<ip>', type=str, default=None)
 		target.add_argument('-p', '--port', help='Target Port', action='store', dest='port', metavar='<port>', type=str, default=None)
 		target.add_argument('-s', '--service', help='Service (see --list-services)', 

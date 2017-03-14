@@ -9,11 +9,11 @@ Description
 Jok3r is a python CLI application which is aimed at simplifying first phases of network infrastructure and web penetration testing.
 
 It provides the following features:
-* Manage toolbox (install & update), organized by service ;
-* Automatically run tools from the toolbox against a specific service for a given target ;
-* Handle context specific options for tools, based on the target.
+* **Manage toolbox (install & update)**, organized by service ;
+* **Automatically run tools** from the toolbox against a specific service for a given target ;
+* **Handle context specific options** for tools, based on the target.
 
-Supported targeted services, tools, commands, specific options are all fully customisable by editing the configuration files.
+Supported targeted services, tools, commands, specific options are all **fully customisable** by editing the configuration files.
 
 
 Requirements
@@ -75,33 +75,34 @@ python jok3r.py --show-toolbox-brief <service>
 Toolbox Management
 ----
 The toolbox installation process has been described in previous section.
-Jok3r is also useful to keep all the tools updated, via following commands:
 
-* To update the whole toolbox (going through all *.conf files):
-```bash
-python jok3r.py --update-all
-```
+* Jok3r is also useful to keep all the tools updated, via following commands:
 
-* To update only the tools targeting a specific service (going through only the corresponding .conf file):
-```bash
-python jok3r.py --update-toolbox <service>
-```
+  * To update the whole toolbox (going through all *.conf files):
+  ```bash
+  python jok3r.py --update-all
+  ```
 
-Tools uninstallation is also handled, via following commands:
-* To uninstall a given tool:
-```bash
-python jok3r.py --uninstall-tool <tool_name>
-```
+  * To update only the tools targeting a specific service (going through only the corresponding .conf file):
+  ```bash
+  python jok3r.py --update-toolbox <service>
+  ```
 
-* To uninstall the tools targeting a specific service:
-```bash
-python jok3r.py --uninstall-toolbox <service>
-```
+* Tools uninstallation is also handled, via following commands:
+  * To uninstall a given tool:
+  ```bash
+  python jok3r.py --uninstall-tool <tool_name>
+  ```
 
-* To clean everything:
-```bash
-python jok3r.py --uninstall-all
-```
+  * To uninstall the tools targeting a specific service:
+  ```bash
+  python jok3r.py --uninstall-toolbox <service>
+  ```
+
+  * To clean everything:
+  ```bash
+  python jok3r.py --uninstall-all
+  ```
 
 Tree structure
 ----
@@ -131,37 +132,41 @@ Configuration files
 There is one configuration file (.conf) per supported service. There are all stored inside the "settings" directory.
 **Testers can easily edit the content of the existing files in order to add/remove some tools and/or to update the commands. Furthermore, they also can add configuration files for new services.**
 
-The syntax of a configuration file is described below (remember, 1 configuration file = 1 service):
+The syntax of a configuration file is described below (remember: 1 configuration file = 1 service):
 
-* **[general] section - General settings**:
-  * _tools_categories_ - mandatory setting - contains the list of categories for the tools configured in the current .conf file.
-  * _<specific>_list_ - optional setting - .
+* **General settings - [general] section**:
+  * `tools_categories` _(mandatory setting)_ - contains the list of categories for the tools configured in the current .conf file.
+  * `<specific>_list` _(optional setting)_ - List-type context-specific setting.
 
 * **Tool section**:
   * General tool settings:
-    * _name_ - mandatory setting - Name of the tool as it will appear in the program
-    * _category_ - mandatory setting - Name of the category to which the tool belong. Must be one of the categories in the setting _tools_categories_.
-    * _description_ - mandatory setting - Short description for the tool.
-    * _command_ - mandatory setting - Command-line used to run the tool (see supported tags that can be used).
-    * _install_ - optional setting - Command-line used to install the tool (if possible with all dependencies installation). This setting is not always set, e.g. for tools that are supposed to be already installed on the system (like Nmap or Metasploit).
-    * _update_ - optional setting - Command-line used to update the tool.
-    * _last_update_ - optional setting - Date of the last tool update. Value auto-updated by Jok3r.
-    * _installed_ - Indicated whether the tool is installed or not. Value auto-updated by Jok3r.
+    * `name` _(mandatory setting)_ - Name of the tool as it will appear in the program
+    * `category` _(mandatory setting)_ - Name of the category to which the tool belong. Must be one of the categories in the setting _tools_categories_.
+    * `description` _(mandatory setting)_ - Short description for the tool.
+    * `command` _(mandatory setting)_ - Command-line used to run the tool (see supported tags that can be used).
+    * `install` _(optional setting)_ - Command-line used to install the tool (if possible with all dependencies installation). This setting is not always set, e.g. for tools that are supposed to be already installed on the system (like Nmap or Metasploit).
+    * `update` _(optional setting)_ - Command-line used to update the tool.
+    * `last_update` _(optional setting)_ - Date of the last tool update. Value auto-updated by Jok3r.
+    * `installed` _(optional setting)_ - Indicated whether the tool is installed or not. Value auto-updated by Jok3r.
   * Context-specific tool settings:
-    * <specific>_specific - optional setting - Context-specific settings can be used in order to specify that a tool should be run against the target ONLY in some circumstances, i.e. only when one specific option (passed on the command-line when running Jok3r) is set with a given value.
+    * `<specific>_specific` _(optional setting)_ - Context-specific settings can be used in order to specify that a tool should be run against the target ONLY in some circumstances, i.e. only when one specific option (passed on the command-line when running Jok3r) is set to a given value.
 
-The setting _command_ supports the use of several tags ; they are replaced by the correct values at runtime:
-* _[URL]_ - The target URL (when target service is HTTP)
-* _[HOST]_ - The target hostname
-* _[IP]_ - The target IP address (in case of load balancing, first IP is taken)
-* _[PORT]_ - Target port number (TCP or UDP, depending on the target service)
-* _[PROTOCOL]_ - Protocol, either TCP or UDP
-* _[SERVICE]_ - Target service name
-* _[OUTPUT]_ - Output file for the command. If it is not specified into the command, Jok3r will automatically make sure to log the output of the tool
-* _[OUTPUTDIR]_ - Output directory for the tools that save their results into several files.
+The setting `command` supports the use of several tags ; they are replaced by the correct values at runtime:
+* `[URL]` - The target URL (when target service is HTTP)
+* `[HOST]` - The target hostname
+* `[IP]` - The target IP address (in case of load balancing, first IP is taken)
+* `[PORT]` - Target port number (TCP or UDP, depending on the target service)
+* `[PROTOCOL]` - Protocol, either TCP or UDP
+* `[SERVICE]` - Target service name
+* `[OUTPUT]` - Output file for the command. If it is not specified into the command, Jok3r will automatically make sure to log the output of the tool
+* `[OUTPUTDIR]` - Output directory for the tools that save their results into several files.
 * Context-specific tags:
-  * For boolean options: _[OPTIONNAME option="value"]_ - If the setting _optionname_specific = True_ is specified for the tool, the string written as _value_ will be inserted into the command-line at the tag location.
-  * For list-member options: _[OPTIONNAME name1="value1" name2="value2" ... ]_ - If the setting _optionname_specific = name2_ is specified for the tool (for example), the string written as _value2_ will be inserted into the command-line at the tag location.
+  * For boolean options: `[OPTIONNAME option="value"]` - If the setting `optionname_specific = True` is specified for the tool, the string written as _value_ will be inserted into the command-line at the tag location.
+  * For list-member options: `[OPTIONNAME name1="value1" name2="value2" ... ]` - If the setting `optionname_specific = name2` is specified for the tool (for example), the string written as _value2_ will be inserted into the command-line at the tag location.
  
-The settings _install_ and _update_ both support the use of the following tag:
-* _[TOOLBOXDIR]_ - Toolbox directory, by default "toolbox/"
+The settings `install` and `update` both support the use of the following tag:
+* `[TOOLBOXDIR]` - Toolbox directory, by default "toolbox/"
+
+
+Context-specific options
+----

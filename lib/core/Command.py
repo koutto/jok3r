@@ -118,7 +118,7 @@ class Command(object):
 		Replace [PORT]
 		"""
 		pattern = re.compile('\[PORT\]', re.IGNORECASE)
-		self.cmdline = pattern.sub(self.target.port, self.cmdline)
+		self.cmdline = pattern.sub(str(self.target.port), self.cmdline)
 
 
 	def replacePROTOCOL(self):
@@ -134,7 +134,7 @@ class Command(object):
 		Replace [SERVICE]
 		"""
 		pattern = re.compile('\[SERVICE\]', re.IGNORECASE)
-		self.cmdline = pattern.sub(self.target.port, self.cmdline)		
+		self.cmdline = pattern.sub(self.target.service, self.cmdline)		
 
 
 	def replaceOUTPUT(self):

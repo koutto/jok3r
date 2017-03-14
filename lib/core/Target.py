@@ -24,7 +24,7 @@ class Target(object):
 		self.port 			= port
 		self.service 		= service
 		self.url 			= url
-		self.host 			= None
+		self.host 			= ''
 		self.protocol 		= PROTOCOL[self.service] if self.service in PROTOCOL else 'tcp'
 		self.is_reachable 	= False
 
@@ -87,6 +87,8 @@ class Target(object):
 			if not ips:
 				return False
 			self.ip = ips[0]
+		else:
+			self.host = self.ip
 
 		# Check if IP:PORT is reachable
 		if self.protocol == 'tcp':
