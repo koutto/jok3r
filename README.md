@@ -168,5 +168,18 @@ The settings `install` and `update` both support the use of the following tag:
 * `[TOOLBOXDIR]` - Toolbox directory, by default "toolbox/"
 
 
-Context-specific options
+Run tools against a target
 ----
+In order to run the tools in the toolbox against a given target:
+
+* For web-based target:
+```bash
+python jok3r.py -u <url> [-o <output_directory>]
+```
+
+* For any service:
+```bash
+python jok3r.py --ip <ip> -p <port> -s <service> [-o <output_directory>]
+```
+
+![Jok3r_short_demo](./pictures/short_demo.gif)
