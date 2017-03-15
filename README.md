@@ -3,6 +3,18 @@ Jok3r
 
 ![Jok3r_logo](./pictures/logo.png)
 
+Table of contents
+----
+* [Description](#description)
+* [Requirements](#requirements)
+* [Installation](#installation)
+* [First usage](#first-usage)
+* [Toolbox Management](#toolbox-management)
+* [Tree structure](#tree-structure)
+* [Configuration files](#configuration-files)
+* [Run tools against a target](#run-tools-against-a-target)
+* [Specific options](#specific-options)
+* [Supported services](#supported-services)
 
 Description
 ----
@@ -129,7 +141,7 @@ The project is structured in folders as such:
 
 Configuration files
 ----
-There is one configuration file (.conf) per supported service. There are all stored inside the "settings" directory.
+There is one configuration file (.conf) per supported service. There are all stored inside the [settings] directory.
 **Testers can easily edit the content of the existing files in order to add/remove some tools and/or to update the commands. Furthermore, they also can add configuration files for new services.**
 
 The syntax of a configuration file is described below (remember: 1 configuration file = 1 service):
@@ -182,4 +194,69 @@ python jok3r.py -u <url> [-o <output_directory>]
 python jok3r.py --ip <ip> -p <port> -s <service> [-o <output_directory>]
 ```
 
+The list of supported services (i.e. there is an existing .conf file) can be displayed:
+```bash
+python jok3r.py --list-services
+```
+
+It is also possible to select only some tools
+
+
 ![Jok3r_short_demo](./pictures/short_demo.gif)
+
+
+Specific options
+----
+In order to understand how specific options work, let us take a simple example: 
+On a pentest, the target is a website (https://www.targetsite.com). The tester navigates on this website and detects that it is running the CMS _Drupal_, therefore the language in use is _PHP_ (easy fingerprinting as such can be easily done using the browser add-on _Wappalyzer_ for example, see https://wappalyzer.com). However, let us assume that the tester is still not sure about the undelying web server.
+Knowing that, he will use the following specific options against the service HTTP:
+* `ssl=True` because HTTPS is used
+* `techno=php`
+* `cms=drupal`
+* `server=all` because server is not known yet, so no asumption is done yet
+
+Note: For a given service, the list of supported specific options can be displayed using next command (e.g. for http):
+```bash
+$ python jok3r.py --list-specific http
+
+[~] Selected mode: List context specific options for service http
+[~] Available specific options for service http:
+   - ssl 	: [Boolean]
+   - techno 	: [List member]
+      +-- php
+      +-- asp
+      +-- java
+      +-- coldfusion
+   - cms 	: [List member]
+      +-- wordpress
+      +-- joomla
+      +-- drupal
+      +-- mambo
+      +-- silverstripe
+      +-- vbulletin
+   - webdav 	: [Boolean]
+   - server 	: [List member]
+      +-- apache
+      +-- iis
+      +-- tomcat
+      +-- jboss
+      +-- weblogic
+      +-- websphere
+      +-- jenkins
+      +-- domino
+```
+
+
+Supported services
+----
+There is one .conf file per supported service into [settings] directory.
+For now, not a lot of services are supported yet, most work has focused on HTTP, however there will be more to come and toolbox will be filled in little by little...
+
+List of supported services:
+* FTP
+* SSH
+* Telnet
+* SMTP
+* HTTP
+* SMB
+* SNMP
