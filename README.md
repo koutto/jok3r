@@ -13,7 +13,7 @@ Table of contents
 * [Tree structure](#tree-structure)
 * [Configuration files](#configuration-files)
 * [Run tools against a target](#run-tools-against-a-target)
-* [Specific options](#specific-options)
+* [Context-specific options](#context-specific-options)
 * [Supported services](#supported-services)
 
 Description
@@ -23,7 +23,7 @@ Jok3r is a python CLI application which is aimed at simplifying first phases of 
 It provides the following features:
 * **Manage toolbox (install & update)**, organized by service ;
 * **Automatically run tools** from the toolbox against a specific service for a given target ;
-* **Handle context specific options** for tools, based on the target.
+* **Handle context-specific options** for tools, based on the target.
 
 Supported targeted services, tools, commands, specific options are all **fully customisable** by editing the configuration files.
 
@@ -207,9 +207,9 @@ It is also possible to select only some tools to run:
 ![Jok3r_short_demo](./pictures/short_demo.gif)
 
 
-Specific options
+Context-specific options
 ----
-In order to understand how specific options work, let us take a simple example: <br />
+In order to understand how context-specific options work, let us take a simple example: <br />
 On a pentest, the target is a website (https://www.targetsite.com). The tester navigates on this website and detects that it is running the CMS _Drupal_, therefore the language in use is _PHP_ (easy fingerprinting as such can be easily done using the browser add-on _Wappalyzer_ for example, see https://wappalyzer.com). However, let us assume that the tester is still not sure about the undelying web server.
 Knowing that, he will use the following specific options against the service HTTP:
 * `ssl=True` because HTTPS is used
