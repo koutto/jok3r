@@ -199,7 +199,9 @@ The list of supported services (i.e. there is an existing .conf file) can be dis
 python jok3r.py --list-services
 ```
 
-It is also possible to select only some tools
+It is also possible to select only some tools to run:
+* Use either `--only` or `--exclude` to select or exclude a list of tools categories.
+* Use `--single` to run only one tool from the toolbox.
 
 
 ![Jok3r_short_demo](./pictures/short_demo.gif)
@@ -215,7 +217,10 @@ Knowing that, he will use the following specific options against the service HTT
 * `cms=drupal`
 * `server=all` because server is not known yet, so no asumption is done yet
 
-Here is the command
+Here is the command to run Jok3r with those options:
+```bash
+python jok3r.py --url https://www.targetsite.com --service http ssl=True techno=php cms=drupal server=all
+```
 
 Note: For a given service, the list of supported specific options can be displayed using next command (e.g. for http):
 ```bash
