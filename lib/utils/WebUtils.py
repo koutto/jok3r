@@ -3,6 +3,8 @@ import re
 import urllib3
 import httplib
 
+urllib3.disable_warnings()
+
 class WebUtils(object):
 
 	@staticmethod

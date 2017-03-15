@@ -207,13 +207,15 @@ It is also possible to select only some tools
 
 Specific options
 ----
-In order to understand how specific options work, let us take a simple example: 
+In order to understand how specific options work, let us take a simple example: <br />
 On a pentest, the target is a website (https://www.targetsite.com). The tester navigates on this website and detects that it is running the CMS _Drupal_, therefore the language in use is _PHP_ (easy fingerprinting as such can be easily done using the browser add-on _Wappalyzer_ for example, see https://wappalyzer.com). However, let us assume that the tester is still not sure about the undelying web server.
 Knowing that, he will use the following specific options against the service HTTP:
 * `ssl=True` because HTTPS is used
 * `techno=php`
 * `cms=drupal`
 * `server=all` because server is not known yet, so no asumption is done yet
+
+Here is the command
 
 Note: For a given service, the list of supported specific options can be displayed using next command (e.g. for http):
 ```bash

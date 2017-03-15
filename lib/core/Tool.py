@@ -373,7 +373,6 @@ class Tool(object):
 		"""
 		# Tool not installed yet
 		if not self.installed:
-			print output_dir
 			output.printInfo('{0} is not installed yet (according to config), skipped.'.format(self.name))
 			return False
 

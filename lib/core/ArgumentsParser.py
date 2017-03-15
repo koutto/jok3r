@@ -379,10 +379,10 @@ class ArgumentsParser(object):
 					sys.exit(0)
 
 			elif option_type == 'list_member':
-				if SpecificOptions.isMemberOfList(self.settings, self.args.service, name, value):
+				if SpecificOptions.isMemberOfList(self.settings, self.args.service, name, value) or value == 'all':
 					self.specific[name] = value
 				else:
-					self.output.printError('Specific option "{0}" is list member type. Only member of the list is supported'.format(name))
+					self.output.printError('Specific option "{0}" is list member type. Only member of the list is supported or "all"'.format(name))
 					print
 					SpecificOptions.listAvailableSpecificOptions(self.settings, self.args.service, self.output)
 					sys.exit(0)			
