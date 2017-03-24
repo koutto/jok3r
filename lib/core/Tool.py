@@ -384,9 +384,9 @@ class Tool(object):
 					if self.specific_options[opt][1] == True and (opt not in specific_args.keys() or specific_args[opt] == False):
 						output.printInfo('Tool skipped. Specific to: {0} = True'.format(opt))
 						return False
-					elif self.specific_options[opt][1] == False and opt in specific_args.keys() and specific_args[opt] == True:
-						output.printInfo('Tool skipped. Specific to: {0} = False'.format(opt))
-						return False
+					#elif self.specific_options[opt][1] == False and opt in specific_args.keys() and specific_args[opt] == True:
+					#	output.printInfo('Tool skipped. Specific to: {0} = False'.format(opt))
+					#	return False
 
 				# List option
 				elif self.specific_options[opt][0] == list and self.specific_options[opt][1]: 

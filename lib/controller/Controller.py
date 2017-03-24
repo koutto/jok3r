@@ -105,9 +105,8 @@ class Controller(object):
             if not tool:
                 sys.exit(0)
 
-            subdir = FileUtils.concat_path(self.arguments.args.output_dir, tool.category)
-            output_file = FileUtils.absolute_path(FileUtils.concat_path(subdir, tool.name + '.txt'))
-            output_dir  = FileUtils.absolute_path(FileUtils.concat_path(subdir, tool.name))
+            output_file = FileUtils.absolute_path(FileUtils.concat_path(self.arguments.args.output_dir, tool.name + '.txt'))
+            output_dir  = FileUtils.absolute_path(FileUtils.concat_path(self.arguments.args.output_dir, tool.name))
             print
             output.printTitle1('   ' + tool.name)
             try:

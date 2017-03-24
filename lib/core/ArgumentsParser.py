@@ -335,15 +335,16 @@ class ArgumentsParser(object):
 
 		if self.args.output_dir:
 			self.args.output_dir = self.args.output_dir.strip()
-			if FileUtils.is_dir(self.args.output_dir):
-				self.output.printError('Directory "{0}" already exists. Choose another name.'.format(self.args.output_dir))
-				sys.exit(0)
-			if not FileUtils.create_directory(self.args.output_dir):
-				self.output.printError('Impossible to create output directory "{0}". Check permissions'.format(self.args.output_dir))
-				sys.exit(0)
 		else:
 			self.args.output_dir = self.defineOutputDir(self.args.output_dir, self.target.host, self.target.port, 
 														self.target.protocol, self.target.service)
+
+		if FileUtils.is_dir(self.args.output_dir):
+			self.output.printError('Directory "{0}" already exists. Choose another name.'.format(self.args.output_dir))
+			sys.exit(0)
+		if not FileUtils.create_directory(self.args.output_dir):
+			self.output.printError('Impossible to create output directory "{0}". Check permissions'.format(self.args.output_dir))
+			sys.exit(0)
 
 
 	def checkArgsSpecificOptions(self):
