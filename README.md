@@ -34,6 +34,17 @@ It is recommended that Kali Linux is used as it already has tools like Metasploi
 
 Language: Python 2.7
 
+List of tools that should be installed on the machine to be able to run some commands:
+* Nmap
+* Metasploit (msfconsole)
+* traceroute
+* dig
+* patator
+
+Linux packages:
+```bash
+sudo apt-get install python-dev
+```
 
 Installation
 ----

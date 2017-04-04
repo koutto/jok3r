@@ -1,3 +1,5 @@
 colorama==0.3.7
 urllib3==1.19.1
 IPy==0.83
+regex
+setuptools
