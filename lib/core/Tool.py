@@ -397,7 +397,7 @@ class Tool(object):
 
 		# Run command parsing
 		cmd_run = self.getRunCmd(target, output_file, output_dir, specific_args)
-		cmd_run_print = cmd_run[cmd_run.index(';')+1:].strip()
+		cmd_run_print = self.getSimplifiedRunCmd(cmd_run)
 		output.printInfo('Command:')
 		output.printInfo(cmd_run_print)
 		if not auto_yes:
@@ -493,3 +493,20 @@ class Tool(object):
 	 	c = Command(self.tool_dir, self.command, target, self.toolbox_dir, 
 	 				output_file, output_dir, self.service_name, specific_args)
 		return c.getParsedRunCommandLine()
+
+	def getSimplifiedRunCmd(self, fullcmd):
+		"""
+		Get simplified command, ie. without:
+			- "cd [...];" prefix 
+			- "2>&1 | tee [...]" suffix if present
+
+		@Args 		fullcmd: 	The full command-line
+		@Returns 	The simplified command line
+		"""
+		try:
+			cmd = fullcmd[fullcmd.index(';')+1:].strip()
+			cmd = cmd[:cmd.rindex('2>&1 | tee')].strip()
+		except:
+			return ''
+		return cmd
+		
