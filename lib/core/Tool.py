@@ -256,16 +256,23 @@ class Tool(object):
 		# Try to run the tool
 		output.printInfo('Trying to run the tool {0}...'.format(self.name))
 		splitted = self.command.strip().split(' ')
-		cmd = splitted[0]
-		if cmd.lower() in ('python', 'python3', 'perl', 'ruby') and len(splitted) > 1:
+
+		cmd = ''
+		if splitted[0].lower() == 'sudo' and len(splitted) > 1:
+			cmd = 'sudo '
+			splitted = splitted[1:]
+		cmd += splitted[0]
+
+		if splitted[0].lower() in ('python', 'python3', 'perl', 'ruby') and len(splitted) > 1:
 			if splitted[1] != '-m':
 				cmd += ' {0}'.format(splitted[1])
 			elif len(splitted) > 2:
 				cmd += ' -m {0}'.format(splitted[2])
 
-		elif cmd.lower() == 'java' and len(splitted) > 2:
+		elif splitted[0].lower() == 'java' and len(splitted) > 2:
 			if splitted[1].lower() == '-jar':
 				cmd += ' -jar {0}'.format(splitted[2])
+
 				
 	 	c = Command(self.tool_dir, cmd, None, self.toolbox_dir, None, None, None, None)
 		cmd_check = c.getStandardCommandLine()

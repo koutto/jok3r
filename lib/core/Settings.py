@@ -118,9 +118,8 @@ class Settings(object):
 				if SPECIFIC_TOOL_OPTIONS[service_name][option]:
 					setting_name = SPECIFIC_TOOL_OPTIONS[service_name][option]
 					if not self.general_settings[service_name][setting_name]:
-						self.output.printWarning('[{0}{1}] General settings warning: No "{2}" setting for service {3}.' + \
-							'The tool option "{4}" will not be taken into account'.format( \
-								service_name, CONF_EXT, setting_name, service_name, option))
+						self.output.printWarning('[{0}{1}] General settings warning: No "{2}" setting for service {3}. The tool option "{4}" will not be taken into account'.format( \
+							service_name, CONF_EXT, setting_name, service_name, option))
 		return True
 
 
@@ -162,8 +161,7 @@ class Settings(object):
 			self.output.printWarning('[{0}{1}] Section "{2}" > option "category" is empty, section skipped'.format(service_name, CONF_EXT, section))
 			return False
 		if category not in self.general_settings[service_name]['tools_categories']:
-			self.output.printWarning('[{0}{1}] Section "{2}" > option "category" ("{3}") not in "tools_categories",' + \
-				' section skipped'.format(service_name, CONF_EXT, section, category))
+			self.output.printWarning('[{0}{1}] Section "{2}" > option "category" ("{3}") not in "tools_categories", section skipped'.format(service_name, CONF_EXT, section, category))
 			return False
 		if not raw_command:
 			self.output.printWarning('[{0}{1}] Section "{2}" > option "command" is empty, section skipped'.format(service_name, CONF_EXT, section))
@@ -194,8 +192,7 @@ class Settings(object):
 						for e in value_list:
 							if e.lower() not in self.general_settings[service_name][SPECIFIC_TOOL_OPTIONS[service_name][option]]:
 								value_list.remove(e)
-								self.output.printWarning('[{0}{1}] Section "{2}" > option "{3}" contains invalid entry ' + \
-									'("{4}")'.format(service_name, CONF_EXT, section, option, e))
+								self.output.printWarning('[{0}{1}] Section "{2}" > option "{3}" contains invalid entry ("{4}")'.format(service_name, CONF_EXT, section, option, e))
 					opt_specific[option] = (list, value_list)
 
 		# Create the Tool object from parsed info
