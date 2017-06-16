@@ -12,9 +12,6 @@ class Program(object):
 		self.script_path = os.path.dirname(os.path.realpath(__file__))
 		self.output = CLIOutput(SETTINGS_PRINT_ENABLED)
 
-		# Print banner
-		#self.output.printBanner(BANNER)
-
 		try:
 			# Read settings from config file
 			self.settings = Settings(self.script_path + os.sep + SETTINGS_DIR, self.script_path + os.sep + TOOLBOX_DIR, self.output)
@@ -23,11 +20,16 @@ class Program(object):
 			self.arguments = ArgumentsParser(self.settings, self.output)
 
 			# Processing
-			self.controller = Controller(self.script_path, self.arguments, self.settings, self.output)
+			print BANNER
+			self.controller = Controller(self.arguments, self.settings, self.output)
+			self.controller.run()
 
 		except KeyboardInterrupt, SystemExit:
 			print
 			self.output.printError('User aborted')
+			sys.exit(0)
+		except ValueError:
+			print
 			sys.exit(0)
 		except Exception as e:
 			print

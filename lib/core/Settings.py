@@ -2,38 +2,41 @@
 ### Settings 
 ###
 import sys
-import ConfigParser
 import traceback
 from datetime import datetime
 from lib.utils.DefaultConfigParser import DefaultConfigParser
 from lib.utils.FileUtils import FileUtils
+from lib.utils.StringUtils import StringUtils
 from lib.core.Constants import *
 from lib.core.Toolbox import Toolbox
-from lib.core.Tool import Tool
+from lib.core.Tool import ToolType, Tool
 
 
 class Settings(object):
 
 	def __init__(self, settings_dir, toolbox_dir, output):
 		"""
-		Constructor of Settings object
+		Initialize Settings object
+
 		@Args		settings_dir: 	directory where config files are stored
 					toolbox_dir: 	directory where the toolbox is stored
 					output: 		Instance of CLIOutput
+
 		"""
 		self.settings_dir 		= settings_dir
 		self.toolbox_dir 		= toolbox_dir
 		self.output 	 		= output
-		# config_parsers: dict of config_parsers indexed by service_name
+
+		# config_parsers: dict of config_parsers indexed by conf_filename
 		self.config_parsers     = {}
-		# general_settings: 2 dimensions dict - [service_name][setting]
+		# general_settings: 2 dimensions dict - [service_name][option_name]
 		self.general_settings	= {}
 		self.toolbox 			= Toolbox(self)
 
 		# Check directory and presence of *.conf files
 		if not FileUtils.is_dir(settings_dir):
 			self.output.printError('Configuration directory ({0}) does not exist'.format(settings_dir))
-			sys.exit(0)
+			raise ValueError
 
 		files = FileUtils.list_directory(settings_dir)
 		for f in files:
@@ -41,66 +44,104 @@ class Settings(object):
 				files.remove(f)
 		if not files:
 			self.output.printError('Configuration directory ({0}) does not store any *.conf file'.format(settings_dir))
-			sys.exit(0)
+			raise ValueError
 
 		# Parse config files
-		# i.e. extract tools categories and optional/specific settings for each service
-		self.parseConfFiles(files)
+		self.parseAllConfFiles(files)
 
 
-	def parseConfFiles(self, files):
+	def parseAllConfFiles(self, files):
 		"""
 		Parse all *.conf files into the config directory
 		@Args		files: 	list of config files to parse
 		@Returns 	None
 		"""
-		# Process *.conf files
+		# ----
+		# Parse INSTALL_STATUS_CONF_FILE
+		if INSTALL_STATUS_CONF_FILE+CONF_EXT not in files:
+			self.output.printError('Install status file ({0}/{1}.{2}) is missing'.format(SETTINGS_DIR, INSTALL_STATUS_CONF_FILE, CONF_EXT))
+			sys.exit(0)
+
+		self.config_parsers[INSTALL_STATUS_CONF_FILE] = DefaultConfigParser()
+		self.config_parsers[INSTALL_STATUS_CONF_FILE].read(FileUtils.concat_path(self.settings_dir, INSTALL_STATUS_CONF_FILE+CONF_EXT))
+		files.remove(INSTALL_STATUS_CONF_FILE+CONF_EXT)
+
+		# ----
+		# Parse MULTI_SERVICES_CONF_FILE
+		support_multi_services_tools = MULTI_SERVICES_CONF_FILE+CONF_EXT in files
+		self.parseToolsConfFile(MULTI_SERVICES_CONF_FILE+CONF_EXT)
+		files.remove(MULTI_SERVICES_CONF_FILE+CONF_EXT)
+	
+		# ----
+		# Parse services *.conf files
 		for f in files:
-			self.output.printInfo('Parsing configuration file "{0}" ...'.format(f))
+			self.parseToolsConfFile(f)
 
-			full_path = FileUtils.concat_path(self.settings_dir, f)
-			service_name = f[:f.rfind(CONF_EXT)].lower().strip()
-			self.config_parsers[service_name] = DefaultConfigParser()
-			self.config_parsers[service_name].read(full_path)
-			#config_parser = DefaultConfigParser()
-			#config_parser.read(full_path)
 
-			# Add the entry into general settings for the service
-			self.general_settings[service_name] = {}
+	def parseToolsConfFile(self, file):
+		"""
+		Parse a given settings file
+		"""
+		#self.output.printInfo('Parsing configuration file "{0}" ...'.format(file))
 
+		full_path 		= FileUtils.concat_path(self.settings_dir, file)
+		conf_filename 	= FileUtils.remove_ext(file).lower().strip()
+
+		self.config_parsers[conf_filename] = DefaultConfigParser()
+		self.config_parsers[conf_filename].read(full_path)
+
+		# Add the entry into general settings for the service
+		self.general_settings[conf_filename] = {}
+
+		if conf_filename == MULTI_SERVICES_CONF_FILE:
+			self.general_settings[conf_filename]['tools_categories'] = ['all']
+
+		else:
 			# General settings - [general] in .conf file
-			self.general_settings[service_name]['tools_categories'] = [ e.lower() for e in self.config_parsers[service_name].safeGetList('general', 'tools_categories', ',', []) ]
+			tools_cats = self.config_parsers[conf_filename].safeGetList('general', 'tools_categories', ',', [])
+			self.general_settings[conf_filename]['tools_categories'] = [ StringUtils.cleanSpecialChars(e).lower() for e in tools_cats ]
 
-			# General settings - Optional/Specific settings (depends on the targeted servicee) 
-			if service_name in SPECIFIC_TOOL_OPTIONS.keys():
-				for option in SPECIFIC_TOOL_OPTIONS[service_name]:
-					if SPECIFIC_TOOL_OPTIONS[service_name][option]:
-						setting_name = SPECIFIC_TOOL_OPTIONS[service_name][option]
-						self.general_settings[service_name][setting_name] = \
-							[ e.lower() for e in self.config_parsers[service_name].safeGetList('general', setting_name, ',', []) ]
+			# General settings - Optional/Specific settings (depends on the targeted service) 
+			if conf_filename in SPECIFIC_TOOL_OPTIONS.keys():
+				for option in SPECIFIC_TOOL_OPTIONS[conf_filename]:
+					setting_name = SPECIFIC_TOOL_OPTIONS[conf_filename][option]
+					if setting_name:
+						self.general_settings[conf_filename][setting_name] = \
+							[ e.lower() for e in self.config_parsers[conf_filename].safeGetList('general', setting_name, ',', []) ]
 
 			# Check general settings for the current service
-			self.checkGeneralSettings(service_name)
+			self.checkGeneralSettings(conf_filename)
 
-			# Add service as new toolbox section
-			self.toolbox.addService(service_name)
+		# Add service as new toolbox section
+		self.toolbox.addService(conf_filename)
 
-			# Add tools in current config file into the toolbox, under the correct service section
-			for section in self.config_parsers[service_name].sections():
-				if section.startswith('tool_'):
-					newtool = self.createToolFromConfiguration(section, service_name)
-					if newtool:
-						if not self.toolbox.addTool(newtool, service_name):
-							self.output.printWarning('Unable to add tool "{0}" into the toolbox'.format(newtool.name))
-					else:
-						#self.output.printSettings('Tool "{0}" added into the toolbox (category "{1}")'.format(newtool.name, 
-						#	newtool.category))
-						pass
+		# Add tools in current config file into the toolbox, under the correct service section
+		for section in self.config_parsers[conf_filename].sections():
+			if section.startswith(PREFIX_TOOL_SECTIONNAME):
+				if conf_filename != MULTI_SERVICES_CONF_FILE:
+					newtool = self.createToolFromConfiguration(section, conf_filename, tooltype=ToolType.STANDARD)
+				else:
+					newtool = self.createToolFromConfiguration(section, conf_filename, tooltype=ToolType.MULTI_SERVICES)
+
+			elif section.startswith(PREFIX_TOOL_USEMULTI_SECTIONNAME):
+				newtool = self.createToolFromConfiguration(section, conf_filename, tooltype=ToolType.USE_MULTI)
+			else:
+				continue
+
+
+			if newtool:
+				if not self.toolbox.addTool(newtool, conf_filename):
+					self.output.printWarning('Unable to add tool "{0}" into the toolbox'.format(newtool.name))
+			else:
+				#self.output.printSettings('Tool "{0}" added into the toolbox (category "{1}")'.format(newtool.name, 
+				#	newtool.category))
+				pass				
 
 
 	def checkGeneralSettings(self, service_name):
 		"""
-		Check [general] section
+		Check [general] section in settings files
+
 		@Args		service_name: 	service related to config file to check
 		@Returns	Boolean indicating status
 		"""
@@ -123,67 +164,158 @@ class Settings(object):
 		return True
 
 
-	def createToolFromConfiguration(self, section, service_name):
+	def createToolFromConfiguration(self, section, service_name, tooltype=ToolType.STANDARD):
 		"""
-		Create tool object from a [tool_****] entry into the settings file
-		@Args		section: 		section from config file corresponding to a tool
-					service_name: 	service targeted by the tool
+		Create tool object from a tool entry (section) into the settings file
+		Note: Must be called after initializing parser for INSTALL_STATUS_CONF_FILE
+
+		@Args		section: 		Section from config file corresponding to a tool
+					service_name: 	Service targeted by the tool
+					tooltype: 		ToolType
 		@Returns	instance of Tool object if everything is ok, False otherwise
+
 		"""
 		if service_name not in self.general_settings.keys():
 			return False
 
-		# First, check for the presence of all needed option for the tool
-		options = self.config_parsers[service_name].options(section)
-		for o in MANDATORY_TOOL_OPTIONS:
-			if o not in options:
-				self.output.printWarning('[{0}{1}] Section "{2}" > missing mandatory option "{3}", skipped'.format( \
-					service_name, CONF_EXT, section, o))
-				return False
+		# Parse general options
+		options_general = self.parseToolGeneralOptions(section, service_name, tooltype)
+		if not options_general:
+			return False
+	
 
-		# Parse general+mandatory info
+		# Parse specific info (depends on targeted service)
+		options_specific = self.parseToolSpecificOptions(section, service_name, tooltype)
+
+		# Create the Tool object from parsed info
+		tool = Tool(service_name,
+					self.toolbox_dir,
+					tooltype,
+					# General tool options
+					options_general['name'],
+					options_general['tool_ref_name'],
+					options_general['category'],
+					options_general['description'],
+					options_general['command'],
+					options_general['install'],
+					options_general['update'],
+					options_general['installed'],
+					options_general['last_update'],
+					# Specific tool options	
+					options_specific)
+		return tool
+
+
+	def parseToolGeneralOptions(self, section, service_name, tooltype=ToolType.STANDARD):
+		"""
+		Parse the general options inside a tool section in settings file.
+		General options include:
+			- Mandatory options (depends on the tooltype), defined inside Constants.py
+			- Optional options: install, update
+			- Install status: extracted from INSTALL_STATUS_CONF_FILE
+
+		@Args		section: 		Section from config file corresponding to a tool
+					service_name: 	Service targeted by the tool
+					tooltype: 		ToolType
+
+		@Returns	If success: 	Dictionary options_general
+					If error: 		None
+
+		"""
+
+		options_general	= {'name'			: '',
+						   'tool_ref_name'	: '',
+						   'category'		: '',
+						   'description'	: '',
+						   'command'		: '',
+						   'install'		: '',
+						   'update'			: '',
+						   'installed'		: False,
+						   'last_update'	: ''}
+
+		# ----
+		# Check presence of mandatory options
+		for o in MANDATORY_TOOL_OPTIONS[tooltype]:
+			if o not in self.config_parsers[service_name].options(section):
+				self.output.printWarning('[{0}{1}] Section "{2}" > missing mandatory option "{3}", skipped'.format(service_name, CONF_EXT, section, o))
+				return None
+
+		# ----
+		# Parse mandatory options
 		try:
-			name        = self.config_parsers[service_name].safeGet(section, 'name', '', None).strip()
-			category    = self.config_parsers[service_name].safeGet(section, 'category', '', None).strip().lower()
-			description = self.config_parsers[service_name].safeGet(section, 'description', '', None).strip()
-			raw_command = self.config_parsers[service_name].safeGet(section, 'command', '', None).strip()
+			for o in MANDATORY_TOOL_OPTIONS[tooltype]:
+				options_general[o] = self.config_parsers[service_name].safeGet(section, o, '', None).strip()
+				if o == 'name' or o == 'tool_ref_name':
+					options_general[o] = StringUtils.cleanSpecialChars(options_general[o])
+				if o == 'category':
+					options_general[o] = StringUtils.cleanSpecialChars(options_general[o]).lower()
 		except:
-			self.output.printWarning('[{0}{1}] Section "{2}" > syntax error with mandatory options'.format( \
-				service_name, CONF_EXT, section))
-			#traceback.print_exc()
-			return False
+			self.output.printWarning('[{0}{1}] Section "{2}" > syntax error with mandatory options'.format(service_name, CONF_EXT, section))
+			return None
 
-		# Check general+mandatory info
-		if not name:
-			self.output.printWarning('[{0}{1}] Section "{2}" > option "name" is empty, section skipped'.format(service_name, CONF_EXT, section))
-			return False
-		if not category:
-			self.output.printWarning('[{0}{1}] Section "{2}" > option "category" is empty, section skipped'.format(service_name, CONF_EXT, section))
-			return False
-		if category not in self.general_settings[service_name]['tools_categories']:
+		if tooltype == ToolType.MULTI_SERVICES:
+			options_general['category'] = 'all'
+
+		# ----
+		# Check mandatory options
+		for o in MANDATORY_TOOL_OPTIONS[tooltype]:
+			if not options_general[o]:
+				self.output.printWarning('[{0}{1}] Section "{2}" > option "{3}" is empty, section skipped'.format(service_name, CONF_EXT, section, o))
+				return None
+		if options_general['category'] not in self.general_settings[service_name]['tools_categories']:
 			self.output.printWarning('[{0}{1}] Section "{2}" > option "category" ("{3}") not in "tools_categories", section skipped'.format(service_name, CONF_EXT, section, category))
-			return False
-		if not raw_command:
-			self.output.printWarning('[{0}{1}] Section "{2}" > option "command" is empty, section skipped'.format(service_name, CONF_EXT, section))
-			return False
+			return None
 
-		# Parse general+optional info
+		# ----
+		# Parse general+optional options
 		try:
-			install 		= self.config_parsers[service_name].safeGet(section, 'install', '', None).strip()
-			update 			= self.config_parsers[service_name].safeGet(section, 'update', '', None).strip()
-			last_update 	= self.config_parsers[service_name].safeGet(section, 'last_update', '', None).strip()
-			installed 		= self.config_parsers[service_name].safeGetBoolean(section, 'installed', True)
+			options_general['install'] = self.config_parsers[service_name].safeGet(section, 'install', '', None).strip()
+			options_general['update']  = self.config_parsers[service_name].safeGet(section, 'update', '', None).strip()
 		except:
 			pass
 
-		# Parse specific info (depends on targeted service)
+		# ----
+		# Retrieve install status
+		# By default: not installed, no last update date
+
+		# If the tool entry is actually a reference to a multi-services tool, extract the install status
+		# from [multi] section inside INSTALL_STATUS_CONF_FILE
+		if tooltype == ToolType.USE_MULTI:
+			tool_installed = self.config_parsers[INSTALL_STATUS_CONF_FILE].safeGet(MULTI_SERVICES_CONF_FILE, options_general['tool_ref_name'], 'false', None).lower().strip()
+		else:
+			tool_installed = self.config_parsers[INSTALL_STATUS_CONF_FILE].safeGet(service_name, options_general['name'], 'false', None).lower().strip()
+
+		if tool_installed == 'false':
+			options_general['installed'] 	= False
+			options_general['last_update'] 	= ''
+		elif tool_installed == 'true':
+			options_general['installed'] 	= True
+			options_general['last_update'] 	= ''
+		else:
+			options_general['installed'] 	= True
+			options_general['last_update'] 	= tool_installed
+
+		return options_general
+
+
+	def parseToolSpecificOptions(self, section, service_name, tooltype=ToolType.STANDARD):
+		"""
+		Parse the specific options inside a tool section in settings file.
+
+		@Args		section: 		Section from config file corresponding to a tool
+					service_name: 	Service targeted by the tool
+					tooltype: 		ToolType
+					
+		@Returns	Dictionary options_specific
+		"""
 		# opt_specific is a dictionary: "option" => (type, value)
-		opt_specific    = dict()
+		options_specific    = dict()
+
 		if service_name in SPECIFIC_TOOL_OPTIONS.keys():
 			for option in SPECIFIC_TOOL_OPTIONS[service_name]:
 				# Boolean options (default False)
 				if SPECIFIC_TOOL_OPTIONS[service_name][option] == '':
-					opt_specific[option] = (bool, self.config_parsers[service_name].safeGetBoolean(section, option + '_specific', False))
+					options_specific[option] = (bool, self.config_parsers[service_name].safeGetBoolean(section, option + '_specific', False))
 
 				# List-type options
 				else:
@@ -193,69 +325,53 @@ class Settings(object):
 							if e.lower() not in self.general_settings[service_name][SPECIFIC_TOOL_OPTIONS[service_name][option]]:
 								value_list.remove(e)
 								self.output.printWarning('[{0}{1}] Section "{2}" > option "{3}" contains invalid entry ("{4}")'.format(service_name, CONF_EXT, section, option, e))
-					opt_specific[option] = (list, value_list)
+					options_specific[option] = (list, value_list)
 
-		# Create the Tool object from parsed info
-		tool = Tool(service_name,
-					section,
-					self.toolbox_dir,
-					# General+Mandatory tool options
-					name,
-					category,
-					description,
-					raw_command,
-					# General+Optional tool options
-					install,
-					update,
-					last_update,
-					installed,	
-					# Specific tool options	
-					opt_specific)
-
-		return tool
+		return options_specific
 
 
-	def changeInstalledOption(self, service_name, tool_section_name, value):
+	def changeInstalledOption(self, service_name, tool_name, install_status):
 		"""
-		Change the status of option "installed" for a given tool
+		Change the install status for a given tool.
+		Change is made into the INSTALL_STATUS_CONF_FILE
+
 		@Args		service_name: 		service targeted by the tool
-					tool_section_name: 	Tool section name as it appears in config file
-					value: 				'True' if tool installed, 'False' otherwise
+					tool_name: 			Tool name as it appears in config file
+					install_status: 	Boolean
 		@Returns	Boolean indicating operation status
 		"""
-		if value not in ('True', 'False'):
-			return False
-		if self.config_parsers[service_name].safeSet(tool_section_name, 'installed', value):
-			return self.saveSettings(service_name)
-		return False
+		# If value == True: tool installed, put the current datetime
+		if install_status:
+			value = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+		else:
+			value = 'False'
+
+		if not self.config_parsers[INSTALL_STATUS_CONF_FILE].safeSet(service_name, tool_name, value):
+			raise Exception
+
+		# If "MULTI_SERVICES" tool, change the install status of all the references
+		if service_name == MULTI_SERVICES_CONF_FILE:
+			for tool in self.toolbox.searchInToolboxToolsReferencing(tool_name):
+				if not self.config_parsers[INSTALL_STATUS_CONF_FILE].safeSet(tool.service_name, tool.name, value):
+					raise Exception
+
+		return self.saveSettings(INSTALL_STATUS_CONF_FILE)
 
 
-	def changeLastUpdateOption(self, service_name, tool_section_name):
-		"""
-		Update the value of the option "last_update" with the current date-time
-		@Args		service_name: 		service targeted by the tool
-					tool_section_name: 	Tool section name as it appears in config file	
-		@Returns	Boolean indicating operation status	
-		"""
-		current_datetime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-		if self.config_parsers[service_name].safeSet(tool_section_name, 'last_update', current_datetime):
-			return self.saveSettings(service_name)
-		return False
-
-
-	def saveSettings(self, service_name):
+	def saveSettings(self, conf_filename):
 		"""
 		Save settings into config file.
 		Make sure changes are thus taken into account.
-		@Args		service_name: service targeted by the tool
+
+		@Args		conf_filename: configuration filename (without extension)
 		@Returns	Boolean indicating operation status
 		"""
 		try:
-			config_file = FileUtils.concat_path(self.settings_dir, service_name + '.conf')
+			config_file = FileUtils.concat_path(self.settings_dir, conf_filename + CONF_EXT)
 			with open(config_file, 'w') as handle:
-				self.config_parsers[service_name].write(handle)
+				self.config_parsers[conf_filename].write(handle)
 				# Re-read to take change into account
-				self.config_parsers[service_name].read(config_file) # warning: takes filename as param
+				self.config_parsers[conf_filename].read(config_file) # warning: takes filename as param
 			return True
 		except:
 			traceback.print_exc()

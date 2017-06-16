@@ -13,7 +13,7 @@ class Target(object):
 
 	def __init__(self, ip, port, service, url):
 		"""
-		Initialize Target. 
+		Initialize Target
 		@Args 	ip: 		IP address
 				port: 		TCP/UDP port
 				service:	service name
@@ -25,7 +25,7 @@ class Target(object):
 		self.service 		= service
 		self.url 			= url
 		self.host 			= ''
-		self.protocol 		= PROTOCOL[self.service] if self.service in PROTOCOL else 'tcp'
+		self.protocol 		= PROTOCOL[self.service] if self.service in PROTOCOL.keys() else 'tcp'
 		self.is_reachable 	= False
 
 		# Specific HTTP/HTTPS

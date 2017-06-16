@@ -1,12 +1,7 @@
 from colorama import *
+from lib.core.Tool import ToolType
 
-SETTINGS_DIR = 'settings'
-SETTINGS_PRINT_ENABLED = True
-TOOLBOX_DIR = 'toolbox'
-DEFAULT_OUTPUT_DIR = 'output'
-ARGPARSE_MAX_WIDTH = 100
-ARGPARSE_MAX_HELP_POSITION = 40
-CURRENT_VERSION = 'Version 1.0'
+CURRENT_VERSION = 'Version 1.1'
 BANNER = Style.BRIGHT + Fore.GREEN + """
          ____.       __    ________        
         |    | ____ |  | __\_____  \______ 
@@ -15,17 +10,38 @@ BANNER = Style.BRIGHT + Fore.GREEN + """
     \________|\____/|__|_ \/______  /__|      {0}
                          \/       \/     
     
-        --[ Hacking Arsenal Manager ]--
+    --[ Network & Web Hacking Arsenal Manager ]--
 """.format(CURRENT_VERSION) + Style.RESET_ALL
 
+
+SETTINGS_DIR = 'settings'
+SETTINGS_PRINT_ENABLED = True
+TOOLBOX_DIR = 'toolbox'
+DEFAULT_OUTPUT_DIR = 'output'
+WORDLISTS_DIR = 'wordlists'
+ARGPARSE_MAX_WIDTH = 100
+ARGPARSE_MAX_HELP_POSITION = 40
+
 CONF_EXT = '.conf'
-MANDATORY_TOOL_OPTIONS  = ( 'name', 'category', 'description', 'command')
+INSTALL_STATUS_CONF_FILE = '_install_status'
+
+MULTI_SERVICES_CONF_FILE = 'multi'
+MULTI_SERVICES_TOOLBOX_SUBDIR = 'multi'
+
+PREFIX_TOOL_SECTIONNAME = 'tool_'
+PREFIX_TOOL_USEMULTI_SECTIONNAME = 'usemulti_'
+
+MANDATORY_TOOL_OPTIONS = {  ToolType.STANDARD:          ('name', 'category', 'description', 'command'),
+                            ToolType.MULTI_SERVICES:    ('name', 'description'),
+                            ToolType.USE_MULTI:         ('name', 'tool_ref_name', 'category', 'description', 'command')}
+
+
 SPECIFIC_TOOL_OPTIONS   = { 'http': {'server': 'server_list',
 						  		     'techno': 'techno_list',
 						  		     'cms'   : 'cms_list',
 						 		     'ssl'   : '',
                                      'webdav': ''},
-				  		    'ftp' : {} 
+				  		    'ftp' : {'ssl'   : ''} 
 				 	 	  }
 
 PROTOCOL = { 'ftp':     'tcp', 

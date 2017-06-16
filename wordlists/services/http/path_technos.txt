@@ -30,7 +30,6 @@
 /123settle
 /1337
 /2
-/..%255c..%255c..%255c..%255cwinnt/system32/cmd.exe?/c+dir
 /2test
 /3
 /3082
@@ -73,12 +72,6 @@
 /a01d01b2_3.bin
 /a02d01b2_3.bin
 /a10d01b2_3.bin
-/a1disp3.cgi?../../../../../../../../../../etc
-/a1disp3.cgi?../../../../../../../../../../etc/passwd
-/a1stats/a1disp3.cgi?../../../../../../../../../../etc/passwd
-/a1stats/a1disp3.cgi?../../../../../../../etc/passwd
-/a1stats/a1disp3.cgi?../../../../../../../../../../passwd
-/a1stats/a1disp4.cgi?../../../../../../../etc/passwd
 /a20d01a2_3.bin
 /a20d01b2_3.bin
 /a25d01a2_5.bin
@@ -87,11 +80,7 @@
 /aa
 /aaa
 /aaaa
-/ab/*
 /ab2
-/ab2/\@AdminAddadmin?uid=foo&password=bar&re_password=bar
-/ab2/\@AdminViewError
-/ab2/Help_C/\@Ab2HelpSearch?scope=HELP&DwebQuery=<script>alert(Vulnerable)</script>
 /abc
 /ab/docs/*
 /abonnement.asp
@@ -106,13 +95,13 @@
 /acart2_0
 /acart2_0/acart2_0.mdb
 /acart2_0/admin/category.asp
-/acart2_0/admin/error.asp?msg=<script>alert(\"test\")</script>
-/acart2_0/admin/index.asp?msg=<script>alert(\"test\")</script>
-/acart2_0/deliver.asp?msg=<script>alert(\"test\")</script>
-/acart2_0/error.asp?msg=<script>alert(\"test\")</script>
-/acart2_0/signin.asp?msg=<script>alert(\"test\")</script>
+/acart2_0/admin/error.asp
+/acart2_0/admin/index.asp
+/acart2_0/deliver.asp
+/acart2_0/error.asp
+/acart2_0/signin.asp
 /acartpath
-/acartpath/signin.asp?|-|0|404_Object_Not_Found
+/acartpath/signin.asp
 /acb
 /accept
 /acceso
@@ -177,22 +166,16 @@
 /addnavigationlinkdialog.aspx
 /addNodeListener
 /add.php
-/add.php3?url=ja&adurl=javascript:<script>alert('Vulnerable')</script>
+/add.php3
 /address
 /Address
 /addressbook
 /.addressbook
 /addressBook
-/addressbook/index.php?name=<script>alert('Vulnerable')</script>
-/addressbook/index.php?surname=<script>alert('Vulnerable')</script>
+/addressbook/index.php
 /AddressBookJ2WB
-/AddressBookJ2WB/*
-/AddressBookJ2WE/*.jsp
+/AddressBookJ2WE
 /AddressBookJ2WE/*.jsv
-/AddressBookJ2WE/*.jsw
-/AddressBookJ2WE/services/AddressBook
-/AddressBookJ2WE/services/AddressBook/wsdl/*
-/addressbook.php?\"><script>alert(Vulnerable)</script><!--
 /AddressBookW2JB
 /AddressBookW2JB/*
 /AddressBookW2JE/*.jsp
@@ -3311,7 +3294,6 @@
 /fileRealm.properties
 /files
 /files/
-/# files commonly transmitted via tftp
 /FileSeek2.cgi
 /FileSeek.cgi
 /file-that-is-not-real-2002.php3
@@ -4709,17 +4691,6 @@
 /impreso
 /impreso/
 /imprimer.asp
-/imprimer.asp?no=%60/etc/passwd%60|44|80040e14|[Microsoft][ODBC_SQL_Server_Driver][SQL_Server]Line_1:_Incorrect_syntax_near_&#039;`&#039;.
-/imprimer.asp?no=/../../../../../../../../../../../../../../../../../../../../boot.ini|44|80040e14|[Microsoft][ODBC_SQL_Server_Driver][SQL_Server]Line_1:_Incorrect_syntax_near_&#039;/&#039;.
-/imprimer.asp?no=/.../.../.../.../.../.../boot.ini|44|80040e14|[Microsoft][ODBC_SQL_Server_Driver][SQL_Server]Line_1:_Incorrect_syntax_near_&#039;/&#039;.
-/imprimer.asp?no=/....../boot.ini|44|80040e14|[Microsoft][ODBC_SQL_Server_Driver][SQL_Server]Line_1:_Incorrect_syntax_near_&#039;/&#039;.
-/imprimer.asp?no=/.\"./.\"./.\"./.\"./.\"./boot.ini|44|80040e14|[Microsoft][ODBC_SQL_Server_Driver][SQL_Server]Line_1:_Incorrect_syntax_near_&#039;/&#039;.
-/imprimer.asp?no=c:\boot.ini|44|80040e14|[Microsoft][ODBC_SQL_Server_Driver][SQL_Server]Line_1:_Incorrect_syntax_near_&#039;c:&#039;.
-/imprimer.asp?no=/etc/passwd%00|44|80040e14|[Microsoft][ODBC_SQL_Server_Driver][SQL_Server]Line_1:_Incorrect_syntax_near_&#039;/&#039;.
-/imprimer.asp?no=../../../../../../../../../etc/passwd%00|44|80040e14|[Microsoft][ODBC_SQL_Server_Driver][SQL_Server]Line_1:_Incorrect_syntax_near_&#039;/&#039;.
-/imprimer.asp?no=/../../../../../../../../etc/passwd|44|80040e14|[Microsoft][ODBC_SQL_Server_Driver][SQL_Server]Line_1:_Incorrect_syntax_near_&#039;/&#039;.
-/imprimer.asp?no=/etc/passwd|44|80040e14|[Microsoft][ODBC_SQL_Server_Driver][SQL_Server]Line_1:_Incorrect_syntax_near_&#039;/&#039;.
-/imprimer.asp?no=....//....//....//....//....//....//....//etc.passwd|44|80040e14|[Microsoft][ODBC_SQL_Server_Driver][SQL_Server]Line_1:_Incorrect_syntax_near_&#039;/&#039;.
 /in
 /inbox
 /inc
@@ -4898,7 +4869,6 @@
 /interchange
 /interchange/
 /interdoc
-/# Interesting Microsoft IIS files which require being scanned for with the HTTP POST verb
 /_interface
 /Interface
 /internal
@@ -6314,7 +6284,6 @@
 /logviewer.aspx
 /longrunningoperationprogress.aspx
 /look
-/# Look at the result codes in the headers - 403 likely mean the dir exists, 404  means not. It takes an ISAPI filter for IIS to return 404's for 403s. 
 /lookup
 /lookwho.cgi
 /lost+found
@@ -6359,7 +6328,7 @@
 /mail7.box
 /mail8.box
 /mail9.box
-/mail/addressaction.html?id=<USERID#>&newaddress=1&addressname=<script>alert('Vulnerable')</script>&addressemail=junk@example.com
+/mail/addressaction.html
 /mail/adminisist.nsf
 /mail/admin.nsf
 /mail.box
@@ -7892,7 +7861,7 @@
 /proplus/admin/login.php+-d+\"action=insert\"+-d+\"username=test\"+-d+\"password=test\"
 /protected
 /protected/
-/protectedpage.php?uid=&#039;%20OR%20&#039;&#039;=&#039;&amp;pwd=&#039;%20OR%20&#039;&#039;=&#039;
+/protectedpage.php
 /protected/secret.html+
 /protection.php
 /protocols
@@ -8123,18 +8092,6 @@
 /rtm.log
 /RU
 /rubrique.asp
-/rubrique.asp?no=%60/etc/passwd%60|55|80040e14|[Microsoft][ODBC_SQL_Server_Driver][SQL_Server]Line_1:_Incorrect_syntax_near_&#039;`&#039;.
-/rubrique.asp?no=/../../../../../../../../../../../../../../../../../../../../boot.ini|55|80040e14|[Microsoft][ODBC_SQL_Server_Driver][SQL_Server]Line_1:_Incorrect_syntax_near_&#039;/&#039;.
-/rubrique.asp?no=/.../.../.../.../.../.../boot.ini|55|80040e14|[Microsoft][ODBC_SQL_Server_Driver][SQL_Server]Line_1:_Incorrect_syntax_near_&#039;/&#039;.
-/rubrique.asp?no=/....../boot.ini|55|80040e14|[Microsoft][ODBC_SQL_Server_Driver][SQL_Server]Line_1:_Incorrect_syntax_near_&#039;/&#039;.
-/rubrique.asp?no=/.\"./.\"./.\"./.\"./.\"./boot.ini|55|80040e14|[Microsoft][ODBC_SQL_Server_Driver][SQL_Server]Line_1:_Incorrect_syntax_near_&#039;/&#039;.
-/rubrique.asp?no=c:\boot.ini|55|80040e14|[Microsoft][ODBC_SQL_Server_Driver][SQL_Server]Line_1:_Incorrect_syntax_near_&#039;c:&#039;.
-/rubrique.asp?no=/etc/passwd%00|55|80040e14|[Microsoft][ODBC_SQL_Server_Driver][SQL_Server]Line_1:_Incorrect_syntax_near_&#039;/&#039;.
-/rubrique.asp?no=../../../../../../../../../etc/passwd%00|55|80040e14|[Microsoft][ODBC_SQL_Server_Driver][SQL_Server]Line_1:_Incorrect_syntax_near_&#039;/&#039;.
-/rubrique.asp?no=/../../../../../../etc/passwd|55|80040e14|[Microsoft][ODBC_SQL_Server_Driver][SQL_Server]Line_1:_Incorrect_syntax_near_&#039;/&#039;.
-/rubrique.asp?no=/../../../etc/passwd|55|80040e14|[Microsoft][ODBC_SQL_Server_Driver][SQL_Server]Line_1:_Incorrect_syntax_near_&#039;/&#039;.
-/rubrique.asp?no=/etc/passwd|55|80040e14|[Microsoft][ODBC_SQL_Server_Driver][SQL_Server]Line_1:_Incorrect_syntax_near_&#039;/&#039;.
-/rubrique.asp?no=....//....//....//....//....//....//....//etc.passwd|55|80040e14|[Microsoft][ODBC_SQL_Server_Driver][SQL_Server]Line_1:_Incorrect_syntax_near_&#039;/&#039;.
 /ruby
 /ruleauthor
 /runreport.aspx

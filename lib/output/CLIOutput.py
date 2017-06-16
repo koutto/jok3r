@@ -37,24 +37,39 @@ class CLIOutput(object):
 			sys.stdout.write('\033[0G')
 
 	def boldString(self, string):
-		return Style.BRIGHT + string + Style.RESET_ALL
+		return Style.BRIGHT + str(string) + Style.RESET_ALL
+
+	def colorString(self, string, color):
+		string = str(string)
+		if color:
+			if color.lower() == 'green':
+				string = Fore.GREEN + string + Style.RESET_ALL
+			elif color.lower() == 'red':
+				string = Fore.RED + string + Style.RESET_ALL
+			elif color.lower() == 'yellow':
+				string = Fore.YELLOW + string + Style.RESET_ALL
+		return string
 
 	def printRaw(self, string):
 		sys.stdout.write(string)
 
 	def printGreen(self, text):
-		message = Fore.GREEN + text + Style.RESET_ALL
+		message = Fore.GREEN + str(text) + Style.RESET_ALL
 		self.printRaw(message)
 
 	def printRed(self, text):
-		message = Fore.RED + text + Style.RESET_ALL
+		message = Fore.RED + str(text) + Style.RESET_ALL
 		self.printRaw(message)
 
 	def printBright(self, text):
 		message = Style.BRIGHT + text + Style.RESET_ALL
 		self.printNewLine(message)
 
-	def printNewLine(self, string):
+	def printNewLine(self, string, color=None):
+		string = str(string)
+		if color:
+			string = self.colorString(string, color)
+
 		if self.lastInLine == True:
 			self.eraseLine()
 		if platform.system() == 'Windows':

@@ -1,209 +1,267 @@
 ###
-### Command builder
+### Core > Command
 ###
-import re
-import regex
-from lib.utils.FileUtils import FileUtils
-from lib.core.Constants import *
-from lib.core.SpecificOptions import SpecificOptions
-
 # ---------------------------
 # Tags supported in commands:
 # ---------------------------
-# [IP]			Target IP
-# [URL]			Target URL
-# [HOST]		Target host
-# [PORT]		Target port
-# [PROTOCOL]	Protocol tcp/udp
-# [SERVICE]		Service name
-# [OUTPUT]		Output file
-# [OUTPUTDIR] 	Output directory (when tool save results in a directory, e.g. skipfish)
-# [TOOLBOXDIR]	Toolbox directory
+# [IP]			 Target IP
+# [URL]			 Target URL
+# [HOST]		 Target host
+# [PORT]		 Target port
+# [PROTOCOL]	 Protocol tcp/udp
+# [SERVICE]		 Service name
+# [OUTPUT]		 Output file
+# [OUTPUTDIR] 	 Output directory (when tool save results in a directory, e.g. skipfish)
+# [TOOLBOXDIR]	 Toolbox directory
+# [WORDLISTSDIR] Wordlists directory
 #
 # + specific tags depending on each service, eg. for http:
 # [SSL option="value"]					In case SSL should be used, add the specified option. e.g.: [SSL option="--ssl"]
 # [CMS cms1="val" cms2="val" ...] 		Option specific to CMS. e.g.: [CMS drupal="--type Drupal" joomla="--type Joomla"]
 # [TECHNO techno1="val" techno2="val"]	Option specific to technology. e.g.: [TECHNO php="-l php" asp="-l asp"]
 # [SERVER server1="val" server2="val"]	Option specific to server. e.g.: [SERVER apache="--serv apache" tomcat="--serv tomcat"]
+#
+import re
+import regex
+from lib.utils.FileUtils import FileUtils
+from lib.utils.CmdUtils import CmdUtils
+from lib.core.SpecificOptions import SpecificOptions
+import Constants
+
+
+
+class CommandType(object):
+	RUN 	= 1
+	INSTALL	= 2
+	UPDATE	= 3
+
 
 class Command(object):
 
 	def __init__(self, 
-				 directory, 
-				 raw_cmdline, 
-				 target, 
-				 toolbox_dir, 
-				 output_file, 
-				 output_dir,
-				 service_name,
-				 specific_args):
-	
-		self.directory	 	= FileUtils.absolute_path(directory)	# directory where the command should be launched
-		self.cmdline 	 	= raw_cmdline
-		self.target 	 	= target
-		self.toolbox_dir 	= FileUtils.absolute_path(toolbox_dir)
-		self.output_file 	= output_file
-		self.output_dir  	= output_dir
-		self.service 	 	= service_name
-		self.specific_args 	= specific_args
-
-	def getParsedRunCommandLine(self):
+				 cmdtype,
+				 cmdline,
+				 current_dir, 
+				 toolbox_dir):
 		"""
-		Replace tags in a command aimed at running a tool.
-		Return the parsed command line, ready to be executed
+		Initilialize Command object 
+		From a raw command line and information used to replace tags correctly
+
+		@Args 	cmdtype:		Command type	
+				cmdline:		Raw command-line (may contain tags)
+				current_dir:	Directory where the command should be started
+				toolbox_dir:	Toolbox directory
+
 		"""
-		if not self.target or not self.output_file:
-			return None
-
-		self.replaceIP()
-		self.replaceURL()
-		self.replaceHOST()
-		self.replacePORT()
-		self.replacePROTOCOL()
-		self.replaceSERVICE()
-		self.replaceOUTPUT()
-		self.replaceOUTPUTDIR()
-		self.replaceTOOLBOXDIR()
-		self.replaceSpecificTags()
-
-		self.cmdline = 'cd {0}; '.format(self.directory) + self.cmdline
-		return self.cmdline
+		self.cmdtype 			= cmdtype
+		self.cmdline 			= cmdline # Keep the original command line
+		self.current_dir		= FileUtils.absolute_path(current_dir)
+		self.toolbox_dir		= FileUtils.absolute_path(toolbox_dir)
+		self.parsed_cmdline		= ''
 
 
-	def getParsedInstallCommandLine(self):
+	def getParsedCmdline(self, 
+						 output_dir=None,
+				 		 output_filename=None,
+				 		 target=None,
+				 		 specific_args=None,
+				 		 remove_args=False):
 		"""
-		Replace tags in a command aimed at installing a tool.
-		Prefix with cd [tool_dir] to make sure commands will be run in correct context
-		Return the parsed command line, ready to be executed
+		Return the parsed command line, i.e. with the tags replaced by their correct values
+		according to the context
+
+		@Args 		output_dir:			Directory where outputs are saved (for RUN commands)
+					output_filename:	Filename for output (for RUN commands)
+					target: 			Target object (for RUN commands)
+					specific_args: 		Specific arguments (for RUN commands)
+					remove_args:		Boolean indicating if arguments from cmd must be deleted (for RUN commands)
+										Used for check install commands
+
+		@Returns 	Tuple	(full parsed cmdline, shortened parsed cmdline)
 		"""
-		self.replaceTOOLBOXDIR()
-		self.cmdline = 'cd {0}; '.format(self.directory) + self.cmdline
-		return self.cmdline
+
+		self.parsed_cmdline = self.cmdline
+		if self.cmdtype == CommandType.RUN:
+			if remove_args:
+				self.parsed_cmdline = CmdUtils.removeArgsFromCmd(self.parsed_cmdline)
+			else:
+				if not output_dir or not output_filename or not target:
+					raise ValueError('Missing required arguments')
+
+				output_dir 		= FileUtils.absolute_path(output_dir)
+				output_file 	= FileUtils.concat_path(output_dir, output_filename)
+				output_subdir 	= FileUtils.concat_path(output_dir, FileUtils.remove_ext(output_filename))
+
+				self.replaceIP(target.ip)
+				self.replaceURL(target.url)
+				self.replaceHOST(target.host)
+				self.replacePORT(target.port)
+				self.replacePROTOCOL(target.protocol)
+				self.replaceSERVICE(target.service)
+				self.replaceOUTPUT(output_file)
+				self.replaceOUTPUTDIR(output_subdir)
+				self.replaceTOOLBOXDIR(self.toolbox_dir)
+				self.replaceWORDLISTSDIR(Constants.WORDLISTS_DIR)
+				self.replaceSpecificTags(target.service, specific_args)
+
+		elif self.cmdtype in (CommandType.INSTALL, CommandType.UPDATE):
+			self.replaceTOOLBOXDIR(self.toolbox_dir)
+
+		else:
+			raise ValueError('Invalid command type')
+
+		# Shortened parsed command line:
+		# 	- without "cd [...]" prefix
+		# 	- without "2>&1 | tee [...]" suffix
+		short_cmdline = self.parsed_cmdline
+		endcmd_index = short_cmdline.rfind('2>&1 | tee')
+		if endcmd_index > 0:
+			short_cmdline = short_cmdline[:endcmd_index].strip()
+
+		# Full parsed command line:	
+		self.parsed_cmdline = 'cd {0}; '.format(self.current_dir) + self.parsed_cmdline
+
+		return self.parsed_cmdline, short_cmdline
 
 
-	def getStandardCommandLine(self):
+	def getSimplifiedRunCmd(self, fullcmd):
 		"""
-		Return a standard command line (without tag)
+		Get simplified command, ie. without:
+			- "cd [...];" prefix 
+			- "2>&1 | tee [...]" suffix if present
+
+		@Args 		fullcmd: 	The full command-line
+		@Returns 	The simplified command line
 		"""
-		self.cmdline = 'cd {0}; '.format(self.directory) + self.cmdline
-		return self.cmdline
+		try:
+			cmd = fullcmd[fullcmd.index(';')+1:].strip()
 
+		except:
+			return ''
+		return cmd
 
-	def replaceURL(self):
+	def replaceURL(self, url):
 		"""
 		Replace [URL]
 		"""
 		pattern = re.compile('\[URL\]', re.IGNORECASE)
-		self.cmdline = pattern.sub(self.target.url, self.cmdline)
+		self.parsed_cmdline = pattern.sub(url, self.parsed_cmdline)
 
 
-	def replaceHOST(self):
+	def replaceHOST(self, host):
 		"""
 		Replace [HOST]
 		"""
 		pattern = re.compile('\[HOST\]', re.IGNORECASE)
-		self.cmdline = pattern.sub(self.target.host, self.cmdline)
+		self.parsed_cmdline = pattern.sub(host, self.parsed_cmdline)
 
 
-	def replaceIP(self):
+	def replaceIP(self, ip):
 		"""
 		Replace [IP]
 		"""
 		pattern = re.compile('\[IP\]', re.IGNORECASE)
-		self.cmdline = pattern.sub(self.target.ip, self.cmdline)
+		self.parsed_cmdline = pattern.sub(ip, self.parsed_cmdline)
 
 
-	def replacePORT(self):
+	def replacePORT(self, port):
 		"""
 		Replace [PORT]
 		"""
 		pattern = re.compile('\[PORT\]', re.IGNORECASE)
-		self.cmdline = pattern.sub(str(self.target.port), self.cmdline)
+		self.parsed_cmdline = pattern.sub(str(port), self.parsed_cmdline)
 
 
-	def replacePROTOCOL(self):
+	def replacePROTOCOL(self, protocol):
 		"""
 		Replace [PROTOCOL]
 		"""
 		pattern = re.compile('\[PROTOCOL\]', re.IGNORECASE)
-		self.cmdline = pattern.sub(self.target.protocol, self.cmdline)
+		self.parsed_cmdline = pattern.sub(protocol, self.parsed_cmdline)
 
 
-	def replaceSERVICE(self):
+	def replaceSERVICE(self, service):
 		"""
 		Replace [SERVICE]
 		"""
 		pattern = re.compile('\[SERVICE\]', re.IGNORECASE)
-		self.cmdline = pattern.sub(self.target.service, self.cmdline)		
+		self.parsed_cmdline = pattern.sub(service, self.parsed_cmdline)		
 
 
-	def replaceOUTPUT(self):
+	def replaceOUTPUT(self, output_file):
 		"""
 		Replace [OUTPUT] if present
-		Else, add at the end of the command: 2>&1 | tee [OUTPUT]
+		Otherwise, add at the end of the command: 2>&1 | tee [OUTPUT]
 		"""
 		pattern = re.compile('\[OUTPUT\]', re.IGNORECASE)
-		if pattern.search(self.cmdline):
-			self.cmdline = pattern.sub('"{0}"'.format(self.output_file), self.cmdline)
+		if pattern.search(self.parsed_cmdline):
+			self.parsed_cmdline = pattern.sub('"{0}"'.format(output_file), self.parsed_cmdline)
 		else:
-			self.cmdline += ' 2>&1 | tee "{0}"'.format(self.output_file)
+			self.parsed_cmdline += ' 2>&1 | tee "{0}"'.format(output_file)
 
 
-	def replaceOUTPUTDIR(self):
+	def replaceOUTPUTDIR(self, output_dir):
 		"""
 		Replace [OUTPUTDIR] if present
 		"""
 		pattern = re.compile('\[OUTPUTDIR\]', re.IGNORECASE)
-		self.cmdline = pattern.sub(self.output_dir, self.cmdline)		
+		self.parsed_cmdline = pattern.sub(output_dir, self.parsed_cmdline)		
 
 
-	def replaceTOOLBOXDIR(self):
+	def replaceTOOLBOXDIR(self, toolbox_dir):
 		"""
 		Replace [TOOLBOXDIR] (toolbox directory)
 		"""
 		pattern = re.compile('\[TOOLBOXDIR\]', re.IGNORECASE)
-		self.cmdline = pattern.sub(self.toolbox_dir, self.cmdline)
+		self.parsed_cmdline = pattern.sub(toolbox_dir, self.parsed_cmdline)
 
 
-	def replaceSpecificTags(self):
+	def replaceWORDLISTSDIR(self, wordlists_dir):
+		"""
+		Replace [WORDLISTSDIR] (wordlists directory)
+		"""
+		pattern = re.compile('\[WORDLISTSDIR\]', re.IGNORECASE)
+		self.parsed_cmdline = pattern.sub(wordlists_dir, self.parsed_cmdline)
+
+
+	def replaceSpecificTags(self, service, specific_args):
 		"""
 		Replace specific tags (depends on the selected service) 
 		eg. for http :
 		[SSL option="value"]
 		[CMS cms1="val" cms2="val" ... default="val"]
 		"""
-		if not self.specific_args:
-			return
-			
-		for tag in SPECIFIC_TOOL_OPTIONS[self.service].keys():
-			option_type = SpecificOptions.specificOptionType(self.service, tag)
+		for tag in Constants.SPECIFIC_TOOL_OPTIONS[service].keys():
+			option_type = SpecificOptions.specificOptionType(service, tag)
 
 			if option_type == 'boolean':
 				try:
 					pattern = re.compile(r'\[' + tag.upper() + '\s+option\s*=\s*[\'"](?P<option>.*?)[\'"]\s*\]', re.IGNORECASE)
-					m = pattern.search(self.cmdline)
+					m = pattern.search(self.parsed_cmdline)
 					# option is True
-					if tag in self.specific_args.keys() and self.specific_args[tag]:
-						self.cmdline = pattern.sub(m.group('option'), self.cmdline)
+					if tag in specific_args.keys() and specific_args[tag]:
+						self.parsed_cmdline = pattern.sub(m.group('option'), self.parsed_cmdline)
 					# option is False
 					else:
-						self.cmdline = pattern.sub('', self.cmdline)
+						self.parsed_cmdline = pattern.sub('', self.parsed_cmdline)
 				except Exception as e:
 					pass	
 
 			elif option_type == 'list_member':	
 				try:
-					pattern = regex.compile(r'\[' + tag.upper() + '(?:\s+(?P<name>\w+)\s*=\s*[\'"](?P<value>\w*)[\'"])+\s*\]', regex.IGNORECASE)
-					m = pattern.search(self.cmdline)
+					print tag
+					print specific_args
+					pattern = regex.compile(r'\[' + tag.upper() + '(?:\s+(?P<name>\w+)\s*=\s*[\'"](?P<value>[ a-zA-Z0-9_,;:-]*)[\'"])+\s*\]', regex.IGNORECASE)
+					m = pattern.search(self.parsed_cmdline)
 					capt = m.capturesdict()
-					if tag in self.specific_args.keys() and self.specific_args[tag]:
-						value = capt['value'][capt['name'].index(self.specific_args[tag])]
-						self.cmdline = pattern.sub(value, self.cmdline)
+					print capt
+					if tag in specific_args.keys() and specific_args[tag]:
+						value = capt['value'][capt['name'].index(specific_args[tag])]
+						self.parsed_cmdline = pattern.sub(value, self.parsed_cmdline)
 					elif 'default' in [e.lower() for e in capt['name']]:
 						value = capt['value'][capt['name'].index('default')]
-						self.cmdline = pattern.sub(value, self.cmdline)
+						self.parsed_cmdline = pattern.sub(value, self.parsed_cmdline)
 					else:
-						self.cmdline = pattern.sub('', self.cmdline)
+						self.parsed_cmdline = pattern.sub('', self.parsed_cmdline)
 				except Exception as e:
-					#print e
 					pass

@@ -9540,11 +9540,6 @@
 /upgrades/7.x/upgrade78-79.php
 /upgrades/8.x/upgrade79-80.php
 /upgrades/readme.1st
-/#
-/http://code.google.com/p/cms-explorer/
-/use
-/
-/#
 /index.php
 /license.txt
 /readme.html

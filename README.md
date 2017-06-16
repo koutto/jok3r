@@ -169,8 +169,6 @@ The syntax of a configuration file is described below (remember: 1 configuration
     * `command` _(mandatory setting)_ - Command-line used to run the tool (see supported tags that can be used).
     * `install` _(optional setting)_ - Command-line used to install the tool (if possible with all dependencies installation). This setting is not always set, e.g. for tools that are supposed to be already installed on the system (like Nmap or Metasploit).
     * `update` _(optional setting)_ - Command-line used to update the tool.
-    * `last_update` _(optional setting)_ - Date of the last tool update. Value auto-updated by Jok3r.
-    * `installed` _(optional setting)_ - Indicated whether the tool is installed or not. Value auto-updated by Jok3r.
   * Context-specific tool settings:
     * `<specific>_specific` _(optional setting)_ - Context-specific settings can be used in order to specify that a tool should be run against the target ONLY in some circumstances, i.e. only when one specific option (passed on the command-line when running Jok3r) is set to a given value.
 
@@ -272,9 +270,27 @@ For now, not a lot of services are supported yet, most work has focused on HTTP,
 
 List of supported services:
 * FTP
+* HTTP
+* JDWP
+* MSSQL
+* MySQL
+* PostgreSQL
+* SMB
+* SMTP
+* SNMP
 * SSH
 * Telnet
-* SMTP
-* HTTP
-* SMB
-* SNMP
+* VNC
+
+
+Changelog
+----
+
+* **v1.1** - Major update
+  * Many bug fixes
+  * Add lots of services/tools
+  * Improve wordlists
+  * Support for "multi-services" tools (tools that can be used differently for targeting different services)
+  * Change a bit of settings logic: Now, install status and last update time are stored into an external file called "_install_status.conf"
+
+* **v1.0** - First release

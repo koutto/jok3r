@@ -1,5 +1,5 @@
 
-from lib.core.Constants import *
+import Constants
 
 
 class SpecificOptions(object):
@@ -20,7 +20,7 @@ class SpecificOptions(object):
 			return		
 
 		string = ''
-		for option in SPECIFIC_TOOL_OPTIONS[service]:
+		for option in Constants.SPECIFIC_TOOL_OPTIONS[service]:
 			if SpecificOptions.specificOptionType(service, option) == 'boolean':
 				string += output.boldString('   - {0} \t: [Boolean]\n'.format(option))
 			else:
@@ -43,7 +43,7 @@ class SpecificOptions(object):
 					option:		the specific option
 		@Returns 	the type 'boolean' / 'list_member'
 		"""
-		if not SPECIFIC_TOOL_OPTIONS[service][option]:
+		if not Constants.SPECIFIC_TOOL_OPTIONS[service][option]:
 			return 'boolean'
 		else:
 			return 'list_member'
@@ -58,7 +58,7 @@ class SpecificOptions(object):
 					value:		the value to check is valid
 		@Returns 	Boolean
 		"""
-		return (value in settings.general_settings[service][SPECIFIC_TOOL_OPTIONS[service][option]])
+		return (value in settings.general_settings[service][Constants.SPECIFIC_TOOL_OPTIONS[service][option]])
 
 
 	@staticmethod
@@ -71,4 +71,4 @@ class SpecificOptions(object):
 		"""
 		if SpecificOptions.specificOptionType(service, option) != 'list_member':
 			return 
-		return settings.general_settings[service][SPECIFIC_TOOL_OPTIONS[service][option]]
+		return settings.general_settings[service][Constants.SPECIFIC_TOOL_OPTIONS[service][option]]

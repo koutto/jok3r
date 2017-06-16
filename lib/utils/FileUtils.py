@@ -4,7 +4,13 @@
 
 import os
 import os.path
+import stat
 import shutil
+
+
+def remove_readonly(func, path, excinfo):
+    os.chmod(path, stat.S_IWRITE)
+    func(path)
 
 
 class FileUtils(object):
@@ -67,7 +73,7 @@ class FileUtils(object):
     def remove_directory(directory):
         try:
             if FileUtils.is_dir(directory):
-                shutil.rmtree(directory)
+                shutil.rmtree(directory, onerror=remove_readonly)
             return True
         except:
             return False
@@ -91,7 +97,11 @@ class FileUtils(object):
 
     @staticmethod
     def absolute_path(relative_path):
-        return os.path.abspath(relative_path)
+        try:
+            return os.path.abspath(relative_path)
+        except:
+            return None
+
 
     @staticmethod
     def concat_path(path1, path2):
@@ -103,3 +113,7 @@ class FileUtils(object):
             return filename.lower().endswith(ext)
         else:
             return False
+
+    @staticmethod
+    def remove_ext(filename):
+        return filename[:filename.rfind('.')] if '.' in filename else filename        

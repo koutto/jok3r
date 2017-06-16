@@ -106,16 +106,16 @@ class ArgumentsParser(object):
 			 			   action='store_true', dest='list_services', default=False)
 		toolbox.add_argument('--list-categories', help='List tools categories for a given service',
 						   action='store', dest='list_categories', type=str, metavar='<service>', default=None)
+		toolbox.add_argument('--fast', help='Do not prompt for confirmation before install and do not check install after',
+						   action='store_true', dest='fast_install', default=False)
 
 		# Target
 		target = self.parser.add_argument_group('Target')
 		target.add_argument('-u', '--url', help='Target URL', action='store', dest='url', metavar='<url>', type=str, default='')
 		target.add_argument('--ip', help='Target IP', action='store', dest='ip', metavar='<ip>', type=str, default=None)
-		target.add_argument('-p', '--port', help='Target Port', action='store', dest='port', metavar='<port>', type=str, default=None)
+		target.add_argument('-p', '--port', help='Target Port', action='store', dest='port', metavar='<port>', type=int, default=None)
 		target.add_argument('-s', '--service', help='Service (see --list-services)', 
 			                action='store', dest='service', metavar='<service>', type=str, default=None)
-		# target.add_argument('--protocol', help='Protocol (default=tcp)', 
-		# 	                action='store', dest='protocol', metavar='<tcp/udp>', type=str, default='tcp')
 
 		# Tools categories
 		tools_selection = self.parser.add_argument_group('Tools running')
@@ -132,9 +132,9 @@ class ArgumentsParser(object):
 
 		# Output settings
 		output = self.parser.add_argument_group('Output settings')
-		output.add_argument('-o', '--output', help='Output directory where are stored all the results', 
+		output.add_argument('-o', '--output', help='Output directory where are stored all the results (default: generated dir in "{0}")'.format(DEFAULT_OUTPUT_DIR), 
 							action='store', dest='output_dir', metavar='<directory>', type=str, required=False, default=None)
-		
+
 
 		# Specific
 		specific = self.parser.add_argument_group('Context specific settings')
@@ -142,15 +142,6 @@ class ArgumentsParser(object):
 							  action='store', dest='list_specific', metavar='<service>', type=str, default=None)
 		specific.add_argument('specific', help='Context specific options, format name=value (value can be "all")', 
 				              metavar='<specific_options>', nargs='*')
-
-		# Context settings
-		#context = self.parser.add_argument_group('Context settings')
-		#context.add_argument('--server', help='Run tools specific to a given server type ("all" is supported)',
-		#				   action='store', dest='server', type=str, default='')
-		#context.add_argument('--techno', help='Run tools specific to a given technology ("all" is supported)',
-		#				   action='store', dest='techno', type=str, default='')
-		#context.add_argument('--cms', help='Run tools specific to a given CMS ("all" is supported)', 
-		#				   action='store', dest='cms', type=str, default='')
 
 		args = self.parser.parse_args()
 
@@ -177,7 +168,7 @@ class ArgumentsParser(object):
 			sys.exit(0)
 
 		if self.args.uninstall_tool:
-			if not self.settings.toolbox.isInToolbox(self.args.uninstall_tool):
+			if not self.settings.toolbox.searchInToolbox(self.args.uninstall_tool):
 				self.output.printError('Tool "{0}" does not exist into toolbox, check name.'.format(self.args.uninstall_tool))
 				sys.exit(0)
 			self.contparsing = False
@@ -297,7 +288,7 @@ class ArgumentsParser(object):
 
 		if self.args.single_tool:
 			self.args.single_tool = self.args.single_tool.strip().lower()
-			found_tool = self.settings.toolbox.isInToolboxForService(self.args.single_tool, self.args.service)
+			found_tool = self.settings.toolbox.searchInToolboxForService(self.args.single_tool, self.args.service)
 			if not found_tool:
 				self.output.printError('Supplied tool is not in toolbox for service {0}, check correct name'.format(self.args.service))
 				sys.exit(0)
@@ -386,7 +377,13 @@ class ArgumentsParser(object):
 					self.output.printError('Specific option "{0}" is list member type. Only member of the list is supported or "all"'.format(name))
 					print
 					SpecificOptions.listAvailableSpecificOptions(self.settings, self.args.service, self.output)
-					sys.exit(0)			
+					sys.exit(0)		
+
+		# Autodetect https and set ssl tag	
+		if self.args.url:
+			if self.args.url.lower().startswith('https://'):
+				if 'ssl' not in self.specific.keys():
+					self.specific['ssl'] = True
 
 
 	def checkAndInitializeTarget(self, ip, port, service, url):
@@ -410,18 +407,23 @@ class ArgumentsParser(object):
 		@Args 	 	output:		CLIOutput instance
 		@Returns 	None
 		"""
-		# Selected tools categories
-		output.printNewLine('   Selected categories : {0}'.format('All' if \
-			len(self.selected_tools_categories) == len(self.settings.general_settings[self.args.service]['tools_categories']) else ''))
-		for cat in self.selected_tools_categories:
-			output.printNewLine('     +-- {0}'.format(cat))
+		# Output directory
+		output.printNewLine('   Output directory : {0}'.format(self.args.output_dir))
 		print
+		
+		if not self.args.single_tool:
+			# Selected tools categories
+			output.printNewLine('   Selected categories : {0}'.format('All' if \
+				len(self.selected_tools_categories) == len(self.settings.general_settings[self.args.service]['tools_categories']) else ''))
+			for cat in self.selected_tools_categories:
+				output.printNewLine('     +-- {0}'.format(cat))
+			print
 
-		# Specific options
-		output.printNewLine('   Specific options : {0}'.format('None' if not self.specific else ''))
-		for setting in self.specific.keys():
-			output.printNewLine('     +-- {0}\t\t: {1}'.format(setting, str(self.specific[setting])))
-		print
+			# Specific options
+			output.printNewLine('   Specific options : {0}'.format('None' if not self.specific else ''))
+			for setting in self.specific.keys():
+				output.printNewLine('     +-- {0}\t\t: {1}'.format(setting, str(self.specific[setting])))
+			print
 
 
 	def checkSelectedToolsCategories(self, service_name, list_only, list_exclude):
@@ -457,5 +459,5 @@ class ArgumentsParser(object):
 		if output_dir:
 			return output_dir
 		return FileUtils.concat_path(DEFAULT_OUTPUT_DIR, \
-			'output_{0}-{1}{2}_{3}_{4}'.format(host, port, protocol, service, str(time.time()).split('.')[0]))
+			'{0}-{1}{2}_{3}_{4}'.format(host, port, protocol, service, str(time.time()).split('.')[0]))
 

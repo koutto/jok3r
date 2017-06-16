@@ -1,0 +1,7 @@
+root
+admin
+administrator
+sysadmin
+guest
+user
+test

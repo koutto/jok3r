@@ -87,11 +87,9 @@ class DefaultConfigParser(ConfigParser.ConfigParser):
 		Returns:
 			Bool indicating operation status
 		"""
-		ConfigParser.ConfigParser.set(self, section, option, str(value))
-		return True
 		try:
-			ConfigParser.ConfigParser.set(self, section, option, value)
+			ConfigParser.ConfigParser.set(self, section, option, str(value))
 			return True
 		except:
-			traceback.print_exc()
+			#traceback.print_exc()
 			return False
