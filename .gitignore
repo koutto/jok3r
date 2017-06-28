@@ -6,3 +6,6 @@ __pycache__/
 # Folders
 #toolbox/*
 #output/*
+
+# Settings file storing install status / last update date
+settings/_install_status.conf

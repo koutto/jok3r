@@ -172,7 +172,7 @@ class Tool(object):
 					else:
 						output.printError('Error when saving "{0}{1}" configuration file'.format(Constants.INSTALL_STATUS_CONF_FILE, Constants.CONF_EXT))
 				except Exception as e:
-					output.printError('An unexpected error occured when trying to mark the tool as installed: {0}'.format(e))
+					output.printError('An unexpected error occured when trying to mark the tool as installed')
 					self.removeTool(settings, output)
 			else:
 				output.printInfo('Tool is still not marked as installed')

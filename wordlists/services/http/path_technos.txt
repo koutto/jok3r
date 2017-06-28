@@ -4995,6 +4995,7 @@
 /jobs
 /john
 /johnmthistle
+/jbossws/services
 /joke
 /Joomla
 /jotter.nsf

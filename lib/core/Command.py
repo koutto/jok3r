@@ -249,12 +249,12 @@ class Command(object):
 
 			elif option_type == 'list_member':	
 				try:
-					print tag
-					print specific_args
+					#print tag
+					#print specific_args
 					pattern = regex.compile(r'\[' + tag.upper() + '(?:\s+(?P<name>\w+)\s*=\s*[\'"](?P<value>[ a-zA-Z0-9_,;:-]*)[\'"])+\s*\]', regex.IGNORECASE)
 					m = pattern.search(self.parsed_cmdline)
 					capt = m.capturesdict()
-					print capt
+					#print capt
 					if tag in specific_args.keys() and specific_args[tag]:
 						value = capt['value'][capt['name'].index(specific_args[tag])]
 						self.parsed_cmdline = pattern.sub(value, self.parsed_cmdline)

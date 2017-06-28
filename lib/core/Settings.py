@@ -353,6 +353,9 @@ class Settings(object):
 		if service_name == MULTI_SERVICES_CONF_FILE:
 			for tool in self.toolbox.searchInToolboxToolsReferencing(tool_name):
 				if not self.config_parsers[INSTALL_STATUS_CONF_FILE].safeSet(tool.service_name, tool.name, value):
+					print tool.service_name
+					print tool.name
+					print value
 					raise Exception
 
 		return self.saveSettings(INSTALL_STATUS_CONF_FILE)

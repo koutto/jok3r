@@ -90,6 +90,7 @@ class Target(object):
 		else:
 			self.host = self.ip
 
+		# TODO: Optional Check
 		# Check if IP:PORT is reachable
 		if self.protocol == 'tcp':
 			if not NetUtils.isTcpPortOpen(self.ip, self.port):
