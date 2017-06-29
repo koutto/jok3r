@@ -23,6 +23,8 @@
 * prefix titles with service name
 * IMPORTANT: update -> when using multi tool, only update from multi
 
+* Fusion rmi + jmxrmi
+
 * Nmap output parser :
 
 for each open port :
