@@ -116,6 +116,8 @@ class ArgumentsParser(object):
 		target.add_argument('-p', '--port', help='Target Port', action='store', dest='port', metavar='<port>', type=int, default=None)
 		target.add_argument('-s', '--service', help='Service (see --list-services)', 
 			                action='store', dest='service', metavar='<service>', type=str, default=None)
+		target.add_argument('--no-port-check', help='Do not check if port is actually open', 
+							action='store_true', dest='no_port_check', default=False)
 
 		# Tools categories
 		tools_selection = self.parser.add_argument_group('Tools running')
@@ -275,8 +277,7 @@ class ArgumentsParser(object):
 		# if self.args.protocol not in ('tcp', 'udp'):
 		# 	self.output.printError('Protocol must be either tcp or udp')
 		# 	sys.exit(0)
-
-		self.checkAndInitializeTarget(self.args.ip, self.args.port, self.args.service, self.args.url)
+		self.checkAndInitializeTarget(self.args.ip, self.args.port, self.args.service, self.args.url, self.args.no_port_check)
 
 
 	def checkArgsToolsSelection(self):
@@ -386,16 +387,17 @@ class ArgumentsParser(object):
 					self.specific['ssl'] = True
 
 
-	def checkAndInitializeTarget(self, ip, port, service, url):
+	def checkAndInitializeTarget(self, ip, port, service, url, no_port_check):
 		"""
 		Initialize the target based either on IP:PORT or on URL, plus service
-		@Args 		ip: 		IP address (None if url given)
-					port: 		Port number (None if url given)
-					service:	Service name
-					url:		URL (None if ip+port given)
+		@Args 		ip: 			IP address (None if url given)
+					port: 			Port number (None if url given)
+					service:		Service name
+					url:			URL (None if ip+port given)
+					no_port_check: 	If True, no check for open port
 		@Returns 	Boolean indicating status
 		"""
-		self.target = Target(ip, port, service, url)
+		self.target = Target(ip, port, service, url, no_port_check=no_port_check)
 		if not self.target.is_reachable:
 			self.output.printError('Target seems not to be reachable...')
 			sys.exit(0)

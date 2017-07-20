@@ -23,7 +23,9 @@
 * prefix titles with service name
 * IMPORTANT: update -> when using multi tool, only update from multi
 
-* Fusion rmi + jmxrmi
+==> * Fusion rmi + jmxrmi
+
+
 
 * Nmap output parser :
 
@@ -55,6 +57,8 @@ for each open port :
     vmauthd
     - jdwp
     ldap
+
+    jms => JMET tool
 
 
 Ideas for wordlists :

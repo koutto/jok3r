@@ -11,19 +11,21 @@ from lib.core.Constants import *
 
 class Target(object):
 
-	def __init__(self, ip, port, service, url):
+	def __init__(self, ip, port, service, url, no_port_check=False):
 		"""
 		Initialize Target
-		@Args 	ip: 		IP address
-				port: 		TCP/UDP port
-				service:	service name
-				url:		URL address (can be empty if ip+port)
+		@Args 	ip: 			IP address
+				port: 			TCP/UDP port
+				service:		service name
+				url:			URL address (can be empty if ip+port)
+				no_port_check: 	If True, ignore check for open port
 		"""
 
 		self.ip 			= ip
 		self.port 			= port
 		self.service 		= service
 		self.url 			= url
+		self.no_port_check	= no_port_check
 		self.host 			= ''
 		self.protocol 		= PROTOCOL[self.service] if self.service in PROTOCOL.keys() else 'tcp'
 		self.is_reachable 	= False
@@ -61,9 +63,14 @@ class Target(object):
 			self.port = '443' if self.proto == 'HTTPS' else '80'
 
 		# Check if url is reachable and retrieve headers
-		self.is_reachable, self.status, self.resp_headers = WebUtils.checkUrlExists(self.url)
-		if not self.is_reachable:
-			return False
+		if not self.no_port_check:
+			self.is_reachable, self.status, self.resp_headers = WebUtils.checkUrlExists(self.url)
+			if not self.is_reachable:
+				return False
+		else:
+			self.is_reachable = True
+			self.status 	  = ''
+			self.resp_headers = {}
 
 		# DNS lookup to get IP corresponding to host (if several, just take the first one)
 		self.ip = DnsUtils.dnsLookup(self.host)[0]
@@ -92,14 +99,15 @@ class Target(object):
 
 		# TODO: Optional Check
 		# Check if IP:PORT is reachable
-		if self.protocol == 'tcp':
-			if not NetUtils.isTcpPortOpen(self.ip, self.port):
-				self.is_reachable = False
-				return False
-		else:
-			if not NetUtils.isUdpPortOpen(self.ip, self.port):
-				self.is_reachable = False
-				return False
+		if not self.no_port_check:
+			if self.protocol == 'tcp':
+				if not NetUtils.isTcpPortOpen(self.ip, self.port):
+					self.is_reachable = False
+					return False
+			else:
+				if not NetUtils.isUdpPortOpen(self.ip, self.port):
+					self.is_reachable = False
+					return False
 		self.is_reachable = True
 		return True
 
