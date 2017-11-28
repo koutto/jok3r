@@ -126,13 +126,14 @@ class Target(object):
 			output.printNewLine('   Port         : {0}/tcp'.format(self.port))
 			output.printNewLine('   HTTP Status  : {0}'.format(self.status))
 			output.printNewLine('   Resp Headers :')
-			for h in self.resp_headers.keys():
-				output.printRaw('     +-- {0}: '.format(h))
-				firstline = True
-				for l in textwrap.wrap(self.resp_headers[h], 160):
-					output.printRaw('{0}{1}\n'.format('' if firstline else ' '*5+'|'+' '*3, l))
-					firstline = False
-			#output.printNewLine('   HTTP code : {0}'.format(str(self.httpcode) if self.httpcode != -1 else 'N/A'))
+			if self.resp_headers:
+				for h in self.resp_headers.keys():
+					output.printRaw('     +-- {0}: '.format(h))
+					firstline = True
+					for l in textwrap.wrap(self.resp_headers[h], 160):
+						output.printRaw('{0}{1}\n'.format('' if firstline else ' '*5+'|'+' '*3, l))
+						firstline = False
+				#output.printNewLine('   HTTP code : {0}'.format(str(self.httpcode) if self.httpcode != -1 else 'N/A'))
 			print
 
 		else:

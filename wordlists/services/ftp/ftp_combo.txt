@@ -1,0 +1,5 @@
+anonymous:
+admin:password
+admin:admin
+ftp:ftp
+ftp:password
