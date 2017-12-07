@@ -5,6 +5,8 @@ import httplib
 
 urllib3.disable_warnings()
 
+HTTP_KEYWORDS = 'html|http|head|body|404|403|401|500'
+
 class WebUtils(object):
 
 	@staticmethod
@@ -50,5 +52,35 @@ class WebUtils(object):
 			return (True, r.status, r.getheaders())
 		except Exception as e:
 			return (False, None, None)
+
+	@staticmethod
+	def checkIfHttpData(ip, port):
+		"""
+		Check if the given ip:port actually returns HTTP data
+		"""
+		timeout = urllib3.util.timeout.Timeout(0.1)
+		http_url  = 'http://{0}:{1}'.format(ip, port)
+		https_url = 'https://{0}:{1}'.format(ip, port)
+		regex = re.compile(HTTP_KEYWORDS, re.IGNORECASE)
+		http = urllib3.PoolManager(cert_reqs='CERT_NONE')
+		try:
+			r1 = http.request('GET', https_url, timeout=timeout)
+			r2 = http.request('GET', '{0}/aaa'.format(https_url), timeout=timeout)
+			if r1.data or r2.data:
+				if regex.search(r1.data) or regex.search(r2.data):
+					return https_url
+		except Exception as e:
+			pass
+		try:
+			r1 = http.request('GET', http_url, timeout=timeout)
+			r2 = http.request('GET', '{0}/aaa'.format(http_url), timeout=timeout)
+			if r1.data or r2.data:
+				if regex.search(r1.data) or regex.search(r2.data):
+					return http_url
+			return False
+		except Exception as e:
+			#print e
+			return False
+
 
 

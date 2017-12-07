@@ -49,6 +49,7 @@ class ToolsRunner(object):
 						 self.arguments.args.output_dir,
 						 self.arguments.target, 
 						 self.arguments.specific,
+						 ignore_specific=self.arguments.args.ignore_specific,
 						 auto_yes=self.arguments.args.auto_yes)
 		except KeyboardInterrupt, SystemExit:
 			print

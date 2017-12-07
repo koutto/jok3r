@@ -2,8 +2,6 @@
 * Support tag variable for commands (eg. could be used to edit wordlist path before running tool)
 * Support start in new tab
 
-* Adds comments in conf file for more readability
-
 * Clean up code with objects: specificoption, targethost, targetservice
 
 * Clean up wordlists :
@@ -15,15 +13,15 @@
 * Update README :
 	* Required tools: nmap, metasploit, dig... 
 
-* Take into account option --ignore-specific
-
-
-* Option to disable check Open port
 
 * prefix titles with service name
 * IMPORTANT: update -> when using multi tool, only update from multi
 
-==> * Fusion rmi + jmxrmi
+Repair tools :
+- opendoor
+- web-sorrow
+
+
 
 
 

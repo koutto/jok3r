@@ -11,7 +11,7 @@ import platform
 
 class CLIOutput(object):
 
-	def __init__(self, debug_enabled):
+	def __init__(self, debug_enabled=True):
 		self.settings_print_enabled = debug_enabled
 		self.lastInLine = False
 		self.rows, self.columns = (lambda x: (int(x[0]), int(x[1])))(os.popen('stty size', 'r').read().split())

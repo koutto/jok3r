@@ -361,7 +361,7 @@ class Tool(object):
 			return False
 
 		# If context specific
-		if self.specific_options:
+		if self.specific_options and not ignore_specific:
 			for opt in self.specific_options.keys():
 				# Boolean option
 				if self.specific_options[opt][0] == bool:
@@ -386,6 +386,8 @@ class Tool(object):
 		if not auto_yes: 
 			output.printPrompt('Run tool ? [Y/n/t/w/q]'.format(self.category, self.name))
 			to_run = CLIUtils.promptRunMode(output, default='Y')
+		else:
+			to_run = 'Yes'
 
 		# Run command if wanted
 		if to_run == 'Quit':
