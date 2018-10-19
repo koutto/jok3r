@@ -1,4 +1,4 @@
-FROM koutto/jok3r-docker
+FROM koutto/jok3r
 
 WORKDIR /root/jok3r
 
