@@ -8,25 +8,40 @@ Jok3r - Network and Web Pentest Framework
 *Jok3r* is a Python3 CLI application which is aimed at **helping penetration testers 
 for network infrastructure and web black-box security tests**. 
 
+=============
 Main features
 =============
-* **Toolbox management**: Install automatically all the hacking tools that are used by
-  *Jok3r* and keep them up-to-date.
+* **Toolbox management**: 
 
-* **Attack automation**: Run security checks against network services (including web) 
-  by chaining various hacking tools. *Jok3r* does its best to become aware of the context
-  of the target and run the checks accordingly (depending on the technology in use, the
-  knowledge of valid credentials or not, etc.)
+    * Install automatically all the hacking tools used by *Jok3r*,
+    * Keep the toolbox up-to-date,
+    * Easily add new tools.
 
-* **Mission management**: Targets can be classified by missions and stored into a local
-  database. It stores all information related to targeted services and results of the 
-  security checks that have been run. It is similar to the *Metasploit* database.
+* **Attack automation**: 
+
+    * Target most common network services (including web),
+    * Run security checks by chaining hacking tools, following standard process:
+
+        * Reconaissance,
+        * Vulnerability scanning, 
+        * Exploitation,
+        * Account bruteforce,
+        * (Basic) Post-exploitation.
+
+    * Let *Jok3r* automatically choose the checks to run according to the context and knowledge about the target,
+
+* **Mission management / Local database**: 
+
+    * Organize targets by missions in local database,
+    * Fully manage missions and targets (hosts/services) via interactive shell (like msfconsole db),
+    * Access results from security checks.
+    
 
 *Jok3r* has been built with the ambition to be easily and quickly customizable: 
 Tools, security checks, supported network services... can be easily 
 added/edited/removed by editing settings files with an easy-to-understand syntax.
 
-
+============
 Installation
 ============
 **The recommended way to use Jok3r is inside a Docker container so you will not have 
@@ -51,6 +66,7 @@ Linux Docker image (kalilinux/kali-linux-docker).
 Jok3r and its toolbox is ready-to-use !
 
 
+====================
 Quick usage examples
 ====================
 
