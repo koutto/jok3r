@@ -20,14 +20,8 @@ Main features
 **Attack automation**: 
 
 * Target most common network services (including web),
-* Run security checks by chaining hacking tools, following standard process:
-
-    * Reconaissance,
-    * Vulnerability scanning, 
-    * Exploitation,
-    * Account bruteforce,
-    * (Basic) Post-exploitation.
-
+* Run security checks by chaining hacking tools, following standard process (Reconaissance,
+  Vulnerability scanning, Exploitation, Account bruteforce, (Basic) Post-exploitation).
 * Let *Jok3r* automatically choose the checks to run according to the context and knowledge about the target,
 
 **Mission management / Local database**: 
