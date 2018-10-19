@@ -1,5 +1,31 @@
+.. raw:: html
+
+   <p align="center">
 
 .. image:: ./pictures/logo.png
+
+.. raw:: html
+
+   <br class="title">
+
+.. image:: https://img.shields.io/badge/python-3.6-blue.svg
+    :target: https://www.python.org/downloads/release/python-366/
+    :alt: Python 3.6
+
+.. image:: https://readthedocs.org/projects/jok3r/badge/?version=latest
+   :target: https://jok3r.readthedocs.io/en/latest/
+   :alt: Documentation ReadTheDocs
+
+.. image:: https://img.shields.io/docker/automated/koutto/jok3r.svg
+    :target: https://hub.docker.com/r/koutto/jok3r/
+    :alt: Docker Automated build
+
+.. image:: https://img.shields.io/docker/build/koutto/jok3r.svg
+    :alt: Docker Build Status
+
+.. raw:: html
+
+   </p>
 
 ==========================================
 Jok3r - Network and Web Pentest Framework
@@ -7,6 +33,12 @@ Jok3r - Network and Web Pentest Framework
 
 *Jok3r* is a Python3 CLI application which is aimed at **helping penetration testers 
 for network infrastructure and web black-box security tests**. 
+
+Its main goal is to **save time on everything that can be automated during network/web
+pentest in order to enjoy more time on more interesting and challenging stuff**.
+
+To achieve that, it **combines open-source Hacking tools to run various security checks
+against all common network services.**
 
 =============
 Main features
@@ -40,25 +72,38 @@ added/edited/removed by editing settings files with an easy-to-understand syntax
 Installation
 ============
 **The recommended way to use Jok3r is inside a Docker container so you will not have 
-to bother about dependencies and installing the whole toolbox.**
+to worry about dependencies issues and installing the various hacking tools of the toolbox.**
 
-A Docker image is available and maintained on Docker Hub at 
-https://hub.docker.com/r/koutto/jok3r-docker/. It is initially based on official Kali
+.. image:: https://raw.githubusercontent.com/koutto/jok3r/master/pictures/docker-logo.png
+
+A Docker image is available on Docker Hub and automatically re-built at each update: 
+https://hub.docker.com/r/koutto/jok3r/. It is initially based on official Kali
 Linux Docker image (kalilinux/kali-linux-docker).
 
-**Pull Jok3r Docker Image**
+.. image:: https://images.microbadger.com/badges/image/koutto/jok3r.svg
+   :target: https://microbadger.com/images/koutto/jok3r
+   :alt: Docker Image size
+
+
+**Pull Jok3r Docker Image:**
 
 .. code-block:: console
 
-    sudo docker pull koutto/jok3r-docker
+    sudo docker pull koutto/jok3r
 
-**Run fresh Docker container**
+**Run fresh Docker container:**
 
 .. code-block:: console
 
-    sudo docker run -i -t --name jok3r-container -w /root/jok3r koutto/jok3r-docker
+    sudo docker run -i -t --name jok3r-container -w /root/jok3r koutto/jok3r
 
 Jok3r and its toolbox is ready-to-use !
+
+To re-run a stopped container:
+
+.. code-block:: console
+
+    sudo docker start -i jok3r-container
 
 
 ====================

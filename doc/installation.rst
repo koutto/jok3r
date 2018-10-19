@@ -5,37 +5,41 @@ Installation
 Docker
 ======
 **The recommended way to use Jok3r is inside a Docker container so you will not have 
-to bother about dependencies and installing the whole toolbox.**
+to worry about dependencies issues and installing the various hacking tools of the toolbox.**
 
-A Docker image is available and maintained on Docker Hub at 
-https://hub.docker.com/r/koutto/jok3r-docker/. It is initially based on official Kali
+.. image:: https://raw.githubusercontent.com/koutto/jok3r/master/pictures/docker-logo.png
+
+A Docker image is available on Docker Hub and automatically re-built at each update: 
+https://hub.docker.com/r/koutto/jok3r/. It is initially based on official Kali
 Linux Docker image (kalilinux/kali-linux-docker).
 
-**Pull Jok3r Docker Image**
+.. image:: https://images.microbadger.com/badges/image/koutto/jok3r.svg
+   :target: https://microbadger.com/images/koutto/jok3r
+   :alt: Docker Image size
+
+
+**Pull Jok3r Docker Image:**
 
 .. code-block:: console
 
-    sudo docker pull koutto/jok3r-docker
+    sudo docker pull koutto/jok3r
 
-**Run fresh Docker container**
+**Run fresh Docker container:**
 
 .. code-block:: console
 
-    sudo docker run -i -t --name jok3r-container -w /root/jok3r koutto/jok3r-docker
+    sudo docker run -i -t --name jok3r-container -w /root/jok3r koutto/jok3r
 
 Jok3r and its toolbox is ready-to-use !
 
+To re-run a stopped container:
 
-Environment
-===========
-This project has been fully tested on **Kali Linux**, it should also work on other 
-Debian-based systems.
+.. code-block:: console
 
-You need to make sure you have **Python 3** installed to run *Jok3r*. 
+    sudo docker start -i jok3r-container
 
-The following tools must be installed to be able to run several security checks 
-in *Jok3r* (installed by default on Kali Linux):
 
-* Metasploit (msfconsole)
-* Nmap
+Manual install
+==============
 
+TODO
