@@ -1,0 +1,335 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Command toolbox &mdash; jok3r 2.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Command db" href="command_db.html" />
+    <link rel="prev" title="Command info" href="command_info.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> jok3r
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="what.html">What is Jok3r ?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="why.html">Why Jok3r ?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="command_info.html">Command <cite>info</cite></a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Command <cite>toolbox</cite></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#show-the-toolbox-content">Show the Toolbox content</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#install-the-tools">Install the Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#update-the-tools">Update the Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#uninstall-the-tools">Uninstall the Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#misc">Misc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="command_db.html">Command <cite>db</cite></a></li>
+<li class="toctree-l1"><a class="reference internal" href="command_attack.html">Command <cite>attack</cite></a></li>
+<li class="toctree-l1"><a class="reference internal" href="settings.html">Settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="smartmodules.html">Smart Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="wordlists.html">Wordlists</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">jok3r</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Command <cite>toolbox</cite></li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/command_toolbox.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="command-toolbox">
+<h1>Command <cite>toolbox</cite><a class="headerlink" href="#command-toolbox" title="Permalink to this headline">¶</a></h1>
+<p>The command <cite>toolbox</cite> allows to manage the hacking tools used by <em>Jok3r</em>.</p>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="go">usage: python3 jok3r.py toolbox &lt;args&gt;</span>
+
+<span class="go">optional arguments:</span>
+<span class="go">  -h, --help                    show this help message and exit</span>
+
+<span class="go">Toolbox management:</span>
+<span class="go">  Tools are classified by services they can target into the toolbox. Tools that may be used against various</span>
+<span class="go">  different services are grouped under the name &quot;multi&quot;.</span>
+
+<span class="go">  --show &lt;service&gt;              Show toolbox content for a given service</span>
+<span class="go">  --show-all                    Show full toolbox content</span>
+<span class="go">  --install &lt;service&gt;           Install the tools for a given service</span>
+<span class="go">  --install-all                 Install all the tools in the toolbox</span>
+<span class="go">  --update &lt;service&gt;            Update the tools for a given service</span>
+<span class="go">  --update-all                  Update all tools in the toolbox</span>
+<span class="go">  --uninstall &lt;service&gt;         Uninstall the tools for a given service</span>
+<span class="go">  --uninstall-tool &lt;tool-name&gt;  Uninstall a given tool</span>
+<span class="go">  --uninstall-all               Uninstall all tools in the toolbox</span>
+<span class="go">  --fast                        Fast mode, disable prompts and post-install checks</span>
+</pre></div>
+</div>
+<div class="section" id="show-the-toolbox-content">
+<h2>Show the Toolbox content<a class="headerlink" href="#show-the-toolbox-content" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">--show</span> <span class="pre">&lt;service&gt;</span></code>: Display the list of tools that target the specified service.
+Use <code class="docutils literal"><span class="pre">multi</span></code> as parameter to display the tools that target multiple services (e.g.
+<em>Nmap</em>, <em>Metasploit</em>...)</li>
+<li><code class="docutils literal"><span class="pre">--show-all</span></code>: Display all the tools in the toolbox.</li>
+</ul>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The toolbox is defined in the configuration file <code class="docutils literal"><span class="pre">settings/toolbox.conf</span></code>.
+It can be easily customized in order to add new tools.</p>
+</div>
+</div>
+<div class="section" id="install-the-tools">
+<h2>Install the Tools<a class="headerlink" href="#install-the-tools" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">--install</span> <span class="pre">&lt;service&gt;</span></code>: Install the tools that target a given service.</li>
+<li><code class="docutils literal"><span class="pre">--install-all</span></code>: Install all the tools in the toolbox.</li>
+</ul>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">For installing a tool, <em>Jok3r</em> runs the command(s) that is(are) defined as value
+for the key <code class="docutils literal"><span class="pre">install</span></code> into the <code class="docutils literal"><span class="pre">[toolname]</span></code> section, in the
+<code class="docutils literal"><span class="pre">settings/toolbox.conf</span></code> file.</p>
+</div>
+</div>
+<div class="section" id="update-the-tools">
+<h2>Update the Tools<a class="headerlink" href="#update-the-tools" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">--update</span> <span class="pre">&lt;service&gt;</span></code>: Update the tools that target a given service.</li>
+<li><code class="docutils literal"><span class="pre">--update-all</span></code>: Update all the tools in the toolbox.</li>
+</ul>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">For updating a tool, <em>Jok3r</em> runs the command(s) that is(are) defined as value
+for the key <code class="docutils literal"><span class="pre">update</span></code> into the <code class="docutils literal"><span class="pre">[toolname]</span></code> section, in the
+<code class="docutils literal"><span class="pre">settings/toolbox.conf</span></code> file.</p>
+</div>
+</div>
+<div class="section" id="uninstall-the-tools">
+<h2>Uninstall the Tools<a class="headerlink" href="#uninstall-the-tools" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">--uninstall</span> <span class="pre">&lt;service&gt;</span></code>: Uninstall the tools that target a given service.</li>
+<li><code class="docutils literal"><span class="pre">--uninstall-tool</span> <span class="pre">&lt;tool-name&gt;</span></code>: Uninstall a given tool.</li>
+<li><code class="docutils literal"><span class="pre">--uninstall-all</span></code>: Uninstall all the tools in the toolbox.</li>
+</ul>
+</div>
+<div class="section" id="misc">
+<h2>Misc<a class="headerlink" href="#misc" title="Permalink to this headline">¶</a></h2>
+<p>By default, when installing/updating/uninstalling tools in the toolbox, <em>Jok3r</em> will
+ask for confirmation for each tool. And after installing or updating a tool, it will
+also ask the user to check if it has been correctly installed. To do so, <em>Jok3r</em> runs
+the command defined in <code class="docutils literal"><span class="pre">check_command</span></code> into the <code class="docutils literal"><span class="pre">[toolname]</span></code> in the
+<code class="docutils literal"><span class="pre">settings/toolbox.conf</span></code> file, and then it asks the user whether everything seems ok
+(i.e. no error is displayed) or not.</p>
+<p>This has been designed this way essentially for debugging purpose, and <strong>human
+interaction can be avoided</strong> by adding the option <code class="docutils literal"><span class="pre">--fast</span></code></p>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>The commands you will run most of the time are:</p>
+<ul class="simple">
+<li><strong>Install the whole toolbox</strong>, just after installing <em>Jok3r</em>:</li>
+</ul>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="go">sudo python3 jok3r.py toolbox --install-all --fast</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><strong>Update all the tools in the toolbox</strong>:</li>
+</ul>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="go">sudo python3 jok3r.py toolbox --update-all --fast</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="command_db.html" class="btn btn-neutral float-right" title="Command db" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="command_info.html" class="btn btn-neutral" title="Command info" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, koutto.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'2.0',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

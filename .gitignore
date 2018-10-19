@@ -1,11 +1,23 @@
-# Byte-compiled / optimized / DLL files
+# Byte-compiled files
 __pycache__/
 *.py[cod]
-*$py.class
 
-# Folders
+# Distribution / packaging
+*.egg-info/
+.installed.cfg
+*.egg
+build/
+dist/
+
+# Toolbox
 #toolbox/*
-#output/*
 
-# Settings file storing install status / last update date
-settings/_install_status.conf
+# Tools install status
+#settings/_install_status.conf
+
+# Local database
+local.db
+
+# History of commands in db
+.dbhistory
+

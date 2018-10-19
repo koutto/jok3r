@@ -1,0 +1,555 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Command db &mdash; jok3r 2.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Command attack" href="command_attack.html" />
+    <link rel="prev" title="Command toolbox" href="command_toolbox.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> jok3r
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="what.html">What is Jok3r ?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="why.html">Why Jok3r ?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="command_info.html">Command <cite>info</cite></a></li>
+<li class="toctree-l1"><a class="reference internal" href="command_toolbox.html">Command <cite>toolbox</cite></a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Command <cite>db</cite></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#command-mission">Command <cite>mission</cite></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#command-hosts">Command <cite>hosts</cite></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#command-services">Command <cite>services</cite></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#command-creds">Command <cite>creds</cite></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#command-nmap">Command <cite>nmap</cite></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#command-results">Command <cite>results</cite></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="command_attack.html">Command <cite>attack</cite></a></li>
+<li class="toctree-l1"><a class="reference internal" href="settings.html">Settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="smartmodules.html">Smart Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="wordlists.html">Wordlists</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">jok3r</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Command <cite>db</cite></li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/command_db.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="command-db">
+<span id="id1"></span><h1>Command <cite>db</cite><a class="headerlink" href="#command-db" title="Permalink to this headline">¶</a></h1>
+<p>The command <cite>db</cite> spawns an interactive shell giving access to the <em>Jok3r</em>&#8216;s local database.
+<strong>The local database stores the missions, targets info &amp; attacks results.</strong> It is very
+similar to the database that can be used in <em>Metasploit</em>.</p>
+<p>The goal is to allow the pentester to create a <strong>new mission</strong> at the beginning of a
+pentest, and to fill it with the targets (i.e. network services/URLs) that are in scope.
+Most of the time, he will just <strong>import Nmap results</strong> from scans he has previously done,
+but he can also add some targets manually by using the shell. He will be able to
+<strong>visualize and organize target information (ip, hotsname, port, banner...)</strong>.</p>
+<p>After running some security checks against targets in the mission, <strong>results from the tools
+- and potentially credentials that might be found - are stored</strong> in the database and can be
+viewed from the shell.</p>
+<p>Here are the supported commands in the <em>jok3rdb</em> interactive shell:</p>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="go">jok3rdb[default]&gt; help</span>
+
+<span class="go">Documented commands (type help &lt;topic&gt;):</span>
+
+<span class="go">Attacks results</span>
+<span class="go">================================================================================</span>
+<span class="go">results             Attacks results</span>
+
+<span class="go">Import</span>
+<span class="go">================================================================================</span>
+<span class="go">nmap                Import Nmap results</span>
+
+<span class="go">Missions data</span>
+<span class="go">================================================================================</span>
+<span class="go">creds               Credentials in the current mission scope</span>
+<span class="go">hosts               Hosts in the current mission scope</span>
+<span class="go">mission             Missions management</span>
+<span class="go">services            Services in the current mission scope</span>
+
+<span class="go">Other</span>
+<span class="go">================================================================================</span>
+<span class="go">alias               Define or display aliases</span>
+<span class="go">help                Display this help message</span>
+<span class="go">history             View, run, edit, and save previously entered commands.</span>
+<span class="go">quit                Exits this application.</span>
+<span class="go">set                 Sets a settable parameter or shows current settings of parameters.</span>
+<span class="go">shell               Execute a command as if at the OS prompt.</span>
+<span class="go">unalias             Unsets aliases</span>
+</pre></div>
+</div>
+<div class="section" id="command-mission">
+<h2>Command <cite>mission</cite><a class="headerlink" href="#command-mission" title="Permalink to this headline">¶</a></h2>
+<p>This command allows to create a new mission, rename or delete an existing one.
+It also allow to change the current mission (the mission named <em>default</em> is selected by
+default).</p>
+<p>Here are the supported options:</p>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="go">jok3rdb[default]&gt; mission -h</span>
+<span class="go">usage: mission [-h] [-a &lt;name&gt;] [-c &lt;name&gt; &lt;comment&gt;] [-d &lt;name&gt;] [-D]</span>
+<span class="go">               [-r &lt;old&gt; &lt;new&gt;] [-S &lt;string&gt;]</span>
+<span class="go">               [&lt;name&gt;]</span>
+
+<span class="go">Manage missions</span>
+
+<span class="go">positional arguments:</span>
+<span class="go">  &lt;name&gt;                          Switch mission</span>
+
+<span class="go">optional arguments:</span>
+<span class="go">  -h, --help                      show this help message and exit</span>
+<span class="go">  -a, --add &lt;name&gt;                Add mission</span>
+<span class="go">  -c, --comment &lt;name&gt; &lt;comment&gt;  Change the comment of a mission</span>
+<span class="go">  -d, --del &lt;name&gt;                Delete mission</span>
+<span class="go">  -D, --reset                     Delete all missions</span>
+<span class="go">  -r, --rename &lt;old&gt; &lt;new&gt;        Rename mission</span>
+<span class="go">  -S, --search &lt;string&gt;           Search string to filter by</span>
+</pre></div>
+</div>
+<p>When creating a new mission, the following command must be issued:</p>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="go">jok3rdb[default]&gt; mission -a missionname</span>
+
+<span class="go">[+] Mission &quot;missionname&quot; successfully added</span>
+<span class="go">[*] Selected mission is now missionname</span>
+
+<span class="go">jok3rdb[missionname]&gt;</span>
+</pre></div>
+</div>
+<p>The newly created mission is automatically selected as the new current mission.</p>
+</div>
+<div class="section" id="command-hosts">
+<h2>Command <cite>hosts</cite><a class="headerlink" href="#command-hosts" title="Permalink to this headline">¶</a></h2>
+<p>This command allows to view and to manage hosts in the current mission.</p>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="go">jok3rdb[default]&gt; hosts -h</span>
+<span class="go">usage: hosts [-h] [-c &lt;comment&gt; | -d] [-o &lt;column&gt;] [-S &lt;string&gt;]</span>
+<span class="go">             [&lt;addr1&gt; &lt;addr2&gt; ... [&lt;addr1&gt; &lt;addr2&gt; ... ...]]</span>
+
+<span class="go">Hosts in the current mission scope</span>
+
+<span class="go">optional arguments:</span>
+<span class="go">  -h, --help               show this help message and exit</span>
+
+<span class="go">Manage hosts:</span>
+<span class="go">  -c, --comment &lt;comment&gt;  Change the comment of selected host(s)</span>
+<span class="go">  -d, --del                Delete selected host(s) (instead of displaying)</span>
+
+<span class="go">Filter hosts:</span>
+<span class="go">  -o, --order &lt;column&gt;     Order rows by specified column</span>
+<span class="go">  -S, --search &lt;string&gt;    Search string to filter by</span>
+<span class="go">  &lt;addr1&gt; &lt;addr2&gt; ...      IPs/CIDR ranges/hostnames to select</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="command-services">
+<h2>Command <cite>services</cite><a class="headerlink" href="#command-services" title="Permalink to this headline">¶</a></h2>
+<p>This command allows to view and to manage all services in the current mission. Running
+this command without any option will display all services added into the current mission.</p>
+<p>For better readability, there are a lot of supported filtering options in order to select
+only a subset of services to display.</p>
+<p>Those filtering options can also be used to add special comments, usernames, credentials
+(couples username+password) manually to one particular service or a subset of services.</p>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="go">jok3rdb[default]&gt; services -h</span>
+<span class="go">usage: services [-h]</span>
+<span class="go">                [-a &lt;host&gt; &lt;port&gt; &lt;service&gt; | -u &lt;url&gt; | -d | -c &lt;comment&gt; | --https]</span>
+<span class="go">                [--addcred &lt;user&gt; &lt;pass&gt; | --addcred-http &lt;user&gt; &lt;pass&gt; &lt;auth-type&gt; | --adduser &lt;user&gt; | --adduser-http &lt;user&gt; &lt;auth-type&gt;]</span>
+<span class="go">                [-H &lt;hostname1,hostname2...&gt;] [-I &lt;ip1,ip2...&gt;]</span>
+<span class="go">                [-p &lt;port1,port2...&gt;] [-r &lt;protocol&gt;] [-U] [-o &lt;column&gt;]</span>
+<span class="go">                [-S &lt;string&gt;]</span>
+<span class="go">                [&lt;name1&gt; &lt;name2&gt; ... [&lt;name1&gt; &lt;name2&gt; ... ...]]</span>
+
+<span class="go">Services in the current mission scope</span>
+
+<span class="go">optional arguments:</span>
+<span class="go">  -h, --help                                show this help message and exit</span>
+
+<span class="go">Manage services:</span>
+<span class="go">  -a, --add &lt;host&gt; &lt;port&gt; &lt;service&gt;         Add a new service</span>
+<span class="go">  -u, --url &lt;url&gt;                           Add a new URL</span>
+<span class="go">  -d, --del                                 Delete selected service(s) (instead of displaying)</span>
+<span class="go">  -c, --comment &lt;comment&gt;                   Change the comment of selected service(s)</span>
+<span class="go">  --https                                   Switch between HTTPS and HTTP protocol for URL of selected service(s)</span>
+
+<span class="go">Manage services credentials:</span>
+<span class="go">  --addcred &lt;user&gt; &lt;pass&gt;                   Add new credentials (username+password) for selected service(s)</span>
+<span class="go">  --addcred-http &lt;user&gt; &lt;pass&gt; &lt;auth-type&gt;  Add new credentials (username+password) for the specified authentication type on selected HTTP service(s)</span>
+<span class="go">  --adduser &lt;user&gt;                          Add new username (password unknown) for selected service(s)</span>
+<span class="go">  --adduser-http &lt;user&gt; &lt;auth-type&gt;         Add new username (password unknown) for the specified authentication type on selected HTTP service(s)</span>
+
+<span class="go">Filter services:</span>
+<span class="go">  -H, --hostname &lt;hostname1,hostname2...&gt;   Search for a list of hostnames (comma-separated)</span>
+<span class="go">  -I, --ip &lt;ip1,ip2...&gt;                     Search for a list of IPs (single IP/CIDR range comma-separated)</span>
+<span class="go">  -p, --port &lt;port1,port2...&gt;               Search for a list of ports (single/range comma-separated)</span>
+<span class="go">  -r, --proto &lt;protocol&gt;                    Only show [tcp|udp] services</span>
+<span class="go">  -U, --up                                  Only show services which are up</span>
+<span class="go">  -o, --order &lt;column&gt;                      Order rows by specified column</span>
+<span class="go">  -S, --search &lt;string&gt;                     Search string to filter by</span>
+<span class="go">  &lt;name1&gt; &lt;name2&gt; ...                       Services to select</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="command-creds">
+<h2>Command <cite>creds</cite><a class="headerlink" href="#command-creds" title="Permalink to this headline">¶</a></h2>
+<p>This command is used to manage the <em>credentials store</em>, i.e. credentials for targets in
+the current mission. This store is filled by two means:</p>
+<ul class="simple">
+<li>When a security check run by <em>Jok3r</em> finds new valid credentials,</li>
+<li>When the user explicitly provides credentials.</li>
+</ul>
+<p>Running this command without any options will display currently saved
+credentials.</p>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="go">jok3rdb[default]&gt; creds -h</span>
+<span class="go">usage: creds [-h]</span>
+<span class="go">             [--addcred &lt;service-id&gt; &lt;user&gt; &lt;pass&gt; | --addcred-http &lt;service-id&gt; &lt;user&gt; &lt;pass&gt; &lt;auth-type&gt; | --adduser &lt;service-id&gt; &lt;user&gt; | --adduser-http &lt;service-id&gt; &lt;user&gt; &lt;auth-type&gt; | -c &lt;comment&gt; | -d]</span>
+<span class="go">             [-U &lt;string&gt;] [-P &lt;string&gt;] [-b | -u]</span>
+<span class="go">             [-H &lt;hostname1,hostname2...&gt;] [-I &lt;ip1,ip2...&gt;]</span>
+<span class="go">             [-p &lt;port1,port2...&gt;] [-s &lt;svc1,svc2...&gt;] [-o &lt;column&gt;]</span>
+<span class="go">             [-S &lt;string&gt;]</span>
+
+<span class="go">Credentials in the current mission scope</span>
+
+<span class="go">optional arguments:</span>
+<span class="go">  -h, --help                                 show this help message and exit</span>
+
+<span class="go">Manage credentials:</span>
+<span class="go">  --addcred &lt;service-id&gt; &lt;user&gt; &lt;pass&gt;       Add new credentials (username+password) for the given service</span>
+<span class="go">  --addcred-http &lt;service-id&gt; &lt;user&gt; &lt;pass&gt; &lt;auth-type&gt;</span>
+<span class="go">                                             Add new credentials (username+password) for the specified authentication type on HTTP service</span>
+<span class="go">  --adduser &lt;service-id&gt; &lt;user&gt;              Add new username (password unknown) for the given service</span>
+<span class="go">  --adduser-http &lt;service-id&gt; &lt;user&gt; &lt;auth-type&gt;</span>
+<span class="go">                                             Add new username (password unknown) for the specified authentication type on HTTP service</span>
+<span class="go">  -c, --comment &lt;comment&gt;                    Change the comment of selected cred(s)</span>
+<span class="go">  -d, --del                                  Delete selected credential(s) (instead of displaying)</span>
+
+<span class="go">Filter credentials:</span>
+<span class="go">  -U, --username &lt;string&gt;                    Select creds with username matching this string</span>
+<span class="go">  -P, --password &lt;string&gt;                    Select creds with password matching this string</span>
+<span class="go">  -b, --both                                 Select creds where username and password are both set (no single username)</span>
+<span class="go">  -u, --onlyuser                             Select creds where only username is set</span>
+<span class="go">  -H, --hostname &lt;hostname1,hostname2...&gt;    Select creds for a list of hostnames (comma-separated)</span>
+<span class="go">  -I, --ip &lt;ip1,ip2...&gt;                      Select creds for a list of IPs (single IP/CIDR range comma-separated)</span>
+<span class="go">  -p, --port &lt;port1,port2...&gt;                Select creds a list of ports (single/range comma-separated)</span>
+<span class="go">  -s, --service &lt;svc1,svc2...&gt;               Select creds for a list of services (comma-separated)</span>
+<span class="go">  -o, --order &lt;column&gt;                       Order rows by specified column</span>
+<span class="go">  -S, --search &lt;string&gt;                      Search string to filter by</span>
+
+<span class="go">Note: you can also use &quot;services --addcred/--addonlyuser&quot; to add new creds</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="command-nmap">
+<h2>Command <cite>nmap</cite><a class="headerlink" href="#command-nmap" title="Permalink to this headline">¶</a></h2>
+<p>After creating a new mission into the database, it is necessary to add some targets
+(services). It can be done either manually - using <code class="docutils literal"><span class="pre">services</span> <span class="pre">--add</span> <span class="pre">&lt;host&gt;</span> <span class="pre">&lt;port&gt;</span> <span class="pre">&lt;service&gt;</span></code>
+or <code class="docutils literal"><span class="pre">services</span> <span class="pre">--url</span> <span class="pre">&lt;url&gt;</span></code> - or automatically from the results of a <em>Nmap</em> scan with the
+<code class="docutils literal"><span class="pre">nmap</span></code> command.</p>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="go">jok3rdb[default]&gt; nmap -h</span>
+<span class="go">usage: nmap [-h] [-n] &lt;xml-results&gt;</span>
+
+<span class="go">Import Nmap results</span>
+
+<span class="go">positional arguments:</span>
+<span class="go">  &lt;xml-results&gt;          Nmap XML results file</span>
+
+<span class="go">optional arguments:</span>
+<span class="go">  -h, --help             show this help message and exit</span>
+<span class="go">  -n, --no-http-recheck  Do not recheck for HTTP services</span>
+</pre></div>
+</div>
+<p>Just issue the following command in order to import into the currently selected mission
+all the services supported by <em>Jok3r</em> from results of a <em>Nmap</em> scan (in XML format):</p>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="go">jok3rdb[missionname]&gt; nmap results.xml</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">When importing <em>Nmap</em> results, services <em>HTTPS/HTTP</em> are both added as <em>HTTP</em> services,
+and the distinction between cleartext and encrypted versions is done internally by using
+<em>Context-specific option</em> (<em>https</em>). It is the same for <em>SMTPS/SMTP</em>, <em>FTPS/FTP</em> and so on.</p>
+</div>
+<p>When importing <em>Nmap</em> results, <em>Jok3r</em> will recheck - by default - for <em>HTTP/HTTPS</em> services
+on all detected open ports that were not fingerprinted as such. This feature has been added
+because - by experience - <em>Nmap</em> does not always detect all services serving web content when
+they are on exotic ports.</p>
+</div>
+<div class="section" id="command-results">
+<h2>Command <cite>results</cite><a class="headerlink" href="#command-results" title="Permalink to this headline">¶</a></h2>
+<p>This command allows to view the outputs from tools run during security checks against
+the various targets in the currently selected mission.</p>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="go">jok3rdb[default]&gt; results -h</span>
+<span class="go">usage: results [-h] [-s &lt;check-id&gt;] [&lt;service-id&gt;]</span>
+
+<span class="go">Attacks results</span>
+
+<span class="go">positional arguments:</span>
+<span class="go">  &lt;service-id&gt;           Service id</span>
+
+<span class="go">optional arguments:</span>
+<span class="go">  -h, --help             show this help message and exit</span>
+<span class="go">  -s, --show &lt;check-id&gt;  Show results for specified check</span>
+</pre></div>
+</div>
+<p>For example, if you want to view the results for checks against the service with id 108
+(refer to the column <em>id</em> in the output of the <code class="docutils literal"><span class="pre">services</span></code> command):</p>
+<ul class="simple">
+<li>First, issue the following command to get the list of checks that have been run against
+this particular service:</li>
+</ul>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="go">jok3rdb[missionname]&gt; results 108</span>
+
+<span class="go">[&gt;] Attacks results:</span>
+<span class="go">[&gt;] Target: host=192.168.1.53 | port=16000/tcp | service http</span>
+<span class="go">+----------+------------+------------------------------+------------+</span>
+<span class="go">| Check id | Category   | Check                        | # Commands |</span>
+<span class="go">+----------+------------+------------------------------+------------+</span>
+<span class="go">| 211      | recon      | nmap-recon                   | 1          |</span>
+<span class="go">| 212      | recon      | fingerprinting-app-server    | 1          |</span>
+<span class="go">| 213      | recon      | fingerprinting-cms-wig       | 1          |</span>
+<span class="go">| 214      | recon      | fingerprinting-cms-cmseek    | 1          |</span>
+<span class="go">| 215      | recon      | crawling-fast                | 1          |</span>
+<span class="go">| 216      | recon      | crawling-fast2               | 1          |</span>
+<span class="go">| 217      | vulnscan   | nmap-vuln-lookup             | 1          |</span>
+<span class="go">| 218      | vulnscan   | vulnscan-multi-nikto         | 1          |</span>
+<span class="go">| 219      | vulnscan   | default-creds-web-multi      | 1          |</span>
+<span class="go">| 220      | vulnscan   | http-put-check               | 1          |</span>
+<span class="go">| 221      | vulnscan   | shellshock-scan              | 1          |</span>
+<span class="go">| 222      | vulnscan   | jboss-vulnscan-multi         | 1          |</span>
+<span class="go">| 223      | vulnscan   | jboss-status-infoleak        | 1          |</span>
+<span class="go">| 224      | exploit    | jboss-deploy-shell           | 1          |</span>
+<span class="go">| 225      | exploit    | struts2-rce-cve2017-5638     | 1          |</span>
+<span class="go">| 226      | exploit    | struts2-rce-cve2017-9805     | 1          |</span>
+<span class="go">| 227      | exploit    | struts2-rce-cve2018-11776    | 1          |</span>
+<span class="go">| 235      | bruteforce | web-path-bruteforce-targeted | 1          |</span>
+<span class="go">| 236      | bruteforce | web-path-bruteforce-opendoor | 1          |</span>
+<span class="go">+----------+------------+------------------------------+------------+</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>Then, you can display the outputs corresponding to a given check by specifying
+the <em>id</em> of the check as follows:</li>
+</ul>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="go">jok3rdb[missionname]&gt; results -s 235</span>
+
+<span class="go">[&gt;] Results for check web-path-bruteforce-targeted:</span>
+<span class="go">[&gt;] Target: host=192.168.1.53 | port=16000/tcp | service http</span>
+
+<span class="go">[&gt;] cd /home/jbr/bitbucket/joker/toolbox/http/dirsearch; python3 dirsearch.py -u http://192.168.1.53:16000 -e jsp,java,do,txt,html,log -w /home/jbr/bitbucket/joker/wordlists/services/http/discovery/raft-large-directories.txt -f --exclude-status=400,404,500,000</span>
+
+
+<span class="go"> _|. _ _  _  _  _ _|_    v0.3.8</span>
+<span class="go">(_||| _) (/_(_|| (_| )</span>
+
+<span class="go">Extensions: jsp, java, do, txt, html, log | Threads: 10 | Wordlist size: 532797</span>
+
+<span class="go">Error Log: /home/jbr/bitbucket/joker/toolbox/http/dirsearch/logs/errors-18-10-02_14-17-17.log</span>
+
+<span class="go">Target: http://192.168.1.53:16000</span>
+
+<span class="go">[14:17:17] Starting:</span>
+<span class="go">[14:17:20] 200 -    3KB - /test/</span>
+<span class="go">[14:17:20] 200 -  474B  - /download.html</span>
+<span class="go">[14:17:23] 200 -    7KB - /tools/</span>
+<span class="go">[14:17:27] 200 -    8KB - /index.html</span>
+<span class="go">[14:19:11] 200 -   26B  - /robots.txt</span>
+
+<span class="go">Task Completed</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="command_attack.html" class="btn btn-neutral float-right" title="Command attack" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="command_toolbox.html" class="btn btn-neutral" title="Command toolbox" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, koutto.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'2.0',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

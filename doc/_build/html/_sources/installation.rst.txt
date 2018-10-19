@@ -1,0 +1,40 @@
+============
+Installation
+============
+
+Environment
+===========
+This project has been fully tested on **Kali Linux**, it should also work on other 
+Debian-based systems.
+
+You need to make sure you have **Python 3** installed to run *Jok3r*. 
+
+The following tools must be installed to be able to run several security checks 
+in *Jok3r* (installed by default on Kali Linux):
+
+* Metasploit (msfconsole)
+* Nmap
+
+Install
+=======
+To install *Jok3r*, run the following command:
+
+.. code-block:: console
+
+	sudo python3 setup.py install
+
+.. note::
+	``setup.py`` will install several packages that are needed to make sure that 
+	the tools inside the *Jok3r*'s toolbox can be run, such as: ruby, perl, nodejs...
+
+The first thing to do is then to install all the tools in the toolbox by running:
+
+.. code-block:: console
+
+	sudo python3 jok3r.py toolbox --install-all --fast
+
+
+Docker
+======
+
+TODO

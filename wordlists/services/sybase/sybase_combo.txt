@@ -1,0 +1,11 @@
+mon_user:mon_user
+dba:SQL
+entldbdbo:dbopswd
+entldbreader:rdrpswd
+jagadmin:
+PIAdmin:PIAdmin
+pkiuser:pkipasswd
+PortalAdmin:sybase
+pso:123qwe
+admin:admin
+dbaadmin:dbaadmin

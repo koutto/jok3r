@@ -1,0 +1,17 @@
+from SmartModule import SmartModule
+
+class ModuleTest(SmartModule):
+
+    def __init__(self):
+        super(ModuleTest, self).__init__('http')
+
+    def start(self, arguments):
+        print 'start method'
+
+    def testMethod1(self, arguments):
+        print 'testMethod1 inside'
+
+    def testMethod2(self, arguments):
+        print 'testMethod1 inside'
+
+#ModuleTest()

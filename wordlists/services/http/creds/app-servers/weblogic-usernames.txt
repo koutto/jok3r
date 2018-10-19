@@ -1,0 +1,11 @@
+weblogic
+system
+weblogic1
+WEBLOGIC
+WEBLOGIC1
+PUBLIC
+public
+EXAMPLES
+examples
+operator
+monitor

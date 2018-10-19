@@ -1,0 +1,430 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Command attack &mdash; jok3r 2.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Settings" href="settings.html" />
+    <link rel="prev" title="Command db" href="command_db.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> jok3r
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="what.html">What is Jok3r ?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="why.html">Why Jok3r ?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="command_info.html">Command <cite>info</cite></a></li>
+<li class="toctree-l1"><a class="reference internal" href="command_toolbox.html">Command <cite>toolbox</cite></a></li>
+<li class="toctree-l1"><a class="reference internal" href="command_db.html">Command <cite>db</cite></a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Command <cite>attack</cite></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#single-target-mode">Single Target Mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#multiple-targets-mode">Multiple Targets Mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#miscellaneous-options">Miscellaneous Options</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#selection-of-checks">Selection of Checks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#authentication">Authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#context-specific-options">Context-specific Options</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="settings.html">Settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="smartmodules.html">Smart Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="wordlists.html">Wordlists</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">jok3r</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Command <cite>attack</cite></li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/command_attack.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="command-attack">
+<h1>Command <cite>attack</cite><a class="headerlink" href="#command-attack" title="Permalink to this headline">¶</a></h1>
+<p>The command <cite>attack</cite> is where security checks against targets are started.</p>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="go">usage: python3 jok3r.py attack &lt;args&gt;</span>
+
+<span class="go">optional arguments:</span>
+<span class="go">  -h, --help                             show this help message and exit</span>
+
+<span class="go">Single target:</span>
+<span class="go">  Quickly define a target to run checks against it.</span>
+
+<span class="go">  -t, --target &lt;ip[:port] | url&gt;         Target IP[:PORT] (default port if not specified) or URL</span>
+<span class="go">  -s, --service &lt;service&gt;                Target service</span>
+<span class="go">  --add &lt;mission&gt;                        Add/update the target into a given mission scope</span>
+<span class="go">  --disable-banner-grab                  Disable banner grabbing with Nmap at start</span>
+
+<span class="go">Multiple targets from a mission scope:</span>
+<span class="go">  Select targets from the scope of an existing mission.</span>
+
+<span class="go">  -m, --mission &lt;mission&gt;                Load targets from the specified mission</span>
+<span class="go">  -f, --filter &lt;filter&gt;                  Set of conditions to select a subset of targets</span>
+<span class="go">                                         (e.g &quot;ip=192.168.1.0/24,10.0.0.4;port=80,8000-8100;service=http&quot;).</span>
+<span class="go">                                         Available filter options: ip, host, port, service, url, os</span>
+<span class="go">                                         Several sets can be combined (logical OR) by using the option multiple times</span>
+
+<span class="go">Selection of checks:</span>
+<span class="go">  Select only some categories/checks to run against the target(s).</span>
+
+<span class="go">  --cat-only &lt;cat1,cat2...&gt;              Run only tools in specified category(ies) (comma-separated)</span>
+<span class="go">  --cat-exclude &lt;cat1,cat2...&gt;           Do not run tools in specified category(ies) (comma-separated)</span>
+<span class="go">  --checks &lt;check1,check2...&gt;            Run only the specified check(s) (comma-separated)</span>
+
+<span class="go">Running option:</span>
+<span class="go">  --fast                                 Fast mode, disable prompts</span>
+
+<span class="go">Authentication:</span>
+<span class="go">  Define authentication option if some credentials or single usernames are known.</span>
+<span class="go">  Options can be used multiple times. For multiple targets, the service for which</span>
+<span class="go">  the creds/users will be used should be specified.</span>
+
+<span class="go">  --cred [&lt;svc&gt;[.&lt;type&gt;]] &lt;user&gt; &lt;pass&gt;  Credentials (username + password)</span>
+<span class="go">  --user [&lt;svc&gt;[.&lt;type&gt;]] &lt;user&gt;         Single username</span>
+
+<span class="go">Context-specific options:</span>
+<span class="go">  Define manually some known info about the target(s).</span>
+
+<span class="go">  &lt;opt1=val1 opt2=val2 ...&gt;              Context-specific options, format name=value (space-separated)</span>
+</pre></div>
+</div>
+<p>There are 2 modes of attacks:</p>
+<ul class="simple">
+<li>Single target</li>
+<li>Multiple targets from a mission sccope in database</li>
+</ul>
+<div class="section" id="single-target-mode">
+<h2>Single Target Mode<a class="headerlink" href="#single-target-mode" title="Permalink to this headline">¶</a></h2>
+<p>This mode is used to run security checks against only one target.</p>
+<ul class="simple">
+<li>Example to run checks against <em>MSSQL</em> service running on port 1433/tcp on 192.168.1.42:</li>
+</ul>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="go">python3 jok3r.py attack -t 192.168.1.42 -s mssql</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>Example to run checks against web application located at <a class="reference external" href="https://www.example.com/webapp/">https://www.example.com/webapp/</a>:</li>
+</ul>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="go">python3 jok3r.py attack -t https://www.example.com/webapp/</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>By default, <em>Jok3r</em> is run in interactive mode and so, will stop before running each
+check/command to ask for confirmation. It is usually useful when you want to have time
+to examine each result in live and decide whether it is needed to run the next check or
+if it can be skipped. However, you will often want to let <em>Jok3r</em> <strong>running all the checks
+without any user interaction</strong>, for better productivity, and check for the results at the
+end. To do so, add the option <code class="docutils literal"><span class="pre">--fast</span></code> to the command-line.</p>
+<p>Run checks against web application located at <a class="reference external" href="https://www.example.com/webapp/">https://www.example.com/webapp/</a> without
+user interaction:</p>
+<div class="last highlight-console"><div class="highlight"><pre><span></span><span class="go">python3 jok3r.py attack -t https://www.example.com/webapp/ --fast</span>
+</pre></div>
+</div>
+</div>
+<p><strong>When doing a pentest, the proper way is to create a mission in the local database</strong>
+(See <a class="reference internal" href="command_db.html#command-db"><span class="std std-ref">Command db</span></a>), and then if you run <em>Jok3r</em> against a single target that is in
+the scope of this mission, you should use the <code class="docutils literal"><span class="pre">--add</span> <span class="pre">&lt;missionname&gt;</span></code> option in order
+<strong>to push the target information and all the outputs from the security checks into the
+database under the specified mission.</strong></p>
+</div>
+<div class="section" id="multiple-targets-mode">
+<h2>Multiple Targets Mode<a class="headerlink" href="#multiple-targets-mode" title="Permalink to this headline">¶</a></h2>
+<p>This mode is designed to work with the local database: First you create a mission
+to define the scope of the pentest in the database (see <a class="reference internal" href="command_db.html#command-db"><span class="std std-ref">Command db</span></a>), and then
+you run security checks against all or a subset a targets from the scope:</p>
+<ul class="simple">
+<li>Example to run checks against <strong>all targets from the mission &#8220;MayhemProject&#8221;</strong>, using
+fast mode (i.e. without asking for any confirmation before targets and checks):</li>
+</ul>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="go">python3 jok3r.py attack -m MayhemProject --fast</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>Example to run checks against <strong>only FTP services running on ports 21/tcp and 2121/tcp
+from the mission &#8220;MayhemProject&#8221;</strong>, using fast mode:</li>
+</ul>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="go">python3 jok3r.py attack -m MayhemProject -f &quot;port=21,2121;service=ftp&quot; --fast</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>Example to run checks against <strong>only FTP services running on ports 2121/tcp and all
+HTTP services on 192.168.1.42</strong>:</li>
+</ul>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="go">python3 jok3r.py attack -m MayhemProject -f &quot;port=2121;service=ftp&quot; -f &quot;ip=192.168.1.42;service=http&quot;</span>
+</pre></div>
+</div>
+<p><strong>The local database is automatically updated with the results</strong> from the security checks
+run by <em>Jok3r</em>.</p>
+</div>
+<div class="section" id="miscellaneous-options">
+<h2>Miscellaneous Options<a class="headerlink" href="#miscellaneous-options" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="selection-of-checks">
+<h3>Selection of Checks<a class="headerlink" href="#selection-of-checks" title="Permalink to this headline">¶</a></h3>
+<p>When running the <code class="docutils literal"><span class="pre">attack</span></code> command, it is possible to make a selection of checks to run:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">--checks</span> <span class="pre">&lt;check1,check2...&gt;</span></code>: Run only the given checks against targets. It might even be
+a single check. Use <code class="docutils literal"><span class="pre">python3</span> <span class="pre">info</span> <span class="pre">--checks</span> <span class="pre">&lt;service&gt;</span></code> in order to get the list of available
+checks for the targeted service (see <a class="reference internal" href="command_info.html#command-info"><span class="std std-ref">Command info</span></a>).</li>
+<li><code class="docutils literal"><span class="pre">--cat-only</span> <span class="pre">&lt;cat1,cat2...&gt;</span></code>: Run only checks that are classified under one or several
+categories (e.g. &#8220;recon&#8221;).</li>
+<li><code class="docutils literal"><span class="pre">--cat-exclude</span> <span class="pre">&lt;cat1,cat2...&gt;</span></code>: Run all categories of checks except the one(s) specified.</li>
+</ul>
+</div>
+<div class="section" id="authentication">
+<h3>Authentication<a class="headerlink" href="#authentication" title="Permalink to this headline">¶</a></h3>
+<p>It is also possible to define some authentication options if credentials - or only valid
+usernames - are known on the targets.</p>
+<p>Let&#8217;s take several examples:</p>
+<ul class="simple">
+<li>When you want to run attack against all targets in the scope of mission &#8220;MayhemProject&#8221; and you
+already know credentials of all <em>MSSQL</em> instances in the scope:</li>
+</ul>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="go">python3 jok3r.py attack -m MayhemProject --cred mssql sa password --fast</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>When you want to scan a web application running on a <em>JBoss</em> server (and add the target to
+the mission &#8220;MayhemProject&#8221;), and you already know <em>JBoss</em> credentials:</li>
+</ul>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="go">python3 jok3r.py attack -t http://www.example.com --cred http.jboss manager password --add MayhemProject --fast</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>When you want to scan a Wordpress website, and you know a valid admin username (but no
+valid password):</li>
+</ul>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="go">python3 jok3r.py attack -t http://www.targetwordpress.com --user http.wordpress wordpressadmin --fast</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="context-specific-options">
+<h3>Context-specific Options<a class="headerlink" href="#context-specific-options" title="Permalink to this headline">¶</a></h3>
+<p>In <em>Jok3r</em>, Context-specific options are options that give specifications about a
+service.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Usually, you don&#8217;t have to bother specifying context-specific options manually
+in <em>Jok3r</em> command-line because it does its best to set and update them using
+<em>SmartModules</em>. However, you might still want to force the value of some of them
+in some situations.</p>
+</div>
+<p>Available context-specific options depends on the service.</p>
+<p>There are 3 supported types of context-specific options:</p>
+<ul class="simple">
+<li><strong>Boolean</strong>,</li>
+<li><strong>Value from a given list</strong>,</li>
+<li><strong>Variable</strong>.</li>
+</ul>
+<p>To better understand, here are some example of supported context-specific options
+for <em>HTTP</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">https</span></code> (boolean): Set to <em>true</em> when SSL/TLS is used.</li>
+<li><code class="docutils literal"><span class="pre">webdav</span></code> (boolean): Set to <em>true</em> when <em>WebDav</em> is supported.</li>
+<li><code class="docutils literal"><span class="pre">language</span></code>: Allows to set the language of the targeted web application, can be
+one of the value in the list defined in <code class="docutils literal"><span class="pre">http.conf</span></code> settings file (e.g. java, php,
+asp, angularjs, coldfusion).</li>
+<li><code class="docutils literal"><span class="pre">cms</span></code>: Allows to set the name of the CMS in use if relevant (wordpress, joomla,
+drupal, mambo, silverstripe, vbulletin, magento...)</li>
+<li><code class="docutils literal"><span class="pre">server</span></code>: Allows to set the name of the server (iis, glassfish, jboss, jenkins,
+tomcat, weblogic...)</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="settings.html" class="btn btn-neutral float-right" title="Settings" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="command_db.html" class="btn btn-neutral" title="Command db" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, koutto.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'2.0',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
