@@ -11,30 +11,25 @@ for network infrastructure and web black-box security tests**.
 =============
 Main features
 =============
-* **Toolbox management**: 
+**Toolbox management**: 
+* Install automatically all the hacking tools used by *Jok3r*,
+* Keep the toolbox up-to-date,
+* Easily add new tools.
 
-    * Install automatically all the hacking tools used by *Jok3r*,
-    * Keep the toolbox up-to-date,
-    * Easily add new tools.
+**Attack automation**: 
+* Target most common network services (including web),
+* Run security checks by chaining hacking tools, following standard process:
+    * Reconaissance,
+    * Vulnerability scanning, 
+    * Exploitation,
+    * Account bruteforce,
+    * (Basic) Post-exploitation.
+* Let *Jok3r* automatically choose the checks to run according to the context and knowledge about the target,
 
-* **Attack automation**: 
-
-    * Target most common network services (including web),
-    * Run security checks by chaining hacking tools, following standard process:
-
-        * Reconaissance,
-        * Vulnerability scanning, 
-        * Exploitation,
-        * Account bruteforce,
-        * (Basic) Post-exploitation.
-
-    * Let *Jok3r* automatically choose the checks to run according to the context and knowledge about the target,
-
-* **Mission management / Local database**: 
-
-    * Organize targets by missions in local database,
-    * Fully manage missions and targets (hosts/services) via interactive shell (like msfconsole db),
-    * Access results from security checks.
+**Mission management / Local database**: 
+* Organize targets by missions in local database,
+* Fully manage missions and targets (hosts/services) via interactive shell (like msfconsole db),
+* Access results from security checks.
     
 
 *Jok3r* has been built with the ambition to be easily and quickly customizable: 
