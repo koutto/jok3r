@@ -53,6 +53,7 @@ run the following commands:
     For better convenience when editing files, *Sublime-text* editor is installed 
     inside Docker image. It is a GUI application, so you need to connect the container
     to host's X server to be able to run it:
+    
     * Use the following command to run the container:
 
     .. code-block:: console
