@@ -2,6 +2,9 @@
 What is Jok3r ?
 ===============
 
+.. image:: https://raw.githubusercontent.com/koutto/jok3r/master/pictures/logo.png
+	:target: https://github.com/koutto/jok3r
+
 Network and Web Pentest Framework
 =================================
 *Jok3r* is a Python3 CLI application which is aimed at **helping penetration testers 

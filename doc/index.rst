@@ -2,20 +2,24 @@
 Jok3r Documentation
 ====================
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+.. image:: https://raw.githubusercontent.com/koutto/jok3r/master/pictures/logo.png
+    :target: https://github.com/koutto/jok3r
 
-   what
-   why
-   installation
-   command_info
-   command_toolbox
-   command_db
-   command_attack
-   settings
-   smartmodules
-   wordlists
+
+.. toctree::
+    :maxdepth: 2
+    :caption: Contents:
+
+    what
+    why
+    installation
+    command_info
+    command_toolbox
+    command_db
+    command_attack
+    settings
+    smartmodules
+    wordlists
 
 
 

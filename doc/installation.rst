@@ -39,6 +39,33 @@ To re-run a stopped container:
     sudo docker start -i jok3r-container
 
 
+Build your own Jok3r Docker Image
+==================================
+If you want to build your own Jok3r image from a fresh Kali image rather than use our pre-made one,
+run the following commands:
+
+.. code-block:: console
+    
+    wget https://raw.githubusercontent.com/koutto/jok3r/master/docker/Dockerfile
+    sudo docker build -t jok3r-image .
+
+.. note::
+    For better convenience when editing files, *Sublime-text* editor is installed 
+    inside Docker image. It is a GUI application, so you need to connect the container
+    to host's X server to be able to run it:
+    * Use the following command to run the container:
+
+    .. code-block:: console
+    
+        sudo docker run -i -t --name jok3r-container -w /root/jok3r -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix koutto/jok3r
+
+    * On the host, execute the following command:
+
+    .. code-block:: console
+    
+        xhost +local:root
+
+
 Manual install
 ==============
 
