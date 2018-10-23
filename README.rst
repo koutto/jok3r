@@ -229,7 +229,7 @@ You begin a pentest with several servers in the scope. Here is a typical example
     jok3rdb[MayhemProject]> nmap results.xml
 
 4. You can then have a quick overview of all services and hosts in the scope, add some comments, add
-  some credentials if you already have some knowledge about the targets (grey box pentest), and so on
+   some credentials if you already have some knowledge about the targets (grey box pentest), and so on
 
 .. code-block:: console
 
@@ -242,14 +242,14 @@ You begin a pentest with several servers in the scope. Here is a typical example
     [...]
 
 5. Now, you can run security checks against some targets in the scope. For example, if you 
-  want to run checks against all Java-RMI services in the scope, you can run the following command:
+   want to run checks against all Java-RMI services in the scope, you can run the following command:
 
 .. code-block:: console
 
     python3 jok3r.py attack -m MayhemProject -f "service=java-rmi" --fast
 
 6. You can view the results from the security checks either in live when the tools are 
-  executed or later from the database using the following command:
+   executed or later from the database using the following command:
 
 .. code-block:: console
 
