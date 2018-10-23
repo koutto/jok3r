@@ -10,10 +10,10 @@ build/
 dist/
 
 # Toolbox
-#toolbox/*
+toolbox/*
 
 # Tools install status
-#settings/_install_status.conf
+settings/_install_status.conf
 
 # Local database
 local.db
