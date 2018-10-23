@@ -278,6 +278,7 @@ Supported Services & Security Checks (Updated on 20/10/2018)
 -  `Oracle (default 1521/tcp)`_
 -  `PostgreSQL (default 5432/tcp)`_
 -  `RDP (default 3389/tcp)`_
+-  `SMB (default 445/tcp)`_
 -  `SMTP (default 25/tcp)`_
 -  `SNMP (default 161/udp)`_
 -  `SSH (default 22/tcp)`_
