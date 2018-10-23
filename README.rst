@@ -322,73 +322,74 @@ HTTP (default 80/tcp)
 
 .. code-block:: console
 
-    +--------------------------------------+------------+------------------------------------------------------------------------------------------------------------+--------------------------------+
-    | Name                                 | Category   | Description                                                                                                | Tool used                      |
-    +--------------------------------------+------------+------------------------------------------------------------------------------------------------------------+--------------------------------+
-    | nmap-recon                           | recon      | Recon using Nmap HTTP scripts                                                                              | nmap                           |
-    | load-balancing-detection             | recon      | HTTP load balancer detection                                                                               | halberd                        |
-    | waf-detection                        | recon      | Identify and fingerprint WAF products protecting website                                                   | wafw00f                        |
-    | tls-probing                          | recon      | Identify the implementation in use by SSL/TLS servers (might allow server fingerprinting)                  | tls-prober                     |
-    | fingerprinting-multi-whatweb         | recon      | Identify CMS, blogging platforms, JS libraries, Web servers                                                | whatweb                        |
-    | fingerprinting-app-server            | recon      | Fingerprint application server (JBoss, ColdFusion, Weblogic, Tomcat, Railo, Axis2, Glassfish)              | clusterd                       |
-    | fingerprinting-server-domino         | recon      | Fingerprint IBM/Lotus Domino server                                                                        | domiowned                      |
-    | fingerprinting-cms-wig               | recon      | Identify several CMS and other administrative applications                                                 | wig                            |
-    | fingerprinting-cms-cmseek            | recon      | Detect CMS (130+ supported), detect version on Drupal, advanced scan on Wordpress/Joomla                   | cmseek                         |
-    | fingerprinting-cms-fingerprinter     | recon      | Fingerprint precisely CMS versions (based on files checksums)                                              | fingerprinter                  |
-    | fingerprinting-cms-cmsexplorer       | recon      | Find plugins and themes (using bruteforce) installed in a CMS (Wordpress, Drupal, Joomla, Mambo)           | cmsexplorer                    |
-    | fingerprinting-drupal                | recon      | Fingerprint Drupal 7/8: users, nodes, default files, modules, themes enumeration                           | drupwn                         |
-    | crawling-fast                        | recon      | Crawl website quickly, analyze interesting files/directories                                               | dirhunt                        |
-    | crawling-fast2                       | recon      | Crawl website and extract URLs, files, intel & endpoints                                                   | photon                         |
-    | vuln-lookup                          | vulnscan   | Vulnerability lookup in Vulners.com (NSE scripts) and exploit-db.com (lots of false positive !)            | vuln-databases                 |
-    | ssl-check                            | vulnscan   | Check for SSL/TLS configuration                                                                            | testssl                        |
-    | vulnscan-multi-nikto                 | vulnscan   | Check for multiple web vulnerabilities/misconfigurations                                                   | nikto                          |
-    | default-creds-web-multi              | vulnscan   | Check for default credentials on various web interfaces                                                    | changeme                       |
-    | webdav-scan-davscan                  | vulnscan   | Scan HTTP WebDAV                                                                                           | davscan                        |
-    | webdav-scan-msf                      | vulnscan   | Scan HTTP WebDAV                                                                                           | metasploit                     |
-    | webdav-internal-ip-disclosure        | vulnscan   | Check for WebDAV internal IP disclosure                                                                    | metasploit                     |
-    | webdav-website-content               | vulnscan   | Detect webservers disclosing its content through WebDAV                                                    | metasploit                     |
-    | http-put-check                       | vulnscan   | Detect the support of dangerous HTTP PUT method                                                            | metasploit                     |
-    | apache-optionsbleed-check            | vulnscan   | Test for the Optionsbleed bug in Apache httpd (CVE-2017-9798)                                              | optionsbleed                   |
-    | shellshock-scan                      | vulnscan   | Detect if web server is vulnerable to Shellshock (CVE-2014-6271)                                           | shocker                        |
-    | iis-shortname-scan                   | vulnscan   | Scan for IIS short filename (8.3) disclosure vulnerability                                                 | iis-shortname-scanner          |
-    | iis-internal-ip-disclosure           | vulnscan   | Check for IIS internal IP disclosure                                                                       | metasploit                     |
-    | tomcat-user-enum                     | vulnscan   | Enumerate users on Tomcat 4.1.0 - 4.1.39, 5.5.0 - 5.5.27, and 6.0.0 - 6.0.18                               | metasploit                     |
-    | jboss-vulnscan-multi                 | vulnscan   | Scan JBoss application server for multiple vulnerabilities                                                 | metasploit                     |
-    | jboss-status-infoleak                | vulnscan   | Queries JBoss status servlet to collect sensitive information (JBoss 4.0, 4.2.2 and 4.2.3)                 | metasploit                     |
-    | jenkins-infoleak                     | vulnscan   | Enumerate a remote Jenkins-CI installation in an unauthenticated manner                                    | metasploit                     |
-    | cms-multi-vulnscan-cmsmap            | vulnscan   | Check for vulnerabilities in CMS Wordpress, Drupal, Joomla                                                 | cmsmap                         |
-    | wordpress-vulscan                    | vulnscan   | Scan for vulnerabilities in CMS Wordpress                                                                  | wpscan                         |
-    | wordpress-vulscan2                   | vulnscan   | Scan for vulnerabilities in CMS Wordpress                                                                  | wpseku                         |
-    | joomla-vulnscan                      | vulnscan   | Scan for vulnerabilities in CMS Joomla                                                                     | joomscan                       |
-    | joomla-vulnscan2                     | vulnscan   | Scan for vulnerabilities in CMS Joomla                                                                     | joomlascan                     |
-    | joomla-vulnscan3                     | vulnscan   | Scan for vulnerabilities in CMS Joomla                                                                     | joomlavs                       |
-    | drupal-vulnscan                      | vulnscan   | Scan for vulnerabilities in CMS Drupal                                                                     | droopescan                     |
-    | magento-vulnscan                     | vulnscan   | Check for misconfigurations in CMS Magento                                                                 | magescan                       |
-    | silverstripe-vulnscan                | vulnscan   | Scan for vulnerabilities in CMS Silverstripe                                                               | droopescan                     |
-    | vbulletin-vulnscan                   | vulnscan   | Scan for vulnerabilities in CMS vBulletin                                                                  | vbscan                         |
-    | liferay-vulnscan                     | vulnscan   | Scan for vulnerabilities in CMS Liferay                                                                    | liferayscan                    |
-    | angularjs-csti-scan                  | vulnscan   | Scan for AngularJS Client-Side Template Injection                                                          | angularjs-csti-scanner         |
-    | jboss-deploy-shell                   | exploit    | Try to deploy shell on JBoss server (jmx-console, web-console, admin-console, JMXInvokerServlet)           | jexboss                        |
-    | struts2-rce-cve2017-5638             | exploit    | Exploit Apache Struts2 Jakarta Multipart parser RCE (CVE-2017-5638)                                        | jexboss                        |
-    | struts2-rce-cve2017-9805             | exploit    | Exploit Apache Struts2 REST Plugin XStream RCE (CVE-2017-9805)                                             | struts-pwn-cve2017-9805        |
-    | struts2-rce-cve2018-11776            | exploit    | Exploit Apache Struts2 misconfiguration RCE (CVE-2018-11776)                                               | struts-pwn-cve2018-11776       |
-    | tomcat-rce-cve2017-12617             | exploit    | Exploit for Apache Tomcat (<9.0.1 (Beta), <8.5.23, <8.0.47, <7.0.8) JSP Upload Bypass RCE (CVE-2017-12617) | exploit-tomcat-cve2017-12617   |
-    | jenkins-cliport-deserialize          | exploit    | Exploit Java deserialization in Jenkins CLI port                                                           | jexboss                        |
-    | weblogic-t3-deserialize-cve2015-4852 | exploit    | Exploit Java deserialization in Weblogic T3(s) (CVE-2015-4852)                                             | loubia                         |
-    | weblogic-t3-deserialize-cve2017-3248 | exploit    | Exploit Java deserialization in Weblogic T3(s) (CVE-2017-3248)                                             | exploit-weblogic-cve2017-3248  |
-    | weblogic-t3-deserialize-cve2018-2893 | exploit    | Exploit Java deserialization in Weblogic T3(s) (CVE-2018-2893)                                             | exploit-weblogic-cve2018-2893  |
-    | weblogic-wls-wsat-cve2017-10271      | exploit    | Exploit WLS-WSAT in Weblogic - CVE-2017-10271                                                              | exploit-weblogic-cve2017-10271 |
-    | drupal-cve-exploit                   | exploit    | Check and exploit CVEs in CMS Drupal 7/8 (include Drupalgeddon2) (require user interaction)                | drupwn                         |
-    | bruteforce-domino                    | bruteforce | Bruteforce against IBM/Lotus Domino server                                                                 | domiowned                      |
-    | bruteforce-wordpress                 | bruteforce | Bruteforce Wordpress accounts                                                                              | wpseku                         |
-    | bruteforce-joomla                    | bruteforce | Bruteforce Joomla account                                                                                  | xbruteforcer                   |
-    | bruteforce-drupal                    | bruteforce | Bruteforce Drupal account                                                                                  | xbruteforcer                   |
-    | bruteforce-opencart                  | bruteforce | Bruteforce Opencart account                                                                                | xbruteforcer                   |
-    | bruteforce-magento                   | bruteforce | Bruteforce Magento account                                                                                 | xbruteforcer                   |
-    | web-path-bruteforce-targeted         | bruteforce | Bruteforce web paths when language is known (extensions adapted) (use raft wordlist)                       | dirsearch                      |
-    | web-path-bruteforce-blind            | bruteforce | Bruteforce web paths when language is unknown (use raft wordlist)                                          | wfuzz                          |
-    | web-path-bruteforce-opendoor         | bruteforce | Bruteforce web paths using OWASP OpenDoor wordlist                                                         | wfuzz                          |
-    +--------------------------------------+------------+------------------------------------------------------------------------------------------------------------+--------------------------------+
+    +--------------------------------------+-------------+--------------------------------------------------------------------------------------------------+--------------------------------+
+    | Name                                 | Category    | Description                                                                                      | Tool used                      |
+    +--------------------------------------+-------------+--------------------------------------------------------------------------------------------------+--------------------------------+
+    | nmap-recon                           | recon       | Recon using Nmap HTTP scripts                                                                    | nmap                           |
+    | load-balancing-detection             | recon       | HTTP load balancer detection                                                                     | halberd                        |
+    | waf-detection                        | recon       | Identify and fingerprint WAF products protecting website                                         | wafw00f                        |
+    | tls-probing                          | recon       | Identify the implementation in use by SSL/TLS servers (might allow server fingerprinting)        | tls-prober                     |
+    | fingerprinting-multi-whatweb         | recon       | Identify CMS, blogging platforms, JS libraries, Web servers                                      | whatweb                        |
+    | fingerprinting-app-server            | recon       | Fingerprint application server (JBoss, ColdFusion, Weblogic, Tomcat, Railo, Axis2, Glassfish)    | clusterd                       |
+    | fingerprinting-server-domino         | recon       | Fingerprint IBM/Lotus Domino server                                                              | domiowned                      |
+    | fingerprinting-cms-wig               | recon       | Identify several CMS and other administrative applications                                       | wig                            |
+    | fingerprinting-cms-cmseek            | recon       | Detect CMS (130+ supported), detect version on Drupal, advanced scan on Wordpress/Joomla         | cmseek                         |
+    | fingerprinting-cms-fingerprinter     | recon       | Fingerprint precisely CMS versions (based on files checksums)                                    | fingerprinter                  |
+    | fingerprinting-cms-cmsexplorer       | recon       | Find plugins and themes (using bruteforce) installed in a CMS (Wordpress, Drupal, Joomla, Mambo) | cmsexplorer                    |
+    | fingerprinting-drupal                | recon       | Fingerprint Drupal 7/8: users, nodes, default files, modules, themes enumeration                 | drupwn                         |
+    | crawling-fast                        | recon       | Crawl website quickly, analyze interesting files/directories                                     | dirhunt                        |
+    | crawling-fast2                       | recon       | Crawl website and extract URLs, files, intel & endpoints                                         | photon                         |
+    | vuln-lookup                          | vulnscan    | Vulnerability lookup in Vulners.com (NSE scripts) and exploit-db.com (lots of false positive !)  | vuln-databases                 |
+    | ssl-check                            | vulnscan    | Check for SSL/TLS configuration                                                                  | testssl                        |
+    | vulnscan-multi-nikto                 | vulnscan    | Check for multiple web vulnerabilities/misconfigurations                                         | nikto                          |
+    | default-creds-web-multi              | vulnscan    | Check for default credentials on various web interfaces                                          | changeme                       |
+    | webdav-scan-davscan                  | vulnscan    | Scan HTTP WebDAV                                                                                 | davscan                        |
+    | webdav-scan-msf                      | vulnscan    | Scan HTTP WebDAV                                                                                 | metasploit                     |
+    | webdav-internal-ip-disclosure        | vulnscan    | Check for WebDAV internal IP disclosure                                                          | metasploit                     |
+    | webdav-website-content               | vulnscan    | Detect webservers disclosing its content through WebDAV                                          | metasploit                     |
+    | http-put-check                       | vulnscan    | Detect the support of dangerous HTTP PUT method                                                  | metasploit                     |
+    | apache-optionsbleed-check            | vulnscan    | Test for the Optionsbleed bug in Apache httpd (CVE-2017-9798)                                    | optionsbleed                   |
+    | shellshock-scan                      | vulnscan    | Detect if web server is vulnerable to Shellshock (CVE-2014-6271)                                 | shocker                        |
+    | iis-shortname-scan                   | vulnscan    | Scan for IIS short filename (8.3) disclosure vulnerability                                       | iis-shortname-scanner          |
+    | iis-internal-ip-disclosure           | vulnscan    | Check for IIS internal IP disclosure                                                             | metasploit                     |
+    | tomcat-user-enum                     | vulnscan    | Enumerate users on Tomcat 4.1.0 - 4.1.39, 5.5.0 - 5.5.27, and 6.0.0 - 6.0.18                     | metasploit                     |
+    | jboss-vulnscan-multi                 | vulnscan    | Scan JBoss application server for multiple vulnerabilities                                       | metasploit                     |
+    | jboss-status-infoleak                | vulnscan    | Queries JBoss status servlet to collect sensitive information (JBoss 4.0, 4.2.2 and 4.2.3)       | metasploit                     |
+    | jenkins-infoleak                     | vulnscan    | Enumerate a remote Jenkins-CI installation in an unauthenticated manner                          | metasploit                     |
+    | cms-multi-vulnscan-cmsmap            | vulnscan    | Check for vulnerabilities in CMS Wordpress, Drupal, Joomla                                       | cmsmap                         |
+    | wordpress-vulscan                    | vulnscan    | Scan for vulnerabilities in CMS Wordpress                                                        | wpscan                         |
+    | wordpress-vulscan2                   | vulnscan    | Scan for vulnerabilities in CMS Wordpress                                                        | wpseku                         |
+    | joomla-vulnscan                      | vulnscan    | Scan for vulnerabilities in CMS Joomla                                                           | joomscan                       |
+    | joomla-vulnscan2                     | vulnscan    | Scan for vulnerabilities in CMS Joomla                                                           | joomlascan                     |
+    | joomla-vulnscan3                     | vulnscan    | Scan for vulnerabilities in CMS Joomla                                                           | joomlavs                       |
+    | drupal-vulnscan                      | vulnscan    | Scan for vulnerabilities in CMS Drupal                                                           | droopescan                     |
+    | magento-vulnscan                     | vulnscan    | Check for misconfigurations in CMS Magento                                                       | magescan                       |
+    | silverstripe-vulnscan                | vulnscan    | Scan for vulnerabilities in CMS Silverstripe                                                     | droopescan                     |
+    | vbulletin-vulnscan                   | vulnscan    | Scan for vulnerabilities in CMS vBulletin                                                        | vbscan                         |
+    | liferay-vulnscan                     | vulnscan    | Scan for vulnerabilities in CMS Liferay                                                          | liferayscan                    |
+    | angularjs-csti-scan                  | vulnscan    | Scan for AngularJS Client-Side Template Injection                                                | angularjs-csti-scanner         |
+    | jboss-deploy-shell                   | exploit     | Try to deploy shell on JBoss server (jmx|web|admin-console, JMXInvokerServlet)                   | jexboss                        |
+    | struts2-rce-cve2017-5638             | exploit     | Exploit Apache Struts2 Jakarta Multipart parser RCE (CVE-2017-5638)                              | jexboss                        |
+    | struts2-rce-cve2017-9805             | exploit     | Exploit Apache Struts2 REST Plugin XStream RCE (CVE-2017-9805)                                   | struts-pwn-cve2017-9805        |
+    | struts2-rce-cve2018-11776            | exploit     | Exploit Apache Struts2 misconfiguration RCE (CVE-2018-11776)                                     | struts-pwn-cve2018-11776       |
+    | tomcat-rce-cve2017-12617             | exploit     | Exploit for Apache Tomcat JSP Upload Bypass RCE (CVE-2017-12617)                                 | exploit-tomcat-cve2017-12617   |
+    | jenkins-cliport-deserialize          | exploit     | Exploit Java deserialization in Jenkins CLI port                                                 | jexboss                        |
+    | weblogic-t3-deserialize-cve2015-4852 | exploit     | Exploit Java deserialization in Weblogic T3(s) (CVE-2015-4852)                                   | loubia                         |
+    | weblogic-t3-deserialize-cve2017-3248 | exploit     | Exploit Java deserialization in Weblogic T3(s) (CVE-2017-3248)                                   | exploit-weblogic-cve2017-3248  |
+    | weblogic-t3-deserialize-cve2018-2893 | exploit     | Exploit Java deserialization in Weblogic T3(s) (CVE-2018-2893)                                   | exploit-weblogic-cve2018-2893  |
+    | weblogic-wls-wsat-cve2017-10271      | exploit     | Exploit WLS-WSAT in Weblogic - CVE-2017-10271                                                    | exploit-weblogic-cve2017-10271 |
+    | drupal-cve-exploit                   | exploit     | Check and exploit CVEs in CMS Drupal 7/8 (include Drupalgeddon2) (require user interaction)      | drupwn                         |
+    | bruteforce-domino                    | bruteforce  | Bruteforce against IBM/Lotus Domino server                                                       | domiowned                      |
+    | bruteforce-wordpress                 | bruteforce  | Bruteforce Wordpress accounts                                                                    | wpseku                         |
+    | bruteforce-joomla                    | bruteforce  | Bruteforce Joomla account                                                                        | xbruteforcer                   |
+    | bruteforce-drupal                    | bruteforce  | Bruteforce Drupal account                                                                        | xbruteforcer                   |
+    | bruteforce-opencart                  | bruteforce  | Bruteforce Opencart account                                                                      | xbruteforcer                   |
+    | bruteforce-magento                   | bruteforce  | Bruteforce Magento account                                                                       | xbruteforcer                   |
+    | web-path-bruteforce-targeted         | bruteforce  | Bruteforce web paths when language is known (extensions adapted) (use raft wordlist)             | dirsearch                      |
+    | web-path-bruteforce-blind            | bruteforce  | Bruteforce web paths when language is unknown (use raft wordlist)                                | wfuzz                          |
+    | web-path-bruteforce-opendoor         | bruteforce  | Bruteforce web paths using OWASP OpenDoor wordlist                                               | wfuzz                          |
+    | wordpress-shell-upload               | postexploit | Upload shell on Wordpress if admin credentials are known                                         | wpforce                        |
+    +--------------------------------------+-------------+--------------------------------------------------------------------------------------------------+--------------------------------+
 
 
 Java-RMI (default 1099/tcp)
@@ -396,19 +397,21 @@ Java-RMI (default 1099/tcp)
 
 .. code-block:: console
 
-    +------------------------------+------------+-------------------------------------------------------------------------------------------------------------+----------------+
-    | Name                         | Category   | Description                                                                                                 | Tool used      |
-    +------------------------------+------------+-------------------------------------------------------------------------------------------------------------+----------------+
-    | nmap-recon                   | recon      | Attempt to dump all objects from Java-RMI service                                                           | nmap           |
-    | rmi-enum                     | recon      | Enumerate RMI services                                                                                      | barmie         |
-    | jmx-info                     | recon      | Get information about JMX and the MBean server                                                              | twiddle        |
-    | vuln-lookup                  | vulnscan   | Vulnerability lookup in Vulners.com (NSE scripts) and exploit-db.com (lots of false positive !)             | vuln-databases |
-    | jmx-bruteforce               | bruteforce | Bruteforce creds to connect to JMX registry                                                                 | jmxbf          |
-    | exploit-rmi-default-config   | exploit    | Exploit default config in RMI Registry to load classes from any remote URL (not working against JMX)        | metasploit     |
-    | exploit-jmx-insecure-config  | exploit    | Exploit JMX insecure config. Auth disabled: should be vuln. Auth enabled: vuln only if weak config deployed | metasploit     |
-    | tomcat-rmi-deserialize       | exploit    | Exploit Java-RMI deserialize in Tomcat (CVE-2016-8735, CVE-2016-8735), req. JmxRemoteLifecycleListener      | jexboss        |
-    | rmi-deserialize-all-payloads | exploit    | Attempt to exploit Java deserialize against Java RMI Registry with all ysoserial payloads                   | ysoserial      |
-    +------------------------------+------------+-------------------------------------------------------------------------------------------------------------+----------------+
+    +--------------------------------+-------------+--------------------------------------------------------------------------------------------------------+----------------+
+    | Name                           | Category    | Description                                                                                            | Tool used      |
+    +--------------------------------+-------------+--------------------------------------------------------------------------------------------------------+----------------+
+    | nmap-recon                     | recon       | Attempt to dump all objects from Java-RMI service                                                      | nmap           |
+    | rmi-enum                       | recon       | Enumerate RMI services                                                                                 | barmie         |
+    | jmx-info                       | recon       | Get information about JMX and the MBean server                                                         | twiddle        |
+    | vuln-lookup                    | vulnscan    | Vulnerability lookup in Vulners.com (NSE scripts) and exploit-db.com (lots of false positive !)        | vuln-databases |
+    | jmx-bruteforce                 | bruteforce  | Bruteforce creds to connect to JMX registry                                                            | jmxbf          |
+    | exploit-rmi-default-config     | exploit     | Exploit default config in RMI Registry to load classes from any remote URL (not working against JMX)   | metasploit     |
+    | exploit-jmx-insecure-config    | exploit     | Exploit JMX insecure config. Auth disabled: should be vuln. Auth enabled: vuln if weak config          | metasploit     |
+    | jmx-auth-disabled-deploy-class | exploit     | Deploy malicious MBean on JMX service with auth disabled (alternative to msf module)                   | sjet           |
+    | tomcat-jmxrmi-deserialize      | exploit     | Exploit Java-RMI deserialize in Tomcat (CVE-2016-8735, CVE-2016-8735), req. JmxRemoteLifecycleListener | jexboss        |
+    | rmi-deserialize-all-payloads   | exploit     | Attempt to exploit Java deserialize against Java RMI Registry with all ysoserial payloads              | ysoserial      |
+    | tomcat-jmxrmi-manager-creds    | postexploit | Retrieve Manager creds on Tomcat JMX (req. auth disabled or creds known on JMX)                        | jmxploit       |
+    +--------------------------------+-------------+--------------------------------------------------------------------------------------------------------+----------------+
 
 
 JDWP (default 9000/tcp)
@@ -460,15 +463,17 @@ Oracle (default 1521/tcp)
 
 .. code-block:: console
 
-    +-----------------------+-------------+--------------------------------------------------------------------------------------------------------------+-----------+
-    | Name                  | Category    | Description                                                                                                  | Tool used |
-    +-----------------------+-------------+--------------------------------------------------------------------------------------------------------------+-----------+
-    | tnscmd                | recon       | Connect to TNS Listener and issue commands Ping, Status, Version                                             | odat      |
-    | tnspoisoning          | vulnscan    | Test if TNS Listener is vulnerable to TNS Poisoning (CVE-2012-1675)                                          | odat      |
-    | common-creds          | bruteforce  | Check common/default credentials on Oracle server                                                            | odat      |
-    | bruteforce-creds      | bruteforce  | Bruteforce Oracle accounts (might block some accounts !)                                                     | odat      |
-    | audit-oracle-postauth | postexploit | Check for privesc vectors, config leading to command execution, weak accounts after authenticating on Oracle | odat      |
-    +-----------------------+-------------+--------------------------------------------------------------------------------------------------------------+-----------+
+    +--------------------------+-------------+--------------------------------------------------------------------------------------------------------------+-----------+
+    | Name                     | Category    | Description                                                                                                  | Tool used |
+    +--------------------------+-------------+--------------------------------------------------------------------------------------------------------------+-----------+
+    | tnscmd                   | recon       | Connect to TNS Listener and issue commands Ping, Status, Version                                             | odat      |
+    | tnspoisoning             | vulnscan    | Test if TNS Listener is vulnerable to TNS Poisoning (CVE-2012-1675)                                          | odat      |
+    | common-creds             | bruteforce  | Check common/default credentials on Oracle server                                                            | odat      |
+    | bruteforce-creds         | bruteforce  | Bruteforce Oracle accounts (might block some accounts !)                                                     | odat      |
+    | audit-oracle-postauth    | postexploit | Check for privesc vectors, config leading to command execution, weak accounts after authenticating on Oracle | odat      |
+    | search-columns-passwords | postexploit | Search for columns storing passwords in the database                                                         | odat      |
+    +--------------------------+-------------+--------------------------------------------------------------------------------------------------------------+-----------+
+
 
 
 PostgreSQL (default 5432/tcp)
@@ -493,6 +498,23 @@ RDP (default 3389/tcp)
     +----------+----------+-----------------------------------------------------------------------+------------+
     | ms12-020 | vulnscan | Check for MS12-020 RCE vulnerability (any Windows before 13 Mar 2012) | metasploit |
     +---------+----------+-----------------------------------------------------------------------+------------+
+
+
+SMB (default 445/tcp)
+---------------------
+
+.. code-block:: console
+
+    +-----------------------------------+----------+-------------------------------------------------------------------------------+------------+
+    | Name                              | Category | Description                                                                   | Tool used  |
+    +-----------------------------------+----------+-------------------------------------------------------------------------------+------------+
+    | nmap-recon                        | recon    | Recon using Nmap SMB scripts                                                  | nmap       |
+    | anonymous-enum                    | recon    | Attempt to perform enum (users, shares...) without account                    | enum4linux |
+    | nmap-vulnscan                     | vulnscan | Check for vulns in SMB (MS17-010, MS10-061, MS10-054, MS08-067...) using Nmap | nmap       |
+    | samba-rce-cve2015-0240            | vulnscan | Check for RCE vuln (CVE-2015-0240) in Samba 3.5.x and 3.6.X                   | metasploit |
+    | exploit-rce-ms08-067              | exploit  | Exploit for RCE vuln MS08-067 on SMB                                          | metasploit |
+    | exploit-sambacry-rce-cve2017-7494 | exploit  | Exploit for SambaCry RCE on Samba <= 4.5.9 (CVE-2017-7494)                    | metasploit |
+    +-----------------------------------+----------+-------------------------------------------------------------------------------+------------+
 
 
 SMTP (default 25/tcp)
