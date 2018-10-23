@@ -10,4 +10,4 @@ ENV DEBIAN_FRONTEND noninteractive
 
 WORKDIR /root/jok3r
 
-RUN git pull
+RUN git pull && ./install-all.sh

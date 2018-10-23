@@ -95,7 +95,10 @@ Linux Docker image (kalilinux/kali-linux-docker).
 
 .. code-block:: console
 
-    sudo docker run -i -t --name jok3r-container -w /root/jok3r koutto/jok3r
+    sudo docker run -i -t --name jok3r-container -w /root/jok3r --net=host koutto/jok3r
+
+**Important: --net=host option is required to share host's interface. It is needed for reverse
+connections (e.g. Ping to container when testing for RCE, Get a reverse shell)**
 
 Jok3r and its toolbox is ready-to-use !
 
@@ -202,7 +205,55 @@ on 192.168.1.42 from the mission**
 ======================
 Typical usage example
 ======================
-TODO
+You begin a pentest with several servers in the scope. Here is a typical example of usage of *JoK3r*:
+
+1. You run *Nmap* scan on the servers in the scope.
+
+2. You create a new mission (let's say "MayhemProject") in the local database:
+
+.. code-block:: console
+
+    python3 jok3r.py db
+
+    jok3rdb[default]> mission -a MayhemProject
+
+    [+] Mission "MayhemProject" successfully added
+    [*] Selected mission is now MayhemProject
+
+    jok3rdb[MayhemProject]> 
+
+3. You import your results from *Nmap* scan in the database:
+
+.. code-block:: console
+
+    jok3rdb[MayhemProject]> nmap results.xml
+
+4. You can then have a quick overview of all services and hosts in the scope, add some comments, add
+  some credentials if you already have some knowledge about the targets (grey box pentest), and so on
+
+.. code-block:: console
+
+    jok3rdb[MayhemProject]> hosts
+
+    [...]
+
+    jok3rdb[MayhemProject]> services
+
+    [...]
+
+5. Now, you can run security checks against some targets in the scope. For example, if you 
+  want to run checks against all Java-RMI services in the scope, you can run the following command:
+
+.. code-block:: console
+
+    python3 jok3r.py attack -m MayhemProject -f "service=java-rmi" --fast
+
+6. You can view the results from the security checks either in live when the tools are 
+  executed or later from the database using the following command:
+
+.. code-block:: console
+
+    jok3rdb[MayhemProject]> results
 
 
 ==================

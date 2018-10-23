@@ -55,16 +55,11 @@ Bug fixes
 
 
 TOOLS/CHECKS:
--------------
+=============
 * Weblogic CVE-2018-2628 https://github.com/tdy218/ysoserial-cve-2018-2628
-* https://github.com/n00py/WPForce
-* https://github.com/PaulSec/SPIPScan
 * https://github.com/chadillac/mdns_recon
 * nfsshell (sudo apt-get install libreadline-dev ; make)
-* https://github.com/siberas/sjet
-* https://github.com/rfunix/Pompem
 * https://github.com/m8r0wn/nullinux
-* add postexploit oracle search password
 * https://github.com/m8r0wn/enumdb mysql postexploit search in column 
 * https://github.com/hegusung/RPCScan.git
 * auxiliary/scanner/* wordpress ...
@@ -78,9 +73,13 @@ Not sure:
 * https://www.magereport.com
 * https://github.com/AlisamTechnology/PRESTA-modules-shell-exploit/blob/master/PRESTA-shell-exploit.pl
 * https://github.com/breenmachine/JavaUnserializeExploits
-* https://github.com/jothatron/blackbox ???
-* https://github.com/enaqx/awesome-pentest
 * arachni
 * https://github.com/DanMcInerney/pentest-machine
 
+* https://github.com/vulnersCom/getsploit
 
+
+Services:
+=========
+* SMB
+* NFS

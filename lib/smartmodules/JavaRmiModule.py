@@ -34,3 +34,9 @@ class JavaRmiModule(SmartModule):
             for username, password in m:
                 r.add_credentials(username, password)
         return r
+
+    def sjet_auth_disabled(self, cmd_output):
+        r = SmartModuleResult()
+        if 'Successfully loaded' in cmd_output:
+            r.add_option('jmxauthdisabled', 'true')
+        return r
