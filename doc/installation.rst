@@ -28,8 +28,10 @@ Linux Docker image (kalilinux/kali-linux-docker).
 
 .. code-block:: console
 
-    sudo docker run -i -t --name jok3r-container -w /root/jok3r koutto/jok3r
+    sudo docker run -i -t --name jok3r-container -w /root/jok3r --net=host koutto/jok3r
 
+**Important: --net=host option is required to share host's interface. It is needed for reverse
+connections (e.g. Ping to container when testing for RCE, Get a reverse shell)**
 Jok3r and its toolbox is ready-to-use !
 
 To re-run a stopped container:

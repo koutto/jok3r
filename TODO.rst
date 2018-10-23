@@ -78,6 +78,7 @@ Not sure:
 
 * https://github.com/vulnersCom/getsploit
 
+* Java-RMI -> handle case windows ping -n
 
 Services:
 =========

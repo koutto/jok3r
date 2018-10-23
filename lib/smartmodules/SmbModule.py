@@ -22,7 +22,16 @@ class SmbModule(SmartModule):
     def nmap_detect_vulns(self, cmd_output):
         r = SmartModuleResult()
 
-        if re.search('Microsoft Windows system vulnerable to remote code execution \(MS08-067\)\s*(\r\n|\r|\n)\|\s*State: VULNERABLE', cmd_output):
-            r.add_option('vuln-ms01-067', 'true')
+        if re.search('Microsoft Windows system vulnerable to remote code execution \(MS08-067\)\s*(\r\n|\r|\n)\|\s*State: VULNERABLE', 
+                     cmd_output, re.IGNORECASE):
+            r.add_option('vuln-ms08-067', 'true')
+
+        if re.search('Remote Code Execution vulnerability in Microsoft SMBv1 servers (ms17-010)\s*(\r\n|\r|\n)\|\s*State: VULNERABLE',
+                     cmd_output, re.IGNORECASE):
+            r.add_option('vuln-ms17-010', 'true')
+
+        if re.search('SAMBA Remote Code Execution from Writable Share\s*(\r\n|\r|\n)\|\s*State: VULNERABLE', cmd_output, re.IGNORECASE):
+            r.add_option('vuln-sambacry', 'true')
+
         return r
 
