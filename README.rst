@@ -263,7 +263,7 @@ Documentation is available at: https://jok3r.readthedocs.io/
 
 
 ============================================================
-Supported Services & Security Checks (Updated on 20/10/2018)
+Supported Services & Security Checks (Updated on 24/10/2018)
 ============================================================
 
 **Lots of checks remain to be implemented and services must be added !! Work in progress ...**
@@ -506,16 +506,21 @@ SMB (default 445/tcp)
 
 .. code-block:: console
 
-    +-----------------------------------+----------+-------------------------------------------------------------------------------+------------+
-    | Name                              | Category | Description                                                                   | Tool used  |
-    +-----------------------------------+----------+-------------------------------------------------------------------------------+------------+
-    | nmap-recon                        | recon    | Recon using Nmap SMB scripts                                                  | nmap       |
-    | anonymous-enum                    | recon    | Attempt to perform enum (users, shares...) without account                    | enum4linux |
-    | nmap-vulnscan                     | vulnscan | Check for vulns in SMB (MS17-010, MS10-061, MS10-054, MS08-067...) using Nmap | nmap       |
-    | samba-rce-cve2015-0240            | vulnscan | Check for RCE vuln (CVE-2015-0240) in Samba 3.5.x and 3.6.X                   | metasploit |
-    | exploit-rce-ms08-067              | exploit  | Exploit for RCE vuln MS08-067 on SMB                                          | metasploit |
-    | exploit-sambacry-rce-cve2017-7494 | exploit  | Exploit for SambaCry RCE on Samba <= 4.5.9 (CVE-2017-7494)                    | metasploit |
-    +-----------------------------------+----------+-------------------------------------------------------------------------------+------------+
+    +-----------------------------------+-------------+-------------------------------------------------------------------------------+------------+
+    | Name                              | Category    | Description                                                                   | Tool used  |
+    +-----------------------------------+-------------+-------------------------------------------------------------------------------+------------+
+    | nmap-recon                        | recon       | Recon using Nmap SMB scripts                                                  | nmap       |
+    | anonymous-enum-smb                | recon       | Attempt to perform enum (users, shares...) without account                    | nullinux   |
+    | nmap-vulnscan                     | vulnscan    | Check for vulns in SMB (MS17-010, MS10-061, MS10-054, MS08-067...) using Nmap | nmap       |
+    | detect-ms17-010                   | vulnscan    | Detect MS17-010 SMB RCE                                                       | metasploit |
+    | samba-rce-cve2015-0240            | vulnscan    | Detect RCE vuln (CVE-2015-0240) in Samba 3.5.x and 3.6.X                      | metasploit |
+    | exploit-rce-ms08-067              | exploit     | Exploit for RCE vuln MS08-067 on SMB                                          | metasploit |
+    | exploit-rce-ms17-010-eternalblue  | exploit     | Exploit for RCE vuln MS17-010 EternalBlue on SMB                              | metasploit |
+    | exploit-sambacry-rce-cve2017-7494 | exploit     | Exploit for SambaCry RCE on Samba <= 4.5.9 (CVE-2017-7494)                    | metasploit |
+    | auth-enum-smb                     | postexploit | Authenticated enumeration (users, groups, shares) on SMB                      | nullinux   |
+    | auth-shares-perm                  | postexploit | Get R/W permissions on SMB shares                                             | smbmap     |
+    | smb-exec                          | postexploit | Attempt to get a remote shell (psexec-like, requires Administrator creds)     | impacket   |
+    +-----------------------------------+-------------+-------------------------------------------------------------------------------+------------+
 
 
 SMTP (default 25/tcp)
