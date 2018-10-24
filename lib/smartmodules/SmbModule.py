@@ -35,3 +35,12 @@ class SmbModule(SmartModule):
 
         return r
 
+    def metasploit_detect_vulns(self, cmd_output):
+        r = SmartModuleResult()
+
+        if 'VULNERABLE to MS17-010' in cmd_output:
+            r.add_option('vuln-ms17-010', 'true')
+
+        return r
+
+

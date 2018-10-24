@@ -4,12 +4,7 @@ TODO
 
 High Priority
 =============
-* Examples in help
-* Documentation
 * Ctrl-C better handler -> skip current, exit ?
-* Docker:
-    * Test after release on github
-    * Open ports for reverse connections
 
 * Improve wordlist quality:
     * passwords
@@ -40,7 +35,6 @@ Low Priority
         * :return: the message id
         * :rtype: int
 
-* jok3r-scripts odat-dependencies download only at install
 * filter on nmap results to add
 * option --disable-banner-grab for multiple targets
 * option --disable-port-check
@@ -59,7 +53,6 @@ TOOLS/CHECKS:
 * Weblogic CVE-2018-2628 https://github.com/tdy218/ysoserial-cve-2018-2628
 * https://github.com/chadillac/mdns_recon
 * nfsshell (sudo apt-get install libreadline-dev ; make)
-* https://github.com/m8r0wn/nullinux
 * https://github.com/m8r0wn/enumdb mysql postexploit search in column 
 * https://github.com/hegusung/RPCScan.git
 * auxiliary/scanner/* wordpress ...
@@ -79,8 +72,8 @@ Not sure:
 * https://github.com/vulnersCom/getsploit
 
 * Java-RMI -> handle case windows ping -n
+* Better exploit for MS17-010 (support for more win versions, only Win7 and 2008 R2 for now)
 
 Services:
 =========
-* SMB
 * NFS

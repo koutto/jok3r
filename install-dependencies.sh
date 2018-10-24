@@ -91,7 +91,8 @@ fi
 
 print_title "[~] Install other required packages (if missing)"
 sudo apt-get install -y --ignore-missing zlib1g-dev libcurl4-openssl-dev liblzma-dev libxml2 libxml2-dev libxslt1-dev build-essential libgmp-dev 
-sudo apt-get install -y --ignore-missing gcc make automake patch libssl-dev locate
+sudo apt-get install -y --ignore-missing gcc make automake patch libssl-dev locate libffi-dev
+sudo apt-get install -y --ignore-missing smbclient
 
 print_title "[~] Install Python3 libraries required by Jok3r (if missing)"
 sudo pip3 install -r requirements.txt
