@@ -42,7 +42,7 @@ fi
 
 print_title "[~] Install Python 2.7 + 3 and useful related packages (if missing)"
 sudo apt-get install -y --ignore-missing python python2.7 python3 python-pip python3-pip python-dev python3-dev python-setuptools python3-setuptools
-sudo apt-get install -y --ignore-missing python-ipy python-nmap
+sudo apt-get install -y --ignore-missing python-ipy python-nmap python3-pymysql
 sudo pip3 uninstall -y psycopg2
 sudo pip3 install psycopg2-binary
 

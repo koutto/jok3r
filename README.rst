@@ -449,14 +449,15 @@ MySQL (default 3306/tcp)
 
 .. code-block:: console
 
-    +--------------------------------+-------------+-------------------------------------------------------------------------+------------+
-    | Name                           | Category    | Description                                                             | Tool used  |
-    +--------------------------------+-------------+-------------------------------------------------------------------------+------------+
-    | nmap-recon                     | recon       | Recon using Nmap MySQL scripts                                          | nmap       |
-    | mysql-auth-bypass-cve2012-2122 | exploit     | Exploit password bypass vulnerability in MySQL - CVE-2012-2122          | metasploit |
-    | default-creds                  | bruteforce  | Check default credentials on MySQL server                               | patator    |
-    | mysql-hashdump                 | postexploit | Retrieve usernames and password hashes from MySQL database (req. creds) | metasploit |
-    +--------------------------------+-------------+-------------------------------------------------------------------------+------------+
+    +----------------------------------+-------------+-------------------------------------------------------------------------+---------------+
+    | Name                             | Category    | Description                                                             | Tool used     |
+    +----------------------------------+-------------+-------------------------------------------------------------------------+---------------+
+    | nmap-recon                       | recon       | Recon using Nmap MySQL scripts                                          | nmap          |
+    | mysql-auth-bypass-cve2012-2122   | exploit     | Exploit password bypass vulnerability in MySQL - CVE-2012-2122          | metasploit    |
+    | default-creds                    | bruteforce  | Check default credentials on MySQL server                               | patator       |
+    | mysql-hashdump                   | postexploit | Retrieve usernames and password hashes from MySQL database (req. creds) | metasploit    |
+    | mysql-interesting-tables-columns | postexploit | Search for interesting tables and columns in database                   | jok3r-scripts |
+    +----------------------------------+-------------+-------------------------------------------------------------------------+---------------+
 
 
 Oracle (default 1521/tcp)
