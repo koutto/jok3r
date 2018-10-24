@@ -97,31 +97,21 @@ class Settings:
             raise SettingsException('Configuration directory ({dir}) does not store any *.conf file'.format(
                 dir=SETTINGS_DIR))
 
-        if not self.__check_presence_mandatory_files(files):
-            raise SettingsException('Missing mandatory settings file in the directory "{dir}"'.format(
-                    dir=SETTINGS_DIR, filename=f))
+        if TOOLBOX_CONF_FILE+CONF_EXT not in files:
+            raise SettingsException('Missing mandatory {toolbox}{ext} settings file in directory "{dir}"'.format(
+                toolbox=TOOLBOX_CONF_FILE, ext=CONF_EXT, dir=SETTINGS_DIR))
+
+        if INSTALL_STATUS_CONF_FILE+CONF_EXT not in files:
+            open(SETTINGS_DIR+'/'+INSTALL_STATUS_CONF_FILE+CONF_EXT, 'a').close()
+            logger.info('{status}{ext} settings file created in directory "{dir}"'.format(
+                status=INSTALL_STATUS_CONF_FILE, ext=CONF_EXT, dir=SETTINGS_DIR))
+            files.append(INSTALL_STATUS_CONF_FILE+CONF_EXT)
 
         # Parse settings files, add tools inside toolbox and create scan configs
         self.__parse_all_conf_files(files)
         self.__create_toolbox()
         self.__create_all_services_checks()
     
-
-    def __check_presence_mandatory_files(self, files):
-        """
-        Check if following mandatory files are present in settings directory:
-            - toolbox.conf
-            - __install_status.conf
-        :param files: List of files in settings directory
-        """
-        mandatory_files = [ 
-            TOOLBOX_CONF_FILE + CONF_EXT, 
-            INSTALL_STATUS_CONF_FILE + CONF_EXT
-        ]
-        for f in mandatory_files:
-            if f not in files: return False
-        return True
-
 
     def __parse_all_conf_files(self, files):
         """
