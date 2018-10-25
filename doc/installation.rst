@@ -60,7 +60,7 @@ run the following commands:
 
     .. code-block:: console
     
-        sudo docker run -i -t --name jok3r-container -w /root/jok3r -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix koutto/jok3r
+        sudo docker run -i -t --name jok3r-container -w /root/jok3r -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix --net=host koutto/jok3r
 
     * On the host, execute the following command:
 
