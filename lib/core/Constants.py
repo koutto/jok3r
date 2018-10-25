@@ -7,7 +7,6 @@ from enum import Enum
 CMD_RUN, CMD_INSTALL, CMD_UPDATE, CMD_CHECK = range(4) # Command types
 MANDATORY, OPTIONAL = range(2)
 NO_AUTH, USER_ONLY, POST_AUTH = range(3) # Authentication status for Context
-NO_CRED, USER, USER_PASS = range(3)    # For target auth level
 
 class Mode(Enum):
     TOOLBOX = 1

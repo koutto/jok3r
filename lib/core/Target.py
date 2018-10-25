@@ -226,13 +226,11 @@ class Target:
         users_only = self.get_usernames_only(auth_type)
         userpass   = self.get_userpass(auth_type)
 
-        if len(userpass) > 0     : auth_level = USER_PASSWORD
-        elif len(users_only) > 0 : auth_level = USER
+        if len(userpass) > 0     : auth_level = POST_AUTH
+        elif len(users_only) > 0 : auth_level = USER_ONLY
         else                     : auth_level = NO_AUTH 
 
-        return (auth_level, context['auth_status']) in (( NO_CRED   , NO_AUTH   ),
-                                                        ( USER      , USER_ONLY ),
-                                                        ( USER_PASS , POST_AUTH ))
+        return auth_level == context['auth_status']
 
 
     def __are_specific_options_matching_context(self, context):

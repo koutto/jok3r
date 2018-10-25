@@ -14,6 +14,9 @@ High Priority
         * https://www.netsparker.com/blog/web-security/svn-digger-better-lists-for-forced-browsing/
         * Administration: https://github.com/fnk0c/cangibrina/tree/master/wordlists
 
+* Add HTML report for results:
+    * Template https://www.jqueryscript.net/menu/Bootstrap-Sidebar-Extension-With-jQuery-CSS-CSS3.html
+    * https://www.jqueryscript.net/demo/Bootstrap-Sidebar-Extension-With-jQuery-CSS-CSS3/
 
 Medium Priority
 ===============
@@ -22,10 +25,6 @@ Medium Priority
 * Code quality: enum with auto numbering (aenum?)
 * info --checks-categories
 * argcomplete
-* Add HTML report for results:
-    * Template https://www.jqueryscript.net/menu/Bootstrap-Sidebar-Extension-With-jQuery-CSS-CSS3.html
-    * https://www.jqueryscript.net/demo/Bootstrap-Sidebar-Extension-With-jQuery-CSS-CSS3/
-
 
 Low Priority
 ============
@@ -39,9 +38,10 @@ Low Priority
 * option --disable-banner-grab for multiple targets
 * option --disable-port-check
 * --userlist --passlist
-* Db> add management of context-specific options
+* Db> context-specific options
 * for web targets, put title in comment
 * run command in new window/new tab
+
 
 Bug fixes
 =========
@@ -53,7 +53,6 @@ TOOLS/CHECKS:
 * Weblogic CVE-2018-2628 https://github.com/tdy218/ysoserial-cve-2018-2628
 * https://github.com/chadillac/mdns_recon
 * nfsshell (sudo apt-get install libreadline-dev ; make)
-* https://github.com/m8r0wn/enumdb mysql postexploit search in column 
 * https://github.com/hegusung/RPCScan.git
 * auxiliary/scanner/* wordpress ...
 * https://github.com/1N3/BlackWidow
