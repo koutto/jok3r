@@ -39,8 +39,8 @@ class ServicesRequester(Requester):
                 'Banner',
                 'URL',
                 'Comment',
-                '# ✓',
-                '# C',
+                'Checks',
+                'Creds',
             ]
             for r in results:
                 nb_userpass  = r.get_nb_credentials(single_username=False)
@@ -132,8 +132,8 @@ class ServicesRequester(Requester):
         if matching_service:
             logger.warning('URL already present into database')
         else:
-            up = WebUtils.is_url_reachable(url)
-            if not up:
+            is_reachable, status, resp_headers = WebUtils.is_url_reachable(url)
+            if not is_reachable:
                 logger.warning('URL seems not to be reachable')
             parsed = urlparse(url)
 
@@ -154,12 +154,13 @@ class ServicesRequester(Requester):
                 host = Host(ip=ip, hostname=hostname)
                 host.mission = mission
                 self.sqlsess.add(host)
-            self.sqlsess.add(Service(name     = 'http',
-                                     port     = port,
-                                     protocol = Protocol.TCP,
-                                     url      = url,
-                                     up       = up,
-                                     host     = host))
+            self.sqlsess.add(Service(name         = 'http',
+                                     port         = port,
+                                     protocol     = Protocol.TCP,
+                                     url          = url,
+                                     up           = is_reachable,
+                                     http_headers = '\n'.join("{}: {}".format(key,val) for (key,val) in resp_headers.items()),
+                                     host         = host))
             self.sqlsess.commit()
             logger.success('Service/URL added')
 

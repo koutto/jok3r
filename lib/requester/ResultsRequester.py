@@ -62,7 +62,9 @@ class ResultsRequester(Requester):
 
         command_outputs = self.sqlsess.query(CommandOutput).filter(CommandOutput.result_id == result_id).all()
 
-        Output.title2('Results for check {check}:'.format(check=result_check.check))
+        Output.title2('Results for check {category} > {check}:'.format(
+            category = result_check.category, 
+            check    = result_check.check))
         Output.title2('Target: host={ip}{hostname} | port={port}/{proto} | service {service}'.format(
             ip       = result_check.service.host.ip,
             hostname = ' ('+result_check.service.host.hostname+')' if result_check.service.host.hostname else '',
