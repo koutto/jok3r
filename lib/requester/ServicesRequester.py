@@ -106,8 +106,14 @@ class ServicesRequester(Requester):
         if matching_service:
             logger.warning('Service already present into database')
         else:
-            if not up:
+            if up:
+                logger.info('Grabbing banner from {ip}:{port} with Nmap...'.format(ip=ip, port=port))
+                banner = NetUtils.grab_banner_nmap(ip, port)
+                logger.info('Banner: {}'.format(banner))
+            else:
                 logger.warning('Port seems to be closed !')
+
+            # Add host in db if it does not exist
             host = self.sqlsess.query(Host).join(Mission)\
                                .filter(Mission.name == self.current_mission)\
                                .filter(Host.ip == ip).first()
@@ -116,11 +122,14 @@ class ServicesRequester(Requester):
                 host = Host(ip=ip, hostname=hostname)
                 host.mission = mission
                 self.sqlsess.add(host)
+
+            # Add service in db
             self.sqlsess.add(Service(name     = service,
                                      port     = int(port),
                                      protocol = protocol,
                                      up       = up,
-                                     host     = host))
+                                     host     = host,
+                                     banner   = banner))
             self.sqlsess.commit()
             logger.success('Service added')
 
@@ -132,18 +141,8 @@ class ServicesRequester(Requester):
         if matching_service:
             logger.warning('URL already present into database')
         else:
-            is_reachable, status, resp_headers = WebUtils.is_url_reachable(url)
-            http_headers = '\n'.join("{}: {}".format(key,val) for (key,val) in resp_headers.items())
 
-            if is_reachable:
-                comment = WebUtils.grab_html_title(url)
-                logger.info('HTTP Headers:')
-                print(http_headers)
-                logger.info('Title: {}'.format(comment))
-            else:
-                comment = 'Not reachable'
-                logger.warning('URL seems not to be reachable')
-
+            # Parse URL: Get IP, hostname, port
             parsed = urlparse(url)
             if NetUtils.is_valid_ip(parsed.hostname):
                 ip = parsed.hostname
@@ -151,10 +150,28 @@ class ServicesRequester(Requester):
             else:
                 ip = NetUtils.dns_lookup(parsed.hostname)
                 if not ip:
-                    logger.warning('Host cannot be resolved')
+                    logger.error('Host cannot be resolved')
                     return
                 hostname = parsed.hostname
             port = WebUtils.get_port_from_url(url)
+
+            # Check URL, grab headers, html title
+            is_reachable, status, resp_headers = WebUtils.is_url_reachable(url)
+            if is_reachable:
+                comment = WebUtils.grab_html_title(url)
+                if resp_headers:
+                    http_headers = '\n'.join("{}: {}".format(key,val) for (key,val) in resp_headers.items())
+
+                logger.info('HTTP Headers:')
+                print(http_headers)
+                logger.info('Title: {}'.format(comment))
+                logger.info('Grabbing banner from {ip}:{port} with Nmap...'.format(ip=ip, port=port))
+                banner = NetUtils.grab_banner_nmap(ip, port)
+                logger.info('Banner: {}'.format(banner))
+            else:
+                comment = 'Not reachable'
+                banner = http_headers = ''
+                logger.warning('URL seems not to be reachable')
 
             # Add host in db if it does not exist
             host = self.sqlsess.query(Host).filter(Host.ip == ip).first()
@@ -171,6 +188,7 @@ class ServicesRequester(Requester):
                                      url          = url,
                                      up           = is_reachable,
                                      http_headers = http_headers,
+                                     banner       = banner,
                                      comment      = comment,
                                      host         = host))
             self.sqlsess.commit()

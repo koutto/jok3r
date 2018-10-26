@@ -104,10 +104,10 @@ class NetUtils:
     @staticmethod
     def grab_banner_nmap(ip, port):
         report = None
-        nmproc = NmapProcess(ip, '-sV -p '+str(port))
+        nmproc = NmapProcess(ip, '-sT -sV -Pn -p '+str(port))
         rc = nmproc.run()
         if rc != 0:
-            #print("nmap scan failed: {0}".format(nmproc.stderr))
+            print("nmap scan failed: {0}".format(nmproc.stderr))
             return None
         #print(type(nmproc.stdout))
 
