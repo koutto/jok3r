@@ -102,11 +102,17 @@ connections (e.g. Ping to container when testing for RCE, Get a reverse shell)**
 
 Jok3r and its toolbox is ready-to-use !
 
-To re-run a stopped container:
+* To re-run a stopped container:
 
 .. code-block:: console
 
     sudo docker start -i jok3r-container
+
+* To open multiple shells inside the container:
+
+.. code-block:: console
+
+    sudo docker exec -it jok3r-container bash
 
 For information about building your own Docker image or installing *Jok3r* on your system
 without using Docker, refer to https://jok3r.readthedocs.io/en/latest/installation.html

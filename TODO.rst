@@ -68,11 +68,16 @@ Not sure:
 * arachni
 * https://github.com/DanMcInerney/pentest-machine
 
-* https://github.com/vulnersCom/getsploit
+
 
 * Java-RMI -> handle case windows ping -n
 * Better exploit for MS17-010 (support for more win versions, only Win7 and 2008 R2 for now)
 
+* Script for vuln lookup based on banner (vulners, exploit-db...)
+    * see * https://github.com/vulnersCom/getsploit
+
 Services:
 =========
 * NFS
+* MongoDB
+* RPC

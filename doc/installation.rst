@@ -34,11 +34,17 @@ Linux Docker image (kalilinux/kali-linux-docker).
 connections (e.g. Ping to container when testing for RCE, Get a reverse shell)**
 Jok3r and its toolbox is ready-to-use !
 
-To re-run a stopped container:
+* To re-run a stopped container:
 
 .. code-block:: console
 
     sudo docker start -i jok3r-container
+
+* To open multiple shells inside the container:
+
+.. code-block:: console
+
+    sudo docker exec -it jok3r-container bash
 
 
 Build your own Jok3r Docker Image
