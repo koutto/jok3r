@@ -80,20 +80,6 @@ class AttackController(Controller):
             if not mission:
                 raise AttackException('The specified mission does not exist in the database. You should create it if needed')
 
-            # # Check if service is already present inside database
-            # filter_ = Filter(FilterOperator.AND)
-            # filter_.add_condition(Condition(args.service, FilterData.SERVICE_EXACT))
-            # filter_.add_condition(Condition(args.target_port, FilterData.PORT))
-            # filter_.add_condition(Condition(self.settings.services.get_protocol(args.service), FilterData.PROTOCOL))
-            # filter_.add_condition(Condition(args.target_ip_or_url if args.target_mode == TargetMode.URL else '', FilterData.URL_EXACT))
-            # try:
-            #     req.add_filter(filter_)
-            # except FilterException as e:
-            #     raise AttackException(e)
-
-            # service = req.get_first_result()
-            # deported to ServicesRequester
-
         # Create new Service/Host objects (if service already exist, will be merged by ServicesRequester.add_target)
         service = Service(name = args.service,
                           port = int(args.target_port),

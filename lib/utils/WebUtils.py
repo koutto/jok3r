@@ -2,8 +2,10 @@
 ###
 ### Utils > WebUtils
 ###
+import bs4
 import re
 import urllib3
+import requests
 from six.moves.urllib.parse import urlparse
 
 urllib3.disable_warnings()
@@ -108,5 +110,15 @@ class WebUtils:
 			return int(parsed.port)
 		else:
 			return 443 if parsed.scheme == 'https' else 80
+
+	@staticmethod
+	def grab_html_title(url):
+		try:
+			r = requests.get(url, verify=False)
+			html = bs4.BeautifulSoup(r.text, 'html.parser')
+			return html.title.text.strip()
+		except:
+			return ''
+
 
 

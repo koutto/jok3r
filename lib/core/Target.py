@@ -81,7 +81,7 @@ class Target:
         if not self.service.host.ip: 
             return False
 
-        # Simple port checking
+        # For HTTP: Check URL availability, grab headers, grab HTML title
         if self.service.url: 
             is_reachable, status, resp_headers = WebUtils.is_url_reachable(self.service.url)
             self.service.up = is_reachable
@@ -89,6 +89,9 @@ class Target:
                 self.service.http_headers = '\n'.join("{}: {}".format(key,val) for (key,val) in resp_headers.items())
             else:
                 self.service.http_headers = ''
+
+            self.service.comment = WebUtils.grab_html_title(self.service.url)
+        # For any other service: Simple port check
         elif self.service.protocol == Protocol.TCP:
             self.service.up = NetUtils.is_tcp_port_open(str(self.service.host.ip), self.service.port)
         else:

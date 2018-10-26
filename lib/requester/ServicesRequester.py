@@ -133,10 +133,18 @@ class ServicesRequester(Requester):
             logger.warning('URL already present into database')
         else:
             is_reachable, status, resp_headers = WebUtils.is_url_reachable(url)
-            if not is_reachable:
-                logger.warning('URL seems not to be reachable')
-            parsed = urlparse(url)
+            http_headers = '\n'.join("{}: {}".format(key,val) for (key,val) in resp_headers.items())
 
+            if is_reachable:
+                comment = WebUtils.grab_html_title(url)
+                logger.info('HTTP Headers:')
+                print(http_headers)
+                logger.info('Title: {}'.format(comment))
+            else:
+                comment = 'Not reachable'
+                logger.warning('URL seems not to be reachable')
+
+            parsed = urlparse(url)
             if NetUtils.is_valid_ip(parsed.hostname):
                 ip = parsed.hostname
                 hostname = NetUtils.reverse_dns_lookup(parsed.hostname)
@@ -148,18 +156,22 @@ class ServicesRequester(Requester):
                 hostname = parsed.hostname
             port = WebUtils.get_port_from_url(url)
 
+            # Add host in db if it does not exist
             host = self.sqlsess.query(Host).filter(Host.ip == ip).first()
             if not host:
                 mission = self.sqlsess.query(Mission).filter(Mission.name == self.current_mission).first()
                 host = Host(ip=ip, hostname=hostname)
                 host.mission = mission
                 self.sqlsess.add(host)
+
+            # Add service in db
             self.sqlsess.add(Service(name         = 'http',
                                      port         = port,
                                      protocol     = Protocol.TCP,
                                      url          = url,
                                      up           = is_reachable,
-                                     http_headers = '\n'.join("{}: {}".format(key,val) for (key,val) in resp_headers.items()),
+                                     http_headers = http_headers,
+                                     comment      = comment,
                                      host         = host))
             self.sqlsess.commit()
             logger.success('Service/URL added')
