@@ -4,6 +4,7 @@
 ###
 from sqlalchemy import Column, Integer, String, Text, DateTime
 from sqlalchemy.orm import relationship
+from sqlalchemy.ext.hybrid import hybrid_method
 from sqlalchemy.sql import func
 
 from lib.db.Session import Base
@@ -26,3 +27,10 @@ class Mission(Base):
                 name          = self.name,
                 comment       = self.comment,
                 creation_date = self.creation_date)
+
+    @hybrid_method
+    def get_nb_services(self):
+        nb = 0
+        for host in self.hosts:
+            nb += len(host.services)
+        return nb

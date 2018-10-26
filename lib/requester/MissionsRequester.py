@@ -31,17 +31,17 @@ class MissionsRequester(Requester):
                 'Mission',
                 'Creation date',
                 'Comment',
-                '# hosts',
-                '# services',
+                '# Hosts',
+                '# Services',
             ]
-            for r in results:
-                color = 'light_green' if r.name == highlight else None
+            for mission in results:
+                color = 'light_green' if mission.name == highlight else None
                 data.append([
-                    Output.colored(r.name, color=color),
-                    Output.colored(str(r.creation_date), color=color),
-                    Output.colored(StringUtils.wrap(r.comment, 50), color=color),
-                    Output.colored('TODO', color=color),
-                    Output.colored('TODO', color=color),                
+                    Output.colored(mission.name, color=color),
+                    Output.colored(str(mission.creation_date), color=color),
+                    Output.colored(StringUtils.wrap(mission.comment, 50), color=color),
+                    Output.colored(len(mission.hosts), color=color),
+                    Output.colored(mission.get_nb_services(), color=color),                
                 ])
             Output.table(columns, data, hrules=False)
 
