@@ -117,11 +117,28 @@ class NetUtils:
             #print("Exception raised while parsing scan: {0}".format(e.msg))
             return None
 
+        banner = ''
         if len(report.hosts):
-            if len(report.hosts[0].services):
-                return report.hosts[0].services[0].banner
+            host = report.hosts[0]
+            if len(host.services):
+                banner = host.services[0].banner
 
-        return None
+        return banner
+
+
+    @staticmethod
+    def os_from_nmap_banner(banner):
+        """
+        Return OS name that might be contained inside Nmap banner
+        """
+        if 'ostype: windows' in banner.lower():
+            return 'Windows'
+        elif 'ostype: linux' in banner.lower():
+            return 'Linux'
+        elif 'ostype: unix' in banner.lower():
+            return 'Unix'
+        else:
+            return ''
 
 
     @staticmethod
