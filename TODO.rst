@@ -39,7 +39,6 @@ Low Priority
 * option --disable-port-check
 * --userlist --passlist
 * Db> context-specific options
-* for web targets, put title in comment
 * run command in new window/new tab
 
 

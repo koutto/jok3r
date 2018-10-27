@@ -12,7 +12,7 @@ class StringUtils:
 
     @staticmethod
     def shorten(string, maxlength):
-        if len(string <= maxlength):
+        if len(string) <= maxlength:
             return string
         else:
             return textwrap.wrap(string, maxlength)[0]+'...'
@@ -24,4 +24,10 @@ class StringUtils:
             return ''
         else:
             return '\n'.join(textwrap.wrap(string, maxlength))
+
+    @staticmethod
+    def remove_non_printable_chars(string):
+        """Remove non-ASCII chars like chinese chars"""
+        printable = set("""0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~ """)
+        return ''.join(filter(lambda x: x in printable, string))
 
