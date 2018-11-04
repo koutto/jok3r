@@ -5,6 +5,7 @@ from .Command import *
 from .Config import *
 from .Constants import *
 from .Context import *
+from .ContextChecker import *
 from .Exceptions import *
 from .NmapResultsParser import *
 from .ProcessLauncher import *

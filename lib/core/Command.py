@@ -45,6 +45,11 @@
 #   - Otherwise, it is replaced by the text into "default" parameter if existing
 #   (optional parameter).
 #
+# - For OptionType.PRODUCT type:
+# [OPTION_NAME-VENDOR]  : Product vendor
+# [OPTION_NAME-NAME]    : Product name
+# [OPTION_NAME-VERSION] : Product version number
+#
 # Example for http:
 # -----------------
 # [SSL true="value"]                    In case SSL should be used, add the specified option. e.g.: [SSL true="--ssl"]
@@ -202,26 +207,6 @@ class Command:
         self.parsed_cmdline = pattern.sub(NetUtils.get_local_ip_address(), self.parsed_cmdline)
          
 
-    # def __replace_tag_output(self, output_file):
-    #   """
-    #   Replace [OUTPUT] if present
-    #   Otherwise, add at the end of the command: 2>&1 | tee [OUTPUT]
-    #   """
-    #   pattern = re.compile('\[OUTPUT\]', re.IGNORECASE)
-    #   if pattern.search(self.parsed_cmdline):
-    #       self.parsed_cmdline = pattern.sub('"{0}"'.format(output_file), self.parsed_cmdline)
-    #   else:
-    #       self.parsed_cmdline += ' 2>&1 | tee "{0}"'.format(output_file)
-
-
-    # def replace_tag_outputdir(self, output_dir):
-    #   """
-    #   Replace [OUTPUTDIR] if present
-    #   """
-    #   pattern = re.compile('\[OUTPUTDIR\]', re.IGNORECASE)
-    #   self.parsed_cmdline = pattern.sub(output_dir, self.parsed_cmdline)      
-
-
     def __replace_tags_credentials(self, target):
         """
         Replace credentials (username/password) in parsed_cmdline.
@@ -326,33 +311,41 @@ class Command:
                 except Exception as e:
                     pass    
 
+            elif option_type == OptionType.PRODUCT:
+                if value is not None:
+                    vendor, name, version = VersionUtils.extract_vendor_name_version(value)
+                    # vendor and/or version can be empty string depending on the option value
+                    self.parsed_cmdline = self.parsed_cmdline.replace('['+option.upper()+'-VENDOR]', vendor)
+                    self.parsed_cmdline = self.parsed_cmdline.replace('['+option.upper()+'-NAME', name)
+                    self.parsed_cmdline = self.parsed_cmdline.replace('['+option.upper()+'-VERSION', version)
 
-        def __remove_args(self):
-            """
-            NOT USED ANYMORE
-            Remove arguments from command line
-            Example:
-                - input:  sudo python toolname.py -a 'abc' -b 'def' -c
-                - output: sudo python toolname.py
-            """
-            cmdsplit = self.cmdline.strip().split(' ')
-            newcmd = ''
 
-            if cmdsplit[0].lower() == 'sudo' and len(cmdsplit) > 1:
-                newcmd = 'sudo '
-                cmdsplit = cmdsplit[1:]
+        # def __remove_args(self):
+        #     """
+        #     NOT USED ANYMORE
+        #     Remove arguments from command line
+        #     Example:
+        #         - input:  sudo python toolname.py -a 'abc' -b 'def' -c
+        #         - output: sudo python toolname.py
+        #     """
+        #     cmdsplit = self.cmdline.strip().split(' ')
+        #     newcmd = ''
 
-            newcmd += cmdsplit[0]
-            if cmdsplit[0].lower() in ('python', 'python3', 'perl', 'ruby') and len(cmdsplit) > 1:
-                if cmdsplit[1] != '-m':
-                    newcmd += ' ' + cmdsplit[1]
-                elif len(cmdsplit) > 2:
-                    newcmd += ' -m ' + cmdsplit[2]
+        #     if cmdsplit[0].lower() == 'sudo' and len(cmdsplit) > 1:
+        #         newcmd = 'sudo '
+        #         cmdsplit = cmdsplit[1:]
 
-            elif cmdsplit[0].lower() == 'java' and len(cmdsplit) > 1:
-                if cmdsplit[1] != '-jar':
-                    newcmd += ' ' + cmdsplit[1]
-                elif len(cmdsplit) > 2:
-                    newcmd += ' -jar ' + cmdsplit[2]
+        #     newcmd += cmdsplit[0]
+        #     if cmdsplit[0].lower() in ('python', 'python3', 'perl', 'ruby') and len(cmdsplit) > 1:
+        #         if cmdsplit[1] != '-m':
+        #             newcmd += ' ' + cmdsplit[1]
+        #         elif len(cmdsplit) > 2:
+        #             newcmd += ' -m ' + cmdsplit[2]
 
-            return newcmd
+        #     elif cmdsplit[0].lower() == 'java' and len(cmdsplit) > 1:
+        #         if cmdsplit[1] != '-jar':
+        #             newcmd += ' ' + cmdsplit[1]
+        #         elif len(cmdsplit) > 2:
+        #             newcmd += ' -jar ' + cmdsplit[2]
+
+        #     return newcmd

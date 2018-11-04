@@ -148,6 +148,7 @@ class Target:
     def get_specific_option_value(self, option_name):
         """
         Get the value for a given specific option
+
         :param option_name: Specific option's name
         :return: The corresponding value if the option is set, otherwise None
         """
@@ -155,7 +156,7 @@ class Target:
         if option_type is None:
             return None
 
-        # Check if the option is set
+        # If option is set, return its value
         for opt in self.service.options:
             if opt.name == option_name:
                 if option_type == OptionType.BOOLEAN:
@@ -163,8 +164,8 @@ class Target:
                 else:
                     return opt.value
 
-        # If option is not set: for boolean options, default value is "False"
-        if self.services_config.get_specific_option_type(option_name, self.service.name) == OptionType.BOOLEAN:
+        # If option is not set, return "False" as default value for boolean options, otherwise None
+        if option_type == OptionType.BOOLEAN:
             return False
         else:
             return None
@@ -239,6 +240,7 @@ class Target:
     def __are_specific_options_matching_context(self, context):
         """
         Check if required values for specific options defined in Context are met
+
         :param context: Context object
         :return: Boolean
         """
@@ -248,49 +250,18 @@ class Target:
                 continue
                 
             type_ = self.services_config[self.get_service_name()]['specific_options'][required_option]
-            current_value  = self.get_specific_option_value(required_option)
-            required_value = context[required_option]
+            option_value = self.get_specific_option_value(required_option)
+            req_context_value = context[required_option]
 
-            # For type OptionType.BOOLEAN:
-            # Option      Context      Result (run ?)
-            # True        True         True
-            # False       True         False
-            # True        False        False
-            # False       False        True
-            # any         None         True   
             if type_ == OptionType.BOOLEAN:
-                status &= required_value is None or current_value == required_value
-
-            # For type OptionType.LIST:
-            # Option      Context      Result
-            # None        val          False
-            # val1        val1,val2    True
-            # val1        val2,val3    False
-            # any         None         True  
-            # any         'undefined'  False
-            # None        'undefined'  True                 
+                status &= ContextChecker.check_boolean_option(option_value, req_context_value)
             elif type_ == OptionType.LIST:
-                status &= required_value is None          or \
-                          current_value in required_value or \
-                          required_value == ['undefined'] and current_value is None
-
-            # For type OptionType.VAR:
-            # Option      Context     Result
-            # None        True        False
-            # non-empty   True        True
-            # None        False       True
-            # non-empty   False       False
-            # any         None        True        
+                status &= ContextChecker.check_list_option(option_value, req_context_value)
             elif type_ == OptionType.VAR:
-                status &= required_value is None or \
-                          current_value is None and required_value == False or \
-                          current_value is not None and required_value == True
+                status &= ContextChecker.check_var_option(option_value, req_context_value)
+            elif type_ == OptionType.PRODUCT:
+                status &= ContextChecker.check_product_option(option_value, req_context_value)
 
         return status
-
-
-
-
-
 
 

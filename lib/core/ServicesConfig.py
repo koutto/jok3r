@@ -64,25 +64,29 @@ class ServicesConfig:
                     protocol, 
                     specific_options, 
                     supported_list_options,
+                    supported_product_options,
                     auth_types,
                     service_checks):
         """
         Add a service configuration
+
         :param name: Service name
         :param default_port: Default port number
         :param protocol: Protocol tcp or udp
         :param specific_options: Dictionary { specific option : type }
-        :param supported_list_options: Dictionary { specific option : list of possible values }
+        :param supported_list_options: Dictionary { specific option : list of possible values } for options of type "list"
+        :param supported_product_options: Dictionary { specific option : list of possible values } for options of type "product"
         :param auth_types: List of supported authentication types, relevant for HTTP only
         :param service_checks: ServiceChecks object
         """
         service = name.lower()
-        self.services[service]['default_port']           = int(default_port)
-        self.services[service]['protocol']               = protocol
-        self.services[service]['specific_options']       = specific_options
-        self.services[service]['supported_list_options'] = supported_list_options
-        self.services[service]['auth_types']             = auth_types
-        self.services[service]['checks']                 = service_checks
+        self.services[service]['default_port']              = int(default_port)
+        self.services[service]['protocol']                  = protocol
+        self.services[service]['specific_options']          = specific_options
+        self.services[service]['supported_list_options']    = supported_list_options
+        self.services[service]['supported_product_options'] = supported_product_options
+        self.services[service]['auth_types']                = auth_types
+        self.services[service]['checks']                    = service_checks
 
 
     def list_services(self, multi=False):
@@ -174,6 +178,7 @@ class ServicesConfig:
         """
         Check if a given context-specific option name is valid, either for any service
         or for a given service
+
         :param option: Context-specific option name to check
         :param service: Service name or None if check for any service
         :return: Boolean
@@ -191,6 +196,7 @@ class ServicesConfig:
     def is_specific_option_value_supported(self, name, value):
         """
         Check if the value for a given context-specific option is valid
+
         :param name: Context-specific option name
         :param value: Context-specific option value
         :return: Boolean
@@ -201,8 +207,15 @@ class ServicesConfig:
                 if type_ == OptionType.BOOLEAN:
                     return value in ('true', 'false')
                 elif type_ == OptionType.LIST:
-                    return value not in self.services[service]['supported_list_options'][name]
+                    return value in self.services[service]['supported_list_options'][name]
+                elif type_ == OptionType.PRODUCT:
+                    # Exclude version if specified in "product" option and check if 
+                    # (vendor/)product_name is in the list of supported products
+                    product = value[:value.index('|')] if '|' in value else value
+                    # Perform case insensitive lookup
+                    return product.lower() in list(map(lambda x: x.lower(), self.services[service]['supported_product_options'][name]))
                 else:
+                    # For option of type "var", value is free
                     return True
         return False
 
@@ -210,6 +223,7 @@ class ServicesConfig:
     def get_specific_option_type(self, option, service):
         """
         Get the type of a context-specific option
+
         :param option: Context-specific option name
         :param service: Service name
         :return: OptionType
@@ -281,6 +295,9 @@ class ServicesConfig:
                     values = 'true, false'
                 elif options[opt] == OptionType.LIST:
                     values = sorted(self.services[service]['supported_list_options'][opt])
+                    values = StringUtils.wrap(', '.join(values), 80)
+                elif options[opt] == OptionType.PRODUCT:
+                    values = sorted(self.services[service]['supported_product_options'][opt])
                     values = StringUtils.wrap(', '.join(values), 80)
                 else:
                     values = '<anything>' 

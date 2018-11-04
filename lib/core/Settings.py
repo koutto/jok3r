@@ -29,12 +29,16 @@
 # auth_types       = list of authentication types, relevant only for HTTP ([a-z0-9_-]) (optional)
 # 
 # [specific_options]
-# <option_name ([a-z0-9_-])> = boolean:default_value|list|var 
+# <option_name ([a-z0-9_-])> = boolean:default_value|list|var|product 
 #       (for boolean, default value can be added, True or False. False by default)
 #
 # [supported_list_options] (may not be present if no option of type list)
 # For each option of type "list":
 #   supported_<option_name> = list of supported values for the option ([a-z0-9_-])
+#
+# [supported_product_options] (may not be present if no option of type product)
+#   supported_<option_name> = list of supported values for the option ([a-zA-Z0-9_\/- ])
+#                             format: (vendor/)product_name (vendor can be omitted if no confusion)
 #
 # For each check:
 #   [check_<check_name>]
@@ -275,6 +279,7 @@ class Settings:
         categories = self.__parse_section_config(service, service_config)
         self.__parse_section_specific_options(service, service_config)
         self.__parse_section_supported_list_options(service, service_config)
+        self.__parse_section_supported_product_options(service, service_config)
 
         # Add the service configuration from settings
         self.services.add_service(
@@ -283,6 +288,7 @@ class Settings:
             service_config['protocol'],
             service_config['specific_options'],
             service_config['supported_list_options'],
+            service_config['supported_product_options'],
             service_config['auth_types'],
             ServiceChecks(service, categories)
         )
@@ -350,9 +356,10 @@ class Settings:
                 option_type, default_value = option_type.split(':')
             opt_clean   = StringUtils.clean(opt.lower(), allowed_specials=('-', '_'))
 
-            if option_type == 'boolean' :  specific_options[opt_clean] = OptionType.BOOLEAN
-            elif option_type == 'list'  :  specific_options[opt_clean] = OptionType.LIST
-            elif option_type == 'var'   :  specific_options[opt_clean] = OptionType.VAR
+            if   option_type == 'boolean' : specific_options[opt_clean] = OptionType.BOOLEAN
+            elif option_type == 'list'    : specific_options[opt_clean] = OptionType.LIST
+            elif option_type == 'var'     : specific_options[opt_clean] = OptionType.VAR
+            elif option_type == 'product' : specific_options[opt_clean] = OptionType.PRODUCT
             else:
                 raise SettingsException('[{filename}{ext} | Section "specific_options"] Specific option named "{option}" has ' \
                     'an invalid type. Supported types are: boolean, list, var'.format(
@@ -366,6 +373,7 @@ class Settings:
         Parse section [supported_list_options] in <service_name>.conf and retrieve 
         supported values for specific options of type list.
         Must be called after self.__parse_section_config() and self.__parse_section_specific_options()
+
         :param service: Service name
         :param service_config: Dict storing info about service, updated into this method
         :return: None
@@ -374,10 +382,10 @@ class Settings:
         options_list = list(filter(lambda x: service_config['specific_options'][x] == OptionType.LIST, 
                                    service_config['specific_options'].keys()))
         if not options_list:
-            return dict()
+            return
         elif not self.config_parsers[service].has_section('supported_list_options'):
             raise SettingsException('[{filename}{ext}] Missing section [supported_list_options] to store supported ' \
-                'values for specific options of type list'.format(filename=service, ext=CONF_EXT))
+                'values for specific options of type "list"'.format(filename=service, ext=CONF_EXT))
 
         log_prefix = '[{filename}{ext} | Section "supported_list_options"]'.format(filename=service, ext=CONF_EXT)
         supported_list_options = dict()
@@ -397,6 +405,45 @@ class Settings:
             supported_list_options[opt] = values
 
         service_config['supported_list_options'] = supported_list_options
+
+
+    def __parse_section_supported_product_options(self, service, service_config):
+        """
+        Parse section [supported_product_options] in <service_name>.conf and retrieve 
+        supported values for specific options of type product.
+        Must be called after self.__parse_section_config() and self.__parse_section_specific_options()
+
+        :param service: Service name
+        :param service_config: Dict storing info about service, updated into this method
+        :return: None
+        :raises SettingsException:
+        """
+        options_list = list(filter(lambda x: service_config['specific_options'][x] == OptionType.PRODUCT, 
+                                   service_config['specific_options'].keys()))
+        if not options_list:
+            return
+        elif not self.config_parsers[service].has_section('supported_product_options'):
+            raise SettingsException('[{filename}{ext}] Missing section [supported_product_options] to store supported ' \
+                'values for specific options of type "product"'.format(filename=service, ext=CONF_EXT))
+
+        log_prefix = '[{filename}{ext} | Section "supported_product_options"]'.format(filename=service, ext=CONF_EXT)
+        supported_list_options = dict()
+        optparsed = self.config_parsers[service].options('supported_product_options')
+
+        for opt in options_list:
+            if 'supported_'+opt not in optparsed:
+                raise SettingsException('{prefix} No option "supported_{option}" is defined'.format(
+                    prefix=log_prefix, option=opt))
+
+            values = list(map(lambda x: StringUtils.clean(x, allowed_specials=('-', '_', '/', '\\', ' ')), 
+                         self.config_parsers[service].safe_get_list('supported_product_options', 
+                         'supported_'+opt, ',', [])))
+            if not values:
+                raise SettingsException('{prefix} Option "supported_{option}" is empty'.format(
+                    prefix=log_prefix, option=opt))
+            supported_list_options[opt] = values
+
+        service_config['supported_product_options'] = supported_list_options
 
 
     def __parse_all_checks_sections(self, service):
@@ -521,6 +568,7 @@ class Settings:
     def __parse_context(self, service, section, num_context, context_str):
         """
         Convert the value of a "context_<command_number>" option into a valid python dict
+
         :param service: Service name
         :param section: Section name [check_(.+)]
         :param num_context: Number in option name, ie: context_<num_context>
@@ -546,12 +594,15 @@ class Settings:
 
         # Check validity of values according to service name
         for opt,val in context.items():
+
+            # Auth status
             if opt == 'auth_status':
                 if val not in (NO_AUTH, USER_ONLY, POST_AUTH, None):
                     logger.warning('{prefix} Invalid value for "auth_status" context-option. Supported values are: ' \
                         'NO_AUTH, USER_ONLY, POST_AUTH, None'.format(prefix=log_prefix))
                     return None
 
+            # Auth type (for HTTP)
             elif opt == 'auth_type':
                 if service != 'http':
                     logger.warning('{prefix} "auth_type" context-option is only supported for service HTTP'.format(
@@ -562,29 +613,50 @@ class Settings:
                         'check --list-http-auth'.format(prefix=log_prefix))
                     return None
 
-            else:
-                if not self.services.is_specific_option_name_supported(opt, service):
-                    logger.warning('{prefix} Context-option "{option}" is not supported for service {service}'.format(
-                        prefix=log_prefix, option=opt, service=service))
-                    return None
-                if self.services.get_specific_option_type(opt, service) == OptionType.LIST:
-                    if val is not None:
-                        if val == 'undefined':
-                            context[opt] = ['undefined']
-                        else:
-                            if isinstance(val, str):
-                                val = [val]
-                            val = list(map(lambda x: x.lower(), val))
-                            for e in val:
-                                if e not in self.services[service]['supported_list_options'][opt]:
-                                    logger.warning('{prefix} Context-option "{option}" contains an invalid element ' \
-                                        '("{element}")'.format(prefix=log_prefix, option=opt, element=e))
+            # Check if specific option name is valid
+            elif not self.services.is_specific_option_name_supported(opt, service):
+                logger.warning('{prefix} Context-option "{option}" is not supported for service {service}'.format(
+                    prefix=log_prefix, option=opt, service=service))
+                return None
+
+            # Context-specific option of type "list"
+            elif self.services.get_specific_option_type(opt, service) == OptionType.LIST:
+                if val is not None:
+                    if val == 'undefined':
+                        context[opt] = ['undefined']
+                    else:
+                        if isinstance(val, str):
+                            val = [val]
+                        val = list(map(lambda x: x.lower(), val))
+                        for e in val:
+                            if e not in self.services[service]['supported_list_options'][opt]:
+                                logger.warning('{prefix} Context-option "{option}" contains an invalid element ' \
+                                    '("{element}")'.format(prefix=log_prefix, option=opt, element=e))
+                        context[opt] = val
+
+            # Context-specific option of type "product"
+            elif self.services.get_specific_option_type(opt, service) == OptionType.PRODUCT:
+                if val is not None:
+                    if val == 'undefined':
+                        context[opt] = ['undefined']
+                    else:
+                        if isinstance(val, str):
+                            val = [val]
+                        for e in val:
+                            # Check if (vendor/)product_name is in the list of supported products
+                            # Remove the version contraints if present
+                            product = e[:e.index('|')] if '|' in e else e
+                            if product not in self.services[service]['supported_product_options'][opt]:
+                                logger.warning('{prefix} Context-option "{option}" contains an invalid product ' \
+                                    '("{product}")'.format(prefix=log_prefix, option=opt, product=product))
                             context[opt] = val
-                else:
-                    if val is not None and not isinstance(val, bool):
-                        logger.warning('{prefix} Context-option "{option}" must have a boolean value (True/False) ' \
-                            'or None'.format(prefix=log_prefix, option=opt))   
-                        return None   
+
+            # Context-specific option of type "boolean" and "var"
+            else:
+                if val is not None and not isinstance(val, bool):
+                    logger.warning('{prefix} Context-option "{option}" must have a boolean value (True/False) ' \
+                        'or None'.format(prefix=log_prefix, option=opt))   
+                    return None   
 
         return Context(context)
 

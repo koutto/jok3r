@@ -184,5 +184,5 @@ class HttpModule(SmartModule):
         m = re.findall('^(\S+)\s+(\S+)\s+(Admin|User)\s*$', cmd_output, flags=re.MULTILINE)
         if m:
             for username, password in m:
-                r.add_credentials(username, password, auth_type='lotusdomino')
+                r.add_credentials(username, password, auth_type='domino')
         return r

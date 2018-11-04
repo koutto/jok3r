@@ -5,6 +5,7 @@ from .FileUtils import *
 from .NetUtils import *
 from .OrderedDefaultDict import *
 from .StringUtils import *
+from .VersionUtils import *
 from .Wappalyzer import *
 from .WebUtils import *
 pass
