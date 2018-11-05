@@ -90,7 +90,9 @@ class Target:
             else:
                 self.service.http_headers = ''
 
-            self.service.comment = WebUtils.grab_html_title(self.service.url)
+            if not self.service.comment:
+                self.service.comment = WebUtils.grab_html_title(self.service.url)
+                
         # For any other service: Simple port check
         elif self.service.protocol == Protocol.TCP:
             self.service.up = NetUtils.is_tcp_port_open(str(self.service.host.ip), self.service.port)

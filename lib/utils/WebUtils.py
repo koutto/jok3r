@@ -118,7 +118,10 @@ class WebUtils:
             r = requests.get(url, verify=False)
             html = bs4.BeautifulSoup(r.text, 'html.parser')
 
-            return StringUtils.remove_non_printable_chars(html.title.text.strip())
+            # Remove non-ASCII characters and duplicate spaces
+            title = StringUtils.remove_non_printable_chars(html.title.text.strip())
+            title = " ".join(title.split())
+            return title
         except:
             return ''
 

@@ -59,9 +59,9 @@ class ServicesRequester(Requester):
                     r.port,
                     {Protocol.TCP: 'tcp', Protocol.UDP: 'udp'}.get(r.protocol),
                     r.name,
-                    StringUtils.wrap(r.banner, 65),
+                    StringUtils.wrap(r.banner, 55),
                     StringUtils.wrap(r.url, 50),
-                    StringUtils.wrap(r.comment, 50),
+                    StringUtils.shorten(r.comment, 40),
                     len(r.results),
                     nb_creds,
                 ])

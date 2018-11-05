@@ -160,7 +160,7 @@ class AttackScope:
         data = list()
         columns = [
             'id',
-            'IP',
+            'IP/',
             'Hostname',
             'Port',
             'Proto',
@@ -175,11 +175,11 @@ class AttackScope:
             data.append([
                 Output.colored('>'+str(id_) if self.current_targetid == id_ else str(id_), color=pointer_color, attrs=pointer_attr),
                 Output.colored(target.get_ip(), color=pointer_color, attrs=pointer_attr),
-                Output.colored(target.get_host(), color=pointer_color, attrs=pointer_attr),
+                Output.colored(StringUtils.wrap(target.get_host(), 50), color=pointer_color, attrs=pointer_attr),
                 Output.colored(str(target.get_port()), color=pointer_color, attrs=pointer_attr),
                 Output.colored(target.get_protocol(), color=pointer_color, attrs=pointer_attr),
                 Output.colored(target.get_service_name(), color=pointer_color, attrs=pointer_attr),
-                Output.colored(StringUtils.wrap(target.get_banner(), 70), color=pointer_color, attrs=pointer_attr),
+                Output.colored(StringUtils.wrap(target.get_banner(), 55), color=pointer_color, attrs=pointer_attr),
                 Output.colored(StringUtils.wrap(target.get_url(), 50), color=pointer_color, attrs=pointer_attr),
             ])
             id_ += 1
