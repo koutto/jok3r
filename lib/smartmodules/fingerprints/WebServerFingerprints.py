@@ -109,7 +109,13 @@ WEBSERVER_VERSION_CLUSTERD = {
 	] 
 }
 
-WEBSERVER_NAME_WIG {
-	'Apache'
+WEBSERVER_NAME_VERSION_WIG {
+	'Apache\s+[VERSION]\s+Platform' : 'Apache',
+	'Tomcat\s+[VERSION]\s+Platform' : 'Apache/Tomcat',
+	'Lotus Domino\s+[VERSION]\s+Platform' : 'Domino',
+	'IIS\s+[VERSION]\s+Platform' : 'Microsoft/IIS',
+	'nginx\s+[VERSION]\s+Platform' : 'Nginx',
+	'jBoss\s+[VERSION]\s+Platform'  : 'JBoss',
+	'Zope\s+[VERSION]\s+Platform' : 'Zope',
 }
 
