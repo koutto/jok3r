@@ -109,3 +109,7 @@ WEBSERVER_VERSION_CLUSTERD = {
 	] 
 }
 
+WEBSERVER_NAME_WIG {
+	'Apache'
+}
+
