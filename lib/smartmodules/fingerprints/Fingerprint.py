@@ -12,55 +12,60 @@ class Fingerprint:
         self.fingerprints = fingerprints
 
 
-    def search_product_name_and_version(self, text):
+    def search_product_name_and_version(self, tool, text):
         """
         Search for patterns into input text to try to detect product name and 
         potentially version number
+
+        :param str tool: Name of the tool that generated the output
+        :param str text: Output from the tool
+        :return: [vendor_name/]product_name[|version_number]
+        :rtype: str
         """
         result = ''
-        for pattern in self.fingerprints:
-            pattern = pattern.replace('[VERSION]', VERSION_REGEXP)
-            m = re.search(pattern, text, re.IGNORECASE)
-            if m:
-                result = self.fingerprints[pattern]
-                # If version is present, add it as suffix
-                if m.group('version'):
-                    result += '|{}'.format(m.group('version'))
-                break
+
+        for name in self.fingerprints:
+            if tool in self.fingerprints[name]:
+                version_detection = '[VERSION]' in self.fingerprints[name][tool]
+                pattern = self.fingerprints[name][tool].replace('[VERSION]', VERSION_REGEXP)
+                m = re.search(pattern, text, re.IGNORECASE)
+                if m:
+                    result = name
+
+                    # If version is present, add it as suffix
+                    if version_detection:
+                        if m.group('version'):
+                            result += '|{}'.format(m.group('version'))
+                    break
+
         return result
 
 
-    def search_product_name(self, text):
-        """
-        Search for patterns into input text to try to detect product name
-        """
-        result = ''
-        for pattern in self.fingerprints:
-            m = re.search(pattern, text, re.IGNORECASE)
-            if m:
-                result = self.fingerprints[pattern]
-                break
-        return result
-
-
-    def search_product_version(self, product_name, text):
+    def search_product_version_for_name(self, tool, product_name, text):
         """
         Search for version number into input text using patterns for the given
-        product name.
+        product name
+
+        :param str tool: Name of the tool that generated the output
+        :param str product_name: Product name to check version number for
+        :param str text: Output from the tool
+        :return: [vendor_name/]product_name[|version_number]
+        :rtype: str
         """
         result = product_name.split('|')[0] if '|' in product_name else product_name
 
-        # Fingerprints dict used must have the structure:
-        # { product_name : [ list of patterns using "[VERSION]" ] }
-        if product_name not in self.fingerprints.keys():
+        if product_name not in self.fingerprints:
             return result
 
-        for pattern in self.fingerprints[product_name]:
-            pattern = pattern.replace('[VERSION]', VERSION_REGEXP)
-            m = re.search(pattern, text, re.IGNORECASE)
-            if m:
-                # If version is present, add it as suffix
-                if m.group('version'):
-                    result += '|{}'.format(m.group('version'))
-                break
+        if tool not in self.fingerprints[product_name]:
+            return result
+
+        pattern = self.fingerprints[product_name][tool].replace('[VERSION]', VERSION_REGEXP)
+        m = re.search(pattern, text, re.IGNORECASE)
+        if m:
+            # If version is present, add it as suffix
+            if m.group('version'):
+                result += '|{}'.format(m.group('version'))
+            break
+            
         return result            
