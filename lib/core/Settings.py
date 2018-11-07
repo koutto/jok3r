@@ -396,6 +396,7 @@ class Settings:
                 raise SettingsException('{prefix} No option "supported_{option}" is defined'.format(
                     prefix=log_prefix, option=opt))
 
+            # List options are put in lowercase, no spaces, no special chars (except -, _)
             values = list(map(lambda x: StringUtils.clean(x.lower(), allowed_specials=('-', '_')), 
                          self.config_parsers[service].safe_get_list('supported_list_options', 
                          'supported_'+opt, ',', [])))
@@ -435,7 +436,9 @@ class Settings:
                 raise SettingsException('{prefix} No option "supported_{option}" is defined'.format(
                     prefix=log_prefix, option=opt))
 
-            values = list(map(lambda x: StringUtils.clean(x, allowed_specials=('-', '_', '/', '\\', ' ')), 
+            # Product options only allow some special chars, spaces are allowed
+            # '/' is used to separate vendor name (optional) and product name
+            values = list(map(lambda x: StringUtils.clean(x, allowed_specials=('-', '_', '.', '/', '\\', ' ')), 
                          self.config_parsers[service].safe_get_list('supported_product_options', 
                          'supported_'+opt, ',', [])))
             if not values:
