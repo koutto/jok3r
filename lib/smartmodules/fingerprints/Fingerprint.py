@@ -28,7 +28,7 @@ class Fingerprint:
             if tool in self.fingerprints[name]:
                 version_detection = '[VERSION]' in self.fingerprints[name][tool]
                 pattern = self.fingerprints[name][tool].replace('[VERSION]', VERSION_REGEXP)
-                m = re.search(pattern, text, re.IGNORECASE)
+                m = re.search(pattern, text, re.IGNORECASE|re.DOTALL)
                 if m:
                     result = name
 
@@ -61,7 +61,7 @@ class Fingerprint:
             return result
 
         pattern = self.fingerprints[product_name][tool].replace('[VERSION]', VERSION_REGEXP)
-        m = re.search(pattern, text, re.IGNORECASE)
+        m = re.search(pattern, text, re.IGNORECASE|re.DOTALL)
         if m:
             # If version is present, add it as suffix
             if m.group('version'):
