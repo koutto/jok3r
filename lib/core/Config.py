@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 ###
 ### Core > Config
@@ -9,7 +10,9 @@ from lib.core.Constants import *
 from lib._version import __version__
 
 
-# -- Banner/Help ----------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------------
+# Banner/Help
+
 BANNER = colored.stylize("""
          ____.       __    ________              `Combine the best of...
         |    | ____ |  | __\_____  \______           ...open-source Hacking Tools`
@@ -40,7 +43,10 @@ This shell allows for easy access to this database. New missions can be added an
 scopes can be defined by importing new targets.
 """
 
-# -- Arguments parsing settings --------------------------------------------------------------------
+
+#----------------------------------------------------------------------------------------
+# Arguments Parsing Settings
+
 ARGPARSE_MAX_HELP_POS    = 45
 TARGET_FILTERS           = {'ip'      : FilterData.IP, 
                             'host'    : FilterData.HOST,
@@ -50,18 +56,21 @@ TARGET_FILTERS           = {'ip'      : FilterData.IP,
                             'os'      : FilterData.OS}
 
 
-# -- Basic settings -------------------------------------------------------------------------------
-TOOL_BASEPATH            = os.path.dirname(os.path.realpath(__file__+os.sep +'..'+os.sep+'..'))
-TOOLBOX_DIR              = TOOL_BASEPATH + os.sep + 'toolbox'
-DEFAULT_OUTPUT_DIR       = 'output'
-WEBSHELLS_DIR            = TOOL_BASEPATH + os.sep + 'webshells'
-WORDLISTS_DIR            = TOOL_BASEPATH + os.sep + 'wordlists'
-DB_FILE                  = TOOL_BASEPATH + os.sep + 'local.db'
-DB_HIST_FILE             = TOOL_BASEPATH + os.sep + '.dbhistory'
-SMART, SMART_I           = '[SMART] ', colored.stylize('[SMART] ', colored.fg('blue') + colored.attr('bold'))
+#----------------------------------------------------------------------------------------
+# Basic Settings
+
+TOOL_BASEPATH      = os.path.dirname(os.path.realpath(__file__+os.sep +'..'+os.sep+'..'))
+TOOLBOX_DIR        = TOOL_BASEPATH + os.sep + 'toolbox'
+DEFAULT_OUTPUT_DIR = 'output'
+WEBSHELLS_DIR      = TOOL_BASEPATH + os.sep + 'webshells'
+WORDLISTS_DIR      = TOOL_BASEPATH + os.sep + 'wordlists'
+DB_FILE            = TOOL_BASEPATH + os.sep + 'local.db'
+DB_HIST_FILE       = TOOL_BASEPATH + os.sep + '.dbhistory'
 
 
-# -- Settings files -------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------------
+# Settings Files
+
 SETTINGS_DIR             = TOOL_BASEPATH + os.sep + 'settings'
 CONF_EXT                 = '.conf'
 TOOLBOX_CONF_FILE        = 'toolbox'
@@ -107,18 +116,33 @@ CHECK_OPTIONS = {
     ]
 }
 
-# -- Services -------------------------------------------------------------------------------------
-# Table conversion: nmap service names to Jok3r service names
-# Used to avoid confusion if necessary
-# In particular, unencrypted and encrypted versions of the same protocol are differentiated in Nmap
-# (eg: smtp/smtps, http/https, etc.), but in Jok3r this distinction is done by context-specific options
+
+#----------------------------------------------------------------------------------------
+# Services
+
+# Service names matching between Nmap and Jok3r
+# In particular, unencrypted and encrypted versions of the same protocol are 
+# differentiated in Nmap (e.g. smtp/smtps, http/https, etc.), but in Jok3r this 
+# distinction is done by context-specific options
 SERVICES_NMAP_TO_JOKER = {
-    'rmiregistry' : 'java-rmi',
-    'http-alt'    : 'http',
-    'https'       : 'http',
-    'https-alt'   : 'http',
-    'ssl/http'    : 'http',
-    'oracle-tns'  : 'oracle', 
-    'smtps'       : 'smtp',
+    'ftp-agent'     : 'ftp',
+    'ftp-proxy'     : 'ftp',
+    'ftps'          : 'ftp',
+    'microsoft-ds'  : 'smb',
+    'ms-sql2000'    : 'mssql',
+    'ms-sql-m'      : 'mssql',
+    'ms-sql-s'      : 'mssql',
+    'ms-wbt-server' : 'rdp',
+    'rmiregistry'   : 'java-rmi',
+    'http-alt'      : 'http',
+    'http-mgmt'     : 'http',
+    'http-proxy'    : 'http',
+    'http-wmap'     : 'http',
+    'https'         : 'http',
+    'https-alt'     : 'http',
+    'https-wmap'    : 'http',
+    'ssl/http'      : 'http',
+    'oracle-tns'    : 'oracle', 
+    'smtps'         : 'smtp',
 }
 

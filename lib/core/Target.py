@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 ###
 ### Core > Target
@@ -7,6 +8,7 @@ from six.moves.urllib.parse import urlparse
 
 from lib.core.Config import *
 from lib.core.Constants import *
+from lib.core.Output import Output
 from lib.utils.WebUtils import WebUtils
 from lib.utils.NetUtils import NetUtils
 from lib.db.Host import Host
@@ -19,24 +21,20 @@ from lib.output.Logger import logger
 
 class Target:
     """
-    Embeds info about targeted service along with the specific options that must be applied
-    during the attack.
+    Target object is used during an attack in order to:
+    - Gives access to information about targeted service, 
+    - Check availability of targeted service,
     """
 
     def __init__(self, service, services_config):
         """
-        :param service: db.Service object storing all info related to target service
-        :param services_config: ServicesConfig object
+        Construct the Target object.
+
+        :param Service service: Service Model
+        :param ServicesConfig services_config: Configuration of services
         """
         self.service = service
         self.services_config = services_config
-
-        # If necessary, update/forge URL
-        # if self.service.name == 'http' and not self.service.url:
-        #     self.service.url = '{proto}://{ip}:{port}'.format(
-        #         proto ='http',  # TODO: Need for handling https here ?
-        #         ip    = self.service.host.ip,
-        #         port  = self.service.port)
 
         if self.service.url: 
             self.__init_with_url()
@@ -46,6 +44,8 @@ class Target:
 
     def __init_with_url(self):
         """
+        Initialize with an URL (when targeting HTTP).
+        This method updates: URL, Hostname, IP, Port
         """
         self.service.url = WebUtils.add_prefix_http(self.service.url)
         url = urlparse(self.service.url)
@@ -63,60 +63,36 @@ class Target:
 
     def __init_with_ip(self):
         """
+        Initialize with an IP address
+        This method updates: Hostname, IP
         """
         if NetUtils.is_valid_ip(self.service.host.ip):
-            self.service.host.hostname = NetUtils.reverse_dns_lookup(str(self.service.host.ip))
+            self.service.host.hostname = NetUtils.reverse_dns_lookup(
+                str(self.service.host.ip))
         else:
             # host.ip actually stores a hostname at this point
             self.service.host.ip = NetUtils.dns_lookup(str(self.service.host.ip)) 
             self.service.host.hostname = self.service.host.ip
 
 
-    def smart_check(self, grab_banner_nmap=False):
-        """
-        Check if the target is reachable and update target info
-        :return: Boolean indicating status
-        """
-        # If no IP, means that DNS lookup has failed
-        if not self.service.host.ip: 
-            return False
-
-        # For HTTP: Check URL availability, grab headers, grab HTML title
-        if self.service.url: 
-            is_reachable, status, resp_headers = WebUtils.is_url_reachable(self.service.url)
-            self.service.up = is_reachable
-            if resp_headers:
-                self.service.http_headers = '\n'.join("{}: {}".format(key,val) for (key,val) in resp_headers.items())
-            else:
-                self.service.http_headers = ''
-
-            if not self.service.comment:
-                self.service.comment = WebUtils.grab_html_title(self.service.url)
-                
-        # For any other service: Simple port check
-        elif self.service.protocol == Protocol.TCP:
-            self.service.up = NetUtils.is_tcp_port_open(str(self.service.host.ip), self.service.port)
-        else:
-            self.service.up = NetUtils.is_udp_port_open(str(self.service.host.ip), self.service.port)
-
-        # Banner grabbing via Nmap (for TCP only) only if there is no banner already stored in db
-        if grab_banner_nmap and self.service.up  and self.service.protocol == Protocol.TCP and not self.service.banner:
-            self.service.banner = NetUtils.grab_banner_nmap(str(self.service.host.ip), self.service.port)
-
-        return self.service.up
-
+    #------------------------------------------------------------------------------------
+    # Basic Getters
 
     def get_ip(self):
         return str(self.service.host.ip)
 
+
     def get_url(self):
         return self.service.url
+
 
     def get_host(self):
         return self.service.host.hostname
 
+
     def get_port(self):
         return self.service.port
+
 
     def get_protocol(self):
         proto = {
@@ -125,59 +101,93 @@ class Target:
         }
         return proto[self.service.protocol]
 
+
     def get_protocol2(self):
         return self.service.protocol
+
 
     def get_service_name(self):
         return self.service.name
 
+
     def get_banner(self):
         return self.service.banner
+
 
     def get_http_headers(self):
         return self.service.http_headers
 
+
     def get_credentials(self):
         return self.service.credentials
 
+
     def get_specific_options(self):
         return self.service.options
+
+
+    def get_products(self):
+        return self.service.products
+
 
     def get_mission_name(self):
         return self.service.host.mission.name
 
 
+    #------------------------------------------------------------------------------------
+    # Context-Information Getters
+
     def get_specific_option_value(self, option_name):
         """
         Get the value for a given specific option
 
-        :param option_name: Specific option's name
+        :param str option_name: Specific option's name
         :return: The corresponding value if the option is set, otherwise None
+        :rtype: str|bool|None
         """
-        option_type = self.services_config.get_specific_option_type(option_name, self.service.name)
-        if option_type is None:
+        type_ = self.services_config.get_specific_option_type(
+            option_name, self.service.name)
+        if type_ is None:
             return None
 
         # If option is set, return its value
-        for opt in self.service.options:
-            if opt.name == option_name:
-                if option_type == OptionType.BOOLEAN:
-                    return opt.value.lower() == 'true'
-                else:
-                    return opt.value
-
-        # If option is not set, return "False" as default value for boolean options, otherwise None
-        if option_type == OptionType.BOOLEAN:
-            return False
+        opt = self.service.get_option(option_name)
+        if opt:
+            if type_ == OptionType.BOOLEAN:
+                return opt.value.lower() == 'true'
+            else:
+                return opt.value
+        # Otherwise, return default value (False for boolean) or None
         else:
-            return None
+            if type_ == OptionType.BOOLEAN:
+                return False
+            else:
+                return None
+
+
+    def get_product_name_version(self, product_type):
+        """
+        Get the product name and version for a given product type.
+        (e.g for HTTP, for product_type=web_server, it might be product_name=Apache)
+
+        :param str product_type: Product type
+        :return: (Product name, version) if present, otherwise (None, None)
+        :rtype: tuple
+        """
+        prod = self.service.get_product(product_type)
+        if prod:
+            return (prod.name, prod.version)
+        else:
+            return (None, None)
 
 
     def get_usernames_only(self, auth_type=None):
         """
         Get the list of usernames with no associated password
-        :param auth_type: For HTTP service, authentication type must be specified 
-        :return: List of usernames
+
+        :param str auth_type: Authentication type (for HTTP only)
+        :return: Usernames with no associated password
+        :rtype: list
         """
         if self.service.name == 'http' and auth_type is None: 
             return list()
@@ -194,8 +204,10 @@ class Target:
         """
         Get the list of credentials (username+password) where both username and
         password are set (no single usernames !)
-        :param auth_type: For HTTP service, authentication type must be specified
-        :return: List of tuples (username, password)
+
+        :param str auth_type: Authentication type (for HTTP only)
+        :return: Credentials (username, password)
+        :rtype: list(tuple)
         """
         if self.service.name == 'http' and auth_type is None: 
             return list()
@@ -208,62 +220,113 @@ class Target:
         return userpass
 
 
-    def is_matching_context(self, context):
+    #------------------------------------------------------------------------------------
+    # Target availability checker
+
+    def smart_check(self, grab_banner_nmap=False):
         """
-        Check if required conditions to run a command (ie. Context) are met
-        :param context: Context object
-        :return: Boolean
+        Check if the target is reachable and update target information
+
+        :param bool grab_banner_nmap: Set to True to grab the Nmap banner (for TCP)
+        :return: Result of check
+        :rtype: bool
         """
-        return self.__are_creds_matching_context(context) and \
-               self.__are_specific_options_matching_context(context)
 
+        # If no IP, means that DNS lookup has failed
+        if not self.service.host.ip: 
+            return False
 
-    def __are_creds_matching_context(self, context):
-        """
-        Check if required authentication status defined in Context is met 
-        :param context: Context object
-        :return: Boolean     
-        """
-        # When context does not define any auth_status, no restriction on auth level
-        if context['auth_status'] == None: 
-            return True
-        
-        auth_type  = context['auth_type'] if self.service.name == 'http' else None
-        users_only = self.get_usernames_only(auth_type)
-        userpass   = self.get_userpass(auth_type)
+        # For HTTP: Check URL availability, grab headers, grab HTML title
+        if self.service.url: 
+            is_reachable, status, resp_headers = WebUtils.is_url_reachable(
+                self.service.url)
+            self.service.up = is_reachable
 
-        if len(userpass) > 0     : auth_level = POST_AUTH
-        elif len(users_only) > 0 : auth_level = USER_ONLY
-        else                     : auth_level = NO_AUTH 
+            if resp_headers:
+                self.service.http_headers = '\n'.join("{}: {}".format(key,val) \
+                    for (key,val) in resp_headers.items())
+            else:
+                self.service.http_headers = ''
 
-        return auth_level == context['auth_status']
-
-
-    def __are_specific_options_matching_context(self, context):
-        """
-        Check if required values for specific options defined in Context are met
-
-        :param context: Context object
-        :return: Boolean
-        """
-        status = True
-        for required_option in context.keys():
-            if required_option in ('auth_type', 'auth_status'):
-                continue
+            if not self.service.comment:
+                self.service.comment = WebUtils.grab_html_title(self.service.url)
                 
-            type_ = self.services_config[self.get_service_name()]['specific_options'][required_option]
-            option_value = self.get_specific_option_value(required_option)
-            req_context_value = context[required_option]
+        # For any other service: Simple port check
+        elif self.service.protocol == Protocol.TCP:
+            self.service.up = NetUtils.is_tcp_port_open(
+                str(self.service.host.ip), self.service.port)
+        else:
+            self.service.up = NetUtils.is_udp_port_open(
+                str(self.service.host.ip), self.service.port)
 
-            if type_ == OptionType.BOOLEAN:
-                status &= ContextChecker.check_boolean_option(option_value, req_context_value)
-            elif type_ == OptionType.LIST:
-                status &= ContextChecker.check_list_option(option_value, req_context_value)
-            elif type_ == OptionType.VAR:
-                status &= ContextChecker.check_var_option(option_value, req_context_value)
-            elif type_ == OptionType.PRODUCT:
-                status &= ContextChecker.check_product_option(option_value, req_context_value)
+        # Banner grabbing via Nmap (for TCP only) only if there is no banner 
+        # already stored in db
+        if grab_banner_nmap \
+           and self.service.up  \
+           and self.service.protocol == Protocol.TCP \
+           and not self.service.banner:
 
-        return status
+            self.service.banner = NetUtils.grab_banner_nmap(
+                str(self.service.host.ip), self.service.port)
+
+        return self.service.up
 
 
+    #------------------------------------------------------------------------------------
+    # Output methods
+
+    def __repr__(self):
+        return 'host {ip} | port {port}/{proto} | service {service}'.format(
+            ip=self.get_ip(),
+            port=self.get_port(),
+            proto=self.get_protocol(),
+            service=self.get_service_name())
+
+
+    def print_http_headers(self):
+        """Print HTTP Response Headers if available"""
+        if self.get_http_headers():
+            logger.info('HTTP Response headers:')
+            for l in self.get_http_headers().splitlines():
+                Output.print(l)
+            print()
+
+
+    def print_context(self):
+        """Print target's context information"""
+
+        # Print credentials if available
+        if self.get_credentials():
+            logger.info('Credentials set for this target:')
+            data = list()
+            columns = ['Username', 'Password']
+            if self.get_service_name() == 'http': columns.append('auth-type')
+            for c in self.get_credentials():
+                username = '<empty>' if c.username == '' else c.username
+                if c.password is None:
+                    password = '???'
+                else:
+                    password = '<empty>' if c.password == '' else c.password
+
+                line = [username, password]
+                if self.get_service_name() == 'http': line.append(c.type)
+                data.append(line)
+            Output.table(columns, data, hrules=False)
+
+        # Print specific options if available
+        if self.get_specific_options():
+            logger.info('Context-specific options set for this target:')
+            data = list()
+            columns = ['Option', 'Value']
+            for o in self.get_specific_options():
+                data.append([o.name, o.value])
+            Output.table(columns, data, hrules=False)
+
+        # Print products if available
+        if self.get_products():
+            logger.info('Products known fot this target:')
+            data = list()
+            columns = ['Type', 'Name', 'Version']
+            for p in self.get_products():
+                data.append([p.type, p.name, p.version])
+            Output.table(columns, data, hrules=False)

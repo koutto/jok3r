@@ -8,10 +8,11 @@ from sqlalchemy.types import Enum
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.hybrid import hybrid_method
 
-from lib.db.Session import Base
 from lib.db.Credential import Credential
 from lib.db.Option import Option
+from lib.db.Product import Product
 from lib.db.Result import Result
+from lib.db.Session import Base
 
 
 class Protocol(enum.Enum):
@@ -35,13 +36,17 @@ class Service(Base):
     host_id      = Column(Integer, ForeignKey('hosts.id'))
 
     host         = relationship('Host', back_populates='services')
-    credentials  = relationship('Credential', order_by=Credential.username, back_populates='service',
-                                cascade='save-update, merge, delete, delete-orphan')
-    options      = relationship('Option', order_by=Option.name, back_populates='service',
-                                cascade='save-update, merge, delete, delete-orphan')
-    results      = relationship('Result', order_by=Result.id, back_populates='service',
-                                cascade='save-update, merge, delete, delete-orphan')
+    credentials  = relationship('Credential', order_by=Credential.username, 
+        back_populates='service', cascade='save-update, merge, delete, delete-orphan')
+    options      = relationship('Option', order_by=Option.name, 
+        back_populates='service', cascade='save-update, merge, delete, delete-orphan')
+    products     = relationship('Product', order_by=Product.type, 
+        back_populates='service', cascade='save-update, merge, delete, delete-orphan')
+    results      = relationship('Result', order_by=Result.id, 
+        back_populates='service', cascade='save-update, merge, delete, delete-orphan')
 
+
+    #------------------------------------------------------------------------------------
 
     @hybrid_method
     def merge(self, dst):
@@ -76,6 +81,9 @@ class Service(Base):
                     o.service_id^= self.id
 
 
+    #------------------------------------------------------------------------------------
+    # Getters
+
     @hybrid_method
     def get_option(self, name):
         for opt in self.options:
@@ -83,6 +91,12 @@ class Service(Base):
                 return opt
         return None
 
+    @hybrid_method
+    def get_product(self, product_type):
+        for prod in self.products:
+            if prod.type == product_type.lower():
+                return prod
+        return None
 
     @hybrid_method
     def get_credential(self, username, auth_type=None):
@@ -109,6 +123,8 @@ class Service(Base):
                     nb += 1
         return nb
 
+
+    #------------------------------------------------------------------------------------
 
     def __repr__(self):
         return '<Service(name="{name}", port="{port}", protocol="{protocol}", url="{url}", up="{up}", ' \

@@ -1,12 +1,18 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 ###
 ### Core > Constants
 ###
 from enum import Enum, auto
 
-CMD_RUN, CMD_INSTALL, CMD_UPDATE, CMD_CHECK = range(4) # Command types
 MANDATORY, OPTIONAL = range(2)
-NO_AUTH, USER_ONLY, POST_AUTH = range(3) # Authentication status for Context
+NO_AUTH, USER_ONLY, POST_AUTH = range(3) # Authentication status for ContextRequirements
+
+class CmdType(Enum):
+    RUN     = auto()
+    INSTALL = auto()
+    UPDATE  = auto()
+    CHECK   = auto()
 
 class Mode(Enum):
     TOOLBOX = auto()
@@ -22,7 +28,6 @@ class OptionType(Enum):
     BOOLEAN = auto()
     LIST    = auto()
     VAR     = auto()
-    PRODUCT = auto()
 
 class FilterData(Enum):
     IP              = auto()

@@ -1,56 +1,63 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 ###
 ### Core > Settings 
 ###
-#
-# toolbox.conf:
-# -------------
-# For each tool registered inside toolbox:
-#   [tool_name]
-#   name           = name to display (mandatory)
-#   description    = short text describing the tool (mandatory)
-#   target_service = targeted service or "multi" (mandatory)
-#   install        = installation command-line (optional)
-#   update         = update command-line (optional)
-#   check_command  = command to run to check for correct install (usually run tool without args) (optional)
-#
-# _install_status.conf:
-# ---------------------
-# For each supported service + "multi":
-#   [target_service]
-#   <tool_name>    = False if not installed, datetime of last install/update otherwise
-#
-# <service_name>.conf (one config file per service):
-# --------------------------------------------------
-# [config]
-# default_port     = [0-65535] (mandatory)
-# protocol         = tcp|udp (mandatory)
-# categories       = list of categories for classifying checks ([a-z0-9_-]) (mandatory)
-# auth_types       = list of authentication types, relevant only for HTTP ([a-z0-9_-]) (optional)
-# 
-# [specific_options]
-# <option_name ([a-z0-9_-])> = boolean:default_value|list|var|product 
-#       (for boolean, default value can be added, True or False. False by default)
-#
-# [supported_list_options] (may not be present if no option of type list)
-# For each option of type "list":
-#   supported_<option_name> = list of supported values for the option ([a-z0-9_-])
-#
-# [supported_product_options] (may not be present if no option of type product)
-#   supported_<option_name> = list of supported values for the option ([a-zA-Z0-9_\/- ])
-#                             format: (vendor/)product_name (vendor can be omitted if no confusion)
-#
-# For each check:
-#   [check_<check_name>]
-#   name           = display name (mandatory) 
-#   category       = category inside which this check is classified (mandatory)
-#   description    = short text describing the check (mandatory)
-#   tool           = tool_name of the tool to use
-#   For each command (there must be at least one command):
-#       command_<command_number> = command-line for the check, multiple tags supported (see Command.py)
-#       context_<command_number> = context that must be met to run the command, dictionary syntax (optional)
-#   postrun        = method from smartmodules to run after the command (optional)
-#
+"""
+
+toolbox.conf:
+-------------
+For each tool registered inside toolbox:
+  [tool_name]
+  name           = name to display (mandatory)
+  description    = short text describing the tool (mandatory)
+  target_service = targeted service or "multi" (mandatory)
+  install        = installation command-line (optional)
+  update         = update command-line (optional)
+  check_command  = command to check for correct install (run without args) (optional)
+
+_install_status.conf:
+---------------------
+For each supported service + "multi":
+  [target_service]
+  <tool_name>    = False if not installed, datetime of last install/update otherwise
+
+<service_name>.conf (one config file per service):
+--------------------------------------------------
+[config]
+default_port     = [0-65535] (mandatory)
+protocol         = tcp|udp (mandatory)
+categories       = list of categories for classifying checks ([a-z0-9_-]) (mandatory)
+auth_types       = list of authentication types, only for HTTP ([a-z0-9_-]) (optional)
+
+[specific_options] (optional)
+<option_name ([a-z0-9_-])> = boolean:default_value|list|var
+      (for boolean, default value can be added, True or False. False by default)
+
+[supported_list_options] (required if options of type list are present)
+For each option of type "list":
+  supported_<option_name> = list of supported values for the option ([a-z0-9_-])
+
+[products] (optional)
+  <product_type> ([a-z0-9_-]) = list of supported product names ([a-zA-Z0-9_\/-. ])
+  format: [vendor/]product_name (vendor can be omitted if no confusion)
+
+For each check:
+  [check_<check_name>]
+  name           = display name (mandatory) 
+  category       = category inside which this check is classified (mandatory)
+  description    = short text describing the check (mandatory)
+  tool           = tool_name of the tool to use
+  For each command (there must be at least one command):
+      command_<command_number> = command-line for the check, multiple tags supported
+      context_<command_number> = context that must be met to run the command (optional)
+  postrun        = method from smartmodules to run after the command (optional)
+
+attack_profiles.conf:
+---------------------
+
+"""
+
 import ast
 import traceback
 import configparser
@@ -61,7 +68,7 @@ from lib.core.Check import Check
 from lib.core.Command import Command
 from lib.core.Config import *
 from lib.core.Constants import *
-from lib.core.Context import Context
+from lib.core.ContextRequirements import ContextRequirements
 from lib.core.Exceptions import SettingsException
 from lib.core.ServiceChecks import ServiceChecks
 from lib.core.ServicesConfig import ServicesConfig
@@ -75,17 +82,22 @@ from lib.utils.StringUtils import StringUtils
 
 class Settings:
     """
-    Class used for parsing settings files:
-        - toolbox.conf         : File storing configuration about all tools
+    Class used to parse all settings files:
+        - toolbox.conf         : File storing configurations about all tools
         - <service_name>.conf  : Each supported service has a corresponding .conf file
-        - _install_status.conf : Store install status for each tool & last update if installed
+        - _install_status.conf : Install status for each tool & last update if installed
+
+    Settings class is instanciated when starting Jok3r.
     """
 
     def __init__(self):
         """
-        :raises SettingsException:
+        Start the parsing of settings files
+
+        :raises SettingsException: Exception raised if any error is encountered while 
+            parsing files (syntax error, missing mandatory file...)
         """
-        self.config_parsers = dict() # dict of DefaultConfigParser indexed by filename
+        self.config_parsers = dict() # Dict of DefaultConfigParser indexed by filename
         self.toolbox        = None   # Receives Toolbox object
         self.services       = None   # Receives ServicesConfig object
 
@@ -114,8 +126,11 @@ class Settings:
         # Parse settings files, add tools inside toolbox and create scan configs
         self.__parse_all_conf_files(files)
         self.__create_toolbox()
-        self.__create_all_services_checks()
+        self.__create_all_services_config_and_checks()
     
+
+    #------------------------------------------------------------------------------------
+    # Config files reading
 
     def __parse_all_conf_files(self, files):
         """
@@ -137,6 +152,9 @@ class Settings:
         list_services.append('multi') # Add support for special "multi" service
         self.services = ServicesConfig(list_services)
 
+
+    #------------------------------------------------------------------------------------
+    # Toolbox config file parsing
 
     def __create_toolbox(self):
         """
@@ -164,7 +182,6 @@ class Settings:
         if not self.__parse_tool_install_status(tool_config):   return None
 
         return Tool(
-            tool_config['name_clean'],
             tool_config['name'],
             tool_config['description'],
             tool_config['target_service'],
@@ -193,7 +210,7 @@ class Settings:
                     prefix=log_prefix, option=opt))
                 return False
 
-        tool_config['name_clean'] = section
+        #tool_config['name_clean'] = section
         for opt in optparsed:
             if opt not in TOOL_OPTIONS[MANDATORY]+TOOL_OPTIONS[OPTIONAL]:
                 logger.warning('{prefix} Option "{option}" is not supported, it will be ignored'.format(
@@ -218,18 +235,16 @@ class Settings:
                         prefix=log_prefix, option=opt))
                     return False
 
-
-
             elif opt == 'install':
-                tool_config[opt] = Command(cmdtype = CMD_INSTALL, 
+                tool_config[opt] = Command(cmdtype = CmdType.INSTALL, 
                                            cmdline = self.config_parsers[TOOLBOX_CONF_FILE].safe_get(section, opt, '', None))
 
             elif opt == 'update':
-                tool_config[opt] = Command(cmdtype = CMD_UPDATE,
+                tool_config[opt] = Command(cmdtype = CmdType.UPDATE,
                                            cmdline = self.config_parsers[TOOLBOX_CONF_FILE].safe_get(section, opt, '', None))
 
             elif opt == 'check_command':
-                tool_config[opt] = Command(cmdtype = CMD_CHECK,
+                tool_config[opt] = Command(cmdtype = CmdType.CHECK,
                                            cmdline = self.config_parsers[TOOLBOX_CONF_FILE].safe_get(section, opt, '', None))
 
         return True
@@ -244,7 +259,7 @@ class Settings:
         :return: Boolean
         """
         tool_installed = self.config_parsers[INSTALL_STATUS_CONF_FILE].safe_get(
-            tool_config['target_service'], tool_config['name_clean'], 'false', None).lower().strip()
+            tool_config['target_service'], tool_config['name'], 'false', None).lower().strip()
 
         if   tool_installed == 'false' : tool_config['installed'], tool_config['last_update']  = False , ''
         elif tool_installed == 'true'  : tool_config['installed'], tool_config['last_update']  = True  , ''
@@ -253,10 +268,13 @@ class Settings:
         return True
 
 
-    def __create_all_services_checks(self):
+    #------------------------------------------------------------------------------------
+    # Services configurations and checks parsing
+
+    def __create_all_services_config_and_checks(self):
         """
-        Parse each <service_name>.conf file and create a ServiceChecks object for each one.
-        A ServiceChecks object stores all checks for a given service.
+        Parse each <service_name>.conf file 
+
         :return: None
         """
         for f in self.config_parsers:
@@ -279,7 +297,7 @@ class Settings:
         categories = self.__parse_section_config(service, service_config)
         self.__parse_section_specific_options(service, service_config)
         self.__parse_section_supported_list_options(service, service_config)
-        self.__parse_section_supported_product_options(service, service_config)
+        self.__parse_section_products(service, service_config)
 
         # Add the service configuration from settings
         self.services.add_service(
@@ -288,7 +306,7 @@ class Settings:
             service_config['protocol'],
             service_config['specific_options'],
             service_config['supported_list_options'],
-            service_config['supported_product_options'],
+            service_config['products'],
             service_config['auth_types'],
             ServiceChecks(service, categories)
         )
@@ -296,6 +314,9 @@ class Settings:
         # Add the various for the service into the ServiceChecks object
         self.__parse_all_checks_sections(service)
 
+
+    #------------------------------------------------------------------------------------
+    # Services configurations parsing
 
     def __parse_section_config(self, service, service_config):
         """
@@ -359,7 +380,6 @@ class Settings:
             if   option_type == 'boolean' : specific_options[opt_clean] = OptionType.BOOLEAN
             elif option_type == 'list'    : specific_options[opt_clean] = OptionType.LIST
             elif option_type == 'var'     : specific_options[opt_clean] = OptionType.VAR
-            elif option_type == 'product' : specific_options[opt_clean] = OptionType.PRODUCT
             else:
                 raise SettingsException('[{filename}{ext} | Section "specific_options"] Specific option named "{option}" has ' \
                     'an invalid type. Supported types are: boolean, list, var'.format(
@@ -408,46 +428,46 @@ class Settings:
         service_config['supported_list_options'] = supported_list_options
 
 
-    def __parse_section_supported_product_options(self, service, service_config):
+    def __parse_section_products(self, service, service_config):
         """
-        Parse section [supported_product_options] in <service_name>.conf and retrieve 
-        supported values for specific options of type product.
-        Must be called after self.__parse_section_config() and self.__parse_section_specific_options()
+        Parse section [products] in <service_name>.conf and retrieve supported values 
+        for each product type.
 
-        :param service: Service name
-        :param service_config: Dict storing info about service, updated into this method
+        :param str service: Service name
+        :param dict service_config: Service configuration, updated into this method
         :return: None
-        :raises SettingsException:
+        :raises SettingsException: Exception raised if unconsistent values detected
         """
-        options_list = list(filter(lambda x: service_config['specific_options'][x] == OptionType.PRODUCT, 
-                                   service_config['specific_options'].keys()))
-        if not options_list:
+
+        # First, check if config file has a [products] section
+        if not self.config_parsers[service].has_section('products'):
             return
-        elif not self.config_parsers[service].has_section('supported_product_options'):
-            raise SettingsException('[{filename}{ext}] Missing section [supported_product_options] to store supported ' \
-                'values for specific options of type "product"'.format(filename=service, ext=CONF_EXT))
 
-        log_prefix = '[{filename}{ext} | Section "supported_product_options"]'.format(filename=service, ext=CONF_EXT)
-        supported_list_options = dict()
-        optparsed = self.config_parsers[service].options('supported_product_options')
+        log_prefix = '[{filename}{ext} | Section "products"]'.format(filename=service, ext=CONF_EXT)
+        products = dict()
+        optparsed = self.config_parsers[service].options('products')
 
-        for opt in options_list:
-            if 'supported_'+opt not in optparsed:
-                raise SettingsException('{prefix} No option "supported_{option}" is defined'.format(
-                    prefix=log_prefix, option=opt))
-
-            # Product options only allow some special chars, spaces are allowed
+        # Parse all product types in [products] and get the supported products for each of them
+        for product_type in optparsed:
+            # Clean the product type
+            product_type = StringUtils.clean(product_type.lower(), 
+                allowed_specials=('-', '_'))
+            
+            # Clean the product names: only some special chars allowed, spaces allowed
             # '/' is used to separate vendor name (optional) and product name
-            values = list(map(lambda x: StringUtils.clean(x, allowed_specials=('-', '_', '.', '/', '\\', ' ')), 
-                         self.config_parsers[service].safe_get_list('supported_product_options', 
-                         'supported_'+opt, ',', [])))
-            if not values:
-                raise SettingsException('{prefix} Option "supported_{option}" is empty'.format(
-                    prefix=log_prefix, option=opt))
-            supported_list_options[opt] = values
+            product_names = self.config_parsers[service].safe_get_list('products', product_type, ',', [])
+            product_names = list(map(lambda x: StringUtils.clean(x, allowed_specials=('-', '_', '.', '/', '\\', ' ')), product_names))
 
-        service_config['supported_product_options'] = supported_list_options
+            if not products:
+                raise SettingsException('{prefix} Option "{option}" is empty'.format(prefix=log_prefix, option=opt))       
+            products[product_type] = product_names        
 
+        # Update service configuration with supported products
+        service_config['products'] = products
+
+
+    #------------------------------------------------------------------------------------
+    # Services security checks parsing
 
     def __parse_all_checks_sections(self, service):
         """
@@ -537,10 +557,10 @@ class Settings:
 
     def __parse_commands(self, service, section):
         """
-        Create Commands object for a given tool.
-        Each command is defined in settings file by:
+        Create Commands object for a given tool. Each command is defined in conf file by:
             - command_<command_number> 
             - context_<command_number> (optional)
+
         :param service: Service name
         :param section: Section name [check_(.+)]
         :return: List of Command instances
@@ -549,36 +569,56 @@ class Settings:
                         filename=service, ext=CONF_EXT, section=section)
 
         commands = list()
-        cmdlines = self.config_parsers[service].safe_get_multi(section, 'command', default=None)
+        cmdlines = self.config_parsers[service].safe_get_multi(
+            section, 'command', default=None)
+
         i = 0
         for cmd in cmdlines:
-            context = self.config_parsers[service].safe_get(section, 'context_'+str(i+1), default=None)
-            context = self.__parse_context(service, section, i, context)
-            if context is None: 
-                logger.warning('{prefix} Context is invalid, the check is ignored'.format(prefix=log_prefix))
+
+            # Parse context requirements and create ContextRequirements object
+            context = self.config_parsers[service].safe_get(
+                section, 'context_'+str(i+1), default=None)
+
+            context_requirements = self.__parse_context_requirements(
+                service, section, i, context)
+
+            if context_requirements is None: 
+                logger.warning('{prefix} Context requirements are invalid, the check ' \
+                    'is ignored'.format(prefix=log_prefix))
                 return None
 
-            commands.append(Command(cmdtype=CMD_RUN, 
-                                    cmdline=cmdlines[i], 
-                                    context=context, 
-                                    services_config=self.services))
+            # Create the Command object
+            command = Command(cmdtype = CmdType.RUN, 
+                              cmdline = cmdlines[i], 
+                              context_requirements = context_requirements, 
+                              services_config = self.services)
+            commands.append(command)
             i += 1
+
         if not commands:
-            logger.warning('{prefix} No command is specified, the check is ignored'.format(prefix=log_prefix))
+            logger.warning('{prefix} No command is specified, the check is ' \
+                'ignored'.format(prefix=log_prefix))
+
         return commands
 
 
-    def __parse_context(self, service, section, num_context, context_str):
+    def __parse_context_requirements(self, service, section, num_context, context_str):
         """
-        Convert the value of a "context_<command_number>" option into a valid python dict
+        Convert the value of a "context_<command_number>" option into a valid 
+        Python dictionary, and initialize a fresh ContextRequirements object from it.
 
-        :param service: Service name
-        :param section: Section name [check_(.+)]
-        :param num_context: Number in option name, ie: context_<num_context>
-        :param context_str: Context string extracted from settings file
-        :return: Context object if parsing is ok, None otherwise
+        :param str service: Service name
+        :param str section: Section name [check_<name>]
+        :param int num_context: Number in option name, ie: context_<num_context>
+        :param str context_str: Context string extracted from settings file
+
+        :return: Context if parsing is ok, None otherwise
+        :rtype: Context|None
         """
-        if not context_str: return Context(None)
+
+        # When no context is defined in settings, it means there is no restriction
+        if not context_str: 
+            return ContextRequirements(None, None, None)
 
         # Retrieve value as dict
         context_str = context_str.replace('NO_AUTH',   str(NO_AUTH))\
@@ -586,83 +626,124 @@ class Settings:
                                  .replace('POST_AUTH', str(POST_AUTH))
 
         log_prefix = '[{filename}{ext} | Section "{section}"] "context_{i}":'.format(
-                            filename=service, ext=CONF_EXT, section=section, i=num_context)
+            filename=service, ext=CONF_EXT, section=section, i=num_context)
 
         try:
             context = ast.literal_eval(context_str)
         except Exception as e:
-            logger.warning('{prefix} Parsing error. Valid dictionary syntax is probably not respected: ' \
-                '{ \'key\': \'value\', ... }'.format(prefix=log_prefix))
+            logger.warning('{prefix} Parsing error. Valid dictionary syntax is ' \
+                'probably not respected: { \'key\': \'value\', ... }'.format(
+                    prefix=log_prefix))
             return None
 
-        # Check validity of values according to service name
-        for opt,val in context.items():
+        # Check validity of context requirements
+        req_specific_options = dict()
+        req_products = dict()
+        for cond,val in context.items():
 
             # Auth status
-            if opt == 'auth_status':
+            if cond == 'auth_status':
                 if val not in (NO_AUTH, USER_ONLY, POST_AUTH, None):
-                    logger.warning('{prefix} Invalid value for "auth_status" context-option. Supported values are: ' \
-                        'NO_AUTH, USER_ONLY, POST_AUTH, None'.format(prefix=log_prefix))
+                    logger.warning('{prefix} Invalid value for "auth_status" ' \
+                        'context requirement. Supported values are: NO_AUTH, ' \
+                        'USER_ONLY, POST_AUTH, None'.format(prefix=log_prefix))
                     return None
 
             # Auth type (for HTTP)
-            elif opt == 'auth_type':
+            elif cond == 'auth_type':
                 if service != 'http':
-                    logger.warning('{prefix} "auth_type" context-option is only supported for service HTTP'.format(
-                        prefix=log_prefix))
+                    logger.warning('{prefix} "auth_type" context requirement is only ' \
+                        'supported for service HTTP'.format(prefix=log_prefix))
                     return None
-                elif context[opt] not in self.services[service]['auth_types']:
-                    logger.warning('{prefix} "auth_type" context-option does not have a valid value, ' \
-                        'check --list-http-auth'.format(prefix=log_prefix))
+                elif context[cond] not in self.services[service]['auth_types']:
+                    logger.warning('{prefix} "auth_type" context requirement does not ' \
+                        'have a valid value, check info --list-http-auth'.format(
+                            prefix=log_prefix))
                     return None
 
-            # Check if specific option name is valid
-            elif not self.services.is_specific_option_name_supported(opt, service):
-                logger.warning('{prefix} Context-option "{option}" is not supported for service {service}'.format(
-                    prefix=log_prefix, option=opt, service=service))
-                return None
+            # Specific option
+            elif self.services.is_specific_option_name_supported(cond, service):
+                if val is None:
+                    continue
 
-            # Context-specific option of type "list"
-            elif self.services.get_specific_option_type(opt, service) == OptionType.LIST:
-                if val is not None:
+                type_ = self.services.get_specific_option_type(cond, service)
+
+                # For specific option of type "list"
+                # Value can be either of type: None, str, list
+                # Possible values:
+                # - None: no restriction on the specific option value (default),
+                # - str: restriction on a given value,
+                # - list: restriction on several possible values
+                # - 'undefined': specific option must not be defined
+                if type_ == OptionType.LIST:
                     if val == 'undefined':
-                        context[opt] = ['undefined']
+                        req_specific_options[cond] = ['undefined']
                     else:
                         if isinstance(val, str):
                             val = [val]
                         val = list(map(lambda x: x.lower(), val))
+                        sup_vals = self.services[service]['supported_list_options'][cond]
                         for e in val:
-                            if e not in self.services[service]['supported_list_options'][opt]:
-                                logger.warning('{prefix} Context-option "{option}" contains an invalid element ' \
-                                    '("{element}")'.format(prefix=log_prefix, option=opt, element=e))
-                        context[opt] = val
+                            if e not in sup_vals:
+                                logger.warning('{prefix} Context requirement ' \
+                                    '"{option}" contains an invalid element ' \
+                                    '("{element}")'.format(prefix=log_prefix, 
+                                        option=cond, element=e))
+                                return None
+                        req_specific_options[cond] = val
 
-            # Context-specific option of type "product"
-            elif self.services.get_specific_option_type(opt, service) == OptionType.PRODUCT:
-                if val is not None:
-                    if val == 'undefined':
-                        context[opt] = ['undefined']
-                    else:
-                        if isinstance(val, str):
-                            val = [val]
-                        for e in val:
-                            # Check if (vendor/)product_name is in the list of supported products
-                            # Remove the version contraints if present
-                            product = e[:e.index('|')] if '|' in e else e
-                            if product not in self.services[service]['supported_product_options'][opt]:
-                                logger.warning('{prefix} Context-option "{option}" contains an invalid product ' \
-                                    '("{product}")'.format(prefix=log_prefix, option=opt, product=product))
-                            context[opt] = val
+                # For specific option of type "boolean" or "var"
+                # Context requirement must be boolean or None             
+                elif type_ in (OptionType.BOOLEAN, OptionType.VAR):
+                    if not isinstance(val, bool):
+                        logger.warning('{prefix} Context requirement "{option}" must ' \
+                            'have a boolean value (True/False) or None'.format(
+                                prefix=log_prefix, option=cond))   
+                        return None 
 
-            # Context-specific option of type "boolean" and "var"
+                    req_specific_options[cond] = val
+
+            # Product
+            elif self.services.is_product_type_supported(cond, service):
+
+                # Possible values:
+                # - None: no restriction on the product name (default),
+                # - str: restriction on a given product name,
+                # - list: restriction on several possible product names,
+                # - 'undefined': product must not be defined
+                #
+                # In context requirements, product name can also embed requirement on 
+                # product version by appending "|version_requirements" to product name
+                if val == 'undefined':
+                    req_products[cond] = ['undefined']
+                else:
+                    if isinstance(val, str):
+                        val = [val]
+                    for e in val:
+                        # Check if [vendor/]product_name is in the list of supported 
+                        # product names (ignore version requirements if present)
+                        product_name = e[:e.index('|')] if '|' in e else e
+                        if product_name not in self.services[service]['products'][cond]:
+                            logger.warning('{prefix} Context requirement "{option}" ' \
+                                'contains an invalid product ("{product}")'.format(
+                                    prefix=log_prefix, option=cond, product=product))
+                        req_products[cond] = val                
+
+            # Not supported
             else:
-                if val is not None and not isinstance(val, bool):
-                    logger.warning('{prefix} Context-option "{option}" must have a boolean value (True/False) ' \
-                        'or None'.format(prefix=log_prefix, option=opt))   
-                    return None   
+                logger.warning('{prefix} Context requirement "{option}" is not ' \
+                    'supported for service {service}'.format(
+                        prefix=log_prefix, option=cond, service=service))
+                return None
 
-        return Context(context)
+        return ContextRequirements(req_specific_options,
+                                   req_products,
+                                   context.get('auth_status'),
+                                   context.get('auth_type'))
 
+
+    #------------------------------------------------------------------------------------
+    # Install status configuration modification
 
     def change_installed_status(self, target_service, tool_name, install_status):
         """

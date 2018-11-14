@@ -1,11 +1,13 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 from .ArgumentsParser import *
 from .AttackScope import *
 from .Check import *
 from .Command import *
 from .Config import *
 from .Constants import *
-from .Context import *
-from .ContextChecker import *
+from .ContextRequirements import *
 from .Exceptions import *
 from .NmapResultsParser import *
 from .ProcessLauncher import *

@@ -13,7 +13,7 @@ class InfoController(Controller):
         elif self.arguments.args.show_specific_options:
             self.settings.services.show_specific_options()
         elif self.arguments.args.show_http_auth_types:
-            self.settings.services.show_authentication_types('http')
+            self.settings.services.show_authentication_types()
         elif self.arguments.args.show_checks:
             svc = self.arguments.args.show_checks
             self.settings.services.get_service_checks(svc).show()

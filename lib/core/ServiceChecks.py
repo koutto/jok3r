@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 ###
 ### Core > Service Checks
@@ -10,22 +11,31 @@ from lib.output.Output import Output
 from lib.output.StatusBar import *
 
 class ServiceChecks:
+    """All Security Checks for a Service"""
 
     def __init__(self, service, categories):
         """
-        :param service: Service name
-        :param categories: List of categories used to classify the various checks
-        """
-        self.service    = service
-        self.categories = categories
-        self.checks     = OrderedDefaultDict(list, {k:[] for k in categories}) # {category: [checks]}
+        Construct ServiceChecks object
 
+        :param str service: Service name
+        :param list categories: Categories used to classify the various checks
+        """
+        self.service = service
+        self.categories = categories
+        # Organize checks in dict {category: [checks]}
+        self.checks = OrderedDefaultDict(list, {k:[] for k in categories})
+
+
+    #------------------------------------------------------------------------------------
+    # Basic Operations
 
     def add_check(self, check):
         """
-        Add a Check
-        :param check: Check object
-        :return: Boolean indicating status
+        Add a Check.
+
+        :param Check check: The check to add
+        :return: Status
+        :rtype: bool
         """
         self.checks[check.category].append(check)
         return True
@@ -33,9 +43,11 @@ class ServiceChecks:
 
     def get_check(self, checkname):
         """
-        Get a Check object by name (NOT case-sensitive)
-        :param checkname: Name of the check to look for
-        :return: Check object
+        Get a check by name (NOT case-sensitive).
+
+        :param checkname: Name of the check to get
+        :return: Check if found, None otherwise
+        :rtype: Check|None
         """
         for cat in self.checks:
             for c in self.checks[cat]:
@@ -44,14 +56,43 @@ class ServiceChecks:
         return None
 
 
+    def get_all_check_names(self):
+        """
+        Get list of names of all checks.
+
+        :return: Names of all checks
+        :rtype: list
+        """
+        return [item.name for sublist in self.checks.values() for item in sublist]
+
+
     def is_existing_check(self, checkname):
         """
-        Indicates if a given check name is existing for the current service (NOT case-sensitive)
-        :param checkname: Name of the check to look for
-        :return: Boolean
-        """
-        return checkname.lower() in [item.name.lower() for sublist in self.checks.values() for item in sublist]
+        Indicates if a given check name is existing for the current service 
+        (NOT case-sensitive)
 
+        :param checkname: Name of the check to look for
+        :return: Result of the search
+        :rtype: bool
+        """
+        return checkname.lower() in map(lambda x: x.lower(), self.get_all_check_names())
+
+
+    def nb_checks(self):
+        """
+        Get the total number of checks
+
+        :return: Number of checks
+        :rtype: int
+        """
+        nb = 0
+        for category in self.categories:
+            nb += len(self.checks[category])
+        return nb
+
+
+    #------------------------------------------------------------------------------------
+    # Run 
 
     def run(self, 
             target, 
@@ -63,12 +104,19 @@ class ServiceChecks:
             attack_progress=None):
         """
         Run checks for the service.
-        By default, all the categories of checks are runned. Otherwise, only a list of categories
-        can be runned.
-        :param target: Target object
-        :param results_requester: ResultsRequester object
-        :param filter_categories: list of categories to run (None for all)
-        :param filter_checks: list of checks to run (None for all) 
+        By default, all the checks are runned (but commands are actually run only if 
+        target complies with context requirements). It is however possible to apply 
+        filters to select the checks to run:
+            - Filter on categories,
+            - Filter on names of checks.
+
+        :param Target target: Target
+        :param SmartModulesLoader smartmodules_loader: Loader of SmartModules
+        :param ResultsRequester results_requester: Accessor for Results Model
+        :param list filter_categories: Selection of categories to run (default: all)
+        :param list filter_checks: Selection of checks to run (default: all)
+        :param bool fast_mode: Set to true to disable prompts
+        :param enlighten.Counter attack_progress: Attack progress
         """
         categories = self.categories if filter_categories is None else filter_categories
 
@@ -93,11 +141,13 @@ class ServiceChecks:
                 for check in self.checks[category]:
 
                     # Update status/progress bar
-                    status = ' +--> Current check [{cur}/{total}]: {category} > {checkname}'.format(
-                        cur       = j,
-                        total     = nb_checks,
-                        category  = check.category,
-                        checkname = check.name)
+                    status = ' +--> Current check [{cur}/{total}]: {category} > ' \
+                        '{checkname}'.format(
+                            cur       = j,
+                            total     = nb_checks,
+                            category  = check.category,
+                            checkname = check.name)
+
                     checks_progress.desc = '{status}{fill}'.format(
                         status = status,
                         fill   = ' '*(DESC_LENGTH-len(status)))
@@ -109,33 +159,42 @@ class ServiceChecks:
 
 
                     # Run the check if and only if:
-                    #   - Check is matching context (i.e. at least one of its command is matching context),
-                    #   - The tool used for the check is well installed
+                    #   - Target is compliant with the check,
+                    #   - The tool used for the check is well installed.
                     if i > 1: print()
-                    if check.is_matching_context(target):
-                        Output.title2('[{category}][Check {num:02}/{total:02}] {name} > {description}'.format(
-                            category    = category.capitalize(),
-                            num         = i,
-                            total       = len(self.checks[category]),
-                            name        = check.name,
-                            description = check.description))
+                    if check.check_target_compliance(target):
+                        Output.title2('[{category}][Check {num:02}/{total:02}] ' \
+                            '{name} > {description}'.format(
+                                category    = category.capitalize(),
+                                num         = j,
+                                total       = nb_checks,
+                                name        = check.name,
+                                description = check.description))
 
                         if not check.tool.installed:
-                            logger.warning('Skipped: the tool "{tool}" used by this check is not installed yet ' \
-                                '(according to config)'.format(tool=check.tool.name_display))
+                            logger.warning('Skipped: the tool "{tool}" used by this ' \
+                                'check is not installed yet'.format(
+                                    tool=check.tool.name_display))
                         else:
                             try:
-                                check.run(target, smartmodules_loader, results_requester, fast_mode=fast_mode)
+                                check.run(target, 
+                                          smartmodules_loader, 
+                                          results_requester, 
+                                          fast_mode=fast_mode)
+
                             except KeyboardInterrupt:
                                 print()
-                                logger.warning('Check {check} skipped !'.format(check=check.name))
+                                logger.warning('Check {check} skipped !'.format(
+                                    check=check.name))
 
                     else:
-                        logger.info('[{category}][Check {num:02}/{total:02}] {name} > Skipped because target\'s context is not matching'.format(
-                            name     = check.name,
-                            category = category.capitalize(),
-                            num      = i,
-                            total    = len(self.checks[category])))
+                        logger.info('[{category}][Check {num:02}/{total:02}] {name} > '\
+                            'Skipped because context requirements does not apply to ' \
+                            'the target'.format(
+                                name     = check.name,
+                                category = category.capitalize(),
+                                num      = j,
+                                total    = nb_checks))
                         time.sleep(.2)
                     i += 1
                     j += 1
@@ -148,9 +207,12 @@ class ServiceChecks:
         # Special mode
         # User has provided list of checks to run (may be one single check)
         else:
-            filter_checks = list(filter(lambda x: self.is_existing_check(x), filter_checks))
+            filter_checks = list(filter(
+                lambda x: self.is_existing_check(x), filter_checks))
+
             if not filter_checks:
-                logger.warning('None of the selected checks is existing for the service {service}'.format(service=target.get_service_name()))
+                logger.warning('None of the selected checks is existing for the ' \
+                    'service {service}'.format(service=target.get_service_name()))
                 return
 
             # Initialize sub status/progress bar
@@ -167,11 +229,13 @@ class ServiceChecks:
                 check = self.get_check(checkname)
 
                 # Update status/progress bar
-                status = ' +--> Current check [{cur}/{total}]: {category} > {checkname}'.format(
-                    cur       = i,
-                    total     = len(filter_checks),
-                    category  = check.category,
-                    checkname = checkname)
+                status = ' +--> Current check [{cur}/{total}]: {category} > ' \
+                    '{checkname}'.format(
+                        cur       = i,
+                        total     = len(filter_checks),
+                        category  = check.category,
+                        checkname = checkname)
+
                 checks_progress.desc = '{status}{fill}'.format(
                     status = status,
                     fill   = ' '*(DESC_LENGTH-len(status)))
@@ -182,16 +246,21 @@ class ServiceChecks:
                     attack_progress.update(incr=0, force=True) 
 
                 # Run the check
-                Output.title2('[Check {num:02}/{total:02}] {name} > {description}'.format(
+                Output.title2('[Check {num:02}/{total:02}] {name} > ' \
+                    '{description}'.format(
                         num         = i,
                         total       = len(filter_checks),
                         name        = check.name,
                         description = check.description))
                 try:
-                    check.run(target, smartmodules_loader, results_requester, fast_mode=fast_mode)
+                    check.run(target, 
+                              smartmodules_loader, 
+                              results_requester, 
+                              fast_mode=fast_mode)
                 except KeyboardInterrupt:
                     print()
                     logger.warning('Check {check} skipped !'.format(check=check.name))
+
                 i += 1     
 
             checks_progress.update()
@@ -200,11 +269,11 @@ class ServiceChecks:
             checks_progress.close()               
 
 
+    #------------------------------------------------------------------------------------
+    # Output methods
+
     def show(self):
-        """
-        Show a summary of checks for the service
-        :return: None
-        """
+        """Display a table with all the checks for the service."""
         data = list()
         columns = [
             'Name',
@@ -215,23 +284,17 @@ class ServiceChecks:
         ]
         for category in self.categories:
             for check in self.checks[category]:
+                color_tool = 'grey_19' if not check.tool.installed else None
                 data.append([
                     check.name,
                     category,
                     check.description,
-                    Output.colored(check.tool.name_display, color='grey_19' if not check.tool.installed else None),
+                    Output.colored(check.tool.name_display, color=color_tool),
                     #len(check.commands),
                 ])
+                
         Output.title1('Checks for service {service}'.format(service=self.service))
         Output.table(columns, data, hrules=False)
 
 
-    def nb_checks(self):
-        """
-        Get the total number of checks
-        :return: Number of checks
-        """
-        nb = 0
-        for category in self.categories:
-            nb += len(self.checks[category])
-        return nb
+

@@ -536,7 +536,8 @@ class DbController(cmd2.Cmd):
 
     def complete_nmap(self, text, line, begidx, endidx):
         flag_dict = {
-            'nmap'   : self.path_complete,
+            'nmap': self.path_complete,
+            '-n'  : self.path_complete, 
         }
 
         return self.flag_based_complete(text, line, begidx, endidx, flag_dict=flag_dict)

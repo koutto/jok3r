@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 ###
 ### Core > Arguments parser
@@ -530,7 +531,7 @@ class ArgumentsParser:
                             logger.error('Auth-type in --cred is only supported with HTTP. ' \
                                 'Syntax: --cred http.<auth-type> <username> <password>')
                             return False
-                        elif not self.settings.services.is_valid_authentication_type(auth_type, svc):
+                        elif not self.settings.services.is_valid_authentication_type(auth_type):
                             logger.error('Invalid authentication type provided in --cred. Check "info --list-http-auth".')
                             return False        
                         current_cred['auth_type'] = auth_type
@@ -569,7 +570,7 @@ class ArgumentsParser:
                             logger.error('Auth-type in --user is only supported with HTTP. ' \
                                 'Syntax: --user http.<auth-type> <username>')
                             return False
-                        elif not self.settings.services.is_valid_authentication_type(auth_type, svc):
+                        elif not self.settings.services.is_valid_authentication_type(auth_type):
                             logger.error('Invalid authentication type provided in --cred. Check "info --list-http-auth".')
                             return False        
                         current_user['auth_type'] = auth_type

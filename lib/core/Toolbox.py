@@ -1,19 +1,20 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 ###
 ### Core > Toolbox
 ###
-#
-# File tree for the toolbox:
-# --------------------------
-#
-# toolbox/
-#   +-- target_service_01/
-#       +-- tool_name_01/
-#       +-- tool_name_02/
-#       ...
-#   +-- target_service_02/
-#   ...
-#
+"""
+File tree for the toolbox:
+--------------------------
+
+toolbox/
+  +-- target_service_01/
+      +-- tool_name_01/
+      +-- tool_name_02/
+      ...
+  +-- target_service_02/
+  ...
+"""
 import os
 from collections import OrderedDict
 
@@ -28,9 +29,20 @@ from lib.output.Logger import logger
 class Toolbox:
 
     def __init__(self, settings, services):
+        """
+        Construct the Toolbox object.
+
+        :param Settings settings: Settings from config file
+        :param list services: Supported services (including special service "multi")
+        """
         self.settings = settings
         self.services = services
+        # Organize tools in dict {service: [tools]}
         self.tools    = OrderedDefaultDict(list, {k:[] for k in services})
+
+
+    #------------------------------------------------------------------------------------
+    # Dict-like accessors for self.tools
 
     def __getitem__(self, key):
         return self.tools[key]
@@ -57,49 +69,90 @@ class Toolbox:
         return self.tools.values()
 
 
+    #------------------------------------------------------------------------------------
+    # Basic Operations
+
     def add_tool(self, tool):
         """
-        Add a Tool into the toolbox
-        :param tool: Tool instance
-        :return: Boolean indicating status
+        Add a tool into the toolbox.
+
+        :param Tool tool: Tool to add
+        :return: Status
+        :rtype: bool
         """
-        if tool.target_service not in self.services: return False
+        if tool.target_service not in self.services: 
+            return False
         self.tools[tool.target_service].append(tool)
         return True
 
 
     def get_tool(self, tool_name):
         """
-        Retrieve a Tool from toolbox
-        :param tool_name: The name of the tool
-        :return: Tool instance if found, None otherwise
+        Retrieve a tool by its name from toolbox.
+        NOT case-sensitive search.
+
+        :param str tool_name: The name of the tool to get
+        :return: Tool if found, None otherwise
+        :rtype: Tool|None
         """
         for service in self.services:
             for tool in self.tools[service]:
-                if tool_name.lower() in (tool.name_clean.lower(), tool.name_display.lower()):
+                if tool_name.lower() == tool.name.lower():
                     return tool
         return None
 
 
-    def install_toolbox_full(self, fast_mode=False):
+    def nb_tools(self, filter_service=None, only_installed=False):
         """
-        Install the full toolbox
-        :param fast_mode: Boolean indicating whether prompts must be displayed or not
-        :return: None
+        Get the number of tools inside the toolbox - installed of not - that target
+        either a given service or all services.
+
+        :param str filter_service: Service name to filter with (default: no filter)
+        :param bool only_installed: Set to true to count only installed tools
+        :return: Number of tools targeting either the given service or all services
+        :rtype: int
+        """
+        if filter_service is not None and filter_service not in self.services: 
+            return 0
+
+        nb = 0
+        services = self.services if filter_service is None else [filter_service]
+        for service in services:
+            for tool in self.tools[service]:
+                if only_installed:
+                    if tool.installed:
+                        nb += 1
+                else:
+                    nb += 1
+        return nb
+
+
+    #------------------------------------------------------------------------------------
+    # Install 
+
+    def install_all(self, fast_mode=False):
+        """
+        Install all tools in the toolbox.
+
+        :param bool fast_mode: Set to true to disable prompts and install checks
         """
         for service in self.services:
-            self.install_toolbox_service(service, fast_mode=fast_mode)
+            self.install_for_service(service, fast_mode=fast_mode)
 
 
-    def install_toolbox_service(self, service, fast_mode=False):
+    def install_for_service(self, service, fast_mode=False):
         """
-        Install the tools for a given service
-        :param service: Name of the service targeted by the tools to install (may be "multi")
-        :param fast_mode: Boolean indicating whether prompts must be displayed or not
-        :return: None
+        Install the tools for a given service.
+
+        :param str service: Name of the service targeted by the tools to install 
+            (may be "multi")
+        :param bool fast_mode: Set to true to disable prompts and install checks
         """
-        if service not in self.services: return
+        if service not in self.services: 
+            return
+
         Output.title1('Install tools for service: {service}'.format(service=service))
+
         if not self.tools[service]:
             logger.info('No tool specific to this service in the toolbox')
         else:
@@ -109,60 +162,67 @@ class Toolbox:
                 Output.title2('[{i:02}/{max:02}] Install {tool_name}:'.format(
                     i         = i,
                     max       = len(self.tools[service]),
-                    tool_name = tool.name_display))
+                    tool_name = tool.name))
+
                 tool.install(self.settings, fast_mode=fast_mode)
                 i += 1 
 
 
-    def update_toolbox_full(self, fast_mode=False):
+    #------------------------------------------------------------------------------------
+    # Update
+
+    def update_all(self, fast_mode=False):
         """
-        Update the full toolbox
-        :param fast_mode: Boolean indicating whether prompts must be displayed or not
-        :return: None
+        Update all tools in the toolbox.
+
+        :param bool fast_mode: Set to true to disable prompts and install checks
         """
         for service in self.services:
-            self.update_toolbox_service(service, fast_mode=fast_mode)
+            self.update_for_service(service, fast_mode=fast_mode)
 
 
-    def update_toolbox_service(self, service, fast_mode=False):
+    def update_for_service(self, service, fast_mode=False):
         """
-        Update the tools for a given service
-        :param service: Name of the service targeted by the tools to update (may be "multi")
-        :param fast_mode: Boolean indicating whether prompts must be displayed or not
-        :return: None
+        Update the tools for a given service.
+
+        :param str service: Name of the service targeted by the tools to update 
+            (may be "multi")
+        :param bool fast_mode: Set to true to disable prompts and install checks
         """
         if service not in self.services: return
         Output.title1('Update tools for service: {service}'.format(service=service))
+
         i = 1
         for tool in self.tools[service]:
             if i>1: print()
             Output.title2('[{i:02}/{max:02}] Update {tool_name}:'.format(
                 i         = i,
                 max       = len(self.tools[service]),
-                tool_name = tool.name_display))
+                tool_name = tool.name))
+
             tool.update(self.settings, fast_mode=fast_mode)
             i += 1
 
 
-    def remove_toolbox_full(self):
-        """
-        Remove the full toolbox
-        :param fast_mode: Boolean indicating whether prompts must be displayed or not
-        :return: None
-        """
+    #------------------------------------------------------------------------------------
+    # Remove
+
+    def remove_all(self):
+        """Remove all tools in the toolbox."""
         for service in self.services:
-            self.remove_toolbox_service(service)
+            self.remove_for_service(service)
 
 
-    def remove_toolbox_service(self, service):
+    def remove_for_service(self, service):
         """
-        Remove the tools for a given service
-        :param service: Name of the service targeted by the tools to remove (may be "multi")
-        :param fast_mode: Boolean indicating whether prompts must be displayed or not
-        :return: None
+        Remove the tools for a given service.
+
+        :param str service: Name of the service targeted by the tools to remove
+            (may be "multi")
         """
         if service not in self.services: return
         Output.title1('Remove tools for service: {service}'.format(service=service))
+
         i = 1
         status = True
         for tool in self.tools[service]:
@@ -170,27 +230,33 @@ class Toolbox:
             Output.title2('[{i:02}/{max:02}] Remove {tool_name}:'.format(
                 i         = i,
                 max       = len(self.tools[service]),
-                tool_name = tool.name_display))
+                tool_name = tool.name))
+
             status &= tool.remove(self.settings)
             i += 1
+
+        # Remove the service directory if all tools successfully removed
         if status:
-            service_dir = FileUtils.absolute_path('{toolbox}/{service}'.format(
-                            toolbox  = TOOLBOX_DIR,
-                            service  = service))
-            if FileUtils.remove_directory(service_dir):
-                logger.success('Toolbox service directory "{toolbox}/{service}" deleted'.format(
-                    toolbox  = TOOLBOX_DIR,
-                    service  = service))
+            short_svc_path = '{toolbox}/{service}'.format(toolbox=TOOLBOX_DIR, 
+                                                          service=service)
+
+            full_svc_path = FileUtils.absolute_path(short_svc_path)
+
+            if FileUtils.remove_directory(full_svc_path):
+                logger.success('Toolbox service directory "{path}" deleted'.format(
+                    path=short_svc_path))
             else:
-                logger.warning('Toolbox service directory "{toolbox}/{service}" cannot be deleted ' +
-                    'because it still stores some files'.format(
-                    toolbox  = TOOLBOX_DIR,
-                    service  = service))
+                logger.warning('Toolbox service directory "{path}" cannot be deleted ' \
+                    'because it still stores some files'.format(path=short_svc_path))
 
 
     def remove_tool(self, tool_name):
         """
-        Remove the given tool from toolbox
+        Remove one tool from the toolbox.
+
+        :param str tool_name: Name of the tool to remove
+        :return: Status of removal
+        :rtype: bool
         """
         tool = self.get_tool(tool_name)
         if not tool:
@@ -200,13 +266,18 @@ class Toolbox:
             return tool.remove(self.settings)
 
 
+    #------------------------------------------------------------------------------------
+    # Output Methods
+
     def show_toolbox(self, filter_service=None):
         """
-        Show the content of the toolbox
-        :param filter_service: Service name. If specified, only show the content for the given service
-        :return: None
+        Display a table showing the content of the toolbox.
+
+        :param str filter_service: Service name to filter with (default: no filter)
         """
-        if filter_service is not None and filter_service not in self.services: return
+        if filter_service is not None and filter_service not in self.services: 
+            return
+
         data = list()
         columns = [
             'Name',
@@ -214,52 +285,30 @@ class Toolbox:
             'Status/Update',
             'Description',
         ]
+
         services = self.services if filter_service is None else [filter_service] 
         for service in services:
             for tool in self.tools[service]:
-                status = Output.colored('OK | '+tool.last_update.split(' ')[0], color='green') if tool.installed else \
-                         Output.colored('Not installed',  color='red')
+
+                # Install status style
+                if tool.installed:
+                    status = Output.colored('OK | '+tool.last_update.split(' ')[0], 
+                        color='green')
+                else:
+                    status = Output.colored('Not installed',  color='red')
+
+                # Add line for the tool
                 data.append([
-                    tool.name_display,
+                    tool.name,
                     tool.target_service,
                     status,
-                    StringUtils.wrap(tool.description, 120),
+                    StringUtils.wrap(tool.description, 120), # Max line length
                 ])
 
         Output.title1('Toolbox content - {filter}'.format(
-            filter='all services' if filter_service is None else 'service ' + filter_service))
+            filter='all services' if filter_service is None \
+                   else 'service ' + filter_service))
+
         Output.table(columns, data, hrules=False)
 
 
-    def nb_tools(self, filter_service=None):
-        """
-        Get the number of tools inside the toolbox - installed of not - either globally
-        or only for a given service
-        :param filter_service: Service name. If specified, only count for the given service
-        :return: Number of tools
-        """
-        if filter_service is not None and filter_service not in self.services: return 0
-
-        nb = 0
-        services = self.services if filter_service is None else [filter_service]
-        for service in services:
-            nb += len(self.tools[service])
-        return nb
-
-
-    def nb_tools_installed(self, filter_service=None):
-        """
-        Get the number of tools installed, either globally (in the whole toolbox) or
-        only for a given service
-        :param filter_service: Service name. If specified, only count for the given service
-        :return: Number of installed tools
-        """
-        if filter_service is not None and filter_service not in self.services: return 0
-
-        nb = 0
-        services = self.services if filter_service is None else [filter_service]
-        for service in services:
-            for tool in self.tools[service]:
-                if tool.installed:
-                    nb += 1
-        return nb

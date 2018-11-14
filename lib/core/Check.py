@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 ###
 ### Core > Check
@@ -14,21 +15,18 @@ from lib.output.Output import Output
 
 
 class Check:
+    """Security check"""
 
-    def __init__(self, 
-                 name,
-                 category,
-                 description,
-                 tool,
-                 commands,
-                 postrun):
+    def __init__(self, name, category, description, tool, commands, postrun=None):
         """
-        :param name: Name of the check (mandatory)
-        :param category: Category of the check (mandatory)
-        :param description: Description of the check (mandatory)
-        :param tool: Tool instance to use (mandatory)
-        :param commands: List of Command instances, each one may have an associated Context (mandatory, at least one)
-        :param postrun: Method from smartmodules to run after the command (optional)
+        Construct Check object.
+
+        :param str name: Name of the check
+        :param str category: Category of the check
+        :param str description: Description of the check
+        :param Tool tool: Tool which is used by the check
+        :param list commands: Commands for the check
+        :param postrun: Method from SmartModules to run after each command (optional)
         """
         self.name        = name
         self.category    = category
@@ -38,22 +36,37 @@ class Check:
         self.postrun     = postrun
 
 
-    def is_matching_context(self, target):
+    #------------------------------------------------------------------------------------
+
+    def check_target_compliance(self, target):
+        """
+        Check if target complies with any of the context requirements of the different 
+        commands defined in the security check.
+
+        :param Target target: Target
+        :return: Check result
+        :rtype: bool
+        """
         for command in self.commands:
-            if target.is_matching_context(command.context):
+            if command.context_requirements.check_target_compliance(target):
                 return True
         return False
 
 
+    #------------------------------------------------------------------------------------
+
     def run(self, target, smartmodules_loader, results_requester, fast_mode=False):
         """
-        Run the check, i.e. run the commands for which Target's specific options and authentication
-        level are matching the required context.
-        :param target  : Target object
-        :param smartmodules_loader: 
-        :param results_requester: ResultsRequester object
-        :param fast_mode: Boolean indicating whether prompts must be displayed or not
-        :return:
+        Run the security check.
+        It consists in running commands with context requirements matching with the
+        target's context.
+
+        :param Target target: Target
+        :param SmartModulesLoader smartmodules_loader: Loader of SmartModules
+        :param ResultsRequester results_requester: Accessor for Results Model
+        :param bool fast_mode: Set to true to disable prompts
+        :return: Status
+        :rtype: bool
         """
         if not self.tool.installed:
             return False
@@ -61,25 +74,24 @@ class Check:
         i = 1
         command_outputs = list()
         for command in self.commands:
-            if target.is_matching_context(command.context):
-                if command.context:
-                    logger.info('Command #{num:02} is matching current target\'s context: {context}'.format(
-                        num=i, context=command.context))
+            if command.context_requirements.check_target_compliance(target):
+                if not command.context_requirements.is_empty:
+                    logger.info('Command #{num:02} matches requirements: ' \
+                        '{context}'.format(num=i, context=command.context_requirements))
 
                 cmdline = command.get_cmdline(self.tool.tool_dir, target)
 
-                #if i == 1:  logger.info('Check: {descr}'.format(descr=self.description))
-                #logger.info('Command #{num:02}: {cmd}'.format(num=i, cmd=cmd_short))
                 if fast_mode:
                     logger.info('Run command #{num:02}'.format(num=i))
                     mode = 'y'
                 else:
-                    mode = Output.prompt_choice('Run command #{num:02} ? [Y/n/t/w/q] '.format(num=i), 
+                    mode = Output.prompt_choice(
+                        'Run command #{num:02} ? [Y/n/q] '.format(num=i), 
                         choices={
                             'y':'Yes',
                             'n':'No',
-                            't':'New tab',
-                            'w':'New window',
+                            #'t':'New tab',
+                            #'w':'New window',
                             'q':'Quit the program'
                         },
                         default='y')
@@ -95,31 +107,36 @@ class Check:
                     process = ProcessLauncher(cmdline)
                     if mode == 'y':
                         output = process.start()
-                    elif mode == 't':
-                        output = process.start_in_new_tab()
-                        logger.info('Command started in new tab')
-                    else:
-                        output = process.start_in_new_window(self.name)
-                        logger.info('Command started in new window')
+                    # elif mode == 't':
+                    #     output = process.start_in_new_tab()
+                    #     logger.info('Command started in new tab')
+                    # else:
+                    #     output = process.start_in_new_window(self.name)
+                    #     logger.info('Command started in new window')
                     Output.delimiter()
                     print()
 
                     command_outputs.append(CommandOutput(cmdline=cmdline, output=output))
 
+                    # Run smartmodule method on output
                     if self.postrun:
-                        smartmodules_loader.call_postcheck_method(self.postrun, target.service, output)
+                        smartmodules_loader.call_postcheck_method(
+                            self.postrun, target.service, output)
 
             else:
-                logger.info('Command #{num:02} is not matching current target\'s context: {context}'.format(
-                    num=i, context=command.context))
+                logger.info('Command #{num:02} does not match requirements: ' \
+                        '{context}'.format(num=i, context=command.context_requirements))
             
             i += 1
 
-        if i == 1:
-            logger.warning('This check is skipped')
-        else: 
-            # Add output(s) in db
-            results_requester.add_result(target.service.id, self.name, self.category, command_outputs)
+        # Add outputs in database
+        if command_outputs:
+            results_requester.add_result(target.service.id, 
+                                         self.name, 
+                                         self.category, 
+                                         command_outputs)
+
+        return True
 
 
 
