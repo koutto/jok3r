@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 ###
 ### Core > Toolbox Controller
@@ -7,41 +8,53 @@ from lib.controller.Controller import Controller
 
 class ToolboxController(Controller):
 
-	def run(self):
-		service = self.arguments.args.show_toolbox_for_svc \
-				  or self.arguments.args.install_for_svc   \
-				  or self.arguments.args.update_for_svc    \
-				  or self.arguments.args.uninstall_for_svc
+    def run(self):
 
-		toolname = self.arguments.args.uninstall_tool
-		fastmode = self.arguments.args.fast_mode
+        service = self.arguments.args.show_toolbox_for_svc \
+                  or self.arguments.args.install_for_svc   \
+                  or self.arguments.args.update_for_svc    \
+                  or self.arguments.args.uninstall_for_svc
 
-		if self.arguments.args.show_toolbox_for_svc:
-			self.settings.toolbox.show_toolbox(service)
+        toolname = self.arguments.args.uninstall_tool
 
-		elif self.arguments.args.show_toolbox_all:
-			self.settings.toolbox.show_toolbox()
+        # --fast
+        fastmode = self.arguments.args.fast_mode
 
-		elif self.arguments.args.install_for_svc:
-			self.settings.toolbox.install_for_service(service, fastmode)
+        # --show <service>
+        if self.arguments.args.show_toolbox_for_svc:
+            self.settings.toolbox.show_toolbox(service)
 
-		elif self.arguments.args.install_all:
-			self.settings.toolbox.install_all(fastmode)
+        # --show-all
+        elif self.arguments.args.show_toolbox_all:
+            self.settings.toolbox.show_toolbox()
 
-		elif self.arguments.args.update_for_svc:
-			self.settings.toolbox.update_for_service(service, fastmode)
+        # --install <service>
+        elif self.arguments.args.install_for_svc:
+            self.settings.toolbox.install_for_service(service, fastmode)
 
-		elif self.arguments.args.update_all:
-			self.settings.toolbox.update_all(fastmode)
+        # --install-all
+        elif self.arguments.args.install_all:
+            self.settings.toolbox.install_all(fastmode)
 
-		elif self.arguments.args.uninstall_for_svc:
-			self.settings.toolbox.remove_toolbox_service(service)
+        # --update <service>
+        elif self.arguments.args.update_for_svc:
+            self.settings.toolbox.update_for_service(service, fastmode)
 
-		elif self.arguments.args.uninstall_tool:
-			self.settings.toolbox.remove_tool(toolname)
+        # --update-all
+        elif self.arguments.args.update_all:
+            self.settings.toolbox.update_all(fastmode)
 
-		elif self.arguments.args.uninstall_all:
-			self.settings.toolbox.remove_all()
+        # --uninstall <service>
+        elif self.arguments.args.uninstall_for_svc:
+            self.settings.toolbox.remove_toolbox_service(service)
+
+        # --uninstall-tool <tool-name>
+        elif self.arguments.args.uninstall_tool:
+            self.settings.toolbox.remove_tool(toolname)
+
+        # --uninstall-all
+        elif self.arguments.args.uninstall_all:
+            self.settings.toolbox.remove_all()
 
 
 

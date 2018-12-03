@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .ArgumentsParser import *
+from .AttackProfiles import *
 from .AttackScope import *
 from .Check import *
 from .Command import *

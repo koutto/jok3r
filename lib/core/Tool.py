@@ -257,7 +257,8 @@ class Tool:
         mode = 'update' if update else 'install'
 
         logger.info('Description: {descr}'.format(descr=self.description))
-        #Output.print('{mode} command : {cmd}'.format(mode=mode.capitalize(), cmd=cmd_short))
+        #Output.print('{mode} command : {cmd}'.format(
+        #   mode=mode.capitalize(), cmd=cmd_short))
 
         if fast_mode \
            or Output.prompt_confirm('Confirm {mode} ?'.format(mode=mode), default=True):

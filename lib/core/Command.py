@@ -25,6 +25,14 @@ General Tags
 [WORDLISTSDIR]    Wordlists directory
 [LOCALIP]         Local IP address
 
+Bruteforce Options Tags
+-----------------------
+[USERLIST default="path"]   List of usernames 
+[PASSLIST default="path"]   List of passwords
+[WEBLIST default="path"]    Wordlist for web content discovery
+
+Default path must be relative to WORDLISTS_DIR
+
 Credentials Tags
 ----------------
 [USERNAME]        Username (ContextRequirements.auth_status=USER_ONLY or POST_AUTH)
@@ -92,7 +100,7 @@ class Command:
         self.services_config = services_config
         
 
-    def get_cmdline(self, directory, target=None):
+    def get_cmdline(self, directory, target=None, arguments=None):
         """
         Get the formatted command line, i.e. with the tags replaced by their correct 
         values according to target's information.
@@ -103,6 +111,7 @@ class Command:
         :param str directory: Directory where the command should be run (if empty,
             the current directory is selected)
         :param Target target: Target (for RUN)
+        :param ArgumentsParser arguments: Arguments (for RUN)
 
         :return: Formatted command-line
         :rtype: str
@@ -111,7 +120,9 @@ class Command:
 
         if self.cmdtype == CmdType.RUN:
 
+            # Return now is missing parameters
             if target is None \
+               or arguments is None \
                or self.context_requirements is None \
                or self.services_config is None:
 
@@ -128,6 +139,11 @@ class Command:
                 self.__replace_tag_webshellsdir(WEBSHELLS_DIR)
                 self.__replace_tag_wordlistsdir(WORDLISTS_DIR)
                 self.__replace_tag_localip()
+
+                # Bruteforce options tags replacement
+                self.__replace_tag_bruteforce_option('USERLIST', arguments.args.userlist)
+                self.__replace_tag_bruteforce_option('PASSLIST', arguments.args.passlist)
+                self.__replace_tag_bruteforce_option('WEBLIST', arguments.args.weblist)
 
                 # Credentials tags replacement
                 self.__replace_tags_credentials(target)
@@ -254,6 +270,41 @@ class Command:
                                              self.formatted_cmdline)
          
 
+
+    #------------------------------------------------------------------------------------
+    # Bruteforce Options Tags Replacement
+
+    def __replace_tag_bruteforce_option(self, tagname, arg_value):
+        """
+        Replace bruteforce option tags in self.formatted_cmdline.
+
+        [USERLIST default="path"]
+        [PASSLIST default="path"]
+        [WEBLIST default="path"]
+
+        :param str tagname: Tag name (USERLIST, PASSLIST, WEBLIST)
+        :param str arg_value: Value passed as argument by user (via --userlist, 
+            --passlist, --weblist). None if not available. 
+        """
+        pattern = re.compile(
+            '\['+tagname.upper()+'\s+default\s*=\s*[\'"](?P<default>.*?)[\'"]\s*\]',
+            re.IGNORECASE)
+        m = pattern.search(self.formatted_cmdline)
+
+        if m:
+            # Replace by value passed as argument by user if available
+            if arg_value:
+                self.formatted_cmdline = pattern.sub(
+                    arg_value,
+                    self.formatted_cmdline)
+
+            # By default, use the specified value in tag as path
+            else:
+                self.formatted_cmdline = pattern.sub(
+                    WORDLISTS_DIR + '/' + m.group('default'),
+                    self.formatted_cmdline)
+
+
     #------------------------------------------------------------------------------------
     # Credentials Tags Replacement
 
@@ -343,7 +394,7 @@ class Command:
             elif type_ == OptionType.LIST:  
                 self.__replace_tag_specific_list(option, value)
 
-            elif option_type == OptionType.VAR:
+            elif type_ == OptionType.VAR:
                 self.__replace_tag_specific_var(option, value)
 
 

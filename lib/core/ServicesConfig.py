@@ -212,7 +212,7 @@ class ServicesConfig:
     #------------------------------------------------------------------------------------
     # Authentication type checker
 
-    def is_valid_authentication_type(self, auth_type):
+    def is_valid_auth_type(self, auth_type):
         """
         Check if a given authentication type is valid.
         Relevant only for HTTP.

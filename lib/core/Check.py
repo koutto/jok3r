@@ -55,13 +55,19 @@ class Check:
 
     #------------------------------------------------------------------------------------
 
-    def run(self, target, smartmodules_loader, results_requester, fast_mode=False):
+    def run(self, 
+            target, 
+            arguments, 
+            smartmodules_loader, 
+            results_requester, 
+            fast_mode=False):
         """
         Run the security check.
         It consists in running commands with context requirements matching with the
         target's context.
 
         :param Target target: Target
+        :param ArgumentsParser arguments: Arguments from command-line
         :param SmartModulesLoader smartmodules_loader: Loader of SmartModules
         :param ResultsRequester results_requester: Accessor for Results Model
         :param bool fast_mode: Set to true to disable prompts
@@ -79,7 +85,7 @@ class Check:
                     logger.info('Command #{num:02} matches requirements: ' \
                         '{context}'.format(num=i, context=command.context_requirements))
 
-                cmdline = command.get_cmdline(self.tool.tool_dir, target)
+                cmdline = command.get_cmdline(self.tool.tool_dir, target, arguments)
 
                 if fast_mode:
                     logger.info('Run command #{num:02}'.format(num=i))

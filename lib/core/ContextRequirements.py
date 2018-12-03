@@ -21,6 +21,14 @@ class ContextRequirements:
 
     - Products: Available product type(s) depend on the service (e.g. web_server and
       web_cms for HTTP).
+      Accepted syntax examples:
+            vendor/product_name (vendor/ is present only if needed)
+            vendor/product_name|version_known
+            vendor/product_name|7.*
+            vendor/product_name|7.1.*
+            vendor/product_name|>7.1
+            vendor/product_name|<=7.0
+            vendor/product_name|7.1.1   
 
     - Authentication status ('auth_status'): Level of authentication on the service.
       Possible values are:
@@ -33,14 +41,15 @@ class ContextRequirements:
       Indeed, several different authentications can be managed for HTTP.
     """
 
-    def __init__(self, specific_options, products, auth_status, auth_type=None):
+    def __init__(self, specific_options, products, os, auth_status, auth_type=None):
         """
         Construct ContextRequirements object from information parsed from config file.
 
         Note: by default, any context condition is None is not set.
 
-        :param dict specific_options: Conditions on specific options values
-        :param dict products: Conditions on products names (+ potentially versions)
+        :param dict specific_options: Requirements on specific options values
+        :param dict products: Requirements on products names (+ potentially versions)
+        :param str os: Requirement on the OS
         :param int auth_status: Level of authentication required on the service
         :param str auth_type: Authentication type (for HTTP only)
         """
@@ -48,6 +57,7 @@ class ContextRequirements:
             isinstance(specific_options, dict) else defaultdict(lambda: None)
         self.products = defaultdict(lambda: None, products) if \
             isinstance(products, dict) else defaultdict(lambda: None)
+        self.os = os.lower()
         self.auth_status = auth_status
         self.auth_type = auth_type
         self.is_empty = not self.specific_options \
@@ -69,7 +79,8 @@ class ContextRequirements:
         """
         status = self.__is_target_matching_auth_status(target) and \
                  self.__is_target_matching_specific_options(target) and \
-                 self.__is_target_matching_products(target)
+                 self.__is_target_matching_products(target) and \
+                 self.__is_target_matching_os(target)
 
         return status
 
@@ -136,6 +147,23 @@ class ContextRequirements:
             status &= self.__check_product(prodtype, name, version)
 
         return status
+
+
+    def __is_target_matching_os(self, target):
+        """
+        Check if target complies with requirements on OS typê.
+
+        :param Target target: Target to check
+        :return: Result
+        :rtype: bool
+        """
+
+        # If OS type for target is unknown, check is not excluded
+        if not target.get_os():
+            return True
+
+        # Otherwise, perform a loose check on OS type
+        return self.os in target.get_os().lower()
 
 
     #------------------------------------------------------------------------------------

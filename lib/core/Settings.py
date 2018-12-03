@@ -16,11 +16,13 @@ For each tool registered inside toolbox:
   update         = update command-line (optional)
   check_command  = command to check for correct install (run without args) (optional)
 
+
 _install_status.conf:
 ---------------------
 For each supported service + "multi":
   [target_service]
   <tool_name>    = False if not installed, datetime of last install/update otherwise
+
 
 <service_name>.conf (one config file per service):
 --------------------------------------------------
@@ -53,17 +55,21 @@ For each check:
       context_<command_number> = context that must be met to run the command (optional)
   postrun        = method from smartmodules to run after the command (optional)
 
+
 attack_profiles.conf:
 ---------------------
+[<profile-name>]
+description = short text describing the profile (mandatory)
+<service_name> = <ordered list of checks to run>
 
 """
-
 import ast
 import traceback
 import configparser
 from datetime import datetime
 from collections import defaultdict
 
+from lib.core.AttackProfiles import AttackProfile, AttackProfiles
 from lib.core.Check import Check
 from lib.core.Command import Command
 from lib.core.Config import *
@@ -86,47 +92,66 @@ class Settings:
         - toolbox.conf         : File storing configurations about all tools
         - <service_name>.conf  : Each supported service has a corresponding .conf file
         - _install_status.conf : Install status for each tool & last update if installed
+        - attack_profiles.conf : Attack profiles
 
     Settings class is instanciated when starting Jok3r.
     """
 
     def __init__(self):
         """
-        Start the parsing of settings files
+        Start the parsing of settings files and create the Settings object.
 
         :raises SettingsException: Exception raised if any error is encountered while 
             parsing files (syntax error, missing mandatory file...)
         """
         self.config_parsers = dict() # Dict of DefaultConfigParser indexed by filename
-        self.toolbox        = None   # Receives Toolbox object
-        self.services       = None   # Receives ServicesConfig object
+        self.toolbox = None # Receives Toolbox object
+        self.services = None # Receives ServicesConfig object
+        self.attack_profiles = None # Receives AttackProfiles object
 
-        # Check directory and presence of *.conf files
+        # Check directory
         if not FileUtils.is_dir(SETTINGS_DIR):
-            raise SettingsException('Configuration directory ({dir}) does not exist'.format(dir=SETTINGS_DIR))
+            raise SettingsException('Configuration directory ({dir}) does not ' \
+                'exist'.format(dir=SETTINGS_DIR))
+
+        # Check presence of *.conf files
         files = FileUtils.list_directory(SETTINGS_DIR)
         for f in files:
             if not FileUtils.check_extension(f, CONF_EXT):
                 files.remove(f)
 
         if not files:
-            raise SettingsException('Configuration directory ({dir}) does not store any *.conf file'.format(
-                dir=SETTINGS_DIR))
+            raise SettingsException('Configuration directory ({dir}) does not ' \
+                'store any *.conf file'.format(dir=SETTINGS_DIR))
 
         if TOOLBOX_CONF_FILE+CONF_EXT not in files:
-            raise SettingsException('Missing mandatory {toolbox}{ext} settings file in directory "{dir}"'.format(
-                toolbox=TOOLBOX_CONF_FILE, ext=CONF_EXT, dir=SETTINGS_DIR))
+            raise SettingsException('Missing mandatory {toolbox}{ext} settings ' \
+                'file in directory "{dir}"'.format(
+                    toolbox=TOOLBOX_CONF_FILE, 
+                    ext=CONF_EXT, 
+                    dir=SETTINGS_DIR))
 
+        if ATTACK_PROFILES_CONF_FILE+CONF_EXT not in files:
+            raise SettingsException('Missing mandatory {profiles}{ext} settings ' \
+                'file in directory "{dir}"'.format(
+                    profiles=ATTACK_PROFILES_CONF_FILE,
+                    ext=CONF_EXT,
+                    dir=SETTINGS_DIR))
+
+        # Create _install_status.conf file if necessary
         if INSTALL_STATUS_CONF_FILE+CONF_EXT not in files:
             open(SETTINGS_DIR+'/'+INSTALL_STATUS_CONF_FILE+CONF_EXT, 'a').close()
-            logger.info('{status}{ext} settings file created in directory "{dir}"'.format(
-                status=INSTALL_STATUS_CONF_FILE, ext=CONF_EXT, dir=SETTINGS_DIR))
+            logger.info('{status}{ext} settings file created in directory ' \
+                '"{dir}"'.format(status=INSTALL_STATUS_CONF_FILE, 
+                                 ext=CONF_EXT, 
+                                 dir=SETTINGS_DIR))
             files.append(INSTALL_STATUS_CONF_FILE+CONF_EXT)
 
-        # Parse settings files, add tools inside toolbox and create scan configs
+        # Parse configuration files and create objects from them
         self.__parse_all_conf_files(files)
         self.__create_toolbox()
         self.__create_all_services_config_and_checks()
+        self.__create_attack_profiles()
     
 
     #------------------------------------------------------------------------------------
@@ -134,52 +159,61 @@ class Settings:
 
     def __parse_all_conf_files(self, files):
         """
-        Parse all *.conf files into the settings directory.
-        Initialize ServicesConfig object with list of supported services
-        :param files: List of files in settings directory
-        :return: None
+        Parse all configuration files into the settings directory.
+        Initialize ServicesConfig object with list of supported services.
+
+        :param list files: List of files in settings directory
         """
-        list_services = list()
+        services = list()
         for f in files:
             name = FileUtils.remove_ext(f).lower().strip()
-            if name not in (INSTALL_STATUS_CONF_FILE, TOOLBOX_CONF_FILE):
-                list_services.append(name)
+            if name not in (INSTALL_STATUS_CONF_FILE, 
+                            TOOLBOX_CONF_FILE,
+                            ATTACK_PROFILES_CONF_FILE):
+                services.append(name)
 
             full_path = FileUtils.concat_path(SETTINGS_DIR, f)
             self.config_parsers[name] = DefaultConfigParser()
-            self.config_parsers[name].read(full_path, 'utf8') # utf8 to avoid encoding issues
+            # Utf8 to avoid encoding issues
+            self.config_parsers[name].read(full_path, 'utf8') 
 
-        list_services.append('multi') # Add support for special "multi" service
-        self.services = ServicesConfig(list_services)
+        services.append('multi') # Add support for special "multi" service
+        self.services = ServicesConfig(services)
 
 
     #------------------------------------------------------------------------------------
     # Toolbox config file parsing
 
     def __create_toolbox(self):
-        """
-        Create the toolbox
-        :return: None
-        """
+        """Create the toolbox and update self.toolbox."""
         self.toolbox = Toolbox(self, self.services.list_services(multi=True))
+
         for section in self.config_parsers[TOOLBOX_CONF_FILE].sections():
             newtool = self.__create_tool(section)
             if newtool is not None:
                 if not self.toolbox.add_tool(newtool):
-                    logger.warning('[{filename}{ext} | Section "{section}"] Unable to add tool "{tool}" into the toolbox'.format(
-                            filename=TOOLBOX_CONF_FILE, ext=CONF_EXT, section=section, tool=newtool.name))
+                    logger.warning('[{filename}{ext} | Section "{section}"] Unable ' \
+                        'to add tool "{tool}" into the toolbox'.format(
+                            filename=TOOLBOX_CONF_FILE, 
+                            ext=CONF_EXT, 
+                            section=section, 
+                            tool=newtool.name))
 
 
     def __create_tool(self, section):
         """
-        Create a Tool object
-        :param section: Tool section into the toolbox settings file
-        :return: The created Tool instance
+        Create a Tool object.
+
+        :param str section: Section name corresponding to the tool in toolbox.conf
+        :return: The newly created tool
+        :rtype: Tool
         """
         tool_config = defaultdict(str)
 
-        if not self.__parse_tool_options(section, tool_config): return None
-        if not self.__parse_tool_install_status(tool_config):   return None
+        if not self.__parse_tool_options(section, tool_config): 
+            return None
+        if not self.__parse_tool_install_status(tool_config):
+            return None
 
         return Tool(
             tool_config['name'],
@@ -195,75 +229,93 @@ class Settings:
 
     def __parse_tool_options(self, section, tool_config):
         """
-        Check and parse options from a given tool section
-        :param section: Tool section into the toolbox settings file
-        :param tool_config: A defaultdict(str) storing tool config which is updated into this method
-        :return: Boolean indicating status
+        Check and parse options from a given tool section.
+
+        :param str section: Section name corresponding to the tool in toolbox.conf
+        :param defaultdict(str) tool_config: Tool configuration updated in this method
+        :return: Status of parsing
+        :rtype: bool
         """
         log_prefix = '[{filename}{ext} | Section "{section}"]'.format(
                         filename=TOOLBOX_CONF_FILE, ext=CONF_EXT, section=section)
 
+        # Check presence of mandatory options
         optparsed = self.config_parsers[TOOLBOX_CONF_FILE].options(section)
         for opt in TOOL_OPTIONS[MANDATORY]:
             if opt not in optparsed:
-                logger.warning('{prefix} Missing mandatory option "{option}", tool is skipped'.format(
-                    prefix=log_prefix, option=opt))
+                logger.warning('{prefix} Missing mandatory option "{option}", ' \
+                    'tool is skipped'.format(prefix=log_prefix, option=opt))
                 return False
 
-        #tool_config['name_clean'] = section
+        # Loop over options
         for opt in optparsed:
+
+            # Check for unsupported options
             if opt not in TOOL_OPTIONS[MANDATORY]+TOOL_OPTIONS[OPTIONAL]:
-                logger.warning('{prefix} Option "{option}" is not supported, it will be ignored'.format(
-                    prefix=log_prefix, option=opt))
+                logger.warning('{prefix} Option "{option}" is not supported, ' \
+                    'it will be ignored'.format(prefix=log_prefix, option=opt))
                 continue
 
-            if opt in TOOL_OPTIONS[MANDATORY]:
-                val = self.config_parsers[TOOLBOX_CONF_FILE].safe_get(section, opt, '', None)
-                if opt == 'name':
-                    tool_config[opt]=StringUtils.clean(val, allowed_specials=['-', '_'])
-                elif opt == 'description':
-                    tool_config[opt] = val
-                elif opt == 'target_service':
-                    tool_config[opt] = val.lower()
-                    if tool_config[opt] not in self.services.list_services(multi=True):
-                        logger.warning('{prefix} Service specified in "target_service" is not supported, ' \
-                            'tool is skipped'.format(prefix=log_prefix))
-                        return False
+            # Add value
+            val = self.config_parsers[TOOLBOX_CONF_FILE].safe_get(
+                section, opt, '', None)
 
-                if not tool_config[opt]:
-                    logger.warning('{prefix} Mandatory option "{option}" is empty, tool is skipped'.format(
-                        prefix=log_prefix, option=opt))
+            if opt == 'name':
+                tool_config[opt] = StringUtils.clean(val, allowed_specials=['-', '_'])
+
+            elif opt == 'description':
+                tool_config[opt] = val
+
+            elif opt == 'target_service':
+                tool_config[opt] = val.lower()
+
+                if tool_config[opt] not in self.services.list_services(multi=True):
+                    logger.warning('{prefix} Service specified in "target_service" is ' \
+                        'not supported, tool is skipped'.format(prefix=log_prefix))
                     return False
 
             elif opt == 'install':
-                tool_config[opt] = Command(cmdtype = CmdType.INSTALL, 
-                                           cmdline = self.config_parsers[TOOLBOX_CONF_FILE].safe_get(section, opt, '', None))
+                tool_config[opt] = Command(cmdtype=CmdType.INSTALL, cmdline=val)
 
             elif opt == 'update':
-                tool_config[opt] = Command(cmdtype = CmdType.UPDATE,
-                                           cmdline = self.config_parsers[TOOLBOX_CONF_FILE].safe_get(section, opt, '', None))
+                tool_config[opt] = Command(cmdtype=CmdType.UPDATE, cmdline=val)
 
             elif opt == 'check_command':
-                tool_config[opt] = Command(cmdtype = CmdType.CHECK,
-                                           cmdline = self.config_parsers[TOOLBOX_CONF_FILE].safe_get(section, opt, '', None))
+                tool_config[opt] = Command(cmdtype=CmdType.CHECK, cmdline=val)
+
+            # Check for empty mandatory option
+            if opt in TOOL_OPTIONS[MANDATORY] and not tool_config[opt]:
+                logger.warning('{prefix} Mandatory option "{option}" is empty, tool ' \
+                    'is skipped'.format(prefix=log_prefix, option=opt))
+                return False                
 
         return True
 
 
     def __parse_tool_install_status(self, tool_config):
         """
-        Retrieve install status of a given tool.
+        Retrieve install status of a given tool and update tool configuration 
+        accordingly.
         By default: not installed, no last update date
         Must be called after self.__parse_tool_options()
-        :param tool_config: A defaultdict(str) storing tool config which is updated into this method
-        :return: Boolean
-        """
-        tool_installed = self.config_parsers[INSTALL_STATUS_CONF_FILE].safe_get(
-            tool_config['target_service'], tool_config['name'], 'false', None).lower().strip()
 
-        if   tool_installed == 'false' : tool_config['installed'], tool_config['last_update']  = False , ''
-        elif tool_installed == 'true'  : tool_config['installed'], tool_config['last_update']  = True  , ''
-        else                           : tool_config['installed'], tool_config['last_update']  = True  , tool_installed
+        :param defaultdict(str) tool_config: Tool configuration updated in this method
+        :return: Status of parsing 
+        :rtype: bool
+        """
+        is_installed = self.config_parsers[INSTALL_STATUS_CONF_FILE].safe_get(
+            tool_config['target_service'], 
+            tool_config['name'], 
+            'false', None).lower().strip()
+
+        if is_installed == 'false': 
+            tool_config['installed'], tool_config['last_update']  = False, ''
+
+        elif is_installed == 'true': 
+            tool_config['installed'], tool_config['last_update']  = True, ''
+
+        else: 
+            tool_config['installed'], tool_config['last_update']  = True, is_installed
 
         return True
 
@@ -272,25 +324,24 @@ class Settings:
     # Services configurations and checks parsing
 
     def __create_all_services_config_and_checks(self):
-        """
-        Parse each <service_name>.conf file 
-
-        :return: None
-        """
+        """Parse each <service_name>.conf file"""
         for f in self.config_parsers:
-            if f in (TOOLBOX_CONF_FILE, INSTALL_STATUS_CONF_FILE):
+            if f in (INSTALL_STATUS_CONF_FILE, 
+                     TOOLBOX_CONF_FILE,
+                     ATTACK_PROFILES_CONF_FILE):
                 continue
+
             self.__parse_service_checks_config_file(f)
 
 
     def __parse_service_checks_config_file(self, service):
         """
-        Parse a service checks configuration file <service_name>.conf, in order to:
-            - Update service info (default port, protocol, specific options, supported values for
-            options of list type) accordingly.
-            - Create a ServiceChecks object from parsing of various check sections
-        :param service: Service name
-        :return: None
+        Parse a service checks configuration file <service_name>.conf, in order to
+        create a ServiceChecks object and to update ServicesConfig object with 
+        service information (default port, protocol, supported specific options,
+        supported products, authentication type for HTTP).
+
+        :param str service: Service name
         """
         service_config = defaultdict(str)
 
@@ -311,7 +362,7 @@ class Settings:
             ServiceChecks(service, categories)
         )
 
-        # Add the various for the service into the ServiceChecks object
+        # Add the various checks for the service into the ServiceChecks object
         self.__parse_all_checks_sections(service)
 
 
@@ -321,110 +372,172 @@ class Settings:
     def __parse_section_config(self, service, service_config):
         """
         Parse section [config] in <service_name>.conf, retrieve basic info about service
-        (default port/protocol) and retrieve list of categories.
-        :param service: Service name
-        :param service_config: Dict storing info about service, updated into this method
-        :return: List of categories of checks
-        :raises SettingsException:
-        """
-        log_prefix = '[{filename}{ext} | Section "config"]'.format(filename=service, ext=CONF_EXT)
+        (default port/protocol) and retrieve list of supported categories of checks for
+        this service.
 
+        :param str service: Service name
+        :param defaultdict(str) service_config: Information about the service, updated 
+            into this method
+        :return: List of categories of checks
+        :rtype: list(str)
+        :raises SettingsException: Exception raised if any unrecoverable error is 
+            encountered while parsing the section
+        """
+        log_prefix = '[{filename}{ext} | Section "config"]'.format(
+            filename=service, ext=CONF_EXT)
+
+        # Check presence of mandatory options in [config]
         optparsed = self.config_parsers[service].options('config')
         for opt in SERVICE_CHECKS_CONFIG_OPTIONS[MANDATORY]:
             if opt not in optparsed:
-                raise SettingsException('{prefix} Missing mandatory option "{option}", check the file'.format(
-                    prefix=log_prefix, option=opt))
+                raise SettingsException('{prefix} Missing mandatory option "{option}"' \
+                    ', check the file'.format(prefix=log_prefix, option=opt))
 
-        default_port = self.config_parsers[service].safe_get_int('config', 'default_port', None, None)
-        protocol     = self.config_parsers[service].safe_get_lower('config', 'protocol', 'tcp', ['tcp', 'udp'])
-        categories   = list(map(lambda x: StringUtils.clean(x.lower(), allowed_specials=('-', '_')),
-                           self.config_parsers[service].safe_get_list('config', 'categories', ',', [])))
-        auth_types   = list(map(lambda x: StringUtils.clean(x.lower(), allowed_specials=('-', '_')),
-                           self.config_parsers[service].safe_get_list('config', 'auth_types', ',', []))) \
-                       if 'auth_types' in optparsed else None
+        # Get port number
+        default_port = self.config_parsers[service].safe_get_int(
+            'config', 'default_port', None, None)
 
         if default_port is None or default_port < 0 or default_port > 65535:
-            raise SettingsException('{prefix} Invalid value for option "default_port", must be in the range ' \
-                '[0-65535]'.format(prefix=log_prefix))
+            raise SettingsException('{prefix} Invalid value for option "default_port",' \
+                ' must be in the range [0-65535]'.format(prefix=log_prefix))
+
+        # Get protocol
+        protocol = self.config_parsers[service].safe_get_lower(
+            'config', 'protocol', 'tcp', ['tcp', 'udp'])
+
+        # Get categories of checks as a list, clean each element
+        categories = list(map(lambda x: StringUtils.clean(
+            x.lower(), allowed_specials=('-', '_')), 
+            self.config_parsers[service].safe_get_list('config', 'categories', ',', [])))
 
         if not categories:
-            raise SettingsException('{prefix} Option "categories" must have at least one category'.format(
-                prefix=log_prefix))
+            raise SettingsException('{prefix} Option "categories" must have at least '\
+                'one category'.format(prefix=log_prefix))
 
+        # Get authentication type (for HTTP) as a list, clean each element
+        if 'auth_types' in optparsed:
+            auth_types = list(map(lambda x: StringUtils.clean(
+                x.lower(), allowed_specials=('-', '_')),
+                self.config_parsers[service].safe_get_list(
+                    'config', 'auth_types', ',', [])))
+        else:
+            auth_types = None
+
+        # Update service configuration with parsed information
         service_config['default_port'] = default_port
         service_config['protocol']     = protocol
         service_config['auth_types']   = auth_types
+
         return categories
 
 
     def __parse_section_specific_options(self, service, service_config):
         """
-        Parse section [specific_options] in <service_name>.conf and update service config
-        :param service: Service name
-        :param service_config: Dict storing info about service, updated into this method
+        Parse section [specific_options] in <service_name>.conf and update service 
+        configuration with supported specific options for the service and their
+        respective types.
+
+        :param str service: Service name
+        :param defaultdict(str) service_config: Information about the service, updated 
+            into this method
         :return: None
-        :raises SettingsException:
+        :raises SettingsException: Exception raised if any unrecoverable error is 
+            encountered while parsing the section
         """
+
+        # Case when no [specific_options] can be found
         try:
             optparsed = self.config_parsers[service].options('specific_options')
         except configparser.NoSectionError:
             service_config['specific_options'] = dict()
             return 
+
         specific_options = dict()
+
+        # Loop over supported specific options
         for opt in optparsed:
-            option_type = self.config_parsers[service].safe_get_lower('specific_options', opt, None, None)
+            # Get option type
+            option_type = self.config_parsers[service].safe_get_lower(
+                'specific_options', opt, None, None)
+
+            # Handle case when default value is specified (for boolean)
             if option_type.count(':') == 1:
                 option_type, default_value = option_type.split(':')
+
             opt_clean   = StringUtils.clean(opt.lower(), allowed_specials=('-', '_'))
 
-            if   option_type == 'boolean' : specific_options[opt_clean] = OptionType.BOOLEAN
-            elif option_type == 'list'    : specific_options[opt_clean] = OptionType.LIST
-            elif option_type == 'var'     : specific_options[opt_clean] = OptionType.VAR
+            if option_type == 'boolean': 
+                specific_options[opt_clean] = OptionType.BOOLEAN
+
+            elif option_type == 'list': 
+                specific_options[opt_clean] = OptionType.LIST
+
+            elif option_type == 'var': 
+                specific_options[opt_clean] = OptionType.VAR
+
             else:
-                raise SettingsException('[{filename}{ext} | Section "specific_options"] Specific option named "{option}" has ' \
+                raise SettingsException('[{filename}{ext} | Section ' \
+                    '"specific_options"]  Specific option named "{option}" has ' \
                     'an invalid type. Supported types are: boolean, list, var'.format(
                         filename = service, ext=CONF_EXT, option=opt))
 
+        # Update service configuration with specific options names and types
         service_config['specific_options'] = specific_options
 
 
     def __parse_section_supported_list_options(self, service, service_config):
         """
-        Parse section [supported_list_options] in <service_name>.conf and retrieve 
-        supported values for specific options of type list.
-        Must be called after self.__parse_section_config() and self.__parse_section_specific_options()
+        Parse section [supported_list_options] in <service_name>.conf and update service 
+        configuration with supported values for specific options of type list.
+        Must be called after self.__parse_section_config() and 
+        self.__parse_section_specific_options().
 
-        :param service: Service name
-        :param service_config: Dict storing info about service, updated into this method
+        :param defaultdict(str) service_config: Information about the service, updated 
+            into this method
         :return: None
-        :raises SettingsException:
+        :raises SettingsException: Exception raised if any unrecoverable error is 
+            encountered while parsing the section
         """
-        options_list = list(filter(lambda x: service_config['specific_options'][x] == OptionType.LIST, 
-                                   service_config['specific_options'].keys()))
+
+        # Get names of specific options of type list
+        options_list = list(filter(
+            lambda x: service_config['specific_options'][x] == OptionType.LIST, 
+            service_config['specific_options'].keys()))
+
         if not options_list:
             return
         elif not self.config_parsers[service].has_section('supported_list_options'):
-            raise SettingsException('[{filename}{ext}] Missing section [supported_list_options] to store supported ' \
-                'values for specific options of type "list"'.format(filename=service, ext=CONF_EXT))
+            raise SettingsException('[{filename}{ext}] Missing section ' \
+                '[supported_list_options] to store supported values for specific ' \
+                'options of type "list"'.format(filename=service, ext=CONF_EXT))
 
-        log_prefix = '[{filename}{ext} | Section "supported_list_options"]'.format(filename=service, ext=CONF_EXT)
+        log_prefix = '[{filename}{ext} | Section "supported_list_options"]'.format(
+            filename=service, ext=CONF_EXT)
+
         supported_list_options = dict()
         optparsed = self.config_parsers[service].options('supported_list_options')
 
+        # Loop over specific options of type list
         for opt in options_list:
-            if 'supported_'+opt not in optparsed:
-                raise SettingsException('{prefix} No option "supported_{option}" is defined'.format(
-                    prefix=log_prefix, option=opt))
 
-            # List options are put in lowercase, no spaces, no special chars (except -, _)
-            values = list(map(lambda x: StringUtils.clean(x.lower(), allowed_specials=('-', '_')), 
-                         self.config_parsers[service].safe_get_list('supported_list_options', 
-                         'supported_'+opt, ',', [])))
+            # If missing option
+            if 'supported_'+opt not in optparsed:
+                raise SettingsException('{prefix} No option "supported_{option}" ' \
+                    'is defined'.format(prefix=log_prefix, option=opt))
+
+            # Values are put in lowercase, no spaces, no special chars (except -, _)
+            values = list(map(lambda x: StringUtils.clean(
+                x.lower(), allowed_specials=('-', '_')), 
+                self.config_parsers[service].safe_get_list(
+                    'supported_list_options', 'supported_'+opt, ',', [])))
+
             if not values:
-                raise SettingsException('{prefix} Option "supported_{option}" is empty'.format(
-                    prefix=log_prefix, option=opt))
+                raise SettingsException('{prefix} Option "supported_{option}" is ' \
+                    'empty'.format(prefix=log_prefix, option=opt))
+
             supported_list_options[opt] = values
 
+        # Update service configuration with lists of supported values
         service_config['supported_list_options'] = supported_list_options
 
 
@@ -443,23 +556,31 @@ class Settings:
         if not self.config_parsers[service].has_section('products'):
             return
 
-        log_prefix = '[{filename}{ext} | Section "products"]'.format(filename=service, ext=CONF_EXT)
+        log_prefix = '[{filename}{ext} | Section "products"]'.format(
+            filename=service, ext=CONF_EXT)
+
         products = dict()
         optparsed = self.config_parsers[service].options('products')
 
-        # Parse all product types in [products] and get the supported products for each of them
+        # Loop over product types in [products]
         for product_type in optparsed:
+
             # Clean the product type
             product_type = StringUtils.clean(product_type.lower(), 
                 allowed_specials=('-', '_'))
             
-            # Clean the product names: only some special chars allowed, spaces allowed
+            # Get supported product names as a list.
+            # Only some special chars allowed, spaces allowed
             # '/' is used to separate vendor name (optional) and product name
-            product_names = self.config_parsers[service].safe_get_list('products', product_type, ',', [])
-            product_names = list(map(lambda x: StringUtils.clean(x, allowed_specials=('-', '_', '.', '/', '\\', ' ')), product_names))
+            product_names = self.config_parsers[service].safe_get_list(
+                'products', product_type, ',', [])
+            product_names = list(map(lambda x: StringUtils.clean(
+                x, allowed_specials=('-', '_', '.', '/', '\\', ' ')), product_names))
 
-            if not products:
-                raise SettingsException('{prefix} Option "{option}" is empty'.format(prefix=log_prefix, option=opt))       
+            if not product_names:
+                raise SettingsException('{prefix} Option "{option}" is empty'.format(
+                    prefix=log_prefix, option=opt))
+
             products[product_type] = product_names        
 
         # Update service configuration with supported products
@@ -472,15 +593,21 @@ class Settings:
     def __parse_all_checks_sections(self, service):
         """
         Parse all the [check_(.+)] sections of a given service checks settings file
-        :param service: Service name
-        :return: None
+        <service_name>.conf.
+
+        :param str service: Service name
         """
         for section in self.config_parsers[service].sections():
+
+            # Check section begins with "check_"
             if section.startswith(PREFIX_SECTION_CHECK):
                 check_config = defaultdict(str)
+
+                # Parse section
                 if not self.__parse_check_section(service, section, check_config): 
                     continue
 
+                # Create new Check object and add it to services configuration
                 newcheck = Check(
                     check_config['name'],
                     check_config['category'],
@@ -494,62 +621,72 @@ class Settings:
 
     def __parse_check_section(self, service, section, check_config):
         """
-        Check and parse options from a given check section
-        :param service: Service name
-        :param section: Tool section into the toolbox settings file
-        :param check_config: A defaultdict(str) storing check config which is updated into this method
-        :return: Boolean indicating status
+        Check and parse options from a given check section.
+
+        :param str service: Service name
+        :param str section: Section corresponding to the check to parse
+        :param defaultdict(str) check_config: Check configuration, updated into this
+            method
+        :return: Status of parsing
+        :rtype: bool
         """
         log_prefix = '[{filename}{ext} | Section "{section}"]'.format(
                         filename=service, ext=CONF_EXT, section=section)
+
+        # Check presence of mandatory options in [check_<name>] section
         optparsed = self.config_parsers[service].options(section)
         for opt in CHECK_OPTIONS[MANDATORY]:
             if opt not in optparsed:
-                logger.warning('{prefix} Missing mandatory option "{option}", the check ' \
-                    'is ignored'.format(prefix=log_prefix, option=opt))
+                logger.warning('{prefix} Missing mandatory option "{option}", the ' \
+                    ' check is ignored'.format(prefix=log_prefix, option=opt))
                 return False
 
+        # Loop over options
         for opt in optparsed:
-            if opt not in CHECK_OPTIONS[MANDATORY]+CHECK_OPTIONS[OPTIONAL] and \
-               not opt.startswith('command_') and not opt.startswith('context_'):
-                logger.warning('{prefix} Option "{option}" is not supported, the check is ' \
-                    'ignored'.format(prefix=log_prefix, option=opt))
+
+            # Check for unsupported options
+            if opt not in CHECK_OPTIONS[MANDATORY]+CHECK_OPTIONS[OPTIONAL] \
+               and not opt.startswith('command_') and not opt.startswith('context_'):
+                logger.warning('{prefix} Option "{option}" is not supported, the ' \
+                    'check is ignored'.format(prefix=log_prefix, option=opt))
                 continue
 
-            value = self.config_parsers[service].safe_get(section, opt, '', None)
-            if opt in CHECK_OPTIONS[MANDATORY]:
-                if opt == 'name':
-                    check_config[opt] = StringUtils.clean(value, allowed_specials=('_','-'))
+            # Add value
+            val = self.config_parsers[service].safe_get(section, opt, '', None)
 
-                elif opt == 'category':
-                    check_config[opt] = StringUtils.clean(value, allowed_specials=('_','-')).lower()
-                    if check_config[opt] not in self.services[service]['checks'].categories:
-                        logger.warning('{prefix} Category "{category}" is not supported, the check is ' \
-                            'ignored'.format(prefix=log_prefix, category=value))
-                        return False
+            if opt == 'name':
+                check_config[opt] = StringUtils.clean(val, allowed_specials=('_','-'))
 
-                elif opt == 'tool':
-                    tool = self.toolbox.get_tool(value)
-                    if tool is None:
-                        logger.warning('{prefix} The tool "{tool}" does not exist, the check is ' \
-                            'ignored'.format(prefix=log_prefix, tool=value))
-                        return False
-                    check_config[opt] = tool
+            elif opt == 'category':
+                cat = StringUtils.clean(val, allowed_specials=('_','-'))
+                check_config[opt] = cat.lower()
 
-                else:
-                    check_config[opt] = value
+                if check_config[opt] not in self.services[service]['checks'].categories:
+                    logger.warning('{prefix} Category "{category}" is not supported, ' \
+                        'the check is ignored'.format(prefix=log_prefix, category=val))
+                    return False      
 
-                if not check_config[opt]:
-                    logger.warning('{prefix} Mandatory option "{option}" is empty, the check is ' \
-                        'ignored'.format(prefix=log_prefix, option=opt))
+            elif opt == 'tool':
+                tool = self.toolbox.get_tool(val)
+                if tool is None:
+                    logger.warning('{prefix} The tool "{tool}" does not exist, the ' \
+                        'check is ignored'.format(prefix=log_prefix, tool=val))
                     return False
+                check_config[opt] = tool
 
-            elif opt == 'postrun':
-                check_config[opt] = value
+            else:
+                check_config[opt] = val   
 
+            # Check for empty mandatory option
+            if opt in CHECK_OPTIONS[MANDATORY] and not check_config[opt]:
+                logger.warning('{prefix} Mandatory option "{option}" is empty, the ' \
+                    'check is ignored'.format(prefix=log_prefix, option=opt))
+                return False
 
+        # Parse commands along with optional context requirements
         commands = self.__parse_commands(service, section)
-        if not commands: return False
+        if not commands: 
+            return False
         
         check_config['commands'] = commands
         return True   
@@ -557,22 +694,27 @@ class Settings:
 
     def __parse_commands(self, service, section):
         """
-        Create Commands object for a given tool. Each command is defined in conf file by:
+        Parse commands for a given tool and create Commands object. 
+        Each command is defined in configuration file by:
             - command_<command_number> 
             - context_<command_number> (optional)
 
-        :param service: Service name
-        :param section: Section name [check_(.+)]
-        :return: List of Command instances
+        :param str service: Service name
+        :param str section: Section name of the check
+        :return: Created Command objects
+        :rtype: list(Command)
         """
         log_prefix = '[{filename}{ext} | Section "{section}"]'.format(
                         filename=service, ext=CONF_EXT, section=section)
 
         commands = list()
+
+        # Get command lines
         cmdlines = self.config_parsers[service].safe_get_multi(
             section, 'command', default=None)
 
         i = 0
+        # Loop over command lines
         for cmd in cmdlines:
 
             # Parse context requirements and create ContextRequirements object
@@ -588,10 +730,10 @@ class Settings:
                 return None
 
             # Create the Command object
-            command = Command(cmdtype = CmdType.RUN, 
-                              cmdline = cmdlines[i], 
-                              context_requirements = context_requirements, 
-                              services_config = self.services)
+            command = Command(cmdtype=CmdType.RUN, 
+                              cmdline=cmdlines[i], 
+                              context_requirements=context_requirements, 
+                              services_config=self.services)
             commands.append(command)
             i += 1
 
@@ -616,18 +758,21 @@ class Settings:
         :rtype: Context|None
         """
 
-        # When no context is defined in settings, it means there is no restriction
+        # When no context is defined in settings, it means there is no requirement
         if not context_str: 
-            return ContextRequirements(None, None, None)
-
-        # Retrieve value as dict
-        context_str = context_str.replace('NO_AUTH',   str(NO_AUTH))\
-                                 .replace('USER_ONLY', str(USER_ONLY))\
-                                 .replace('POST_AUTH', str(POST_AUTH))
+            return ContextRequirements(specific_options=None, 
+                                       products=None, 
+                                       os=None, 
+                                       auth_status=None)
 
         log_prefix = '[{filename}{ext} | Section "{section}"] "context_{i}":'.format(
             filename=service, ext=CONF_EXT, section=section, i=num_context)
 
+        # Retrieve value as dict
+        # Note: Make sure to replace special constants
+        context_str = context_str.replace('NO_AUTH',   str(NO_AUTH))\
+                                 .replace('USER_ONLY', str(USER_ONLY))\
+                                 .replace('POST_AUTH', str(POST_AUTH))
         try:
             context = ast.literal_eval(context_str)
         except Exception as e:
@@ -659,6 +804,13 @@ class Settings:
                     logger.warning('{prefix} "auth_type" context requirement does not ' \
                         'have a valid value, check info --list-http-auth'.format(
                             prefix=log_prefix))
+                    return None
+
+            # OS
+            elif cond == 'os':
+                if not val:
+                    logger.warning('{prefix} "os" context requirement is specified' \
+                        'but no value is provided'.format(prefix=log_prefix))
                     return None
 
             # Specific option
@@ -736,10 +888,89 @@ class Settings:
                         prefix=log_prefix, option=cond, service=service))
                 return None
 
-        return ContextRequirements(req_specific_options,
-                                   req_products,
-                                   context.get('auth_status'),
-                                   context.get('auth_type'))
+        return ContextRequirements(specific_options=req_specific_options,
+                                   products=req_products,
+                                   os=context.get('os'),
+                                   auth_status=context.get('auth_status'),
+                                   auth_type=context.get('auth_type'))
+
+
+    #------------------------------------------------------------------------------------
+    # Attack profiles parsing
+
+    def __create_attack_profiles(self):
+        """Create Attack Profiles and update self.attack_profiles."""
+
+        self.attack_profiles = AttackProfiles()
+
+        for section in self.config_parsers[ATTACK_PROFILES_CONF_FILE].sections():
+            newprofile = self.__create_attack_profile(section)
+            if newprofile is not None:
+                self.attack_profiles.add(newprofile):
+                    logger.warning('[{filename}{ext} | Section "{section}"] Unable ' \
+                        'to add attack profile "{profile}" (duplicate)'.format(
+                            filename=ATTACK_PROFILES_CONF_FILE, 
+                            ext=CONF_EXT, 
+                            section=section, 
+                            profile=newprofile.name))
+
+
+    def __create_attack_profile(self, section):
+        """
+        Create an AttackProfile object.
+
+        :param str section: Section name corresponding to the profile in 
+            attack_profiles.conf
+        :return: The newly created Attack Profile, or None in case of problem
+        :rtype: AttackProfile|None
+        """
+        log_prefix = '[{filename}{ext} | Section "{section}"]'.format(
+            filename=ATTACK_PROFILES_CONF_FILE, ext=CONF_EXT, section=section)
+
+        description = ''
+        checks = defaultdict(list)
+
+        optparsed = self.config_parsers[ATTACK_PROFILES_CONF_FILE].options(section)
+
+        # Loop over options
+        for opt in optparsed:
+
+            if opt == 'description':
+                description = self.config_parsers[ATTACK_PROFILES_CONF_FILE].safe_get(
+                    section, opt, '', None)
+
+            # List of checks (ordered) for a service
+            elif self.services.is_service_supported(opt, multi=False):
+                list_checks = self.config_parsers[ATTACK_PROFILES_CONF_FILE]\
+                    .safe_get_list(section, opt, ',', [])
+
+                if not list_checks:
+                    logger.warning('{prefix} List of checks for {service} is empty, ' \
+                        'the attack profile is skipped'.format(
+                            prefix=log_prefix, service=opt))
+                    return None
+
+                # Check existence of checks
+                for c in list_checks:
+                    if not self.services.get_service_checks(opt).is_existing_check(c):
+                        logger.warning('{prefix} The check "{check}" does not exist ' \
+                            'for service {service}, the attack profile is ' \
+                            'skipped'.format(prefix=log_prefix, check=c, service=opt))
+                        return None
+
+            # Unsupported option
+            else:
+                logger.warning('{prefix} The option "{option}" is not supported ' \
+                    'for attack profile configuration'.format(
+                        prefix=log_prefix, option=opt))
+                return None
+
+        if not description:
+            logger.warning('{prefix} A description must be given for the attack ' \
+                'profile'.format(prefix=log_prefix))
+            return None
+
+        return AttackProfile(section, description, checks)
 
 
     #------------------------------------------------------------------------------------
@@ -749,44 +980,53 @@ class Settings:
         """
         Change the install status for a given tool.
         Change is made into the INSTALL_STATUS_CONF_FILE
-        If tool installed, put the current datetime
+        If tool installed, put the current datetime.
 
-        :param target_service: Name of service targeted by the tool
-        :param tool_name: Tool name (Attention: must be the clean name !)
-        :param install_status: New install status to set
-        :return: Boolean indicating change status
+        :param str target_service: Name of service targeted by the tool
+        :param str tool_name: Name of the tool
+        :param bool install_status: New install status to set
+        :return: Status of change
+        :rtype: bool
         """
-        # 
-        value = datetime.now().strftime('%Y-%m-%d %H:%M:%S') if install_status else 'False'
+        if install_status: 
+            value = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        else:
+            value = 'False'
 
         parser = self.config_parsers[INSTALL_STATUS_CONF_FILE]
+
         # Create the section [service] if needed
         if target_service not in parser.sections():
             parser.add_section(target_service)
 
+        # Add/Update the install status
         if not parser.safe_set(target_service, tool_name, value):
-            raise SettingsException('Unable to change install status value for the tool {tool}'.format(
-                tool=tool_name))
+            raise SettingsException('Unable to change install status value for the ' \
+                'tool {tool}'.format(tool=tool_name))
 
+        # Save change permanently into the file
         return self.save(INSTALL_STATUS_CONF_FILE)
 
 
     def save(self, conf_filename):
         """
-        Save change permanently into the file
-        :param conf_filename: Settings filename without extension
-        :return: Boolean indicating status
+        Save change permanently into the file.
+
+        :param str conf_filename: Settings filename without extension
+        :return: Status of saving
+        :rtype: bool
         """
         try:
             config_file = FileUtils.concat_path(SETTINGS_DIR, conf_filename+CONF_EXT)
             with open(config_file, 'w') as handle:
                 self.config_parsers[conf_filename].write(handle)
                 # Re-read to take change into account
-                self.config_parsers[conf_filename].read(config_file, 'utf8') # warning: takes filename as param
+                # Warning: read() takes filename as param 
+                self.config_parsers[conf_filename].read(config_file, 'utf8') 
             return True
         except:
-            logger.error('Error occured when saving changes in settings file named "{filename}"'.format(
-                filename=conf_filename))
+            logger.error('Error occured when saving changes in settings file ' \
+                'named "{filename}"'.format(filename=conf_filename))
             traceback.print_exc()
             return False        
 

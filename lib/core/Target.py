@@ -8,6 +8,7 @@ from six.moves.urllib.parse import urlparse
 
 from lib.core.Config import *
 from lib.core.Constants import *
+from lib.core.Exceptions import TargetException
 from lib.core.Output import Output
 from lib.utils.WebUtils import WebUtils
 from lib.utils.NetUtils import NetUtils
@@ -46,15 +47,20 @@ class Target:
         """
         Initialize with an URL (when targeting HTTP).
         This method updates: URL, Hostname, IP, Port
+
+        :raises TargetException: Exception raised if DNS lookup fails
         """
         self.service.url = WebUtils.add_prefix_http(self.service.url)
         url = urlparse(self.service.url)
 
         if NetUtils.is_valid_ip(url.hostname):
             self.service.host.ip = url.hostname
-            self.service.host.hostname = NetUtils.reverse_dns_lookup(url.hostname)
+            self.service.host.hostname = url.hostname # updated in smart_check
+
         else:
             self.service.host.ip = NetUtils.dns_lookup(url.hostname)
+            if not self.service.host.ip:
+                raise TargetException('Unable to resolve {}'.format(url.hostname))
             self.service.host.hostname = url.hostname
 
         if not self.service.port:
@@ -63,16 +69,18 @@ class Target:
 
     def __init_with_ip(self):
         """
-        Initialize with an IP address
+        Initialize with an IP address or a hostname.
         This method updates: Hostname, IP
+
+        :raises TargetException: Exception raised if DNS lookup fails
         """
         if NetUtils.is_valid_ip(self.service.host.ip):
-            self.service.host.hostname = NetUtils.reverse_dns_lookup(
-                str(self.service.host.ip))
+            self.service.host.hostname = str(self.service.host.ip) 
+            # updated in smart_check
         else:
             # host.ip actually stores a hostname at this point
-            self.service.host.ip = NetUtils.dns_lookup(str(self.service.host.ip)) 
             self.service.host.hostname = self.service.host.ip
+            self.service.host.ip = NetUtils.dns_lookup(self.service.host.hostname) 
 
 
     #------------------------------------------------------------------------------------
@@ -88,6 +96,10 @@ class Target:
 
     def get_host(self):
         return self.service.host.hostname
+
+
+    def get_os(self):
+        return self.service.host.os
 
 
     def get_port(self):
@@ -223,10 +235,17 @@ class Target:
     #------------------------------------------------------------------------------------
     # Target availability checker
 
-    def smart_check(self, grab_banner_nmap=False):
+    def smart_check(self, 
+                    reverse_dns=True, 
+                    availability_check=True, 
+                    grab_banner_nmap=False):
         """
         Check if the target is reachable and update target information
 
+        :param bool reverse_dns: Set to True to attempt performing reverse DNS lookup 
+            when no hostname is specified (only IP)
+        :param bool availability_check: Set to True to check for availability of the
+            target, and also grab headers and HTML title for HTTP services
         :param bool grab_banner_nmap: Set to True to grab the Nmap banner (for TCP)
         :return: Result of check
         :rtype: bool
@@ -236,28 +255,43 @@ class Target:
         if not self.service.host.ip: 
             return False
 
-        # For HTTP: Check URL availability, grab headers, grab HTML title
-        if self.service.url: 
-            is_reachable, status, resp_headers = WebUtils.is_url_reachable(
-                self.service.url)
-            self.service.up = is_reachable
+        # Perform reverse DNS lookup if hostname not defined
+        # Note: If lookup fails, it fallbacks to IP
+        if reverse_dns:
+            if self.service.host.hostname == self.service.host.ip:
+                self.service.host.hostname = NetUtils.reverse_dns_lookup(
+                    self.service.host.ip)
 
-            if resp_headers:
-                self.service.http_headers = '\n'.join("{}: {}".format(key,val) \
-                    for (key,val) in resp_headers.items())
-            else:
-                self.service.http_headers = ''
 
-            if not self.service.comment:
-                self.service.comment = WebUtils.grab_html_title(self.service.url)
+        # Perform availability check
+        if availability_check:
+
+            # For HTTP: Check URL availability, grab headers, grab HTML title
+            if self.service.url: 
+                is_reachable, status, resp_headers = WebUtils.is_url_reachable(
+                    self.service.url)
+                self.service.up = is_reachable
+
+                if resp_headers:
+                    self.service.http_headers = '\n'.join("{}: {}".format(key,val) \
+                        for (key,val) in resp_headers.items())
+                else:
+                    self.service.http_headers = ''
+
+                if not self.service.comment:
+                    self.service.comment = WebUtils.grab_html_title(self.service.url)
                 
-        # For any other service: Simple port check
-        elif self.service.protocol == Protocol.TCP:
-            self.service.up = NetUtils.is_tcp_port_open(
-                str(self.service.host.ip), self.service.port)
+            # For any other service: Simple port check
+            elif self.service.protocol == Protocol.TCP:
+                self.service.up = NetUtils.is_tcp_port_open(
+                    str(self.service.host.ip), self.service.port)
+            else:
+                self.service.up = NetUtils.is_udp_port_open(
+                    str(self.service.host.ip), self.service.port)
+
         else:
-            self.service.up = NetUtils.is_udp_port_open(
-                str(self.service.host.ip), self.service.port)
+            self.service.up = True # consider it as up anyway
+
 
         # Banner grabbing via Nmap (for TCP only) only if there is no banner 
         # already stored in db

@@ -335,7 +335,7 @@ class DbController(cmd2.Cmd):
             if not req.are_only_http_services_selected():
                 logger.warning('Some non-HTTP services are selected. Use --addcred instead for non-HTTP services')
                 return
-            if not self.settings.services.is_valid_authentication_type(args.addcred_http[2]):
+            if not self.settings.services.is_valid_auth_type(args.addcred_http[2]):
                 logger.warning('Invalid HTTP authentication type')
                 logger.info('List of supported authentication types: ')
                 for auth_type in self.settings.services.get_authentication_types('http'):
@@ -356,7 +356,7 @@ class DbController(cmd2.Cmd):
             if not req.are_only_http_services_selected():
                 logger.warning('Some non-HTTP services are selected. Use --adduser instead for non-HTTP services')
                 return
-            if not self.settings.services.is_valid_authentication_type(args.adduser_http[1]):
+            if not self.settings.services.is_valid_auth_type(args.adduser_http[1]):
                 logger.warning('Invalid HTTP authentication type')
                 logger.info('List of supported authentication types: ')
                 for auth_type in self.settings.services.get_authentication_types('http'):
@@ -463,7 +463,7 @@ class DbController(cmd2.Cmd):
             if args.addcred:
                 req.add_cred(service_id, args.add[1], args.add[2], None)
             elif args.addcred_http:
-                if not self.settings.services.is_valid_authentication_type(args.addcred_http[3]):
+                if not self.settings.services.is_valid_auth_type(args.addcred_http[3]):
                     logger.warning('Invalid HTTP authentication type')
                     logger.info('List of supported authentication types: ')
                     for auth_type in self.settings.services.get_authentication_types('http'):
@@ -473,7 +473,7 @@ class DbController(cmd2.Cmd):
             elif args.adduser:
                 req.add_cred(service_id, args.add[1], None, None)
             elif args.adduser_http:
-                if not self.settings.services.is_valid_authentication_type(args.adduser_http[2]):
+                if not self.settings.services.is_valid_auth_type(args.adduser_http[2]):
                     logger.warning('Invalid HTTP authentication type')
                     logger.info('List of supported authentication types: ')
                     for auth_type in self.settings.services.get_authentication_types('http'):
@@ -503,6 +503,7 @@ class DbController(cmd2.Cmd):
     # --- Nmap
     nmap = argparse.ArgumentParser(description='Import Nmap results', formatter_class=formatter_class)
     nmap.add_argument('-n', '--no-http-recheck', action='store_true', help='Do not recheck for HTTP services')
+    nmap.add_argument('--no-html-title', action='store_true', help='Do not grab HTML title for HTTP services')
     nmap.add_argument('file', nargs=1, metavar='<xml-results>', help='Nmap XML results file')
 
     @cmd2.with_category(CMD_CAT_IMPORT)
@@ -520,7 +521,8 @@ class DbController(cmd2.Cmd):
             logger.info('Each service will be re-checked to detect HTTP services. Use --no-http-recheck if you want to disable it (faster import)')
 
         parser = NmapResultsParser(file, self.settings.services)
-        results = parser.parse(not args.no_http_recheck)
+        results = parser.parse(http_recheck=not args.no_http_recheck,
+                               grab_html_title=not args.no_html_title)
         if results is not None:
             if len(results) == 0:
                 logger.warning('No new service has been added into current mission')

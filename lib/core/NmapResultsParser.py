@@ -30,11 +30,13 @@ class NmapResultsParser:
 
     #------------------------------------------------------------------------------------
 
-    def parse(self, http_recheck):
+    def parse(self, http_recheck=True, grab_html_title=True):
         """
         Parse the Nmap results
 
         :param bool http_recheck: If set to True, TCP ports are re-checked for HTTP(s)
+        :param bool grab_html_title: If set to True, grab title of HTML page (text in
+            <title> tags) and put it as comment for HTTP service.
         :return: Hosts 
         :rtype: list(Host)|None
         """
@@ -91,9 +93,8 @@ class NmapResultsParser:
                         name = 'http'
 
                 # Grab page title for HTTP services 
-                if name == 'http'
+                if grab_html_title and name == 'http':
                     comment = WebUtils.grab_html_title(url)
-
 
                 # Only keep services supported by Jok3r
                 if not self.services_config.is_service_supported(name, multi=False):

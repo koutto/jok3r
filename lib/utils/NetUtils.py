@@ -185,7 +185,7 @@ class NetUtils:
         try:
             return socket.gethostbyaddr(ip)[0]
         except:
-            return ''
+            return ip
 
 
     @staticmethod

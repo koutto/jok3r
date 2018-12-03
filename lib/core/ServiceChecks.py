@@ -96,10 +96,12 @@ class ServiceChecks:
 
     def run(self, 
             target, 
+            arguments,
             smartmodules_loader, 
             results_requester, 
             filter_categories=None, 
             filter_checks=None, 
+            attack_profile=None,
             fast_mode=False,
             attack_progress=None):
         """
@@ -111,10 +113,12 @@ class ServiceChecks:
             - Filter on names of checks.
 
         :param Target target: Target
+        :param ArgumentsParser arguments: Arguments from command-line
         :param SmartModulesLoader smartmodules_loader: Loader of SmartModules
         :param ResultsRequester results_requester: Accessor for Results Model
         :param list filter_categories: Selection of categories to run (default: all)
         :param list filter_checks: Selection of checks to run (default: all)
+        :param AttackProfile attack_profile: Attack profile (default: no profile)
         :param bool fast_mode: Set to true to disable prompts
         :param enlighten.Counter attack_progress: Attack progress
         """
@@ -122,7 +126,7 @@ class ServiceChecks:
 
         # Standard mode 
         # Selected/all categories of checks are run
-        if filter_checks is None:
+        if filter_checks is None and attack_profile is None:
             nb_checks = self.nb_checks()
 
             # Initialize sub status/progress bar
@@ -135,6 +139,7 @@ class ServiceChecks:
 
             j = 1
             for category in categories:
+
                 Output.title1('Category > {cat}'.format(cat=category.capitalize()))
 
                 i = 1
@@ -178,6 +183,7 @@ class ServiceChecks:
                         else:
                             try:
                                 check.run(target, 
+                                          arguments,
                                           smartmodules_loader, 
                                           results_requester, 
                                           fast_mode=fast_mode)
@@ -205,15 +211,31 @@ class ServiceChecks:
             checks_progress.close()     
 
         # Special mode
-        # User has provided list of checks to run (may be one single check)
+        # User has provided either an attack profile or a list of checks to run 
+        # (may be one single check)
         else:
-            filter_checks = list(filter(
-                lambda x: self.is_existing_check(x), filter_checks))
 
-            if not filter_checks:
-                logger.warning('None of the selected checks is existing for the ' \
-                    'service {service}'.format(service=target.get_service_name()))
-                return
+            # User has submitted list of checks
+            if filter_checks:
+                filter_checks = list(filter(
+                    lambda x: self.is_existing_check(x), filter_checks))
+
+                if not filter_checks:
+                    logger.warning('None of the selected checks is existing for the ' \
+                        'service {service}'.format(service=target.get_service_name()))
+                    return
+
+            # User has submitted an attack profile
+            else:
+                if not attack_profile.is_service_supported(target.get_service_name()):
+                    logger.warning('The attack profile {profile} is not supported for ' \
+                        'target service {service}'.format(
+                            profile=attack_profile, service=target.get_service_name()))
+                    return
+                else:
+                    filter_checks = attack_profile.get_checks_for_service(
+                        target.get_service_name())
+ 
 
             # Initialize sub status/progress bar
             checks_progress = manager.counter(total=len(filter_checks)+1, 
@@ -254,6 +276,7 @@ class ServiceChecks:
                         description = check.description))
                 try:
                     check.run(target, 
+                              arguments,
                               smartmodules_loader, 
                               results_requester, 
                               fast_mode=fast_mode)

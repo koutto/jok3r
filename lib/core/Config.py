@@ -48,12 +48,15 @@ scopes can be defined by importing new targets.
 # Arguments Parsing Settings
 
 ARGPARSE_MAX_HELP_POS    = 45
-TARGET_FILTERS           = {'ip'      : FilterData.IP, 
-                            'host'    : FilterData.HOST,
-                            'port'    : FilterData.PORT, 
-                            'service' : FilterData.SERVICE, 
-                            'url'     : FilterData.URL,
-                            'os'      : FilterData.OS}
+TARGET_FILTERS           = {
+    'ip'      : FilterData.IP, 
+    'host'    : FilterData.HOST,
+    'port'    : FilterData.PORT, 
+    'service' : FilterData.SERVICE, 
+    'url'     : FilterData.URL,
+    'os'      : FilterData.OS,
+    'banner'  : FilterData.BANNER,
+}
 
 
 #----------------------------------------------------------------------------------------
@@ -71,13 +74,14 @@ DB_HIST_FILE       = TOOL_BASEPATH + os.sep + '.dbhistory'
 #----------------------------------------------------------------------------------------
 # Settings Files
 
-SETTINGS_DIR             = TOOL_BASEPATH + os.sep + 'settings'
-CONF_EXT                 = '.conf'
-TOOLBOX_CONF_FILE        = 'toolbox'
-INSTALL_STATUS_CONF_FILE = '_install_status'
-PREFIX_SECTION_CHECK     = 'check_'
-MULTI_CONF               = 'multi'
-MULTI_TOOLBOX_SUBDIR     = 'multi'
+SETTINGS_DIR              = TOOL_BASEPATH + os.sep + 'settings'
+CONF_EXT                  = '.conf'
+TOOLBOX_CONF_FILE         = 'toolbox'
+INSTALL_STATUS_CONF_FILE  = '_install_status'
+ATTACK_PROFILES_CONF_FILE = 'attack_profiles'
+PREFIX_SECTION_CHECK      = 'check_'
+MULTI_CONF                = 'multi'
+MULTI_TOOLBOX_SUBDIR      = 'multi'
 
 TOOL_OPTIONS = {
     MANDATORY: [
@@ -125,6 +129,7 @@ CHECK_OPTIONS = {
 # differentiated in Nmap (e.g. smtp/smtps, http/https, etc.), but in Jok3r this 
 # distinction is done by context-specific options
 SERVICES_NMAP_TO_JOKER = {
+    'ajp13'         : 'ajp',
     'ftp-agent'     : 'ftp',
     'ftp-proxy'     : 'ftp',
     'ftps'          : 'ftp',

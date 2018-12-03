@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 ###
 ### Core > Main Controller
@@ -13,6 +14,7 @@ from lib.controller.AttackController import AttackController
 class MainController(Controller):
 
     def run(self):
+        """Run the adapted controller"""
         {
             Mode.TOOLBOX : ToolboxController,
             Mode.INFO    : InfoController,

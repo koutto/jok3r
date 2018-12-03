@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 ###
 ### Core > Attack Controller
@@ -24,37 +25,65 @@ from lib.output.Logger import logger
 class AttackController(Controller):
 
     def run(self):
+        """Run the Attack Controller"""
+
         args = self.arguments.args
-        self.creds = defaultdict(list)
-        self.users = defaultdict(list)
-        self.options = defaultdict(list)
 
         # Load smart modules
         self.smartmodules_loader = SmartModulesLoader(self.sqlsess, self.settings.services)
 
-        # Initialize provided credentials
+        # Context parameters are organized in dict 
+        # { service : list of db objects }
+        self.creds    = defaultdict(list)
+        self.users    = defaultdict(list)
+        self.products = defaultdict(list)
+        self.options  = defaultdict(list)
+
         if args.creds:
             for c in args.creds:
-                self.creds[c['service']].append(Credential(type=c['auth_type'], username=c['username'], password=c['password']))
-
-        # Initialize provided single usernames
+                self.creds[c['service']].append(
+                    Credential(type=c['auth_type'], 
+                               username=c['username'], 
+                               password=c['password']))
         if args.users:
             for u in args.users:
-                self.users[c['service']].append(Credential(type=u['auth_type'], username=u['username'], password=None))
+                self.users[c['service']].append(
+                    Credential(type=u['auth_type'], 
+                               username=u['username'], 
+                               password=None))
 
-        # Initialize provided context-specific options
-        if args.specific:
-            for option_name in args.specific:
-                service = self.settings.services.get_service_for_specific_option(option_name)
+        if args.products:
+            for type_,name in args.products.items():
+                service = self.settings.services.get_service_for_product_type(type_)
                 if service:
-                    self.options[service].append(Option(name=option_name, value=args.specific[option_name]))
+                    self.products[service].append(
+                        Product(type=type_,
+                                name=name))
+
+        if args.options:
+            for name, value in args.options.items():
+                service = self.settings.services.get_service_for_specific_option(name)
+                if service:
+                    self.options[service].append(
+                        Option(name=name, 
+                               value=value))
+
+        # Attack configuration
+        categories = self.settings.services.list_all_categories() # default: all
+
+        if args.cat_only:
+            categories = [ cat for cat in categories if cat in args.cat_only ]
+        elif args.cat_exclude:
+            categories = [ cat for cat in categories if cat not in args.cat_exclude ]
 
         # Run the attack
         self.attack_scope = AttackScope(self.settings, 
+                                        self.arguments,
                                         ResultsRequester(self.sqlsess), 
                                         self.smartmodules_loader, 
-                                        args.cat_only, 
-                                        args.checks, 
+                                        filter_categories=categories, 
+                                        filter_checks=args.checks, 
+                                        attack_profile=args.profile,
                                         fast_mode=args.fast_mode)
 
         begin = time.time()
@@ -69,8 +98,9 @@ class AttackController(Controller):
 
     def __run_for_single_target(self, args):
         """
-        Run attack against a single target specified into argss
+        Run attack against a single target specified into args
         """
+        
         req = ServicesRequester(self.sqlsess)
         mission = None
 
@@ -128,7 +158,9 @@ class AttackController(Controller):
 
         # Run the attack
         self.attack_scope.add_target(target)
-        self.attack_scope.attack()
+        self.attack_scope.attack(reverse_dns = #TODO
+            , grab_banner_nmap=#TODO)
+            )
 
 
     def __run_for_multi_targets(self, args):
@@ -162,29 +194,20 @@ class AttackController(Controller):
         logger.info('Checking if targets are reachable...')
         for service in services:
             # Update credentials and options if needed
+            # TODO: case None for all
             for c in self.creds[service.name]   : service.credentials.append(c)
             for u in self.users[service.name]   : service.credentials.append(u)
             for o in self.options[service.name] : service.options.append(o)
 
-            # Initialize Target and check if reachable
+            # Initialize Target 
             target = Target(service, self.settings.services)
-            service.up = target.smart_check(grab_banner_nmap=False)
-            self.sqlsess.commit()
-
-            msg = 'host {ip} | port {port}/{proto} | service {service}'.format(
-                    ip      = target.get_ip(),
-                    port    = target.get_port(),
-                    proto   = target.get_protocol(),
-                    service = target.get_service_name())
-            if service.up:
-                logger.success('Target reachable: ' + msg)
-            else:
-                logger.warning('Target not reachable (skipped): ' + msg)
-                continue
+            # check now performed in AttackScope !
 
             # Update info into database if needed
             #requester.add_target(target)
 
             self.attack_scope.add_target(target)
 
-        self.attack_scope.attack()      
+        self.attack_scope.attack(reverse_dns = #TODO
+            , grab_banner_nmap=#TODO)
+            )
