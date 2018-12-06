@@ -18,6 +18,7 @@ class AttackScope:
     def __init__(self, 
                  settings, 
                  arguments,
+                 services_requester,
                  results_requester,
                  smartmodules_loader,
                  filter_categories=None, 
@@ -29,6 +30,8 @@ class AttackScope:
 
         :param Settings settings: Settings
         :param ArgumentsParser arguments: Arguments from command-line
+        :param ServicesRequester services_requester:
+
         :param ResultsRequester results_requester: Accessor for Result model
         :param SmartModulesLoader smartmodules_loader: Loader of Smart modules
         :param list filter_categories: Selection of categories of checks to run 
@@ -65,7 +68,7 @@ class AttackScope:
     #------------------------------------------------------------------------------------
     # Run Methods
 
-    def attack(self, reverse_dns=True, grab_banner_nmap=True):
+    def attack(self):
         """Run the attack against all targets in the scope"""
 
         # Initialize top status/progress bar
@@ -83,23 +86,16 @@ class AttackScope:
         # Loop over the targets
         for i in range(1,len(self.targets)+1):
 
-            print()
-            self.show_summary()
-            print()
+            # In Multi-targets mode: 
+            # Display summary table and prompt for target selection
+            if not self.fast_mode or len(self.targets) <= 10:
+                self.show_summary()
 
-            # Prompt for target selection
-            if not self.fast_mode:
-                if len(self.targets) > 1:
-                    self.current_targetid = Output.prompt_choice_range(
-                        'Attack target # ? [{default}] '.format(
-                            default=self.current_targetid), 
-                        1, len(self.targets), self.current_targetid)
-                else:
-                    if Output.prompt_confirm('Start attack ?', default=True):
-                        self.current_targetid = 1
-                    else:
-                        logger.warning('Attack canceled !')
-                        sys.exit(1)
+            if not self.fast_mode and len(self.targets) > 1:
+                self.current_targetid = Output.prompt_choice_range(
+                    'Attack target # ? [{default}] '.format(
+                        default=self.current_targetid), 
+                    1, len(self.targets), self.current_targetid)
 
             target = self.targets[self.current_targetid-1]
 
@@ -115,16 +111,45 @@ class AttackScope:
             attack_progress.update()
             print()
 
-            # Check the target
-            logger.info('Check if target is reachable{add}...'.format(
-                add=' and grab banner using Nmap' if grab_banner_nmap else ''))
+            # Check the current target
+            # For single target mode: already done in AttackController
+            if len(self.targets) > 1:
+                reachable = target.smart_check(
+                    reverse_dns=self.arguments.args.reverse_dns == 'on',
+                    availability_check=True,
+                    grab_banner_nmap=self.arguments.args.nmap_banner_grab == 'on')
 
-            if target.smart_check(reverse_dns=reverse_dns, 
-                                  grab_banner_nmap=grab_banner_nmap):
-                logger.success('Target reachable: {}'.format(target))
-            else:
-                logger.error('Target not reachable, skipped: {}'.format(target))
-                continue
+                if self.arguments.args.target_mode == TargetMode.IP:
+                    msg = 'Target {neg}reachable: {target}'.format(
+                        neg='not ' if not reachable else '',
+                        target=target)
+                else:
+                    msg = 'Target URL {url} is {neg}reachable'.format(
+                        url=target.get_url(),
+                        neg='not ' if not reachable else '')
+
+                # Update info into database if needed
+                self.services_requester.add_target(target)
+
+                if reachable:
+                    service.up = True
+                    logger.success(msg)
+                else: 
+                    # Skip target if not reachable
+                    logger.error(msg)
+                    continue
+
+
+            # In Single-target mode: Display summary table and prompt for confirmation
+            if len(self.targets) == 1:
+                self.show_summary()
+
+                if not self.fast_mode:
+                    if Output.prompt_confirm('Start attack ?', default=True):
+                        self.current_targetid = 1
+                    else:
+                        logger.warning('Attack canceled !')
+                        sys.exit(1)
 
             # Launch the attack on the selected target
             self.__attack_target(target, attack_progress)
@@ -170,8 +195,7 @@ class AttackScope:
     # Output methods
 
     def show_summary(self):
-        """
-        """
+        """Display a table showing the summary of the attack scope."""
         data = list()
         columns = [
             'id',
@@ -208,5 +232,8 @@ class AttackScope:
                     color=pointer_color, attrs=pointer_attr),
             ])
             id_ += 1
+
+        print()
         Output.table(columns, data, hrules=False)
+        print()
 

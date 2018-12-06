@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 ###
 ### Core > Db Controller
@@ -37,7 +38,9 @@ class DbController(cmd2.Cmd):
     CMD_CAT_RESULTS       = 'Attacks results'
 
     intro = DB_INTRO
-    formatter_class = lambda prog: LineWrapRawTextHelpFormatter(prog, max_help_position=ARGPARSE_MAX_HELP_POS)
+    formatter_class = lambda prog: LineWrapRawTextHelpFormatter(
+        prog, max_help_position=ARGPARSE_MAX_HELP_POS)
+
 
     def __init__(self, arguments, settings, sqlsession):
         self.arguments = arguments
@@ -73,10 +76,12 @@ class DbController(cmd2.Cmd):
             logger.error('No mission with this name')
         else:
             self.current_mission = name
-            self.prompt = Output.colored('jok3rdb', color='light_green', attrs='bold') + \
-                          Output.colored('[{mission}]'.format(mission=name), color='light_blue', attrs='bold') + \
-                          Output.colored('> ', color='light_green', attrs='bold')
-            if verbose: logger.info('Selected mission is now {name}'.format(name=name))
+            self.prompt = Output.colored('jok3rdb', color='light_green', attrs='bold')+ \
+                Output.colored('[{}]'.format(name), color='light_blue', attrs='bold') + \
+                Output.colored('> ', color='light_green', attrs='bold')
+
+            if verbose: 
+                logger.info('Selected mission is now {name}'.format(name=name))
 
 
     @cmd2.with_argument_list
@@ -85,16 +90,49 @@ class DbController(cmd2.Cmd):
         super().do_help('-v' if not args else args)
 
 
-    # --- Mission
-    mission = argparse.ArgumentParser(description='Manage missions', formatter_class=formatter_class)
+    #------------------------------------------------------------------------------------
+    # Missions Management
+
+    mission = argparse.ArgumentParser(
+        description='Manage missions', 
+        formatter_class=formatter_class)
+
     mission_mxg = mission.add_mutually_exclusive_group()
-    mission_mxg.add_argument('-a', '--add', action='store', metavar='<name>', help='Add mission')
-    mission_mxg.add_argument('-c', '--comment', nargs=2, metavar=('<name>','<comment>'), help='Change the comment of a mission')
-    mission_mxg.add_argument('-d', '--del', action='store', dest='delete', metavar='<name>', help='Delete mission')
-    mission_mxg.add_argument('-D', '--reset', action='store_true', help='Delete all missions')
-    mission_mxg.add_argument('-r', '--rename', nargs=2, metavar=('<old>','<new>'), help='Rename mission')
-    mission_mxg.add_argument('-S', '--search', action='store', metavar='<string>', help='Search string to filter by')
-    mission_mxg.add_argument('name', nargs='?', metavar='<name>', help='Switch mission')
+    mission_mxg.add_argument(
+        '-a', '--add', 
+        action  = 'store', 
+        metavar = '<name>', 
+        help    = 'Add mission')
+    mission_mxg.add_argument(
+        '-c', '--comment', 
+        nargs   = 2, 
+        metavar = ('<name>','<comment>'), 
+        help    = 'Change the comment of a mission')
+    mission_mxg.add_argument(
+        '-d', '--del', 
+        action  = 'store', 
+        dest    = 'delete', 
+        metavar = '<name>', 
+        help    = 'Delete mission')
+    mission_mxg.add_argument(
+        '-D', '--reset', 
+        action  = 'store_true', 
+        help    = 'Delete all missions')
+    mission_mxg.add_argument(
+        '-r', '--rename', 
+        nargs   = 2, 
+        metavar = ('<old>','<new>'), 
+        help    = 'Rename mission')
+    mission_mxg.add_argument(
+        '-S', '--search', 
+        action  = 'store', 
+        metavar = '<string>', 
+        help    = 'Search string to filter by')
+    mission_mxg.add_argument(
+        'name', 
+        nargs   = '?', 
+        metavar = '<name>', 
+        help    = 'Switch mission')
 
     @cmd2.with_category(CMD_CAT_MISSION_SCOPE)
     @cmd2.with_argparser(mission)
@@ -103,28 +141,44 @@ class DbController(cmd2.Cmd):
         print()
 
         req = MissionsRequester(self.sqlsess)
+
+        # --add <name>
         if args.add:
             if req.add(args.add):
                 self.change_current_mission(args.add, verbose=True)
+
+        # --comment <name> <comment>
         elif args.comment:
             req.add_filter(Condition(args.comment[0], FilterData.MISSION_EXACT))
             req.edit_comment(args.comment[1])
+
+        # --del <name>
         elif args.delete:
             req.add_filter(Condition(args.delete, FilterData.MISSION_EXACT))
-            req.delete()        
+            req.delete()   
+
+        # --reset     
         elif args.reset:
-            if Output.prompt_confirm('Are you sure you want to delete all missions ?', default=False):
+            if Output.prompt_confirm(
+                'Are you sure you want to delete all missions ?', default=False):
                 req.reset()
+
+        # --rename <old> <new>
         elif args.rename:
             req.rename(args.rename[0], args.rename[1])
+
+        # --search <string>
         elif args.search:
             filter_ = Filter()
             filter_.add_condition(Condition(args.search, FilterData.MISSION))
             filter_.add_condition(Condition(args.search, FilterData.COMMENT_MISSION))
             req.add_filter(filter_)
             req.show(self.current_mission)
+
+        # <name> (mission name)
         elif args.name:
             self.change_current_mission(args.name, verbose=True)
+
         else:
             print('All available missions:')
             req.show(self.current_mission)
@@ -132,6 +186,7 @@ class DbController(cmd2.Cmd):
         print()
 
     def complete_mission(self, text, line, begidx, endidx):
+        """Complete with mission name"""
         missions = MissionsRequester(self.sqlsess).get_list_mission_names()
         flag_dict = {
             '-c'        : missions,
@@ -146,15 +201,41 @@ class DbController(cmd2.Cmd):
         return self.flag_based_complete(text, line, begidx, endidx, flag_dict=flag_dict)
 
 
-    # --- Hosts
-    hosts = argparse.ArgumentParser(description='Hosts in the current mission scope', formatter_class=formatter_class)
+    #------------------------------------------------------------------------------------
+    # Hosts Management
+
+    hosts = argparse.ArgumentParser(
+        description='Hosts in the current mission scope', 
+        formatter_class=formatter_class)
+
     hosts_manage = hosts.add_argument_group('Manage hosts').add_mutually_exclusive_group()
-    hosts_manage.add_argument('-c', '--comment', action='store', metavar='<comment>', help='Change the comment of selected host(s)')
-    hosts_manage.add_argument('-d', '--del', action='store_true', dest='delete', help='Delete selected host(s) (instead of displaying)')
+    hosts_manage.add_argument(
+        '-c', '--comment', 
+        action  = 'store', 
+        metavar = '<comment>', 
+        help    = 'Change the comment of selected host(s)')
+    hosts_manage.add_argument(
+        '-d', '--del', 
+        action  = 'store_true', 
+        dest    = 'delete', 
+        help    = 'Delete selected host(s) (instead of displaying)')
+
     hosts_filters = hosts.add_argument_group('Filter hosts')
-    hosts_filters.add_argument('-o', '--order', action='store', metavar='<column>', help='Order rows by specified column')
-    hosts_filters.add_argument('-S', '--search', action='store', metavar='<string>', help='Search string to filter by')
-    hosts_filters.add_argument('addrs', nargs='*', metavar='<addr1> <addr2> ...', help='IPs/CIDR ranges/hostnames to select')
+    hosts_filters.add_argument(
+        '-o', '--order', 
+        action  = 'store', 
+        metavar = '<column>', 
+        help    = 'Order rows by specified column')
+    hosts_filters.add_argument(
+        '-S', '--search', 
+        action  = 'store', 
+        metavar = '<string>', 
+        help    = 'Search string to filter by')
+    hosts_filters.add_argument(
+        'addrs', 
+        nargs   = '*', 
+        metavar = '<addr1> <addr2> ...', 
+        help    = 'IPs/CIDR ranges/hostnames to select')
 
     @cmd2.with_category(CMD_CAT_MISSION_SCOPE)
     @cmd2.with_argparser(hosts)
@@ -164,20 +245,27 @@ class DbController(cmd2.Cmd):
         req = HostsRequester(self.sqlsess)
         req.select_mission(self.current_mission)
 
+        # Filtering options:
+        # ----
         # Logical AND is applied between all specified filtering options
         filter_ = Filter(FilterOperator.AND)
+
         if args.addrs:
             for addr in args.addrs:
                 if NetUtils.is_valid_ip(addr) or NetUtils.is_valid_ip_range(addr):
                     filter_.add_condition(Condition(addr, FilterData.IP))
                 else:
                     filter_.add_condition(Condition(addr, FilterData.HOST))
+
+        # --search <string>
         if args.search:
             filter_search = Filter(FilterOperator.OR)
             filter_search.add_condition(Condition(args.search, FilterData.HOST))
             filter_search.add_condition(Condition(args.search, FilterData.OS))
             filter_search.add_condition(Condition(args.search, FilterData.COMMENT_HOST))
             filter_.add_condition(filter_search)
+
+        # --order <column>
         if args.order:
             req.order_by(args.order)
 
@@ -187,49 +275,130 @@ class DbController(cmd2.Cmd):
             logger.error(e)
             return
 
-        # Operations
+        # Operations:
+        # ----
+        # Edit comment : --comment <comment>
         if args.comment:
             if not req.filter_applied:
-                if not Output.prompt_confirm('No filter applied. Are you sure you want to edit comment for ALL hosts in current mission ?', default=False):
+                if not Output.prompt_confirm('No filter applied. Are you sure you ' \
+                        'want to edit comment for ALL hosts in current mission ?', 
+                        default=False):
                     logger.info('Canceled')
                     return
             req.edit_comment(args.comment)
+
+        # Delete : --del 
         elif args.delete:
             if not req.filter_applied:
-                if not Output.prompt_confirm('No filter applied. Are you sure you want to delete ALL hosts and related services in current mission', default=False):
+                if not Output.prompt_confirm('No filter applied. Are you sure you ' \
+                        'want to delete ALL hosts and related services in current ' \
+                        'mission', default=False):
                     logger.info('Canceled')
                     return
             req.delete()
+
+        # Display (default)
         else:
             req.show()
 
         print()
 
 
-    # --- Services
-    services = argparse.ArgumentParser(description='Services in the current mission scope', formatter_class=formatter_class)
-    services_manage = services.add_argument_group('Manage services').add_mutually_exclusive_group()
-    services_manage.add_argument('-a', '--add', action='store', nargs=3, metavar=('<host>','<port>','<service>'), help='Add a new service')
-    services_manage.add_argument('-u', '--url', action='store', metavar='<url>', help='Add a new URL')
-    services_manage.add_argument('-d', '--del', action='store_true', dest='delete', help='Delete selected service(s) (instead of displaying)')
-    services_manage.add_argument('-c', '--comment', action='store', metavar='<comment>', help='Change the comment of selected service(s)')
-    services_manage.add_argument('--https', action='store_true', help='Switch between HTTPS and HTTP protocol for URL of selected service(s)')
-    services_creds = services.add_argument_group('Manage services credentials').add_mutually_exclusive_group()
-    services_creds.add_argument('--addcred', action='store', nargs=2, metavar=('<user>','<pass>'), 
-                              help='Add new credentials (username+password) for selected service(s)')
-    services_creds.add_argument('--addcred-http', action='store', nargs=3, metavar=('<user>','<pass>','<auth-type>'), 
-                              help='Add new credentials (username+password) for the specified authentication type on selected HTTP service(s)')
-    services_creds.add_argument('--adduser', action='store', nargs=1, metavar=('<user>'), 
-                              help='Add new username (password unknown) for selected service(s)')
-    services_creds.add_argument('--adduser-http', action='store', nargs=2, metavar=('<user>','<auth-type>'), 
-                              help='Add new username (password unknown) for the specified authentication type on selected HTTP service(s)')
+    #------------------------------------------------------------------------------------
+    # Services Management
+
+    services = argparse.ArgumentParser(
+        description='Services in the current mission scope', 
+        formatter_class=formatter_class)
+
+    services_manage = services.add_argument_group('Manage services')\
+        .add_mutually_exclusive_group()
+    services_manage.add_argument(
+        '-a', '--add', 
+        action  = 'store', 
+        nargs   = 3, 
+        metavar = ('<host>','<port>','<service>'), 
+        help    = 'Add a new service')
+    services_manage.add_argument(
+        '-u', '--url', 
+        action  = 'store', 
+        metavar = '<url>', 
+        help    = 'Add a new URL')
+    services_manage.add_argument(
+        '-d', '--del', 
+        action  = 'store_true', 
+        dest    = 'delete', 
+        help    = 'Delete selected service(s) (instead of displaying)')
+    services_manage.add_argument(
+        '-c', '--comment', 
+        action  = 'store', 
+        metavar = '<comment>', 
+        help    = 'Change the comment of selected service(s)')
+    services_manage.add_argument(
+        '--https', 
+        action  = 'store_true', 
+        help    = 'Switch between HTTPS and HTTP protocol for URL of ' \
+            'selected service(s)')
+
+    services_creds = services.add_argument_group('Manage services credentials')\
+        .add_mutually_exclusive_group()
+    services_creds.add_argument(
+        '--addcred', 
+        action  = 'store', 
+        nargs   = 2, 
+        metavar = ('<user>','<pass>'), 
+        help    = 'Add new credentials (username+password) for selected service(s)')
+    services_creds.add_argument(
+        '--addcred-http', 
+        action  = 'store', 
+        nargs   = 3, 
+        metavar = ('<user>','<pass>','<auth-type>'), 
+        help    = 'Add new credentials (username+password) for the specified ' \
+            'authentication type on selected HTTP service(s)')
+    services_creds.add_argument(
+        '--adduser', 
+        action  = 'store', 
+        nargs   = 1, 
+        metavar = ('<user>'), 
+        help    = 'Add new username (password unknown) for selected service(s)')
+    services_creds.add_argument(
+        '--adduser-http', 
+        action  = 'store', 
+        nargs   = 2, 
+        metavar = ('<user>','<auth-type>'), 
+        help    = 'Add new username (password unknown) for the specified ' \
+            'authentication type on selected HTTP service(s)')
+    
     services_filters = services.add_argument_group('Filter services')
-    services_filters.add_argument('-H', '--hostname', action='store', metavar='<hostname1,hostname2...>', help='Search for a list of hostnames (comma-separated)')
-    services_filters.add_argument('-I', '--ip', action='store', metavar='<ip1,ip2...>', help='Search for a list of IPs (single IP/CIDR range comma-separated)')
-    services_filters.add_argument('-p', '--port', action='store', metavar='<port1,port2...>', help='Search for a list of ports (single/range comma-separated)')   
-    services_filters.add_argument('-r', '--proto', action='store', metavar='<protocol>', help='Only show [tcp|udp] services')
-    services_filters.add_argument('-U', '--up', action='store_true', help='Only show services which are up')
-    services_filters.add_argument('-o', '--order', action='store', metavar='<column>', help='Order rows by specified column')
+    services_filters.add_argument(
+        '-H', '--hostname', 
+        action  = 'store', 
+        metavar = '<hostname1,hostname2...>', 
+        help    = 'Search for a list of hostnames (comma-separated)')
+    services_filters.add_argument(
+        '-I', '--ip', 
+        action  = 'store', 
+        metavar = '<ip1,ip2...>', 
+        help    = 'Search for a list of IPs (single IP/CIDR range comma-separated)')
+    services_filters.add_argument(
+        '-p', '--port', 
+        action  = 'store', 
+        metavar = '<port1,port2...>', 
+        help    = 'Search for a list of ports (single/range comma-separated)')   
+    services_filters.add_argument(
+        '-r', '--proto', 
+        action  = 'store', 
+        metavar = '<protocol>', 
+        help    = 'Only show [tcp|udp] services')
+    services_filters.add_argument(
+        '-U', '--up', 
+        action  = 'store_true', 
+        help    = 'Only show services which are up')
+    services_filters.add_argument(
+        '-o', '--order', 
+        action  = 'store', 
+        metavar = '<column>', 
+        help    = 'Order rows by specified column')
     services_filters.add_argument('-S', '--search', action='store', metavar='<string>', help='Search string to filter by')
     services_filters.add_argument('names', nargs='*', metavar='<name1> <name2> ...', help='Services to select')
 

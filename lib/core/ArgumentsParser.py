@@ -800,7 +800,7 @@ class ArgumentsParser:
                     current_cred['service'] = self.args.service
                 else:
                     logger.error('Service must be specified in --cred in multi targets' \
-                        'mode')
+                        'mode. Syntax: --cred <service> <user> <pass>')
                     return False
                 current_cred['username'] = cred[0]
                 current_cred['password'] = cred[1]
@@ -872,7 +872,7 @@ class ArgumentsParser:
                     current_user['service'] = self.args.service
                 else:
                     logger.error('Service must be specified in --user in multi targets' \
-                        'mode')
+                        'mode. Syntax: --user <service> <user>')
                     return False
 
                 current_user['username'] = user[0]

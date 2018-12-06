@@ -6,6 +6,7 @@
 from collections import defaultdict
 
 from lib.core.Constants import *
+from lib.db.Service import Protocol
 from lib.output.Logger import logger
 from lib.output.Output import Output
 from lib.utils.OrderedDefaultDict import OrderedDefaultDict
@@ -147,6 +148,12 @@ class ServicesConfig:
             return None
         return self.services[service]['protocol']
 
+
+    def get_protocol2(self, service):
+        if not self.is_service_supported(service, multi=False):
+            return None        
+        {'tcp': Protocol.TCP, 'udp': Protocol.UDP}.get(
+            self.get_protocol(service))
 
     def get_authentication_types(self, service='http'):
         if not self.is_service_supported(service, multi=False):

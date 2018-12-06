@@ -78,9 +78,22 @@ class Target:
             self.service.host.hostname = str(self.service.host.ip) 
             # updated in smart_check
         else:
-            # host.ip actually stores a hostname at this point
+            # host.ip actually stores a hostname at this point, a DNS lookup is needed
             self.service.host.hostname = self.service.host.ip
             self.service.host.ip = NetUtils.dns_lookup(self.service.host.hostname) 
+            if not self.service.host.ip:
+                raise TargetException('Unable to resolve {}'.format(
+                    self.service.host.hostname))
+
+        # Forge URL for http services
+        if self.service.name == 'http':
+            if self.get_specific_option_value('https'):
+                proto = 'https'
+            else:
+                proto = 'http'
+
+            self.service.url = '{proto}://{ip}:{port}'.format(
+                proto=proto, host=self.service.host.ip, port=self.service.port)
 
 
     #------------------------------------------------------------------------------------
@@ -259,12 +272,23 @@ class Target:
         # Note: If lookup fails, it fallbacks to IP
         if reverse_dns:
             if self.service.host.hostname == self.service.host.ip:
-                self.service.host.hostname = NetUtils.reverse_dns_lookup(
+                logger.info('Reverse DNS lookup for {ip}...'.format(
+                    ip=str(self.service.host.ip)))
+                hostname = NetUtils.reverse_dns_lookup(
                     self.service.host.ip)
+
+                if hostname != self.service.host.ip:
+                    logger.info('{ip} -> {hostname}'.format(ip=self.service.host.ip,
+                                                            hostname=hostname))
+                else:
+                    logger.info('No DNS name found for IP')
+
+                self.service.host.hostname = hostname
 
 
         # Perform availability check
         if availability_check:
+            logger.info('Check if target is reachable...')
 
             # For HTTP: Check URL availability, grab headers, grab HTML title
             if self.service.url: 
@@ -300,6 +324,7 @@ class Target:
            and self.service.protocol == Protocol.TCP \
            and not self.service.banner:
 
+            logger.info('Grab targeted service via Nmap...')
             self.service.banner = NetUtils.grab_banner_nmap(
                 str(self.service.host.ip), self.service.port)
 

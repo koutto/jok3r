@@ -28,57 +28,6 @@ BUG FIXES
 - db > services - ip ranges selection bug
 
 
-- add matching service nmap<->jok3r
-      PORT     STATE    SERVICE       REASON
-      21/tcp   closed   ftp           conn-refused
-      22/tcp   closed   ssh           conn-refused
-      23/tcp   closed   telnet        conn-refused
-      80/tcp   closed   http          conn-refused
-      443/tcp  closed   https         conn-refused
-      445/tcp  filtered microsoft-ds  no-response   <-- add
-      1433/tcp closed   ms-sql-s      conn-refused
-      1434/tcp closed   ms-sql-m      conn-refused
-      1521/tcp closed   oracle        conn-refused
-      7001/tcp closed   afs3-callback conn-refused
-      8000/tcp closed   http-alt      conn-refused
-      8080/tcp closed   http-proxy    conn-refused
-      8443/tcp closed   https-alt     conn-refused
-
-
-
-- IMPORTANT BUG Target.__init_with_ip: 
-
-intervertir hostname et ip
-    def __init_with_ip(self):
-        """
-        """
-        if NetUtils.is_valid_ip(self.service.host.ip):
-            #self.service.host.hostname = NetUtils.reverse_dns_lookup(str(self.service.host.ip))
-            self.service.host.hostname = str(self.service.host.ip)
-        else:
-            # host.ip actually stores a hostname at this point
-   ==>         self.service.host.hostname = self.service.host.ip
-            self.service.host.ip = NetUtils.dns_lookup(str(self.service.host.ip)) 
-            #self.service.host.hostname = self.service.host.ip
-
-
-- Bug host None (check with ip)
-[*] Check if target is reachable and grab banner using Nmap...
-[!] Target not reachable: host None | port 2553/tcp | service mssql
-
-
-- in target. _init_with_ip: create the url if http
-                  if name == 'http':
-                    url = '{proto}://{host}:{port}'.format(
-                        proto = 'https' if 'https' in s.service or 'ssl' in s.service or s.tunnel in ('ssl', 'tls') else 'http',
-                        host  = host.ip, 
-                        port  = s.port)
-
-
-
-
-
-
 
 
 
@@ -141,7 +90,6 @@ product: Oracle TNS listener version: 12.2.0.1.0 extrainfo
     - general-minimal-wordlist
     - general-wordlist (raft directory)
 
-- Add option --webdir-wordlist for check discovery-general-wordlist et tag [WEBDIR-WORDLIST default=""]
 
 
 - Auth types:
@@ -165,8 +113,11 @@ product: Oracle TNS listener version: 12.2.0.1.0 extrainfo
     * skip current, 
     * exit ? (not working, recheck), 
     * switch fast mode
+
 * Nmap import: filter on nmap results to add
+
 * Specific options management
+
 * Products management
 
 
@@ -365,18 +316,6 @@ PORT   STATE SERVICE REASON  VERSION
         [?] Run command #02 ? [Y/n/t/w/q] q
 
 
-* MS17-010 not detected: ==> ) -> \) + LIKELY
-  
-        if re.search('Microsoft Windows system vulnerable to remote code execution \(MS08-067\)\s*(\r\n|\r|\n)\|\s*State: (LIKELY )?VULNERABLE', 
-                     cmd_output, re.IGNORECASE):
-            r.add_option('vuln-ms08-067', 'true')
-
-        if re.search('Remote Code Execution vulnerability in Microsoft SMBv1 servers \(ms17-010\)\s*(\r\n|\r|\n)\|\s*State: (LIKELY )?VULNERABLE',
-                     cmd_output, re.IGNORECASE):
-            r.add_option('vuln-ms17-010', 'true')
-
-        if re.search('SAMBA Remote Code Execution from Writable Share\s*(\r\n|\r|\n)\|\s*State: (LIKELY )?VULNERABLE', cmd_output, re.IGNORECASE):
-            r.add_option('vuln-sambacry', 'true')
 
 
 - add postrun tnscmd_sid
@@ -537,6 +476,9 @@ No response , Normal ?
 
 
 * odat add -v : python2.7 odat.py tnscmd -s 10.14.17.218 -p 1575 -d any --ping -v
+
+- Add option --webdir-wordlist for check discovery-general-wordlist 
+
 
 
 
