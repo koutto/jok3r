@@ -738,6 +738,9 @@ xmlrpc
 
 
 
+
+
+
 - jok3r-script for oracle install:
 
   - change url + reinstall
@@ -763,6 +766,8 @@ sudo dpkg -i oracle-instantclient12.2-sqlplus_12.2.0.1.0-2_amd64.deb
 /bin/bash -c "export ORACLE_HOME=`file /usr/lib/oracle/*/client64/ | tail -n 1 | cut -d':' -f1`; export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_HOME/lib; export PATH=$ORACLE_HOME/bin:$PATH; python2.7 odat.py passwordguesser -s 10.190.98.114 -p 1521 -d SCAN3 -vv --force-retry --accounts-file accounts/accounts_multiple.txt"
 
 
+- More default creds for mssql
+https://github.com/mubix/post-exploitation-wiki/blob/master/windows/mssql.md
 
 
 
