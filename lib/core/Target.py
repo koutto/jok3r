@@ -9,7 +9,6 @@ from six.moves.urllib.parse import urlparse
 from lib.core.Config import *
 from lib.core.Constants import *
 from lib.core.Exceptions import TargetException
-from lib.core.Output import Output
 from lib.utils.WebUtils import WebUtils
 from lib.utils.NetUtils import NetUtils
 from lib.db.Host import Host
@@ -18,6 +17,7 @@ from lib.db.Service import Service, Protocol
 from lib.db.Credential import Credential
 from lib.db.Option import Option
 from lib.output.Logger import logger
+from lib.output.Output import Output
 
 
 class Target:

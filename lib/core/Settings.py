@@ -675,7 +675,7 @@ class Settings:
                 check_config[opt] = tool
 
             else:
-                check_config[opt] = val   
+                check_config[opt] = val   
 
             # Check for empty mandatory option
             if opt in CHECK_OPTIONS[MANDATORY] and not check_config[opt]:
@@ -722,7 +722,7 @@ class Settings:
                 section, 'context_'+str(i+1), default=None)
 
             context_requirements = self.__parse_context_requirements(
-                service, section, i, context)
+                service, section, i+1, context)
 
             if context_requirements is None: 
                 logger.warning('{prefix} Context requirements are invalid, the check ' \
@@ -878,7 +878,9 @@ class Settings:
                         if product_name not in self.services[service]['products'][cond]:
                             logger.warning('{prefix} Context requirement "{option}" ' \
                                 'contains an invalid product ("{product}")'.format(
-                                    prefix=log_prefix, option=cond, product=product))
+                                    prefix=log_prefix, 
+                                    option=cond, 
+                                    product=product_name))
                         req_products[cond] = val                
 
             # Not supported
@@ -906,7 +908,7 @@ class Settings:
         for section in self.config_parsers[ATTACK_PROFILES_CONF_FILE].sections():
             newprofile = self.__create_attack_profile(section)
             if newprofile is not None:
-                self.attack_profiles.add(newprofile):
+                if not self.attack_profiles.add(newprofile):
                     logger.warning('[{filename}{ext} | Section "{section}"] Unable ' \
                         'to add attack profile "{profile}" (duplicate)'.format(
                             filename=ATTACK_PROFILES_CONF_FILE, 

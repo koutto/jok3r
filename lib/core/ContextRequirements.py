@@ -57,7 +57,7 @@ class ContextRequirements:
             isinstance(specific_options, dict) else defaultdict(lambda: None)
         self.products = defaultdict(lambda: None, products) if \
             isinstance(products, dict) else defaultdict(lambda: None)
-        self.os = os.lower()
+        self.os = os.lower() if os else os
         self.auth_status = auth_status
         self.auth_type = auth_type
         self.is_empty = not self.specific_options \

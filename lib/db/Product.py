@@ -18,7 +18,7 @@ class Product(Base):
     version    = Column(String(100), nullable=False, default='')
     service_id = Column(Integer, ForeignKey('services.id'))
 
-    service    = relationship('Service', back_populates='options')
+    service    = relationship('Service', back_populates='products')
 
 
     def __repr__(self):

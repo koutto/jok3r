@@ -194,8 +194,8 @@ class ServiceChecks:
                                     check=check.name))
 
                     else:
-                        logger.info('[{category}][Check {num:02}/{total:02}] {name} > '\
-                            'Skipped because context requirements does not apply to ' \
+                        logger.info('[{category}][Check {num:02}/{total:02}] {name} > ' \
+                            'Skipped because context requirements does not apply to ' \
                             'the target'.format(
                                 name     = check.name,
                                 category = category.capitalize(),

@@ -113,8 +113,11 @@ class AttackProfiles:
                     StringUtils.wrap(p.description, 120)
                 ])
 
-        Output.title1('Attack Profiles {service}'.format(
-            service='for service {}'.format(filter_service.upper()) else ''))
+        if filter_service:
+            service = 'for service {}'.format(filter_service.upper()) 
+        else:
+            service = ''
+        Output.title1('Attack Profiles {service}'.format(service=service))
         Output.table(columns, data, hrules=False)
 
         if not filter_service:

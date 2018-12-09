@@ -278,7 +278,7 @@ class ArgumentsParser:
             '-f', '--filter',
             help    = 'Set of conditions to select a subset of targets\n' \
                       '(e.g "ip=10.1.1.0/24,10.0.0.4;port=80,8000-8100;service=http")\n'\
-                      'Available filter options: {opt}\n'. \
+                      'Available filter options: {opt}\n' \
                       'Several filters can be used (logical OR) by using the option ' \
                       'multiple times'.format(opt=', '.join(TARGET_FILTERS)),
             action  = 'append',
