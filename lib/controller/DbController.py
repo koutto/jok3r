@@ -465,7 +465,8 @@ class DbController(cmd2.Cmd):
             filter_search.add_condition(Condition(args.search, FilterData.HOST))
             filter_search.add_condition(Condition(args.search, FilterData.BANNER))
             filter_search.add_condition(Condition(args.search, FilterData.URL))
-            filter_search.add_condition(Condition(args.search, FilterData.COMMENT_SERVICE))
+            filter_search.add_condition(Condition(args.search, 
+                FilterData.COMMENT_SERVICE))
             filter_.add_condition(filter_search)
 
         try:
@@ -557,7 +558,9 @@ class DbController(cmd2.Cmd):
                         default=False):
                     logger.info('Canceled')
                     return
-            req.add_cred(args.addcred[0], args.addcred[1], None) 
+            req.add_cred(username=args.addcred[0], 
+                         password=args.addcred[1], 
+                         auth_type=None) 
 
         # --addcred-http <user> <pass> <auth-type>
         elif args.addcred_http:
@@ -577,9 +580,9 @@ class DbController(cmd2.Cmd):
                         'mission ?', default=False):
                     logger.info('Canceled')
                     return
-            req.add_cred(args.addcred_http[0], 
-                         args.addcred_http[1], 
-                         args.addcred_http[2]) 
+            req.add_cred(username=args.addcred_http[0], 
+                         password=args.addcred_http[1], 
+                         auth_type=args.addcred_http[2]) 
 
         # --adduser <user>
         elif args.adduser:
@@ -589,7 +592,9 @@ class DbController(cmd2.Cmd):
                         'mission ?', default=False):
                     logger.info('Canceled')
                     return
-            req.add_cred(args.adduser[0], None, None)
+            req.add_cred(username=args.adduser[0], 
+                         password=None, 
+                         auth_type=None)
 
         # --adduser-http <user> <auth-type>
         elif args.adduser_http:
@@ -609,7 +614,9 @@ class DbController(cmd2.Cmd):
                         'mission ?', default=False):
                     logger.info('Canceled')
                     return
-            req.add_cred(args.adduser_http[0], None, args.adduser_http[1]) 
+            req.add_cred(username=args.adduser_http[0], 
+                         password=None, 
+                         auth_type=args.adduser_http[1]) 
 
         # Display (default)
         else:
@@ -689,7 +696,7 @@ class DbController(cmd2.Cmd):
         help    = 'Select creds where only username is set')
     creds_filters.add_argument(
         '-H', '--hostname', 
-        action  = 'store', 
+        action  = 'store',
         metavar = '<hostname1,hostname2...>', 
         help    = 'Select creds for a list of hostnames (comma-separated)')
     creds_filters.add_argument(
@@ -771,7 +778,8 @@ class DbController(cmd2.Cmd):
                     logger.error('Service {name} is not valid/supported'.format(
                         name=s.lower()))
                     return
-            filter_.add_condition(Condition(args.service.split(','), FilterData.SERVICE_EXACT))
+            filter_.add_condition(Condition(args.service.split(','), 
+                FilterData.SERVICE_EXACT))
         
         # --order <column>
         if args.order:
@@ -805,9 +813,12 @@ class DbController(cmd2.Cmd):
 
             # --addcred <service-id> <user> <pass>
             if args.addcred:
-                req.add_cred(service_id, args.add[1], args.add[2], None)
+                req.add_cred(service_id=service_id, 
+                             username=args.add[1], 
+                             password=args.add[2], 
+                             auth_type=None)
 
-            # --
+            # --addcred-http <service-id> <user> <pass> <auth-type>
             elif args.addcred_http:
                 if not self.settings.services.is_valid_auth_type(args.addcred_http[3]):
                     logger.warning('Invalid HTTP authentication type')
@@ -816,35 +827,51 @@ class DbController(cmd2.Cmd):
                             .get_authentication_types('http'):
                         logger.info('- {type}'.format(type=auth_type))
                     return
-                req.add_cred(service_id, 
-                             args.addcred_http[1], 
-                             args.addcred_http[2], 
-                             args.addcred_http[3])
+                req.add_cred(service_id=service_id, 
+                             username=args.addcred_http[1], 
+                             password=args.addcred_http[2], 
+                             auth_type=args.addcred_http[3])
+
+            # --adduser <service-id> <user>
             elif args.adduser:
                 req.add_cred(service_id, args.add[1], None, None)
+
+            # --adduser-http <service-id> <user> <auth-type>
             elif args.adduser_http:
                 if not self.settings.services.is_valid_auth_type(args.adduser_http[2]):
                     logger.warning('Invalid HTTP authentication type')
                     logger.info('List of supported authentication types: ')
-                    for auth_type in self.settings.services.get_authentication_types('http'):
+                    for auth_type in self.settings.services\
+                            .get_authentication_types('http'):
                         logger.info('- {type}'.format(type=auth_type))
                     return
-                req.add_cred(service_id, args.adduser_http[1], None, args.adduser_http[2])
+                req.add_cred(service_id=service_id, 
+                             username=args.adduser_http[1], 
+                             password=None, 
+                             auth_type=args.adduser_http[2])
 
+        # --comment <comment>
         elif args.comment:
             if not req.filter_applied:
-                if not Output.prompt_confirm('No filter applied. Are you sure you want to edit comment for ALL creds in current mission ?', default=False):
+                if not Output.prompt_confirm('No filter applied. Are you sure you ' \
+                        'want to edit comment for ALL creds in current mission ?', 
+                        default=False):
                     logger.info('Canceled')
                     return
             req.edit_comment(args.comment)
 
+        # --del
         elif args.delete:
             if not req.filter_applied:
-                if not Output.prompt_confirm('No filter applied. Are you sure you want to delete ALL creds in current mission ?', default=False):
+                if not Output.prompt_confirm('No filter applied. Are you sure you ' \
+                        'want to delete ALL creds in current mission ?', default=False):
                     logger.info('Canceled')
                     return
             req.delete()
+
+        # Display (default)
         else:
+            # --order <column>
             if not args.order:
                 req.order_by('ip')
             req.show()
@@ -878,14 +905,18 @@ class DbController(cmd2.Cmd):
         """Import Nmap results"""
         print()
 
+        # Check file
         file = os.path.expanduser(args.file[0])
         if not FileUtils.can_read(file):
             logger.error('Cannot read specified file')
             return
+
         logger.info('Importing Nmap results from {file}'.format(file=file))
         if not args.no_http_recheck:
-            logger.info('Each service will be re-checked to detect HTTP services. Use --no-http-recheck if you want to disable it (faster import)')
+            logger.info('Each service will be re-checked to detect HTTP services. ' \
+                'Use --no-http-recheck if you want to disable it (faster import)')
 
+        # Parse Nmap file
         parser = NmapResultsParser(file, self.settings.services)
         results = parser.parse(http_recheck=not args.no_http_recheck,
                                grab_html_title=not args.no_html_title)
@@ -912,10 +943,149 @@ class DbController(cmd2.Cmd):
         return self.flag_based_complete(text, line, begidx, endidx, flag_dict=flag_dict)
 
 
-    # --- Results
-    results = argparse.ArgumentParser(description='Attacks results', formatter_class=formatter_class)
-    results.add_argument('-s', '--show', action='store', metavar='<check-id>', help='Show results for specified check')
-    results.add_argument('service_id', nargs='?', metavar='<service-id>', help='Service id')
+    #------------------------------------------------------------------------------------
+    # Import File
+
+    file = argparse.ArgumentParser(
+        description='Import a list of targets from a file\n' \
+            'One target per line, with the following syntax:\n' \
+            '- For any service: <IP/HOST>:<PORT>,<SERVICE>\n' \
+            '- For HTTP service: <URL> (must begin with http(s)://)', 
+        formatter_class=formatter_class)
+    file.add_argument(
+        '--no-html-title', 
+        action='store_true', 
+        help='Do not grab HTML title for HTTP services')
+    file.add_argument(
+        '--no-dns-reverse',
+        action='store_true',
+        help='Do not perform reverse DNS lookup on IP addresses')
+    file.add_argument(
+        '--no-nmap-banner',
+        action='store_true',
+        help='Disable Nmap banner grabbing')
+    file.add_argument(
+        'file', 
+        nargs=1, 
+        metavar='<filename>', 
+        help='List of targets from a file')
+
+    @cmd2.with_category(CMD_CAT_IMPORT)
+    @cmd2.with_argparser(file)
+    def do_file(self, args):
+        """Import a list of targets from a file into current mission scope"""
+        print()
+        req = ServicesRequester(self.sqlsess)
+        req.select_mission(self.current_mission)
+
+        # Check file
+        file = os.path.expanduser(args.file[0])
+        if not FileUtils.can_read(file):
+            logger.error('Cannot read specified file')
+            return
+
+        logger.info('Importing targets from the file {file}'.format(file=file))
+
+        # Parse file
+        f = open(file, 'r').read().splitlines()
+
+        if len(f) == 0:
+            logger.warning('File is empty')
+            return
+
+        # Process all lines
+        for l in f:
+            logger.info('Processing line "{line}" ...'.format(line=l))
+
+            # For line with syntax: <IP/HOST>:<PORT>,<SERVICE>
+            if ',' in l:
+                ip_port, service = l.split(',', maxsplit=1)
+                if not self.settings.services.is_service_supported(service, multi=False):
+                    logger.error('Service {name} is not valid/supported. ' \
+                        'Line skipped'.format(name=service.lower()))
+                    continue
+
+                ip, port = ip_port.split(':', maxsplit=1)
+                if not NetUtils.is_valid_port(port):
+                    logger.error('Port is invalid, not in range [0-65535]. ' \
+                        'Line skipped')
+                    continue
+
+                # IP submitted
+                if NetUtils.is_valid_ip(ip):
+                    if not args.no_dns_reverse:
+                        logger.info('Reverse DNS lookup for {ip}...'.format(ip=ip))
+                        hostname = NetUtils.reverse_dns_lookup(ip) 
+                        if hostname != ip:
+                            logger.info('{ip} -> {hostname}'.format(
+                                ip=ip, hostname=hostname))
+                    else:
+                        hostname = ip
+
+                # Hostname submitted
+                else:
+                    hostname = ip
+                    ip = NetUtils.dns_lookup(hostname)
+                    if not ip:
+                        logger.error('Cannot resolve hostname. Line skipped')
+                        continue
+                    logger.info('DNS lookup on {hostname} -> IP: {ip}'.format(
+                        hostname=hostname, ip=ip))
+
+                # Add the service in current mission scope
+                req.add_service(ip=ip, 
+                                hostname=hostname, 
+                                port=port, 
+                                protocol=self.settings.services.get_protocol(service), 
+                                service=service,
+                                grab_banner_nmap=not args.no_nmap_banner)
+
+            # For line with syntax: <URL>
+            elif l.lower().startswith('http://') or l.lower().startswith('https://'):
+
+                if not WebUtils.is_valid_url(args.url):
+                    logger.error('URL is invalid')
+                else:
+                    # Add the URL in current mission scope
+                    req.add_url(url=l,
+                                grab_banner_nmap=not args.no_nmap_banner,
+                                grab_html_title=not args.no_html_title)
+
+        print()
+
+
+    #------------------------------------------------------------------------------------
+    # Results
+
+    results = argparse.ArgumentParser(
+        description='Attacks results', 
+        formatter_class=formatter_class)
+
+    checks_filter = results.add_argument_group('Filters on checks')
+    checks_filter.add_argument(
+        '-s', '--service-id', 
+        action='store',
+        metavar='<service-id>', 
+        help='Service id to show results of')
+    checks_filter.add_argument(
+        '-n', '--check-name',
+        action='store',
+        metavar='<name>',
+        help='Search for check name')
+
+    outputs_filter = results.add_argument_group('Filters on command outputs')\
+        .add_mutually_exclusive_group()
+    outputs_filter.add_argument(
+        '-c', '--check-id', 
+        action='store', 
+        metavar='<check-id>', 
+        help='Show results (command outputs) for specified check')
+    outputs_filter.add_argument(
+        '-S', '--search',
+        action='store',
+        metavar='<string>',
+        help='Search for a string in results (command outputs). Accept wildcard "%"')
+
 
     @cmd2.with_category(CMD_CAT_RESULTS)
     @cmd2.with_argparser(results)
@@ -923,23 +1093,82 @@ class DbController(cmd2.Cmd):
         """Attacks results"""
         print()
 
-        req = ResultsRequester(self.sqlsess)
-        #req.select_mission(self.current_mission)
+        # Required checks on arguments
+        if (args.service_id or args.check_name) and (args.check_id or args.search):
+            logger.error('--service-id|--check-name and --check-id|--search are '\
+                'mutually exclusive')
+            return
 
+        if not args.service_id and not args.check_name and not args.check_id \
+                and not args.search:
+            logger.error('At least one argument required')
+            return
+
+
+        # Logical AND is applied between all specified filtering options
+        filter_ = Filter(FilterOperator.AND)
+        
+        # Filtering on checks:
+        # --------------------
+        if args.service_id or args.check_name:
+            results_req = ResultsRequester(self.sqlsess)
+            services_req = ServicesRequester(self.sqlsess)
+            #req.select_mission(self.current_mission)
+
+            # --service-id <service-id>
+            if args.service_id:
+                try:
+                    service_id = int(args.service_id)
+                except:
+                    logger.error('Invalid service id')
+                    return
+
+                # Check service id exists
+                filter_svc = Filter()
+                filter_svc.add_condition(Condition(service_id, FilterData.SERVICE_ID))
+                services_req.add_filter(filter_svc)
+                if not services_req.get_first_result():
+                    logger.error('Invalid service id')
+                    return
+
+                filter_.add_condition(Condition(service_id, FilterData.SERVICE_ID))
+
+            # --check-name <name>
+            if args.check_name:
+                filter_.add_condition(Condition(args.check_name, FilterData.CHECK_NAME))
+
+            results_req.add_filter(filter_)
+            results_req.show_results()            
+
+        else:
+            outputs_req = CommandOutputsRequester(self.sqlsess)
+
+            # --check-id <check-id>
+            if args.check_id:
+                try:
+                    check_id = int(args.check_id)
+                except:
+                    logger.error('Invalid check id')
+                    return
+
+                filter_.add_condition(Condition(args.check_id, FilterData.CHECK_ID))
+                outputs_req.add_filter(filter_)
+                
+
+
+
+
+
+
+
+
+        # --show <check-id>
         if args.show:
-            try:
-                check_id = int(args.show)
-            except:
-                logger.error('Invalid check id')
-                return
-            req.show_command_outputs(check_id)
-        elif args.service_id:
-            try:
-                service_id = int(args.service_id)
-            except:
-                logger.error('Invalid service id')
-                return
-            req.show_results(service_id)
+
+
+            results_req.show_command_outputs(check_id)
+
+
 
         print()             
 

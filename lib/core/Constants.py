@@ -37,6 +37,7 @@ class FilterData(Enum):
     UP              = auto()
     SERVICE         = auto()
     SERVICE_EXACT   = auto()
+    SERVICE_ID      = auto()
     OS              = auto()
     BANNER          = auto()
     URL             = auto()
@@ -53,6 +54,9 @@ class FilterData(Enum):
     COMMENT_MISSION = auto()
     MISSION_EXACT   = auto()
     MISSION         = auto()
+    CHECK_ID        = auto()
+    CHECK_NAME      = auto()
+    COMMAND_OUTPUT  = auto()
 
 class FilterOperator(Enum):
     AND = auto()

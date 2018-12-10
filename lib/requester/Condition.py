@@ -6,9 +6,11 @@ import ipaddress
 
 from lib.core.Constants import *
 from lib.core.Exceptions import FilterException
+from lib.db.CommandOutput import CommandOutput
 from lib.db.Credential import Credential
 from lib.db.Host import Host
 from lib.db.Mission import Mission
+from lib.db.Result import Result
 from lib.db.Service import Service, Protocol
 from lib.utils.NetUtils import NetUtils
 
@@ -38,6 +40,7 @@ class Condition:
             FilterData.UP              : self.__translate_up,
             FilterData.SERVICE         : self.__translate_service,
             FilterData.SERVICE_EXACT   : self.__translate_service_exact,
+            FilterData.SERVICE_ID      : self.__translate_service_id,
             FilterData.OS              : self.__translate_os,
             FilterData.BANNER          : self.__translate_banner,
             FilterData.URL             : self.__translate_url,
@@ -54,6 +57,9 @@ class Condition:
             FilterData.COMMENT_MISSION : self.__translate_comment_mission,
             FilterData.MISSION_EXACT   : self.__translate_mission_exact,
             FilterData.MISSION         : self.__translate_mission,
+            FilterData.CHECK_ID        : self.__translate_check_id,
+            FilterData.CHECK_NAME      : self.__translate_check_name,
+            FilterData.COMMAND_OUTPUT  : self.__translate_command_output,
         }
 
     def translate(self):
@@ -131,6 +137,9 @@ class Condition:
     def __translate_service_exact(self, value):
         return (Service.name == value)
 
+    def __translate_service_id(self, value):
+        return (Service.id == int(value))
+
     def __translate_os(self, value):
         return (Host.os.ilike('%'+str(value)+'%'))
 
@@ -184,4 +193,13 @@ class Condition:
 
     def __translate_mission(self, value):
         return (Mission.name.ilike('%'+str(value)+'%'))
+
+    def __translate_check_id(self, value):
+        return (Result.id == int(value))
+
+    def __translate_check_name(self, value):
+        return (Result.check.ilike('%'+str(value)+'%'))
+
+    def __translate_command_output(self, value):
+        return (CommandOutput.output.ilike('%'+str(value)+'%'))
 

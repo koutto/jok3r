@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 ###
 ### Requester > Services
@@ -15,6 +16,7 @@ from lib.db.Mission import Mission
 from lib.db.Service import Service, Protocol
 from lib.output.Output import Output
 from lib.output.Logger import logger
+
 
 class ServicesRequester(Requester):
 
@@ -91,42 +93,61 @@ class ServicesRequester(Requester):
             logger.success('Switch done')
 
 
-    def add_service(self, ip, hostname, port, protocol, service):
-        protocol = {'tcp': Protocol.TCP, 'udp': Protocol.UDP}.get(protocol, Protocol.TCP)
+    def add_service(self, ip, hostname, port, protocol, service, 
+                    grab_banner_nmap=True):
+        """
+        Add a service into the current mission scope in database.
+
+        :param str ip: IP address to add
+        :param str hostname: Hostname
+        :param int port: Port number
+        :param str protocol: Protocol (tcp/udp)
+        :param str service: Service name
+        :param bool grab_banner_nmap: If set to True, run Nmap to grab server banner
+        :return: Status
+        :rtype: bool
+        """
+        proto = {'tcp': Protocol.TCP, 'udp': Protocol.UDP}.get(protocol, Protocol.TCP)
         matching_service = self.sqlsess.query(Service).join(Host).join(Mission)\
                                        .filter(Mission.name == self.current_mission)\
                                        .filter(Host.ip == ip)\
                                        .filter(Service.port == int(port))\
-                                       .filter(Service.protocol == protocol).first()
-        if protocol == Protocol.TCP:
+                                       .filter(Service.protocol == proto).first()
+
+        # Check if port is open
+        if proto == Protocol.TCP:
             up = NetUtils.is_tcp_port_open(ip, port)
         else:
             up = NetUtils.is_udp_port_open(ip, port)
 
         if matching_service:
             logger.warning('Service already present into database')
+            return False
         else:
             if up:
-                logger.info('Grabbing banner from {ip}:{port} with Nmap...'.format(ip=ip, port=port))
-                banner = NetUtils.grab_banner_nmap(ip, port)
-                logger.info('Banner: {}'.format(banner or 'None'))
-                os = NetUtils.os_from_nmap_banner(banner)
-                if os:
-                    logger.info('Detected Host OS: {}'.format(os))
+                 # Grab Nmap banner
+                if grab_banner_nmap:
+                    logger.info('Grabbing banner from {ip}:{port} with Nmap...'.format(ip=ip, port=port))
+                    banner = NetUtils.grab_banner_nmap(ip, port)
+                    logger.info('Banner: {}'.format(banner or 'None'))
+                    os = NetUtils.os_from_nmap_banner(banner)
+                    if os:
+                        logger.info('Detected Host OS: {}'.format(os))
             else:
-                logger.warning('Port seems to be closed !')
+                logger.error('Port seems to be closed !')
+                return False
 
             # Add service in db (and host if not existing)
             service = Service(name     = service,
                               port     = int(port),
-                              protocol = protocol,
+                              protocol = proto,
                               up       = up,
                               banner   = banner)
 
             matching_host = self.sqlsess.query(Host).join(Mission)\
                                         .filter(Mission.name == self.current_mission)\
                                         .filter(Host.ip == ip).first()
-            new_host = Host(ip = ip, hostname = hostname, os = os)
+            new_host = Host(ip=ip, hostname=hostname, os=os)
             if matching_host:
                 matching_host.merge(new_host)
                 self.sqlsess.commit()
@@ -140,15 +161,29 @@ class ServicesRequester(Requester):
             self.sqlsess.add(service)
             self.sqlsess.commit()
 
-            logger.success('Service added')
+            logger.success('Service added: host {ip} | port {port}/{proto} | ' \
+                'service {service}'.format(
+                    ip=ip, port=port, proto=protocol, service=service))
+            return True
 
 
-    def add_url(self, url):
+    def add_url(self, url, grab_banner_nmap=True, grab_html_title=True):
+        """
+        Add a URL into the current mission scope in database.
+
+        :param str url: URL to add
+        :param bool grab_banner_nmap: If set to True, run Nmap to grab server banner
+        :param bool grab_html_title:  If set to True, grab title of HTML page (text in
+            <title> tags) and put it as comment for HTTP service
+        :return: Status
+        :rtype: bool
+        """
         matching_service = self.sqlsess.query(Service).join(Host).join(Mission)\
                                        .filter(Mission.name == self.current_mission)\
                                        .filter(Service.url == url).first()
         if matching_service:
             logger.warning('URL already present into database')
+            return False
         else:
 
             # Parse URL: Get IP, hostname, port
@@ -167,23 +202,37 @@ class ServicesRequester(Requester):
             # Check URL, grab headers, html title
             is_reachable, status, resp_headers = WebUtils.is_url_reachable(url)
             if is_reachable:
-                comment = WebUtils.grab_html_title(url)
+
+                # Display HTTP Headers
                 if resp_headers:
                     http_headers = '\n'.join("{}: {}".format(key,val) for (key,val) in resp_headers.items())
+                    logger.info('HTTP Headers:')
+                    print(http_headers)
 
-                logger.info('HTTP Headers:')
-                print(http_headers)
-                logger.info('Title: {}'.format(comment))
-                logger.info('Grabbing banner from {ip}:{port} with Nmap...'.format(ip=ip, port=port))
-                banner = NetUtils.grab_banner_nmap(ip, port)
-                logger.info('Banner: {}'.format(banner or 'None'))
-                os = NetUtils.os_from_nmap_banner(banner)
-                if os:
-                    logger.info('Detected Host OS: {}'.format(os))
+                # Grab HTML title
+                if grab_html_title:
+                    comment = WebUtils.grab_html_title(url)
+                    logger.info('Title: {}'.format(comment))
+                else:
+                    comment = ''
+
+                # Grab Nmap banner
+                if grab_banner_nmap:
+                    logger.info('Grabbing banner from {ip}:{port} with Nmap...'.format(ip=ip, port=port))
+                    banner = NetUtils.grab_banner_nmap(ip, port)
+                    logger.info('Banner: {}'.format(banner or 'None'))
+                    os = NetUtils.os_from_nmap_banner(banner)
+                    if os:
+                        logger.info('Detected Host OS: {}'.format(os))
+                else:
+                    banner = ''
+                    os = ''
+
             else:
-                comment = 'Not reachable'
-                banner = http_headers = ''
-                logger.warning('URL seems not to be reachable')
+                # comment = 'Not reachable'
+                # banner = http_headers = ''
+                logger.error('URL is not reachable, therefore it is not added')
+                return False
 
             # Add service in db (and host if not existing)
             service = Service(name         = 'http',
@@ -198,7 +247,7 @@ class ServicesRequester(Requester):
             matching_host = self.sqlsess.query(Host).join(Mission)\
                                         .filter(Mission.name == self.current_mission)\
                                         .filter(Host.ip == ip).first()
-            new_host = Host(ip = ip, hostname = hostname, os = os)
+            new_host = Host(ip=ip, hostname=hostname, os=os)
             if matching_host:
                 matching_host.merge(new_host)
                 self.sqlsess.commit()
@@ -211,7 +260,8 @@ class ServicesRequester(Requester):
 
             self.sqlsess.add(service)
             self.sqlsess.commit()
-            logger.success('Service/URL added')
+            logger.success('Service/URL added: {url}'.format(url=url))
+            return True
 
 
     def add_target(self, target):
@@ -256,6 +306,7 @@ class ServicesRequester(Requester):
             port    = target.get_port(),
             proto   = target.get_protocol(),
             service = target.get_service_name()))
+
 
 
     def add_cred(self, username, password, auth_type=None):

@@ -484,7 +484,7 @@ No response , Normal ?
 
 CHECKS ADDING
 ===============================================================================
-
+- https://github.com/SecWiki/CMS-Hunter
 - Add Hydra
 
 - Jenkins scripts:
