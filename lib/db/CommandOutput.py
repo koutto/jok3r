@@ -14,6 +14,7 @@ class CommandOutput(Base):
     id        = Column(Integer, primary_key=True)
     cmdline   = Column(Text, nullable=False, default='')
     output    = Column(Text, nullable=False, default='')
+    outputraw = Column(Text, nullable=False, default='')
     result_id = Column(Integer, ForeignKey('results.id'))
 
     result    = relationship('Result', back_populates='command_outputs')

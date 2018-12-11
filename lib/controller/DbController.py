@@ -21,6 +21,7 @@ from lib.utils.WebUtils import WebUtils
 from lib.db.Mission import Mission
 from lib.requester.Condition import Condition
 from lib.requester.Filter import Filter
+from lib.requester.CommandOutputsRequester import CommandOutputsRequester
 from lib.requester.CredentialsRequester import CredentialsRequester
 from lib.requester.HostsRequester import HostsRequester
 from lib.requester.MissionsRequester import MissionsRequester
@@ -887,17 +888,17 @@ class DbController(cmd2.Cmd):
         formatter_class=formatter_class)
     nmap.add_argument(
         '-n', '--no-http-recheck', 
-        action='store_true', 
-        help='Do not recheck for HTTP services')
+        action  = 'store_true', 
+        help    = 'Do not recheck for HTTP services')
     nmap.add_argument(
         '--no-html-title', 
-        action='store_true', 
-        help='Do not grab HTML title for HTTP services')
+        action  = 'store_true', 
+        help    = 'Do not grab HTML title for HTTP services')
     nmap.add_argument(
         'file', 
-        nargs=1, 
-        metavar='<xml-results>', 
-        help='Nmap XML results file')
+        nargs   = 1, 
+        metavar = '<xml-results>', 
+        help    = 'Nmap XML results file')
 
     @cmd2.with_category(CMD_CAT_IMPORT)
     @cmd2.with_argparser(nmap)
@@ -954,21 +955,21 @@ class DbController(cmd2.Cmd):
         formatter_class=formatter_class)
     file.add_argument(
         '--no-html-title', 
-        action='store_true', 
-        help='Do not grab HTML title for HTTP services')
+        action = 'store_true', 
+        help   = 'Do not grab HTML title for HTTP services')
     file.add_argument(
         '--no-dns-reverse',
-        action='store_true',
-        help='Do not perform reverse DNS lookup on IP addresses')
+        action = 'store_true',
+        help   = 'Do not perform reverse DNS lookup on IP addresses')
     file.add_argument(
         '--no-nmap-banner',
-        action='store_true',
-        help='Disable Nmap banner grabbing')
+        action = 'store_true',
+        help   = 'Disable Nmap banner grabbing')
     file.add_argument(
         'file', 
-        nargs=1, 
-        metavar='<filename>', 
-        help='List of targets from a file')
+        nargs   = 1, 
+        metavar = '<filename>', 
+        help    = 'List of targets from a file')
 
     @cmd2.with_category(CMD_CAT_IMPORT)
     @cmd2.with_argparser(file)
@@ -1064,27 +1065,34 @@ class DbController(cmd2.Cmd):
     checks_filter = results.add_argument_group('Filters on checks')
     checks_filter.add_argument(
         '-s', '--service-id', 
-        action='store',
-        metavar='<service-id>', 
-        help='Service id to show results of')
+        action  = 'store',
+        metavar = '<service-id>', 
+        help    = 'Service id to show results of')
     checks_filter.add_argument(
         '-n', '--check-name',
-        action='store',
-        metavar='<name>',
-        help='Search for check name')
+        action  = 'store',
+        metavar = '<name>',
+        help    = 'Search for check name')
 
-    outputs_filter = results.add_argument_group('Filters on command outputs')\
-        .add_mutually_exclusive_group()
-    outputs_filter.add_argument(
+    outputs_filter = results.add_argument_group('Filters on command outputs')
+    outputs_filter_mxg = outputs_filter.add_mutually_exclusive_group()
+    outputs_filter_mxg.add_argument(
         '-c', '--check-id', 
-        action='store', 
-        metavar='<check-id>', 
-        help='Show results (command outputs) for specified check')
-    outputs_filter.add_argument(
+        action  = 'store', 
+        metavar = '<check-id>', 
+        help    = 'Show results (command outputs) for specified check')
+    outputs_filter_mxg.add_argument(
         '-S', '--search',
-        action='store',
-        metavar='<string>',
-        help='Search for a string in results (command outputs). Accept wildcard "%"')
+        action  = 'store',
+        metavar = '<string>',
+        help    = 'Search for a string in results (command outputs). Accept wildcard "%"')
+    outputs_filter.add_argument(
+        '--nb-words',
+        action  = 'store',
+        metavar = '<nb>',
+        default  = 12,
+        help     = 'Number of words to show before and after match when using -S/--search ' \
+            '(default: 12)')
 
 
     @cmd2.with_category(CMD_CAT_RESULTS)
@@ -1104,32 +1112,32 @@ class DbController(cmd2.Cmd):
             logger.error('At least one argument required')
             return
 
+        results_req = ResultsRequester(self.sqlsess)
+        results_req.select_mission(self.current_mission)
 
         # Logical AND is applied between all specified filtering options
         filter_ = Filter(FilterOperator.AND)
         
-        # Filtering on checks:
-        # --------------------
-        if args.service_id or args.check_name:
-            results_req = ResultsRequester(self.sqlsess)
-            services_req = ServicesRequester(self.sqlsess)
-            #req.select_mission(self.current_mission)
+
+        if args.service_id or args.check_name:            
 
             # --service-id <service-id>
             if args.service_id:
                 try:
                     service_id = int(args.service_id)
                 except:
-                    logger.error('Invalid service id')
+                    logger.error('Invalid service id (wrong format)')
                     return
 
                 # Check service id exists
-                filter_svc = Filter()
-                filter_svc.add_condition(Condition(service_id, FilterData.SERVICE_ID))
-                services_req.add_filter(filter_svc)
-                if not services_req.get_first_result():
-                    logger.error('Invalid service id')
-                    return
+                # filter_svc = Filter()
+                # filter_svc.add_condition(Condition(service_id, FilterData.SERVICE_ID))
+                # services_req = ServicesRequester(self.sqlsess)
+                # services_req.select_mission(self.current_mission)
+                # services_req.add_filter(filter_svc)
+                # if not services_req.get_first_result():
+                #     logger.error('Invalid service id (not existing)')
+                #     return
 
                 filter_.add_condition(Condition(service_id, FilterData.SERVICE_ID))
 
@@ -1138,37 +1146,30 @@ class DbController(cmd2.Cmd):
                 filter_.add_condition(Condition(args.check_name, FilterData.CHECK_NAME))
 
             results_req.add_filter(filter_)
-            results_req.show_results()            
+            results_req.show()            
 
         else:
-            outputs_req = CommandOutputsRequester(self.sqlsess)
 
             # --check-id <check-id>
             if args.check_id:
                 try:
                     check_id = int(args.check_id)
                 except:
-                    logger.error('Invalid check id')
+                    logger.error('Invalid check id (wrong format)')
                     return
 
                 filter_.add_condition(Condition(args.check_id, FilterData.CHECK_ID))
+                results_req.add_filter(filter_)
+                results_req.show_command_outputs_for_check()
+
+            # --search <string>
+            elif args.search:
+                outputs_req = CommandOutputsRequester(self.sqlsess)
+                outputs_req.select_mission(self.current_mission)
+
+                filter_.add_condition(Condition(args.search, FilterData.COMMAND_OUTPUT))
                 outputs_req.add_filter(filter_)
-                
-
-
-
-
-
-
-
-
-        # --show <check-id>
-        if args.show:
-
-
-            results_req.show_command_outputs(check_id)
-
-
+                outputs_req.show_search_results(args.search, args.nb_words)
 
         print()             
 

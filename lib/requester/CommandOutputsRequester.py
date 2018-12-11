@@ -16,29 +16,45 @@ from lib.output.Output import Output
 class CommandOutputsRequester(Requester):
 
     def __init__(self, sqlsession):
-        query = sqlsession.query(CommandOutput).query(Result).join(Service).join(Host)
+        query = sqlsession.query(CommandOutput).query(Result).join(Service).join(Host)\
+                          .join(Mission)
         super().__init__(sqlsession, query)
 
 
-    def show_command_outputs(self, result_id):
-        result_check = self.sqlsess.query(Result).join(Service).join(Host)\
-                                   .filter(Result.id == result_id).first()
-        if not result_check:
-            logger.error('Invalid check id')
-            return
+    def show_search_results(self, string, nb_words=12):
+        """
 
-        command_outputs = self.sqlsess.query(CommandOutput)\
-                                      .filter(CommandOutput.result_id == result_id).all()
+        """
+        results = self.query.filter(CommandOutput.output.ilike('%'+string+'%'))
+        if not results:
+            logger.error('No result')
+        else:
+            Output.title2('Search results:')
 
-        Output.title2('Results for check {category} > {check}:'.format(
-            category = result_check.category, 
-            check    = result_check.check))
-        Output.title2('Target: host={ip}{hostname} | port={port}/{proto} | service {service}'.format(
-            ip       = result_check.service.host.ip,
-            hostname = ' ('+result_check.service.host.hostname+')' if result_check.service.host.hostname else '',
-            port     = result_check.service.port,
-            proto    = {Protocol.TCP: 'tcp', Protocol.UDP: 'udp'}.get(result_check.service.protocol),
-            service  = result_check.service.name))
+            data = list()
+            columns = [
+                'IP',
+                'Port',
+                'Proto',
+                'Service',
+                'Check id',
+                'Category',
+                'Check',
+                'Matching text',
+            ]
+            for r in results:
+                match = StringUtils.surrounding_text(r.outputraw, string, nb_words)
+                data.append([
+                    r.result.service.host.ip,
+                    r.result.service.port,
+                    {Protocol.TCP: 'tcp', Protocol.UDP: 'udp'}.get(
+                        r.result.service.protocol),
+                    r.result.service.name,
+                    r.result.id,
+                    r.result.category,
+                    r.result.check,
+                    match,
+                ])
 
         print()
         for o in command_outputs:

@@ -122,7 +122,10 @@ class Check:
                     Output.delimiter()
                     print()
 
-                    command_outputs.append(CommandOutput(cmdline=cmdline, output=output))
+                    command_outputs.append(CommandOutput(
+                        cmdline=cmdline, 
+                        output=output, 
+                        outputraw=StringUtils.remove_ansi_escape(output)))
 
                     # Run smartmodule method on output
                     if self.postrun:

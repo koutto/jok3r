@@ -283,6 +283,7 @@ class ServicesRequester(Requester):
             matching_service.merge(target.service)
             self.sqlsess.commit()
             target.service = matching_service # make sure to replace target info by newly created service
+        
         else:
             # Add host in db if it does not exist or update its info (merging)
             host = self.sqlsess.query(Host).join(Mission)\
