@@ -57,6 +57,12 @@ class FilterData(Enum):
     CHECK_ID        = auto()
     CHECK_NAME      = auto()
     COMMAND_OUTPUT  = auto()
+    VULN            = auto()
+    OPTION_NAME     = auto()
+    OPTION_VALUE    = auto()
+    PRODUCT_TYPE    = auto()
+    PRODUCT_NAME    = auto()
+    PRODUCT_VERSION = auto()
 
 class FilterOperator(Enum):
     AND = auto()

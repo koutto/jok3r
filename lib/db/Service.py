@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 ###
 ### Db > Service
@@ -50,6 +51,10 @@ class Service(Base):
 
     @hybrid_method
     def merge(self, dst):
+        """
+        Merge with another Service
+        :param Service dst: Service to merge with
+        """
         if dst.up != self.up:
             self.up = dst.up
         if dst.banner: 
@@ -86,6 +91,12 @@ class Service(Base):
 
     @hybrid_method
     def get_option(self, name):
+        """
+        Get a specific option related to the service.
+        :param str name: Option name
+        :return: Specific option
+        :rtype: Option
+        """
         for opt in self.options:
             if opt.name == name.lower():
                 return opt
@@ -93,6 +104,9 @@ class Service(Base):
 
     @hybrid_method
     def get_product(self, product_type):
+        """
+        Get 
+        """
         for prod in self.products:
             if prod.type == product_type.lower():
                 return prod

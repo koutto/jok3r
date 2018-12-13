@@ -12,6 +12,7 @@ from lib.db.Host import Host
 from lib.db.Mission import Mission
 from lib.db.Result import Result
 from lib.db.Service import Service, Protocol
+from lib.db.Vuln import Vuln
 from lib.utils.NetUtils import NetUtils
 
 
@@ -60,6 +61,12 @@ class Condition:
             FilterData.CHECK_ID        : self.__translate_check_id,
             FilterData.CHECK_NAME      : self.__translate_check_name,
             FilterData.COMMAND_OUTPUT  : self.__translate_command_output,
+            FilterData.VULN            : self.__translate_vuln,
+            FilterData.OPTION_NAME     : self.__translate_option_name,
+            FilterData.OPTION_VALUE    : self.__translate_option_value,
+            FilterData.PRODUCT_TYPE    : self.__translate_product_type,
+            FilterData.PRODUCT_NAME    : self.__translate_product_name,
+            FilterData.PRODUCT_VERSION : self.__translate_product_version,
         }
 
     def translate(self):
@@ -203,3 +210,20 @@ class Condition:
     def __translate_command_output(self, value):
         return (CommandOutput.output.ilike('%'+str(value)+'%'))
 
+    def __translate_vuln(self, value):
+        return (Vuln.name.ilike('%'+str(value)+'%'))
+
+    def __translate_option_name(self, value):
+        return (Option.name.ilike('%'+str(value)+'%'))
+
+    def __translate_option_value(self, value):
+        return (Option.value.ilike('%'+str(value)+'%'))
+
+    def __translate_product_type(self, value):
+        return (Product.type.ilike('%'+str(value)+'%'))
+
+    def __translate_product_name(self, value):
+        return (Product.name.ilike('%'+str(value)+'%'))
+
+    def __translate_product_version(self, value):
+        return (Product.version.ilike('%'+str(value)+'%'))

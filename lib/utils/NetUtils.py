@@ -130,15 +130,43 @@ class NetUtils:
     def os_from_nmap_banner(banner):
         """
         Return OS name that might be contained inside Nmap banner
+
+        Some examples:
+        - ostype: Windows
+        - product: Microsoft HTTPAPI... : Microsoft -> Windows
+        - product: IBM HTTP Server version: 6.1.0.47 extrainfo: Derived from 
+            Apache 2.0.47; Unix -> Linux
+        - product: Apache httpd version: 2.4.34 extrainfo: (Red Hat) -> Red Hat Linux
         """
-        if 'ostype: windows' in banner.lower():
-            return 'Windows'
-        elif 'ostype: linux' in banner.lower():
-            return 'Linux'
-        elif 'ostype: unix' in banner.lower():
-            return 'Unix'
-        else:
-            return ''
+        matches = {
+            'Windows': [
+                'ostype: windows',
+                'microsoft',
+            ],
+            'Linux': [
+                'ostype: linux',
+                'ostype: unix',
+                'Red Hat',
+                'Unix',
+            ]
+        }
+
+        for ostype in matches.keys():
+            for string in matches[ostype]:
+                if string in banner.lower():
+                    return ostype
+
+        return ''
+
+
+    @staticmethod
+    def clean_nmap_banner(banner):
+        """
+        Make Nmap banner more readable:
+            - Delete "product: "
+            - Delete "version: "
+        """
+        return banner.replace('product: ', '').replace('version: ', '')
 
 
     @staticmethod

@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 ###
 ### Db > Credential
@@ -14,16 +15,19 @@ class Credential(Base):
     id         = Column(Integer, primary_key=True)
     type       = Column(String(100))
     username   = Column(String(255), nullable=False, default='')
-    password   = Column(String(255), nullable=True) # Can be NULL when only username is set/known
+    # Password can be NULL when only username is set/known
+    password   = Column(String(255), nullable=True) 
     comment    = Column(Text, nullable=False, default='')
     service_id = Column(Integer, ForeignKey('services.id'))
 
     service    = relationship('Service', back_populates='credentials')
 
 
+    #------------------------------------------------------------------------------------
+
     def __repr__(self):
-        return '<Credential(type="{type}", username="{username}", password="{password}", ' \
-            'comment="{comment}">'.format(
+        return '<Credential(type="{type}", username="{username}", ' \
+            'password="{password}", comment="{comment}">'.format(
                 type     = self.type, 
                 username = self.username, 
                 password = self.password,

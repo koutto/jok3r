@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 ###
 ### Db > Host
@@ -27,23 +28,50 @@ class Host(Base):
     services   = relationship('Service', order_by=Service.port, back_populates='host',
                               cascade='save-update, merge, delete, delete-orphan')
 
+
+    #------------------------------------------------------------------------------------
+
     @hybrid_method
     def merge(self, dst):
+        """
+        Merge with another Host
+        :param Host dst: Host to merge with
+        """
         if dst.hostname: self.hostname = dst.hostname
         if dst.os: self.os = dst.os
 
+
     @hybrid_method
     def is_in_ip_range(self, ip_range):
+        """
+        Check if IP address is inside a given IP range
+        :param str ip_range: IP range in CIDR notation
+            (e.g. 192.168.1.0/24)
+        :return: Status
+        :rtype: bool
+        """
         net = ipaddress.ip_network(ip_range, strict=False)
         return min(net) <= self.ip <= max(net)  
 
+
     @is_in_ip_range.expression
     def is_in_ip_range(cls, ip_range):
+        """
+        Check if IP address is inside a given IP range
+        :param str ip_range: IP range in CIDR notation
+            (e.g. 192.168.1.0/24)
+        :return: Status
+        :rtype: bool
+        """
         net = ipaddress.ip_network(ip_range, strict=False)
         return cls.ip.between(min(net), max(net))
 
+
+    #------------------------------------------------------------------------------------
+
     def __repr__(self):
-        return '<Host(ip="{ip}", hostname="{hostname}", os="{os}", comment="{comment}")>'.format(
+        return '<Host(ip="{ip}", hostname="{hostname}", os="{os}", ' \
+            'comment="{comment}")>'.format(
                 ip       = self.ip, 
                 hostname = self.hostname, 
                 os       = self.os, 

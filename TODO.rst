@@ -8,14 +8,6 @@ Docker Environment
 * IMPORTANT: RE INSTALL odat !! 
 
 
-
-current => AttackController line 80
-
-
-
-
-
-
 BUG FIXES
 ===============================================================================
 
@@ -33,35 +25,9 @@ BUG FIXES
 
 IMPROVEMENTS / NEW FEATURES
 ===============================================================================
-- new filter -f: on banner keyword (ex: banner=tomcat)
-
 - wappalyzer implementation avec versions => based on https://github.com/kanishk619/wappalyzer-python (working)
 
-- Delete product: and version: in banner:
-product: Oracle TNS listener version: 12.2.0.1.0 extrainfo
-
-- Deduce OS from banner:
-    - ostype: Windows
-    - product: Microsoft HTTPAPI... : Microsoft -> Windows
-    - product: IBM HTTP Server version: 6.1.0.47 extrainfo: Derived from Apache 2.0.47; Unix -> Linux
-    - product: Apache httpd version: 2.4.34 extrainfo: (Red Hat) -> Red Hat Linux
-
-- db> hosts: If hostname == str(ip), do not print hostname
-
-- db> nmap -> import
-    -x : Nmap XML
-    -f : File storing a list of ip:port and/or urls
-
-- db> results : Add search features
-
 - Ctrl+C -> add possibility to switch fast mode on/off
-
-
-- IMPORTANT: add option to disable reverse dns lookup in __init_with_ip and __init_with_url in target (to speed up !!)
-    => default opt out (+test benchmark du temps pris pour le reverse lookup)
-
-- feature: attack do not rerun check
-
 
 - AttackProfiles:
     - weak-creds (weak, common, default)
@@ -90,12 +56,10 @@ product: Oracle TNS listener version: 12.2.0.1.0 extrainfo
     - general-minimal-wordlist
     - general-wordlist (raft directory)
 
-
-
 - Auth types:
     - supported auth-type => only type that support various status/lvl (can be added in cmdline)
     - can accept other values (eg creds trouvés par changeme) and can be displayed in db>creds
-    - method for creds retrival in postrun
+    - method for creds retrieval in postrun
 
 * Reporting HTML:
     * Template https://www.jqueryscript.net/menu/Bootstrap-Sidebar-Extension-With-jQuery-CSS-CSS3.html
@@ -105,20 +69,8 @@ product: Oracle TNS listener version: 12.2.0.1.0 extrainfo
 
 * Do not re-run checks already done
 
-* AttackProfiles info --attack-profiles
-
-* info --products
-
-* Ctrl-C better handler 
-    * skip current, 
-    * exit ? (not working, recheck), 
-    * switch fast mode
-
 * Nmap import: filter on nmap results to add
 
-* Specific options management
-
-* Products management
 
 
 

@@ -1,6 +1,7 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 ###
-### Db > Output
+### Db > Command Output
 ###
 from sqlalchemy import ForeignKey, Column, Integer, String, Text, DateTime, Boolean
 from sqlalchemy.orm import relationship
@@ -20,7 +21,9 @@ class CommandOutput(Base):
     result    = relationship('Result', back_populates='command_outputs')
 
 
+    #------------------------------------------------------------------------------------
+    
     def __repr__(self):
         return '<CommandOutput(cmdline="{cmdline}", output="{output}")>'.format(
-                cmdline = self.cmdline, 
-                output  = self.output)
+            cmdline = self.cmdline, 
+            output  = self.output)

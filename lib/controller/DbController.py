@@ -25,8 +25,11 @@ from lib.requester.CommandOutputsRequester import CommandOutputsRequester
 from lib.requester.CredentialsRequester import CredentialsRequester
 from lib.requester.HostsRequester import HostsRequester
 from lib.requester.MissionsRequester import MissionsRequester
+from lib.requester.OptionsRequester import OptionsRequester
+from lib.requester.ProductsRequester import ProductsRequester
 from lib.requester.ResultsRequester import ResultsRequester
 from lib.requester.ServicesRequester import ServicesRequester
+from lib.requester.VulnsRequester import VulnsRequester
 from lib.output.Logger import logger
 from lib.output.Output import Output
 
@@ -425,6 +428,8 @@ class DbController(cmd2.Cmd):
         # ------------------
         # Logical AND is applied between all specified filtering options
         filter_ = Filter(FilterOperator.AND)
+
+        # Service names
         if args.names:
             for n in args.names:
                 if not self.settings.services.is_service_supported(n, multi=False):
@@ -881,6 +886,296 @@ class DbController(cmd2.Cmd):
 
 
     #------------------------------------------------------------------------------------
+    # Specific Options Management
+
+    options = argparse.ArgumentParser(
+        description='Specific Options in the current mission scope', 
+        formatter_class=formatter_class)
+
+    options_filters = options.add_argument_group('Filter options')
+    options_filters.add_argument(
+        '-I', '--ip', 
+        action  = 'store', 
+        metavar = '<ip1,ip2...>', 
+        help    = 'Search for a list of IPs (single IP/CIDR range comma-separated)')
+    options_filters.add_argument(
+        '-H', '--hostname', 
+        action  = 'store', 
+        metavar = '<hostname1,hostname2...>', 
+        help    = 'Search for a list of hostnames (comma-separated)')
+    options_filters.add_argument(
+        '-s', '--service', 
+        action  = 'store', 
+        metavar = '<service1,service2...>', 
+        help    = 'Services to select')
+    options_filters.add_argument(
+        '-p', '--port', 
+        action  = 'store', 
+        metavar = '<port1,port2...>', 
+        help    = 'Search for a list of ports (single/range comma-separated)')   
+    options_filters.add_argument(
+        '-r', '--proto', 
+        action  = 'store', 
+        metavar = '<protocol>', 
+        help    = 'Only show [tcp|udp] services')
+    options_filters.add_argument(
+        '-S', '--search', 
+        action  = 'store', 
+        metavar = '<string>', 
+        help    = 'Search string to filter by')
+    options_filters.add_argument(
+        '-o', '--order', 
+        action  = 'store', 
+        metavar = '<column>', 
+        help    = 'Order rows by specified column')
+    options_filters.add_argument(
+        'names', 
+        nargs   = '*', 
+        metavar = '<option_name1> <option_name2> ...', 
+        help    = 'Option names to select')
+
+    options_manage = options.add_argument_group('Manage options')\
+    options_manage.add_argument(
+        '-d', '--del', 
+        action  = 'store_true', 
+        dest    = 'delete', 
+        help    = 'Delete selected option(s) (instead of displaying)')
+
+
+    @cmd2.with_category(CMD_CAT_MISSION_SCOPE)
+    @cmd2.with_argparser(options)
+    def do_options(self, args):
+        """Options in the current mission scope"""
+
+        print()
+        req = OptionsRequester(self.sqlsess)
+        req.select_mission(self.current_mission)
+
+        # Filtering options:
+        # ------------------
+        # Logical AND is applied between all specified filtering options
+        filter_ = Filter(FilterOperator.AND)
+
+        # --ip <ip1,ip2...>
+        if args.ip:
+            # OR between submitted ips/ranges
+            filter_.add_condition(Condition(args.ip.split(','), FilterData.IP))
+
+        # --hostname <hostname1,hostname2...>
+        if args.hostname:
+            # OR between submitted hostnames
+            filter_.add_condition(Condition(args.hostname.split(','), FilterData.HOST))
+
+        # --service <service1,service2...>
+        if args.services:
+            # OR between ips
+            services = args.services.split(',')
+            for s in services:
+                if not self.settings.services.is_service_supported(s, multi=False):
+                    logger.error('Service {name} is not valid/supported'.format(
+                        name=s.lower()))
+                    return
+            filter_.add_condition(Condition(services, FilterData.SERVICE_EXACT))
+
+        # --port <port1,port2...>
+        if args.port:
+            # OR between ports/port-ranges
+            filter_.add_condition(Condition(args.port.split(','), FilterData.PORT))
+
+        # --proto <protocol>
+        if args.proto:
+            filter_.add_condition(Condition(args.proto, FilterData.PROTOCOL))
+
+        # --search <string>
+        if args.search:
+            filter_search = Filter(FilterOperator.OR)
+            filter_search.add_condition(Condition(args.search, FilterData.OPTION_NAME))
+            filter_search.add_condition(Condition(args.search, FilterData.OPTION_VALUE))
+            filter_.add_condition(filter_search)
+
+        # <option_name1> <option_name2> ...
+        if args.names:
+            for n in args.names:
+                if not self.settings.services.is_specific_option_name_supported(n):
+                    logger.error('Option "{name}" is not valid/supported'.format(
+                        name=n.lower()))
+                    return
+            filter_.add_condition(Condition(args.names, FilterData.OPTION_NAME))
+
+        # --order <column>
+        if args.order:
+            req.order_by(args.order)
+
+        try:
+            req.add_filter(filter_)
+        except FilterException as e:
+            logger.error(e)
+            return
+
+        # Operations:
+        # -----------
+        # --del
+        elif args.delete:
+            if not req.filter_applied:
+                if not Output.prompt_confirm('No filter applied. Are you sure you ' \
+                        'want to delete ALL options in current mission ?', 
+                        default=False):
+                    logger.info('Canceled')
+                    return
+            req.delete()
+
+        # Display (default)
+        else:
+            req.show() 
+
+
+    #------------------------------------------------------------------------------------
+    # Products Management
+
+    products = argparse.ArgumentParser(
+        description='Products in the current mission scope', 
+        formatter_class=formatter_class)
+
+    products_filters = products.add_argument_group('Filter products')
+    products_filters.add_argument(
+        '-I', '--ip', 
+        action  = 'store', 
+        metavar = '<ip1,ip2...>', 
+        help    = 'Search for a list of IPs (single IP/CIDR range comma-separated)')
+    products_filters.add_argument(
+        '-H', '--hostname', 
+        action  = 'store', 
+        metavar = '<hostname1,hostname2...>', 
+        help    = 'Search for a list of hostnames (comma-separated)')
+    products_filters.add_argument(
+        '-s', '--service', 
+        action  = 'store', 
+        metavar = '<service1,service2...>', 
+        help    = 'Services to select')
+    products_filters.add_argument(
+        '-p', '--port', 
+        action  = 'store', 
+        metavar = '<port1,port2...>', 
+        help    = 'Search for a list of ports (single/range comma-separated)')   
+    products_filters.add_argument(
+        '-r', '--proto', 
+        action  = 'store', 
+        metavar = '<protocol>', 
+        help    = 'Only show [tcp|udp] services')
+    products_filters.add_argument(
+        '-S', '--search', 
+        action  = 'store', 
+        metavar = '<string>', 
+        help    = 'Search string to filter by')
+    products_filters.add_argument(
+        '-o', '--order', 
+        action  = 'store', 
+        metavar = '<column>', 
+        help    = 'Order rows by specified column')
+    products_filters.add_argument(
+        'types', 
+        nargs   = '*', 
+        metavar = '<product_type1> <product_type2> ...', 
+        help    = 'Product types to select')
+
+    products_manage = products.add_argument_group('Manage products')\
+    products_manage.add_argument(
+        '-d', '--del', 
+        action  = 'store_true', 
+        dest    = 'delete', 
+        help    = 'Delete selected product(s) (instead of displaying)')
+
+
+    @cmd2.with_category(CMD_CAT_MISSION_SCOPE)
+    @cmd2.with_argparser(products)
+    def do_products(self, args):
+        """Products in the current mission scope"""
+
+        print()
+        req = ProductsRequester(self.sqlsess)
+        req.select_mission(self.current_mission)
+
+        # Filtering options:
+        # ------------------
+        # Logical AND is applied between all specified filtering options
+        filter_ = Filter(FilterOperator.AND)
+
+        # --ip <ip1,ip2...>
+        if args.ip:
+            # OR between submitted ips/ranges
+            filter_.add_condition(Condition(args.ip.split(','), FilterData.IP))
+
+        # --hostname <hostname1,hostname2...>
+        if args.hostname:
+            # OR between submitted hostnames
+            filter_.add_condition(Condition(args.hostname.split(','), FilterData.HOST))
+
+        # --service <service1,service2...>
+        if args.services:
+            # OR between ips
+            services = args.services.split(',')
+            for s in services:
+                if not self.settings.services.is_service_supported(s, multi=False):
+                    logger.error('Service {name} is not valid/supported'.format(
+                        name=s.lower()))
+                    return
+            filter_.add_condition(Condition(services, FilterData.SERVICE_EXACT))
+
+        # --port <port1,port2...>
+        if args.port:
+            # OR between ports/port-ranges
+            filter_.add_condition(Condition(args.port.split(','), FilterData.PORT))
+
+        # --proto <protocol>
+        if args.proto:
+            filter_.add_condition(Condition(args.proto, FilterData.PROTOCOL))
+
+        # --search <string>
+        if args.search:
+            filter_search = Filter(FilterOperator.OR)
+            filter_search.add_condition(Condition(args.search, FilterData.PRODUCT_TYPE))
+            filter_search.add_condition(Condition(args.search, FilterData.PRODUCT_NAME))
+            filter_search.add_condition(Condition(args.search, 
+                FilterData.PRODUCT_VERSION))
+            filter_.add_condition(filter_search)
+
+        # <product_type1> <product_type2> ...
+        if args.types:
+            for t in args.types:
+                if not self.settings.services.is_product_type_supported(t):
+                    logger.error('Product type "{type}" is not valid/supported'.format(
+                        name=t.lower()))
+                    return
+            filter_.add_condition(Condition(args.names, FilterData.PRODUCT_TYPE))
+
+        # --order <column>
+        if args.order:
+            req.order_by(args.order)
+
+        try:
+            req.add_filter(filter_)
+        except FilterException as e:
+            logger.error(e)
+            return
+
+        # Operations:
+        # -----------
+        # --del
+        elif args.delete:
+            if not req.filter_applied:
+                if not Output.prompt_confirm('No filter applied. Are you sure you ' \
+                        'want to delete ALL products in current mission ?', 
+                        default=False):
+                    logger.info('Canceled')
+                    return
+            req.delete()
+
+        # Display (default)
+        else:
+            req.show() 
+
+
+    #------------------------------------------------------------------------------------
     # Import Nmap
 
     nmap = argparse.ArgumentParser(
@@ -1053,6 +1348,142 @@ class DbController(cmd2.Cmd):
                                 grab_html_title=not args.no_html_title)
 
         print()
+
+
+    def complete_file(self, text, line, begidx, endidx):
+        """Complete with filename"""
+        flag_dict = {
+            'file': self.path_complete,
+            '--no-html-title'  : self.path_complete,
+            '--no-dns-reverse' : self.path_complete,
+            '--no-nmap-banner' : self.path_complete,
+
+        }
+
+        return self.flag_based_complete(text, line, begidx, endidx, flag_dict=flag_dict)
+
+    #------------------------------------------------------------------------------------
+    # Vulns Display
+
+    vulns = argparse.ArgumentParser(
+        description='Vulnerabilities in the current mission scope', 
+        formatter_class=formatter_class)
+
+    vulns_filters = vulns.add_argument_group('Filter vulnerabilities')
+    # vulns_filters.add_argument(
+    #     '-H', '--hostname', 
+    #     action  = 'store', 
+    #     metavar = '<hostname1,hostname2...>', 
+    #     help    = 'Search for a list of hostnames (comma-separated)')
+    vulns_filters.add_argument(
+        '-I', '--ip', 
+        action  = 'store', 
+        metavar = '<ip1,ip2...>', 
+        help    = 'Search for a list of IPs (single IP/CIDR range comma-separated)')
+    vulns_filters.add_argument(
+        '-s', '--service', 
+        action  = 'store', 
+        metavar = '<service1,service2...>', 
+        help    = 'Services to select')
+    vulns_filters.add_argument(
+        '-p', '--port', 
+        action  = 'store', 
+        metavar = '<port1,port2...>', 
+        help    = 'Search for a list of ports (single/range comma-separated)')   
+    vulns_filters.add_argument(
+        '-r', '--proto', 
+        action  = 'store', 
+        metavar = '<protocol>', 
+        help    = 'Only show [tcp|udp] services')
+    vulns_filters.add_argument(
+        '-S', '--search', 
+        action  = 'store', 
+        metavar = '<string>', 
+        help    = 'Search string to filter by')
+    vulns_filters.add_argument(
+        '-o', '--order', 
+        action  = 'store', 
+        metavar = '<column>', 
+        help    = 'Order rows by specified column')
+
+    vulns_manage = vulns.add_argument_group('Manage vulnerabilities')
+    vulns_manage.add_argument(
+        '-d', '--del', 
+        action  = 'store_true', 
+        dest    = 'delete', 
+        help    = 'Delete selected vulnerability(ies) (instead of displaying)')
+
+
+    @cmd2.with_category(CMD_CAT_RESULTS)
+    @cmd2.with_argparser(vulns)
+    def do_vulns(self, args):
+        """Vulnerabilities in the current mission scope"""
+
+        print()
+        req = VulnsRequester(self.sqlsess)
+        req.select_mission(self.current_mission)
+
+        # Filtering options:
+        # ------------------
+        # Logical AND is applied between all specified filtering options
+        filter_ = Filter(FilterOperator.AND)
+
+        # --ip <ip1,ip2...>
+        if args.ip:
+            # OR between submitted ips/ranges
+            filter_.add_condition(Condition(args.ip.split(','), FilterData.IP))
+
+        # --service <service1,service2...>
+        if args.services:
+            # OR between ips
+            services = args.services.split(',')
+            for s in services:
+                if not self.settings.services.is_service_supported(s, multi=False):
+                    logger.error('Service {name} is not valid/supported'.format(
+                        name=s.lower()))
+                    return
+            filter_.add_condition(Condition(services, FilterData.SERVICE_EXACT))
+
+        # --port <port1,port2...>
+        if args.port:
+            # OR between ports/port-ranges
+            filter_.add_condition(Condition(args.port.split(','), FilterData.PORT))
+
+        # --proto <protocol>
+        if args.proto:
+            filter_.add_condition(Condition(args.proto, FilterData.PROTOCOL))
+
+        # --search <string>
+        if args.search:
+            filter_search = Filter(FilterOperator.OR)
+            filter_search.add_condition(Condition(args.search, FilterData.VULN))
+            filter_.add_condition(filter_search)
+
+        # --order <column>
+        if args.order:
+            req.order_by(args.order)
+
+        try:
+            req.add_filter(filter_)
+        except FilterException as e:
+            logger.error(e)
+            return
+
+        # Operations:
+        # -----------
+        # --del
+        elif args.delete:
+            if not req.filter_applied:
+                if not Output.prompt_confirm('No filter applied. Are you sure you ' \
+                        'want to delete ALL vulnerabilities in current mission ?', 
+                        default=False):
+                    logger.info('Canceled')
+                    return
+            req.delete()
+
+        # Display (default)
+        else:
+            req.show() 
 
 
     #------------------------------------------------------------------------------------

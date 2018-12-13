@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 ###
 ### Requester > Hosts
@@ -33,7 +34,7 @@ class HostsRequester(Requester):
             for r in results:
                 data.append([
                     r.ip,
-                    r.hostname,
+                    r.hostname if r.hostname != str(r.ip) else '',
                     r.os,
                     r.comment,
                     len(r.services)          

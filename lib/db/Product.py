@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 ###
 ### Db > Product
@@ -21,6 +22,10 @@ class Product(Base):
     service    = relationship('Service', back_populates='products')
 
 
+    #------------------------------------------------------------------------------------
+    
     def __repr__(self):
         return '<Product(type="{type}", name="{name}", version="{version}">'.format(
-            type = self.type, name = self.name, version = self.version)
+            type    = self.type, 
+            name    = self.name, 
+            version = self.version)

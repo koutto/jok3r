@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 ###
 ### Db > Mission
@@ -20,17 +21,25 @@ class Mission(Base):
     creation_date = Column(DateTime, default=func.now())
 
     hosts         = relationship('Host', order_by=Host.id, back_populates='mission',
-                                 cascade='save-update, merge, delete, delete-orphan')
+        cascade='save-update, merge, delete, delete-orphan')
 
-    def __repr__(self):
-        return '<Mission(name="{name}", comment="{comment}", creation_date="{creation_date}")>'.format(
-                name          = self.name,
-                comment       = self.comment,
-                creation_date = self.creation_date)
+
+    #------------------------------------------------------------------------------------
 
     @hybrid_method
     def get_nb_services(self):
+        """Return the total number of services inside the mission scope"""
         nb = 0
         for host in self.hosts:
             nb += len(host.services)
         return nb
+
+    #------------------------------------------------------------------------------------
+            
+    def __repr__(self):
+        return '<Mission(name="{name}", comment="{comment}", ' \
+            'creation_date="{creation_date}")>'.format(
+                name          = self.name,
+                comment       = self.comment,
+                creation_date = self.creation_date)
+

@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 ###
 ### Db > Result
@@ -19,17 +20,25 @@ class Result(Base):
     service_id    = Column(Integer, ForeignKey('services.id'))
 
     service         = relationship('Service', back_populates='results')
-    command_outputs = relationship('CommandOutput', order_by=CommandOutput.id, back_populates='result',
-                        cascade='save-update, merge, delete, delete-orphan')
+    command_outputs = relationship('CommandOutput', order_by=CommandOutput.id, 
+        back_populates='result', cascade='save-update, merge, delete, delete-orphan')
 
+
+    #------------------------------------------------------------------------------------
 
     @hybrid_method
     def merge(self, dst):
+        """
+        Merge with another Result
+        :param Result dst: Result to merge with
+        """
         for output in dst.command_outputs:
             self.command_outputs.append(output)
 
 
+    #------------------------------------------------------------------------------------
+    
     def __repr__(self):
         return '<Result(category={category}, check="{check}")>'.format(
-                category = self.category,
-                check    = self.check)
+            category = self.category,
+            check    = self.check)

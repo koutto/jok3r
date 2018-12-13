@@ -6,6 +6,7 @@
 from libnmap.parser import NmapParser
 
 from lib.core.Config import *
+from lib.utils.NetUtils import NetUtils
 from lib.utils.WebUtils import WebUtils
 from lib.db.Host import Host
 from lib.db.Option import Option
@@ -107,6 +108,13 @@ class NmapResultsParser:
                         '| service {service}'.format(
                             ip = h.ipv4, port=s.port, proto=s.protocol, service=name))
 
+                # Deduce OS from banner if possible
+                if not os:
+                    os = NetUtils.os_from_nmap_banner(s.banner)
+
+                # Clean Nmap banner
+                banner = NetUtils.clean_nmap_banner(s.banner)
+
                 # Create Service object
                 service = Service(
                     name     = name,
@@ -114,9 +122,10 @@ class NmapResultsParser:
                     protocol = {'tcp': Protocol.TCP,'udp': Protocol.UDP}.get(s.protocol),
                     url      = url,
                     up       = True,
-                    banner   = s.banner,
+                    banner   = banner,
                     comment  = comment)
 
+                # Already add specific option https=True if possible
                 if name == 'http' and url.startswith('https://'):
                     service.options.append(Option(name='https', value='true'))
 
