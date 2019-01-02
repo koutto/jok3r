@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 ###
 ### Utils > WebUtils
@@ -13,9 +14,7 @@ class NetUtils:
 
     @staticmethod
     def is_valid_ip(string):
-        """
-        Check if given string represents a valid IP address 
-        """
+        """Check if given string represents a valid IP address"""
         try:
             ipaddress.ip_address(string)
             return True
@@ -25,10 +24,7 @@ class NetUtils:
 
     @staticmethod
     def is_valid_ip_range(string):
-        """
-        Check if given string represents a valid IP range
-        Accepted format: like 1.1.1.1/24
-        """
+        """Check if given string represents a valid CIDR range (e.g. 1.1.1.1/24)"""
         try:
             ipaddress.ip_network(string, strict=False)
             return True
@@ -38,9 +34,7 @@ class NetUtils:
 
     @staticmethod
     def is_valid_port(string):
-        """
-        Check if given string represents a valid port number
-        """
+        """Check if given string represents a valid port number"""
         try:
             port = int(string)
             return (0 <= port <= 65535)
@@ -50,10 +44,7 @@ class NetUtils:
 
     @staticmethod
     def is_valid_port_range(string):
-        """
-        Check if given string represents a valid port range
-        Accepted format: like 80-100
-        """
+        """Check if given string represents a valid port range (e.g. 80-100)"""
         if string.count('-') == 1:
             minport, maxport = string.split('-')
             return NetUtils.is_valid_port(minport) and \
@@ -65,9 +56,8 @@ class NetUtils:
 
     @staticmethod
     def is_tcp_port_open(ip, port):
-        """
-        Check if given TCP port is open
-        """
+        """Check if given TCP port is open"""
+
         # try:
         #     socket.setdefaulttimeout(3)
         #     s = socket.socket()
@@ -94,15 +84,14 @@ class NetUtils:
 
     @staticmethod
     def is_udp_port_open(ip, port):
-        """
-        Check if given UDP port is open
-        """
+        """Check if given UDP port is open"""
         # TODO
         return True
 
 
     @staticmethod
     def grab_banner_nmap(ip, port):
+        """Grab service banner using Nmap"""
         report = None
         nmproc = NmapProcess(ip, '-sT -sV -Pn -p '+str(port))
         rc = nmproc.run()
@@ -129,7 +118,7 @@ class NetUtils:
     @staticmethod
     def os_from_nmap_banner(banner):
         """
-        Return OS name that might be contained inside Nmap banner
+        Return OS name that might be contained inside Nmap banner.
 
         Some examples:
         - ostype: Windows
@@ -207,9 +196,7 @@ class NetUtils:
 
     @staticmethod
     def reverse_dns_lookup(ip):
-        """
-        Get hostname from IP if reverse DNS entry exists
-        """
+        """Get hostname from IP if reverse DNS entry exists"""
         try:
             return socket.gethostbyaddr(ip)[0]
         except:
@@ -218,9 +205,7 @@ class NetUtils:
 
     @staticmethod
     def get_local_ip_address():
-        """
-        Get the IP address of whichever interface is used to connect to the network
-        """
+        """Get the IP address of whichever interface is used to connect to the network"""
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             s.connect(("8.8.8.8", 80))

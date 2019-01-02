@@ -21,9 +21,16 @@ class CommandOutputsRequester(Requester):
         super().__init__(sqlsession, query)
 
 
+    #------------------------------------------------------------------------------------
+
     def show_search_results(self, string, nb_words=12):
         """
+        Display command outputs search results.
+        For good readability, only some words surrounding the search string are 
+        displayed.
 
+        :param str string: Search string (accepts wildcard "%")
+        :param int nb_words: Number of words surrounding the search string to show
         """
         results = self.query.filter(CommandOutput.output.ilike('%'+string+'%'))
         if not results:

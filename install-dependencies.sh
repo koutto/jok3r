@@ -6,10 +6,27 @@ print_title() {
         echo "${BOLD} $1 ${NORMAL}"
 }
 
-# if ! [ -x "$(command -v git)" ]; then
-#   echo 'Error: git is not installed.' >&2
-#   exit 1
-# fi
+print_delimiter() {
+    echo
+    echo "-------------------------------------------------------------------------------"
+    echo
+}
+
+
+echo
+echo
+print_title "=============================="
+print_title "Install dependencies for Jok3r"
+print_title "=============================="
+echo
+
+if ! [ -x "$(command -v git)" ]; then
+    print_title "[~] Install git ..."
+    apt-get install -y git
+else
+    print_title "[+] Git is already installed"
+fi
+print_delimiter
 
 if ! [ -x "$(command -v msfconsole)" ]; then
     print_title "[~] Install Metasploit ..."
@@ -17,6 +34,7 @@ if ! [ -x "$(command -v msfconsole)" ]; then
 else
     print_title "[+] Metasploit is already installed"
 fi
+print_delimiter
 
 if ! [ -x "$(command -v nmap)" ]; then
     print_title "[~] Install Nmap ..."
@@ -24,6 +42,7 @@ if ! [ -x "$(command -v nmap)" ]; then
 else
     print_title "[+] Nmap is already installed"
 fi
+print_delimiter
 
 if ! [ -x "$(command -v tcpdump)" ]; then
     print_title "[~] Install tcpdump ..."
@@ -31,6 +50,7 @@ if ! [ -x "$(command -v tcpdump)" ]; then
 else
     print_title "[+] tcpdump is already installed"
 fi
+print_delimiter
 
 if ! [ -x "$(command -v npm)" ]; then
     print_title "[~] Install NodeJS ..."
@@ -38,13 +58,17 @@ if ! [ -x "$(command -v npm)" ]; then
     sudo apt-get install -y nodejs
 else
     print_title "[+] NodeJS is already installed"
-fi    
+fi
+print_delimiter   
 
 print_title "[~] Install Python 2.7 + 3 and useful related packages (if missing)"
-sudo apt-get install -y --ignore-missing python python2.7 python3 python-pip python3-pip python-dev python3-dev python-setuptools python3-setuptools
+sudo apt-get install -y --ignore-missing python python2.7 python3 python-pip python3-pip 
+sudo apt-get install -y --ignore-missing python-dev python3-dev python-setuptools 
+sudo apt-get install -y --ignore-missing python3-setuptools python3-distutils
 sudo apt-get install -y --ignore-missing python-ipy python-nmap python3-pymysql
 sudo pip3 uninstall -y psycopg2
 sudo pip3 install psycopg2-binary
+print_delimiter
 
 if ! [ -x "$(command -v jython)" ]; then
     print_title "[~] Install Jython"
@@ -52,6 +76,7 @@ if ! [ -x "$(command -v jython)" ]; then
 else
     print_title "[+] Jython is already installed"
 fi
+print_delimiter
 
 
 if ! [ -x "$(command -v rvm)" ]; then
@@ -67,6 +92,7 @@ if ! [ -x "$(command -v rvm)" ]; then
 else
     print_title "[+] Ruby is already installed"
 fi
+print_delimiter
 
 if ! [ -x "$(command -v perl)" ]; then
     print_title "[~] Install Perl and useful related packages"
@@ -74,6 +100,7 @@ if ! [ -x "$(command -v perl)" ]; then
 else
     print_title "[+] Perl is already installed"
 fi
+print_delimiter
 
 if ! [ -x "$(command -v php)" ]; then
     print_title "[~] Install PHP"
@@ -81,6 +108,7 @@ if ! [ -x "$(command -v php)" ]; then
 else
     print_title "[+] PHP is already installed"
 fi
+print_delimiter
 
 if ! [ -x "$(command -v java)" ]; then
     print_title "[~] Install Java"
@@ -88,11 +116,17 @@ if ! [ -x "$(command -v java)" ]; then
 else
     print_title "[+] Java is already installed"
 fi
+print_delimiter
 
 print_title "[~] Install other required packages (if missing)"
-sudo apt-get install -y --ignore-missing zlib1g-dev libcurl4-openssl-dev liblzma-dev libxml2 libxml2-dev libxslt1-dev build-essential libgmp-dev 
-sudo apt-get install -y --ignore-missing gcc make automake patch libssl-dev locate libffi-dev libxml2-utils
-sudo apt-get install -y --ignore-missing smbclient dnsutils
+sudo apt-get install -y --ignore-missing zlib1g-dev libcurl4-openssl-dev liblzma-dev 
+sudo apt-get install -y --ignore-missing libxml2 libxml2-dev libxslt1-dev build-essential 
+sudo apt-get install -y --ignore-missing gcc make automake patch libssl-dev locate
+sudo apt-get install -y --ignore-missing smbclient dnsutils libgmp-dev libffi-dev 
+sudo apt-get install -y --ignore-missing libxml2-utils
+print_delimiter
 
 print_title "[~] Install Python3 libraries required by Jok3r (if missing)"
 sudo pip3 install -r requirements.txt
+
+print_title "[~] Dependencies installation finished. Check if any error has been raised"

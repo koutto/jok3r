@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 ###
 ### Output > StatusBar
@@ -10,10 +11,13 @@ from lib.output.Output import Output
 # enlighten module API reference:
 # https://python-enlighten.readthedocs.io/en/latest/api.html
 
-STATUSBAR_FORMAT = Output.colored('{desc}{desc_pad}|{percentage:3.0f}% |{bar}| [{elapsed}]', 
-                                  color='white', highlight='navy_blue')
-STATUSBAR_FORMAT_SINGLE = Output.colored('{desc}{desc_pad}{fill}', 
-                                  color='white', highlight='navy_blue')
+STATUSBAR_FORMAT = Output.colored(
+    '{desc}{desc_pad}|{percentage:3.0f}% |{bar}| [{elapsed}]', 
+    color='white', highlight='navy_blue')
+
+STATUSBAR_FORMAT_SINGLE = Output.colored(
+    '{desc}{desc_pad}{fill}', 
+    color='white', highlight='navy_blue')
 
 DESC_LENGTH = 81
 
@@ -23,6 +27,7 @@ DESC_LENGTH = 81
 # It is also necessary to override the method manager._resize_handler which is called 
 # each time the window is resized, in order to make sure the width is corrected
 HACK_LENGTH = 24 
+
 
 # Subclassing Manager class from
 # https://github.com/Rockhopper-Technologies/enlighten/blob/master/enlighten/_manager.py
@@ -77,5 +82,5 @@ kwargs = {}
 kwargs['enabled'] = isatty and kwargs.get('enabled', True)
 manager = MyManager(stream=stream, counterclass=enlighten.Counter, **kwargs)
 #manager = enlighten.get_manager()
-manager.width += HACK_LENGTH # hack to fill the whole line
+manager.width += HACK_LENGTH # Hack to fill the whole line
 

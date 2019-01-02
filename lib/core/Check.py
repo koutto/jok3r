@@ -17,7 +17,7 @@ from lib.output.Output import Output
 class Check:
     """Security check"""
 
-    def __init__(self, name, category, description, tool, commands, postrun=None):
+    def __init__(self, name, category, description, tool, commands):
         """
         Construct Check object.
 
@@ -25,15 +25,13 @@ class Check:
         :param str category: Category of the check
         :param str description: Description of the check
         :param Tool tool: Tool which is used by the check
-        :param list commands: Commands for the check
-        :param postrun: Method from SmartModules to run after each command (optional)
+        :param list(Command) commands: Commands for the check
         """
         self.name        = name
         self.category    = category
         self.description = description
         self.tool        = tool
         self.commands    = commands
-        self.postrun     = postrun
 
 
     #------------------------------------------------------------------------------------
@@ -128,6 +126,7 @@ class Check:
                         outputraw=StringUtils.remove_ansi_escape(output)))
 
                     # Run smartmodule method on output
+                    # TODO change
                     if self.postrun:
                         smartmodules_loader.call_postcheck_method(
                             self.postrun, target.service, output)

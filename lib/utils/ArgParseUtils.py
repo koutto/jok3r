@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 ###
 ### Utils > ArgParseUtils
@@ -60,6 +61,8 @@ class LineWrapRawTextHelpFormatter(argparse.RawDescriptionHelpFormatter):
         return action.dest.upper()
 
 
+#----------------------------------------------------------------------------------------
+
 class Store1or2Append(argparse._AppendAction):
     """
     Dirty hack !
@@ -67,7 +70,8 @@ class Store1or2Append(argparse._AppendAction):
     """
     def __call__(self, parser, namespace, values, option_string=None):
         if not (1 <= len(values) <= 2):
-            raise argparse.ArgumentError(self, "%s takes 2 or 3 values, %d given" % (option_string, len(values)))
+            raise argparse.ArgumentError(self, "%s takes 2 or 3 values, %d given" % \
+                (option_string, len(values)))
         super(TwoOrThree, self).__call__(parser, namespace, values, option_string)
 
 class Store2or3Append(argparse._AppendAction):
@@ -77,11 +81,14 @@ class Store2or3Append(argparse._AppendAction):
     """
     def __call__(self, parser, namespace, values, option_string=None):
         if not (2 <= len(values) <= 3):
-            raise argparse.ArgumentError(self, "%s takes 2 or 3 values, %d given" % (option_string, len(values)))
+            raise argparse.ArgumentError(self, "%s takes 2 or 3 values, %d given" % \
+                (option_string, len(values)))
         super(TwoOrThree, self).__call__(parser, namespace, values, option_string)
 
 
-def nargs_req_length(nmin,nmax):
+#----------------------------------------------------------------------------------------
+
+def nargs_req_length(nmin, nmax):
     """
     Custom action for required length for argparse option
     https://stackoverflow.com/questions/4194948/python-argparse-is-there-a-way-to-specify-a-range-in-nargs
@@ -100,7 +107,7 @@ def nargs_req_length(nmin,nmax):
         def __call__(self, parser, args, values, option_string=None):
             if not nmin<=len(values)<=nmax:
                 msg='argument "{f}" requires between {nmin} and {nmax} arguments'.format(
-                    f=self.dest,nmin=nmin,nmax=nmax)
+                    f=self.dest, nmin=nmin, nmax=nmax)
                 raise argparse.ArgumentTypeError(msg)
             setattr(args, self.dest, values)
     return RequiredLength

@@ -48,7 +48,9 @@ class ContextRequirements:
         Note: by default, any context condition is None is not set.
 
         :param dict specific_options: Requirements on specific options values
+            e.g. : { 'name': 'value' }
         :param dict products: Requirements on products names (+ potentially versions)
+            e.g. : { 'type': 'vendor/product_name|>7.1'}
         :param str os: Requirement on the OS
         :param int auth_status: Level of authentication required on the service
         :param str auth_type: Authentication type (for HTTP only)

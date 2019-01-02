@@ -53,7 +53,6 @@ For each check:
   For each command (there must be at least one command):
       command_<command_number> = command-line for the check, multiple tags supported
       context_<command_number> = context that must be met to run the command (optional)
-  postrun        = method from smartmodules to run after the command (optional)
 
 
 attack_profiles.conf:
@@ -614,7 +613,6 @@ class Settings:
                     check_config['description'],
                     check_config['tool'],
                     check_config['commands'],
-                    check_config['postrun']
                 )
                 self.services[service]['checks'].add_check(newcheck)
 

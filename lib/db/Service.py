@@ -62,7 +62,7 @@ class Service(Base):
         if dst.http_headers: 
             self.http_headers = dst.http_headers
         if dst.credentials:
-            # update credentials with same username and auth-type
+            # Update credentials with same username and auth-type
             if self.credentials:    
                 for c1 in self.credentials:
                     print(c1)
@@ -71,12 +71,12 @@ class Service(Base):
                         if c1.username == c2.username and c1.type == c2.type:
                             c1.password = c2.password
                             dst.credentials.remove(c2)
-            # add new credentials
+            # Add new credentials
             for c in dst.credentials:
                 c.service_id = self.id
                 self.credentials.append(c)
         if dst.options:
-            # update options with same name
+            # Update options with same name
             for o in dst.options:
                 matching_option = self.get_option(o.name)
                 if matching_option:
@@ -93,7 +93,7 @@ class Service(Base):
     def get_option(self, name):
         """
         Get a specific option related to the service.
-        :param str name: Option name
+        :param str name: Option name to look for
         :return: Specific option
         :rtype: Option
         """
@@ -102,18 +102,44 @@ class Service(Base):
                 return opt
         return None
 
+
     @hybrid_method
     def get_product(self, product_type):
         """
-        Get 
+        Get product corresponding to given product type.
+        :param str product_type: Product type to look for
+        :return: Product
+        :rtype: Product
         """
         for prod in self.products:
             if prod.type == product_type.lower():
                 return prod
         return None
 
+
+    @hybrid_method
+    def get_vuln(self, name):
+        """
+        Get vulnerability matching (exactly) given name.
+        :param str name: Name of vulnerability to look for
+        :return: Vulnerability
+        :rtype: Vuln
+        """
+        for vuln in self.vulns:
+            if vuln.name.lower() == name.lower():
+                return vuln
+        return None
+
+
     @hybrid_method
     def get_credential(self, username, auth_type=None):
+        """
+        Get credentials with given username.
+        :param str username: Username to look for
+        :param str auth_type: Authentication type (for HTTP service)
+        :return: Credential
+        :rtype: Credential
+        """
         for cred in self.credentials:
             if cred.type == auth_type and cred.username == username:
                 return cred
@@ -123,9 +149,11 @@ class Service(Base):
     @hybrid_method
     def get_nb_credentials(self, single_username=False):
         """
-        :param single_username: if True, get the number of single usernames (password unknown),
-                                if False, get the number of username/password couples
+        Get total number of credentials for the service.
+        :param bool single_username: If True, get the number of single usernames 
+            (password unknown). If False, get the number of username/password couples
         :return: Number of selected credentials
+        :rtype: int
         """
         nb = 0
         for cred in self.credentials:
@@ -141,8 +169,9 @@ class Service(Base):
     #------------------------------------------------------------------------------------
 
     def __repr__(self):
-        return '<Service(name="{name}", port="{port}", protocol="{protocol}", url="{url}", up="{up}", ' \
-               'banner="{banner}", http_headers="{http_headers}", comment="{comment}")>'.format(
+        return '<Service(name="{name}", port="{port}", protocol="{protocol}", ' \
+            'url="{url}", up="{up}", banner="{banner}", ' \
+            'http_headers="{http_headers}", comment="{comment}")>'.format(
                     name         = self.name, 
                     port         = self.port, 
                     protocol     = self.protocol, 

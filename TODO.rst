@@ -25,8 +25,6 @@ BUG FIXES
 
 IMPROVEMENTS / NEW FEATURES
 ===============================================================================
-- wappalyzer implementation avec versions => based on https://github.com/kanishk619/wappalyzer-python (working)
-
 - Ctrl+C -> add possibility to switch fast mode on/off
 
 - AttackProfiles:
@@ -909,6 +907,18 @@ product: Jetty version: 8.1.3.v20120522
 | 9617 | 10.1.98.127    | 1433  | tcp   | mssql   | product: Microsoft SQL Server 2008 R2 version: 10.50.4000; SP2    |     |         | 1      |       |
 |      |                |       |       |         | ostype: Windows                                                   |     |         |        |       |
 +------+----------------+-------+-------+---------+-----------------------
+
+
+
+- cve jquery
+- cve ssh
+- vulners-lookup
+- cvedetails-lookup
+- jndiat
+- check https://bitvijays.github.io/LFF-IPS-P2-VulnerabilityAnalysis.html
+- nmap command -> IP
+- correct start module http 
+
 
 
 Services to add

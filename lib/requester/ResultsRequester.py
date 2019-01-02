@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 ###
 ### Requester > Results
@@ -19,7 +20,10 @@ class ResultsRequester(Requester):
         super().__init__(sqlsession, query)
 
 
+    #------------------------------------------------------------------------------------
+
     def show(self):
+        """Display selected results"""
         results = self.get_results()
 
         Output.title2('Attacks results:')
@@ -54,8 +58,9 @@ class ResultsRequester(Requester):
 
     def show_command_outputs_for_check(self):
         """
-
-        This method must call only when filtering on one Result.id.
+        Display command outputs text for selected result/check
+        This method must call only when filtering on one Result.id, i.e. 
+        Condition(xxx, FilterData.CHECK_ID)
         """
         result = self.get_first_result()
 
@@ -65,11 +70,19 @@ class ResultsRequester(Requester):
             Output.title2('Results for check {category} > {check}:'.format(
                 category = result.category, 
                 check    = result.check))
-            Output.title2('Target: host={ip}{hostname} | port={port}/{proto} | service {service}'.format(
+
+            if result.service.host.hostname:
+                hostname = ' ('+result.service.host.hostname+')'
+            else:
+                hostname = ''
+
+            Output.title2('Target: host={ip}{hostname} | port={port}/{proto} | ' \
+                'service {service}'.format(
                 ip       = result.service.host.ip,
-                hostname = ' ('+result.service.host.hostname+')' if result.service.host.hostname else '',
+                hostname = hostname,
                 port     = result.service.port,
-                proto    = {Protocol.TCP: 'tcp', Protocol.UDP: 'udp'}.get(result.service.protocol),
+                proto    = {Protocol.TCP: 'tcp', Protocol.UDP: 'udp'}.get(
+                    result.service.protocol),
                 service  = result.service.name))
 
             print()
@@ -80,7 +93,16 @@ class ResultsRequester(Requester):
                 print()   
 
 
+    #------------------------------------------------------------------------------------
+
     def add_result(self, service_id, check, category, command_outputs):
+        """
+        Add new result for given service.
+        :param int service_id: Id of service
+        :param str check: Name of the check to add
+        :param str category: Category of the check
+        :param str command_output: Command output text
+        """
         matching_check = self.sqlsess.query(Result).filter_by(service_id = service_id)\
                                      .filter(Result.check == check).first()
         if matching_check:

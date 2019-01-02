@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 ###
 ### Utils > FileUtils
@@ -97,6 +98,7 @@ class FileUtils:
         """Clear the readonly bit and reattempt the removal"""
         os.chmod(path, stat.S_IWRITE)
         func(path)
+
 
     @staticmethod
     def size_human(num):

@@ -21,10 +21,15 @@ from lib.output.Logger import logger
 class ServicesRequester(Requester):
 
     def __init__(self, sqlsession):
-        query = sqlsession.query(Service).join(Host).join(Mission).options(contains_eager(Service.host))
+        query = sqlsession.query(Service).join(Host).join(Mission)\
+                          .options(contains_eager(Service.host))
         super().__init__(sqlsession, query)
 
+
+    #------------------------------------------------------------------------------------
+
     def show(self):
+        """Display selected services"""
         results = self.get_results()
 
         if not results:
@@ -70,29 +75,8 @@ class ServicesRequester(Requester):
             Output.table(columns, data, hrules=False)
 
 
-    def edit_comment(self, comment):
-        results = self.get_results()
-        if not results:
-            logger.error('No matching service')
-        else:
-            for r in results:
-                r.comment = comment
-            self.sqlsess.commit()
-            logger.success('Comment edited')
-
-
-    def switch_https(self):
-        results = self.get_results()
-        if not results:
-            logger.error('No matching service')
-        else:
-            for r in results:
-                if r.url:
-                    r.url = WebUtils.switch_http_https(r.url)
-            self.sqlsess.commit()
-            logger.success('Switch done')
-
-
+    #------------------------------------------------------------------------------------
+    
     def add_service(self, ip, hostname, port, protocol, service, 
                     grab_banner_nmap=True):
         """
@@ -127,7 +111,8 @@ class ServicesRequester(Requester):
             if up:
                  # Grab Nmap banner
                 if grab_banner_nmap:
-                    logger.info('Grabbing banner from {ip}:{port} with Nmap...'.format(ip=ip, port=port))
+                    logger.info('Grabbing banner from {ip}:{port} with Nmap...'.format(
+                        ip=ip, port=port))
                     banner = NetUtils.grab_banner_nmap(ip, port)
                     logger.info('Banner: {}'.format(banner or 'None'))
                     os = NetUtils.os_from_nmap_banner(banner)
@@ -153,7 +138,8 @@ class ServicesRequester(Requester):
                 self.sqlsess.commit()
                 service.host = matching_host
             else:
-                mission = self.sqlsess.query(Mission).filter(Mission.name == self.current_mission).first()
+                mission = self.sqlsess.query(Mission)\
+                              .filter(Mission.name == self.current_mission).first()
                 new_host.mission = mission
                 service.host = new_host
                 self.sqlsess.add(new_host)
@@ -205,7 +191,8 @@ class ServicesRequester(Requester):
 
                 # Display HTTP Headers
                 if resp_headers:
-                    http_headers = '\n'.join("{}: {}".format(key,val) for (key,val) in resp_headers.items())
+                    http_headers = '\n'.join("{}: {}".format(key,val) \
+                        for (key,val) in resp_headers.items())
                     logger.info('HTTP Headers:')
                     print(http_headers)
 
@@ -218,7 +205,8 @@ class ServicesRequester(Requester):
 
                 # Grab Nmap banner
                 if grab_banner_nmap:
-                    logger.info('Grabbing banner from {ip}:{port} with Nmap...'.format(ip=ip, port=port))
+                    logger.info('Grabbing banner from {ip}:{port} with Nmap...'.format(
+                        ip=ip, port=port))
                     banner = NetUtils.grab_banner_nmap(ip, port)
                     logger.info('Banner: {}'.format(banner or 'None'))
                     os = NetUtils.os_from_nmap_banner(banner)
@@ -253,7 +241,8 @@ class ServicesRequester(Requester):
                 self.sqlsess.commit()
                 service.host = matching_host
             else:
-                mission = self.sqlsess.query(Mission).filter(Mission.name == self.current_mission).first()
+                mission = self.sqlsess.query(Mission)\
+                              .filter(Mission.name == self.current_mission).first()
                 new_host.mission = mission
                 service.host = new_host
                 self.sqlsess.add(new_host)
@@ -265,7 +254,13 @@ class ServicesRequester(Requester):
 
 
     def add_target(self, target):
-        mission = self.sqlsess.query(Mission).filter(Mission.name == self.current_mission).first()
+        """
+        Add a target into the current mission scope in database.
+
+        :param Target target: Target to add
+        """
+        mission = self.sqlsess.query(Mission)\
+                      .filter(Mission.name == self.current_mission).first()
 
         matching_service = self.sqlsess.query(Service)\
                               .join(Host)\
@@ -282,7 +277,9 @@ class ServicesRequester(Requester):
             logger.info('A matching service has been found in the database')
             matching_service.merge(target.service)
             self.sqlsess.commit()
-            target.service = matching_service # make sure to replace target info by newly created service
+            # Make sure to replace target info by newly created service
+            target.service = matching_service 
+
         
         else:
             # Add host in db if it does not exist or update its info (merging)
@@ -301,7 +298,8 @@ class ServicesRequester(Requester):
             # Add service in db
             self.sqlsess.add(target.service)
             self.sqlsess.commit()
-        logger.success('{action}: host {ip} | port {port}/{proto} | service {service}'.format(
+        logger.success('{action}: host {ip} | port {port}/{proto} | ' \
+            'service {service}'.format(
             action  = 'Updated' if matching_service else 'Added',
             ip      = target.get_ip(),
             port    = target.get_port(),
@@ -309,8 +307,16 @@ class ServicesRequester(Requester):
             service = target.get_service_name()))
 
 
+    #------------------------------------------------------------------------------------
 
     def add_cred(self, username, password, auth_type=None):
+        """
+        Add new credential for selected service(s).
+
+        :param str username: Username
+        :param str password: Password (None if unknown)
+        :param str auth_type: Authentication type for HTTP service
+        """
         results = self.get_results()
         if not results:
             logger.error('No matching service')
@@ -322,41 +328,95 @@ class ServicesRequester(Requester):
                                    .filter(Credential.password == password)\
                                    .filter(Credential.type == auth_type).first()
                 if not cred:
-                    cred = Credential(username = username,
-                                      password = password,
-                                      type     = auth_type if r.name == 'http' else None) # auth type relevant only for http
+                    cred = Credential(
+                        username = username,
+                        password = password,
+                        type     = auth_type if r.name == 'http' else None)
+
                     self.sqlsess.add(cred)
                     r.credentials.append(cred)
-                    logger.success('Credential {username}/{password}{auth_type} added to service {service} '\
-                        'host={ip}{hostname} port={port}/{proto}'.format(
-                            username  = '<empty>' if cred.username == '' else cred.username,
-                            password  = {'': '<empty>', None: '<???>'}.get(cred.password, cred.password),
-                            auth_type = '('+str(auth_type)+')' if (auth_type and r.name == 'http') else '',
+
+                    username = '<empty>' if cred.username == '' else cred.username
+                    password = {'': '<empty>', None: '<???>'}.get(
+                        cred.password, cred.password)
+                    auth_type = '('+str(auth_type)+')' if \
+                        (auth_type and r.name == 'http') else ''
+                    hostname = '('+r.host.hostname+')' if r.host.hostname else ''
+                    protocol = {Protocol.TCP: 'tcp', Protocol.UDP: 'udp'}.get(r.protocol)
+
+                    logger.success('Credential {username}/{password}{auth_type} ' \
+                        'added to service {service} host={ip}{hostname} ' \
+                        'port={port}/{proto}'.format(
+                            username  = username,
+                            password  = password,
+                            auth_type = auth_type,
                             service   = r.name,
                             ip        = r.host.ip,
-                            hostname  = '('+r.host.hostname+')' if r.host.hostname else '',
+                            hostname  = hostname,
                             port      = r.port,
-                            proto     = {Protocol.TCP: 'tcp', Protocol.UDP: 'udp'}.get(r.protocol)))
+                            proto     = protocol))
             self.sqlsess.commit() 
 
 
-    def delete(self):
+    #------------------------------------------------------------------------------------
+
+    def edit_comment(self, comment):
+        """
+        Edit comment of selected services.
+        :param str comment: New comment
+        """
         results = self.get_results()
         if not results:
             logger.error('No matching service')
         else:
             for r in results:
-                logger.info('Service {service} host={ip}{hostname} port={port}/{proto} deleted'.format(
+                r.comment = comment
+            self.sqlsess.commit()
+            logger.success('Comment edited')
+
+
+    def switch_https(self):
+        """Switch between HTTP and HTTPS on selected services"""
+        results = self.get_results()
+        if not results:
+            logger.error('No matching service')
+        else:
+            for r in results:
+                if r.url:
+                    r.url = WebUtils.switch_http_https(r.url)
+            self.sqlsess.commit()
+            logger.success('Switch done')
+
+
+
+    def delete(self):
+        """Delete selected services"""
+        results = self.get_results()
+        if not results:
+            logger.error('No matching service')
+        else:
+            for r in results:
+                logger.info('Service {service} host={ip}{hostname} ' \
+                    'port={port}/{proto} deleted'.format(
                     service  = r.name,
                     ip       = r.host.ip,
                     hostname = '('+r.host.hostname+')' if r.host.hostname else '',
                     port     = r.port,
-                    proto    = {Protocol.TCP: 'tcp', Protocol.UDP: 'udp'}.get(r.protocol)))
+                    proto    = {Protocol.TCP: 'tcp', Protocol.UDP: 'udp'}.get(
+                        r.protocol)))
+
                 self.sqlsess.delete(r)
+
             self.sqlsess.commit()
 
 
+    #------------------------------------------------------------------------------------
+
     def order_by(self, column):
+        """
+        Add ORDER BY statement
+        :param str column: Column name to order by
+        """
         mapping = {
             'ip'       : Host.ip,
             'hostname' : Host.hostname,
@@ -367,13 +427,19 @@ class ServicesRequester(Requester):
             'url'      : Service.url,
             'comment'  : Service.comment,
         }
+
         if column.lower() not in mapping.keys():
-            logger.warning('Ordering by column {col} is not supported'.format(col=column.lower()))
+            logger.warning('Ordering by column {col} is not supported'.format(
+                col=column.lower()))
             return
+
         super().order_by(mapping[column.lower()])
 
 
+    #------------------------------------------------------------------------------------
+
     def are_only_http_services_selected(self):
+        """Check if selected services are only HTTP services"""
         results = self.get_results()
         for service in results:
             if service.name != 'http':

@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 ###
 ### Requester > Condition
@@ -21,17 +22,20 @@ class Condition:
 
     def __init__(self, value, filtertype):
         """
-        :param value: Condition value, either list or single element
-        :param filtertype: Type of data to filter on (from enum FilterData)
-        :raise FilterException:
+        Construct Condition.
 
-        Example of values:
-        Types   Values
-        IP      [1.1.1.1,2.2.2.2]     -> means ip = 1.1.1.1 or 2.2.2.2
-        Port    [8000-8100,9443]      -> means port = in [8000-8100] or 9443
+        :param str|list value: Condition value, either list or single element
+            Example of values:
+            Types   Values
+            IP      [1.1.1.1,2.2.2.2]     -> means ip = 1.1.1.1 or 2.2.2.2
+            Port    [8000-8100,9443]      -> means port = in [8000-8100] or 9443
+        :param FilterData(Enum) filtertype: Type of data to filter on
+        :raises FilterException: Exception raised in case of invalid value
         """
+
         self.value = value if type(value) == list else [value]
         #print(self.value)
+
         self.filtertype = filtertype
         self.mapping = {
             FilterData.IP              : self.__translate_ip,
@@ -69,10 +73,12 @@ class Condition:
             FilterData.PRODUCT_VERSION : self.__translate_product_version,
         }
 
+
+    #------------------------------------------------------------------------------------
+    
     def translate(self):
-        """
-        Translate the condition into sqlalchemy filter
-        """
+        """Translate the condition into Sqlalchemy filter"""
+
         method_translate = self.mapping.get(self.filtertype)
         if not method_translate:
             return None
@@ -89,11 +95,12 @@ class Condition:
         return result
 
 
+    #------------------------------------------------------------------------------------
+
     def __translate_ip(self, value):
         """
-        value can be:
-            - Single IP
-            - IP range - format: 1.1.1.1/24
+        Translate IP address or IP range into Sqlalchemy filter.
+        Range must be in CIDR format, e.g. 1.1.1.1/24
         """
         if NetUtils.is_valid_ip(value):
             return (Host.ip == value)
@@ -105,6 +112,7 @@ class Condition:
 
     def __translate_host(self, value):
         """
+        Translate Hostname into Sqlalchemy filter.
         LIKE %value%
         """
         return (Host.hostname.ilike('%'+str(value)+'%'))
@@ -112,9 +120,8 @@ class Condition:
 
     def __translate_port(self, value):
         """
-        value can be:
-            - Single port number
-            - Port range - format 8000-8100
+        Translate port number or ports range into Sqlalchemy filter.
+        Ports range in format: 8000-9000
         """
         if NetUtils.is_valid_port(value):
             return (Service.port == int(value))
@@ -126,6 +133,7 @@ class Condition:
 
 
     def __translate_protocol(self, value):
+        """Translate protocol into filter"""
         if value.lower() == 'tcp':
             return (Service.protocol == Protocol.TCP)
         elif value.lower() == 'udp':
@@ -135,95 +143,152 @@ class Condition:
 
 
     def __translate_up(self, value):
+        """Translate up status into filter"""
         val = (value.lower() == 'true')
         return (Service.up == val)
 
+
     def __translate_service(self, value):
+        """Translate service name into LIKE filter"""
         return (Service.name.ilike('%'+str(value)+'%'))
 
+
     def __translate_service_exact(self, value):
+        """Translate service name into exact filter"""
         return (Service.name == value)
 
+
     def __translate_service_id(self, value):
+        """Translate service id into filter"""
         return (Service.id == int(value))
 
+
     def __translate_os(self, value):
+        """Translate host OS into LIKE filter"""
         return (Host.os.ilike('%'+str(value)+'%'))
 
+
     def __translate_banner(self, value):
+        """Translate service banner into LIKE filter"""
         return (Service.banner.ilike('%'+str(value)+'%'))
 
+
     def __translate_url(self, value):
+        """Translate URL into LIKE filter"""
         return (Service.url.ilike('%'+str(value)+'%'))
 
+
     def __translate_url_exact(self, value):
+        """Translate URL into exact filter"""
         return (Service.url == str(value))
 
+
     def __translate_http_headers(self, value):
+        """Translate HTTP headers into LIKE filter"""
         return (Service.http_headers.ilike('%'+str(value)+'%'))
 
+
     def __translate_username(self, value):
+        """Translate username from credentials into LIKE filter"""
         return (Credential.username.ilike('%'+str(value)+'%'))
 
+
     def __translate_password(self, value):
+        """Translate password from credentials into LIKE filter"""
         return (Credential.password.ilike('%'+str(value)+'%'))
 
+
     def __translate_auth_type(self, value):
+        """Translate credential type into LIKE filter"""
         return (Credential.type.ilike('%'+str(value)+'%'))
 
+
     def __translate_user_and_pass(self, boolean):
+        """Create filter for credentials entries with username and password"""
         if boolean:
             return (Credential.username.isnot(None) & Credential.password.isnot(None))
         else:
             return None
 
+
     def __translate_only_user(self, boolean):
+        """Create filter for credentials entries with only username (no pass known)"""
         if boolean:
             return (Credential.username.isnot(None) & Credential.password.is_(None))
         else:
             return None
 
+
     def __translate_comment_service(self, value):
+        """Translate service comment into LIKE filter"""
         return (Service.comment.ilike('%'+str(value)+'%'))
 
+
     def __translate_comment_host(self, value):
+        """Translate host comment into LIKE filter"""
         return (Host.comment.ilike('%'+str(value)+'%'))
 
+
     def __translate_comment_cred(self, value):
+        """Translate credential comment into LIKE filter"""
         return (Credential.comment.ilike('%'+str(value)+'%'))
 
+
     def __translate_comment_mission(self, value):
+        """Translate mission comment into LIKE filter"""
         return (Mission.comment.ilike('%'+str(value)+'%'))
 
+
     def __translate_mission_exact(self, value):
+        """Translate mission name into exact filter"""
         return (Mission.name == value)
 
+
     def __translate_mission(self, value):
+        """Translate mission name into LIKE filter"""
         return (Mission.name.ilike('%'+str(value)+'%'))
 
+
     def __translate_check_id(self, value):
+        """Translate result id into filter"""
         return (Result.id == int(value))
 
+
     def __translate_check_name(self, value):
+        """Translate check name from result into LIKE filter"""
         return (Result.check.ilike('%'+str(value)+'%'))
 
+
     def __translate_command_output(self, value):
+        """Translate command output text into LIKE filter"""
         return (CommandOutput.output.ilike('%'+str(value)+'%'))
 
+
     def __translate_vuln(self, value):
+        """Translate vulnerability name into LIKE filter"""
         return (Vuln.name.ilike('%'+str(value)+'%'))
 
+
     def __translate_option_name(self, value):
+        """Translate specific option name into LIKE filter"""
         return (Option.name.ilike('%'+str(value)+'%'))
 
+
     def __translate_option_value(self, value):
+        """Translate specific option value into LIKE filter"""
         return (Option.value.ilike('%'+str(value)+'%'))
 
+
     def __translate_product_type(self, value):
+        """Translate product type into LIKE filter"""
         return (Product.type.ilike('%'+str(value)+'%'))
 
+
     def __translate_product_name(self, value):
+        """Translate product name into LIKE filter"""
         return (Product.name.ilike('%'+str(value)+'%'))
 
+
     def __translate_product_version(self, value):
+        """Translate product version into LIKE filter"""
         return (Product.version.ilike('%'+str(value)+'%'))

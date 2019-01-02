@@ -34,7 +34,7 @@ class Host(Base):
     @hybrid_method
     def merge(self, dst):
         """
-        Merge with another Host
+        Merge with another Host.
         :param Host dst: Host to merge with
         """
         if dst.hostname: self.hostname = dst.hostname
@@ -44,7 +44,7 @@ class Host(Base):
     @hybrid_method
     def is_in_ip_range(self, ip_range):
         """
-        Check if IP address is inside a given IP range
+        Check if IP address is inside a given IP range.
         :param str ip_range: IP range in CIDR notation
             (e.g. 192.168.1.0/24)
         :return: Status
@@ -57,7 +57,7 @@ class Host(Base):
     @is_in_ip_range.expression
     def is_in_ip_range(cls, ip_range):
         """
-        Check if IP address is inside a given IP range
+        Check if IP address is inside a given IP range.
         :param str ip_range: IP range in CIDR notation
             (e.g. 192.168.1.0/24)
         :return: Status

@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 ###
 ### Utils > WebUtils
@@ -19,9 +20,7 @@ class WebUtils:
 
     @staticmethod
     def add_prefix_http(url):
-        """
-        If protocol not present, add http:// prefix
-        """
+        """If protocol not present, add http:// prefix"""
         if not url:
             return False
         if not url.startswith('http://') and not url.startswith('https://'):
@@ -45,12 +44,11 @@ class WebUtils:
 
     @staticmethod
     def is_valid_url(url):
-        """
-        Check if given URL is valid 
-        """
+        """Check if given URL is valid"""
         regex = re.compile(
             r'^https?://'  # http:// or https://
-            r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|'  # domain...
+            r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+'
+            r'(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|'  # domain...
             r'localhost|'  # localhost...
             r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}|'  # ...or ipv4
             r'\[?[A-F0-9]*:[A-F0-9:]+\]?)'  # ...or ipv6
@@ -61,9 +59,7 @@ class WebUtils:
 
     @staticmethod
     def is_url_reachable(url):
-        """
-        Check if an URL is reachable.
-        """
+        """Check if an URL is reachable"""
         try:
             http = urllib3.PoolManager(cert_reqs='CERT_NONE')
             r = http.request('GET', url, headers={'User-Agent': USER_AGENT})
@@ -85,8 +81,12 @@ class WebUtils:
         regex = re.compile(HTTP_KEYWORDS, re.IGNORECASE)
         http = urllib3.PoolManager(cert_reqs='CERT_NONE')
         try:
-            r1 = http.request('GET', https_url, headers={'User-Agent': USER_AGENT}, timeout=timeout)
-            r2 = http.request('GET', '{0}/aaa'.format(https_url), headers={'User-Agent': USER_AGENT}, timeout=timeout)
+            r1 = http.request(
+                'GET', https_url, 
+                headers={'User-Agent': USER_AGENT}, timeout=timeout)
+            r2 = http.request(
+                'GET', '{0}/aaa'.format(https_url), 
+                headers={'User-Agent': USER_AGENT}, timeout=timeout)
             if r1.data or r2.data:
                 if regex.search(str(r1.data)) or regex.search(str(r2.data)):
                     return https_url
@@ -94,7 +94,10 @@ class WebUtils:
             pass
         try:
             r1 = http.request('GET', http_url, timeout=timeout)
-            r2 = http.request('GET', '{0}/aaa'.format(http_url), headers={'User-Agent': USER_AGENT}, timeout=timeout)
+            r2 = http.request(
+                'GET', '{0}/aaa'.format(http_url), 
+                headers={'User-Agent': USER_AGENT}, timeout=timeout)
+            
             if r1.data or r2.data:
                 if regex.search(str(r1.data)) or regex.search(str(r2.data)):
                     return http_url
@@ -106,6 +109,7 @@ class WebUtils:
 
     @staticmethod
     def get_port_from_url(url):
+        """Return port from URL"""
         parsed = urlparse(url)
         if parsed.port:
             return int(parsed.port)
@@ -114,6 +118,7 @@ class WebUtils:
 
     @staticmethod
     def grab_html_title(url):
+        """Return HTML title from an URL"""
         try:
             r = requests.get(url, verify=False)
             html = bs4.BeautifulSoup(r.text, 'html.parser')

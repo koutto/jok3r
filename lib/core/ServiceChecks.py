@@ -15,7 +15,7 @@ class ServiceChecks:
 
     def __init__(self, service, categories):
         """
-        Construct ServiceChecks object
+        Construct ServiceChecks object.
 
         :param str service: Service name
         :param list categories: Categories used to classify the various checks

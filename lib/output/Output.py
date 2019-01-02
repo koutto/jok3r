@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 ###
 ### Output > Command-Line Output
@@ -16,11 +17,13 @@ class Output(object):
 
     @staticmethod
     def print(string, color=None, highlight=None, attrs=None):
+        """Print string with styles"""
         print(Output.colored(string, color, highlight, attrs))
 
 
     @staticmethod
     def colored(string, color=None, highlight=None, attrs=None):
+        """Apply styles to a given string"""
         # Colors list: https://pypi.org/project/colored/
         return colored.stylize(string, (colored.fg(color) if color else '') + \
                                        (colored.bg(highlight) if highlight else '') + \
@@ -28,16 +31,19 @@ class Output(object):
 
     @staticmethod
     def bold(string):
+        """Print string in bold"""
         return colored.stylize(string, colored.attr('bold'))
 
 
     @staticmethod
     def print_with_tabs(string, color=None, highlight=None, attrs=None):
+        """Print string prefixed by a tabulation"""
         Output.print('         '+string, color, highlight, attrs)
 
 
     @staticmethod
     def print_inline(string):
+        """Print at the same location (erase and print)"""
         sys.stdout.write('\033[1K')
         sys.stdout.write('\033[0G')
         sys.stdout.write(string)
@@ -46,34 +52,40 @@ class Output(object):
 
     @staticmethod
     def banner(banner):
+        """Print banner"""
         Output.print(banner, color='light_green', attrs='bold')
 
 
     @staticmethod
     def title1(title):
+        """Print title level 1"""
         msg  = '\n'
-        msg += '------------------------------------------------------------------------------\n'
+        msg += '-'*80 + '\n'
         msg += ' {title}\n'.format(title=title)
-        msg += '------------------------------------------------------------------------------\n'
+        msg += '-'*80 + '\n'
         Output.print(msg, color='light_green', attrs='bold')
 
 
     @staticmethod
     def title2(title):
+        """Print title level 2"""
         Output.print('[>] ' + title, color='light_yellow', attrs='bold')
 
 
     @staticmethod
     def title3(title):
+        """Print title level 3"""
         Output.print('[>] ' + title, attrs='bold')
 
 
     @staticmethod
     def begin_cmd(cmd):
+        """Print command-line and beginning delimiter for output"""
         # If command-line starts with "cd" command, remove it for better readability
         if cmd.startswith('cd'):
             cmd = cmd[cmd.index(';')+1:].strip()
-        _, col = (lambda x: (int(x[0]), int(x[1])))(os.popen('stty size', 'r').read().split())
+        _, col = (lambda x: (int(x[0]), int(x[1])))(os.popen('stty size', 'r')\
+                                                      .read().split())
         msg  = '\n'
         msg += ' ' * col + '\n'
         msg += 'cmd> {cmd}'.format(cmd=cmd) + ' ' * (col - (len(cmd)+5) % col) + '\n'
@@ -83,7 +95,9 @@ class Output(object):
 
     @staticmethod
     def delimiter():
-        _, col = (lambda x: (int(x[0]), int(x[1])))(os.popen('stty size', 'r').read().split())
+        """Print ending delimiter for command output"""
+        _, col = (lambda x: (int(x[0]), int(x[1])))(os.popen('stty size', 'r')\
+                                                      .read().split())
         msg  = '\n'
         msg += ' ' * col + '\n'
         #msg += ' ' * col + '\n'     
@@ -92,44 +106,67 @@ class Output(object):
 
     @staticmethod
     def prompt_confirm(question, default=None):
-        return humanfriendly.prompts.prompt_for_confirmation(colored.stylize(
-            '[?] ', colored.fg('cyan') + colored.attr('bold'))+question, default=default, padding=False)
+        """
+        Prompt for confirmation.
+        :param str question: Question to print
+        :param str default: Default answer
+        """
+        return humanfriendly.prompts.prompt_for_confirmation(
+            colored.stylize('[?] ', colored.fg('cyan')+colored.attr('bold'))+question,
+            default=default, padding=False)
 
 
     @staticmethod
     def prompt_choice(question, choices, default=None):
         """
-        :param choices: Dict. example: {'y': 'Yes', 'n': 'No', 'q': 'Quit'}
+        Prompt choice.
+        :param str question: Question to print
+        :param dict choices: Possible choices
+            Example: {'y': 'Yes', 'n': 'No', 'q': 'Quit'}
+        :param str default: Default answer
         """
         while True:
-            ret = humanfriendly.prompts.prompt_for_input(colored.stylize(
-                '\b[?] ', colored.fg('cyan') + colored.attr('bold'))+question, default=default)
+            ret = humanfriendly.prompts.prompt_for_input(
+                colored.stylize('\b[?] ', colored.fg('cyan')+colored.attr('bold')) \
+                    + question, default=default)
+
             if ret.lower() in choices: return ret.lower()
             else:
-                valid = ' / '.join('{} = {}'.format(key,val) for key,val in choices.items())
+                valid = ' / '.join('{} = {}'.format(key,val) \
+                    for key,val in choices.items())
                 logger.warning('Invalid value. Valid values are: ' + valid)
         return default
 
 
     @staticmethod
     def prompt_choice_range(question, mini, maxi, default):
+        """
+        Prompt choice in a range [mini-maxi].
+        :param str question: Question to print
+        :param int mini: Minimum number in range
+        :param int maxi: Maximum number in range
+        :param int default: Default answer
+        """
         while True:
             try:
-                ret = int(humanfriendly.prompts.prompt_for_input(colored.stylize(
-                    '\b[?] ', colored.fg('cyan') + colored.attr('bold'))+question, default=default))
+                ret = int(humanfriendly.prompts.prompt_for_input(
+                    colored.stylize('\b[?] ', colored.fg('cyan')+colored.attr('bold'))+ \
+                    question, default=default))
             except ValueError:
                 continue
             if mini <= ret <= maxi: 
                 return ret
             else:
-                logger.warning('Invalid value. Valid values are in range [{mini}-{maxi}]'.format(
-                    mini=mini, maxi=maxi))
+                logger.warning('Invalid value. Valid values are in range ' \
+                    '[{mini}-{maxi}]'.format(mini=mini, maxi=maxi))
         return default
 
 
     @staticmethod
     def prompt_choice_verbose(choices, default=None):
-        return humanfriendly.prompts.prompt_for_choice(choices, default=default, padding=False)
+        """Prompt choice in verbose mode"""
+        return humanfriendly.prompts.prompt_for_choice(choices, 
+            default=default, padding=False)
 
 
     @staticmethod
@@ -141,7 +178,9 @@ class Output(object):
         :param hrules: Boolean for horizontal rules
         """
         columns = map(lambda x:Output.colored(x, attrs='bold'), columns)
-        table = prettytable.PrettyTable(hrules=prettytable.ALL if hrules else prettytable.FRAME, field_names=columns)
+        table = prettytable.PrettyTable(
+            hrules=prettytable.ALL if hrules else prettytable.FRAME, 
+            field_names=columns)
         for row in data:
             table.add_row(row)
         table.align = 'l'
@@ -150,13 +189,6 @@ class Output(object):
 
     # @staticmethod
     # def table(columns, data, mode_row=True):
-    #     """
-    #     :param columns: An iterable of column names (strings)
-    #     :param data: An iterable containing the data of the table
-    #     :param mode_row: If True (default), data must contain an iterable of the rows of the table
-    #                       (where each row is an iterable containing the columns). If False, data must
-    #                       contain an iterable of the columns of the table (inverse).
-    #     """
     #     if not mode_row:
     #         nbcols = len(cols)
     #         maxcollen = len(max(d, key=len))

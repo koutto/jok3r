@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 ###
 ### Requester > Options
@@ -7,6 +8,7 @@ from lib.utils.StringUtils import StringUtils
 from lib.db.Credential import Credential
 from lib.db.Host import Host
 from lib.db.Mission import Mission
+from lib.db.Option import Option
 from lib.db.Service import Service, Protocol
 from lib.output.Logger import logger
 from lib.output.Output import Output
@@ -18,8 +20,11 @@ class OptionssRequester(Requester):
         query = sqlsession.query(Option).join(Service).join(Host).join(Mission)
         super().__init__(sqlsession, query)
 
+
+    #------------------------------------------------------------------------------------
+
     def show(self):
-        """Show selected specific options"""
+        """Display selected specific options"""
         results = self.get_results()
 
         if not results:
@@ -48,8 +53,10 @@ class OptionssRequester(Requester):
             Output.table(columns, data, hrules=False)
 
 
+    #------------------------------------------------------------------------------------
+
     def delete(self):
-        """Delete selected options"""
+        """Delete selected specific options"""
         results = self.get_results()
         if not results:
             logger.error('No matching specific option')
@@ -68,11 +75,12 @@ class OptionssRequester(Requester):
             self.sqlsess.commit()
 
 
+    #------------------------------------------------------------------------------------
+
     def order_by(self, column):
         """
-        Order results by given column name
-
-        :param str column: Column name to filter on
+        Add ORDER BY statement
+        :param str column: Column name to order by
         """
         mapping = {
             'ip'       : Host.ip,
@@ -83,9 +91,11 @@ class OptionssRequester(Requester):
             'name'     : Option.name,
             'value'    : Option.value,
         }
+
         if column.lower() not in mapping.keys():
             logger.warning('Ordering by column {col} is not supported'.format(
                 col=column.lower()))
             return
+
         super().order_by(mapping[column.lower()])
 

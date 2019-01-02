@@ -6,6 +6,7 @@
 import colored
 import textwrap
 
+
 class StringUtils:
 
     @staticmethod

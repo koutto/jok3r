@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 ###
 ### Requester > Filter
@@ -9,21 +10,32 @@ class Filter:
 
     def __init__(self, operator=FilterOperator.AND):
         """
-        Filters can be encapsulated
+        Create a Filter object.
+
+        A Filter is a combination of conditions.
+        Several Filters can also be encapsulated.
+
+        :param FilterOperator operator: Combination between conditions is 
+            performed using AND/OR operator        
         """
         self.conditions = list()
         self.operator = operator
 
+
+    #------------------------------------------------------------------------------------
+
     def add_condition(self, condition):
         """
-        :param condition: Condition object
+        Add a condition to the filter.
+        :param Condition condition: Condition to add
         """
         self.conditions.append(condition)
 
+
+    #------------------------------------------------------------------------------------
+    
     def translate(self):
-        """
-        Translate the filter into sqlalchemy filter
-        """
+        """Combine all conditions together to create Sqlalchemy filter"""
         result = None
         for c in self.conditions:
             translated = c.translate()

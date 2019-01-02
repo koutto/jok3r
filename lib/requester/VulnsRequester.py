@@ -25,8 +25,10 @@ class VulnsRequester(Requester):
         super().__init__(sqlsession, query)
 
 
+    #------------------------------------------------------------------------------------
+
     def show(self):
-        """Show selected vulnerabilities"""
+        """Display selected vulnerabilities"""
         results = self.get_results()
 
         if not results:
@@ -51,6 +53,8 @@ class VulnsRequester(Requester):
             Output.table(columns, data, hrules=False)
 
 
+    #------------------------------------------------------------------------------------
+
     def delete(self):
         """Delete selected vulnerabilities"""
         results = self.get_results()
@@ -70,11 +74,12 @@ class VulnsRequester(Requester):
             self.sqlsess.commit()
 
 
+    #------------------------------------------------------------------------------------
+
     def order_by(self, column):
         """
-        Order results by given column name
-
-        :param str column: Column name to filter on
+        Add ORDER BY statement
+        :param str column: Column name to order by
         """
         mapping = {
             'ip'       : Host.ip,
@@ -84,7 +89,10 @@ class VulnsRequester(Requester):
             'proto'    : Service.protocol,
             'vuln'     : Vuln.name,
         }
+
         if column.lower() not in mapping.keys():
-            logger.warning('Ordering by column {col} is not supported'.format(col=column.lower()))
+            logger.warning('Ordering by column {col} is not supported'.format(
+                col=column.lower()))
             return
+
         super().order_by(mapping[column.lower()])

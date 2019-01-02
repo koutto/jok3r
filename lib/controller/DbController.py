@@ -1362,6 +1362,7 @@ class DbController(cmd2.Cmd):
 
         return self.flag_based_complete(text, line, begidx, endidx, flag_dict=flag_dict)
 
+
     #------------------------------------------------------------------------------------
     # Vulns Display
 
@@ -1516,14 +1517,15 @@ class DbController(cmd2.Cmd):
         '-S', '--search',
         action  = 'store',
         metavar = '<string>',
-        help    = 'Search for a string in results (command outputs). Accept wildcard "%"')
+        help    = 'Search for a string in results (command outputs). ' \
+            'Accept wildcard "%"')
     outputs_filter.add_argument(
         '--nb-words',
         action  = 'store',
         metavar = '<nb>',
         default  = 12,
-        help     = 'Number of words to show before and after match when using -S/--search ' \
-            '(default: 12)')
+        help     = 'Number of words to show before and after match when using ' \
+            '-S--search/--search (default: 12)')
 
 
     @cmd2.with_category(CMD_CAT_RESULTS)
