@@ -2,10 +2,45 @@
 # -*- coding: utf-8 -*-
 from lib.smartmodules.matchstrings.MatchStrings import products_match
 
+WIG_REGEXP = '- Found CMS match: {}\s*Determining CMS version \.\.\.(\s*- Found version: (\S+)\s+[VERSION])?'
+
 
 products_match['http']['web-framework'] = {
-    'product-name': {
-        'check-name1': 'lorem ipsum (version: [VERSION])?',
-        'check-name2': 'lorem ipsum',
-    }
+
+    'Bootstrap': {
+        'wappalyzer': 'Bootstrap',
+    },
+    'Angular Material': {
+        'wappalyzer': 'Angular Material',
+    },
+    'CakePHP': {
+        'wappalyzer': 'CakePHP',
+        'wig': WIG_REGEXP.format('CakePHP'),
+    },
+    'CodeIgniter': {
+        'wappalyzer': 'CodeIgniter',
+    },
+    'Django': {
+        'wappalyzer': 'Django',
+        'wig': WIG_REGEXP.format('Django'),
+    },
+    'Google/Web Toolkit': {
+        'wappalyzer': 'Google Web Toolkit',
+    },
+    'Expressjs/Express': {
+        'wappalyzer': 'Express',
+    },
+    'Laravel': {
+        'wappalyzer': 'Laravel',
+    },
+    'Ruby on Rails': {
+        'wappalyzer': 'Ruby on Rails',
+    },
+    'Symfony': {
+        'wappalyzer': 'Symfony',
+    },
+    'Yiiframework': {
+        'wappalyzer': 'Yii',
+    },
+
 }

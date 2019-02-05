@@ -127,7 +127,7 @@ class Condition:
             return (Service.port == int(value))
         elif NetUtils.is_valid_port_range(value):
             minport, maxport = value.split('-')
-            return (Service.port.between(int(minport), int(maxport)))
+            return (Sevrice.port.between(int(minport), int(maxport)))
         else:
             raise FilterException('{value} invalid port/range'.format(value=value))
 
@@ -144,7 +144,12 @@ class Condition:
 
     def __translate_up(self, value):
         """Translate up status into filter"""
-        val = (value.lower() == 'true')
+        if type(value) is bool:
+            val = value
+        elif type(value) is str:
+            val = (value.lower() == 'true')
+        else:
+            raise FilterException('{value} invalid up status'.format(value=value))
         return (Service.up == val)
 
 

@@ -126,7 +126,8 @@ class Check:
                         outputraw=StringUtils.remove_ansi_escape(output)))
 
                     # Run smartmodule method on output
-                    # TODO change
+                    # TODO change 
+                    # IMPORTANT cmdline + commandoutput to pass
                     if self.postrun:
                         smartmodules_loader.call_postcheck_method(
                             self.postrun, target.service, output)

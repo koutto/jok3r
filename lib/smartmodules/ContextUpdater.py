@@ -90,6 +90,8 @@ class ContextUpdater:
                 self.service.options.append(option)
 
 
+    #------------------------------------------------------------------------------------
+
     def __update_usernames(self):
         """
         Update service's usernames (in table "credentials").
@@ -113,6 +115,8 @@ class ContextUpdater:
                 logger.smartsuccess('New detected username: {}'.format(username_str))
                 self.service.credentials.append(username)
 
+
+    #------------------------------------------------------------------------------------
 
     def __update_credentials(self):
         """Update service's credentials (username+password) (in table "credentials")"""
@@ -141,6 +145,8 @@ class ContextUpdater:
                 self.service.credentials.append(credential)
 
 
+    #------------------------------------------------------------------------------------
+
     def __update_products(self):
         """Update service's products (in table "products")"""
         for product in self.products:
@@ -168,7 +174,7 @@ class ContextUpdater:
 
                         # Version detected is inferior to the one in db, updating
                         # i.e. Keep the oldest version (smallest number) found (to 
-                        # avoid missing issues...)
+                        # avoid missing issues/checks...)
                         elif match_product.version > product.version:
                             logger.smartsuccess('Version for product ' \
                                 '{product} updated: {oldvers} -> {newvers}'.format(
@@ -225,6 +231,8 @@ class ContextUpdater:
                     version=product.version))
                 self.service.products.append(product)
 
+
+    #------------------------------------------------------------------------------------
 
     def __update_vulns(self):
         """Update service's vulnerabilities (table "vulns")"""

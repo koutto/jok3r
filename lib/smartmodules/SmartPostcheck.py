@@ -46,50 +46,61 @@ class SmartPostcheck:
     #------------------------------------------------------------------------------------
 
     def __detect_credentials(self):
-        """Detect usernames/credentials from command output"""
+        """
+        Detect usernames/credentials from command output
+        Important: A command output might contain several usernames/passwords with the
+        same pattern.
+        """
         if self.service.name in creds_match.keys():
 
             if self.tool_name in creds_match[self.service.name].keys():
                 p = creds_match[self.service.name][self.tool_name]
 
                 for pattern in p.keys():
-                    m = re.search(pattern, self.cmd_output, re.IGNORECASE|re.DOTALL)
+
+                    # Important: Multiple search/match
+                    #m = re.search(pattern, self.cmd_output, re.IGNORECASE|re.DOTALL)
+                    mall = re.finditer(pattern, self.cmd_output, re.IGNORECASE)
 
                     # If pattern matches cmd output, extract username/credentials
-                    if m:
-                        cred = dict()
-                        if 'user' in p[pattern]:
-                            cred['user'] = self.__replace_tokens(p[pattern]['user'], m)
-                            if cred['user'] is None:
-                                continue
-                        else:
-                            logger.smarterror('Invalid matchstring for ' \
-                                'service={service}, tool={tool}: Missing ' \
-                                '"user" key'.format(
-                                    service=self.service.name,
-                                    tool=self.tool_name))
-                            continue
-
-                        if 'pass' in p[pattern]:
-                            cred['pass'] = self.__replace_tokens(p[pattern]['pass'], m)
-                            if cred['pass'] is None:
+                    if mall:
+                        for m in mall:
+                            cred = dict()
+                            if 'user' in p[pattern]:
+                                cred['user'] = self.__replace_tokens(
+                                    p[pattern]['user'], m)
+                                if cred['user'] is None:
+                                    continue
+                            else:
+                                logger.smarterror('Invalid matchstring for ' \
+                                    'service={service}, tool={tool}: Missing ' \
+                                    '"user" key'.format(
+                                        service=self.service.name,
+                                        tool=self.tool_name))
                                 continue
 
-                        if 'type' in p[pattern]:
-                            cred['type'] = self.__replace_tokens(p[pattern]['type'], m)
-                            if cred['type'] is None:
-                                continue
+                            if 'pass' in p[pattern]:
+                                cred['pass'] = self.__replace_tokens(
+                                    p[pattern]['pass'], m)
+                                if cred['pass'] is None:
+                                    continue
 
-                        # Add username/cred to context
-                        if 'pass' in cred:
-                            self.cu.add_credentials(
-                                username=cred.get('user'),
-                                password=cred.get('pass'),
-                                auth_type=cred.get('type'))
-                        else:
-                            self.cu.add_username(
-                                username=cred.get('user'),
-                                auth_type=cred.get('type'))
+                            if 'type' in p[pattern]:
+                                cred['type'] = self.__replace_tokens(
+                                    p[pattern]['type'], m)
+                                if cred['type'] is None:
+                                    continue
+
+                            # Add username/cred to context
+                            if 'pass' in cred:
+                                self.cu.add_credentials(
+                                    username=cred.get('user'),
+                                    password=cred.get('pass'),
+                                    auth_type=cred.get('type'))
+                            else:
+                                self.cu.add_username(
+                                    username=cred.get('user'),
+                                    auth_type=cred.get('type'))
 
 
     def __detect_specific_options(self):
@@ -100,7 +111,7 @@ class SmartPostcheck:
                 p = options_match[self.service.name][self.tool_name]
 
                 for pattern in p.keys():
-                    m = re.search(pattern, self.cmd_output, re.IGNORECASE|re.DOTALL)
+                    m = re.search(pattern, self.cmd_output, re.IGNORECASE)
 
                     # If pattern matches cmd output, update specific option
                     if m:
@@ -144,6 +155,7 @@ class SmartPostcheck:
                 
                     if self.tool_name in p[prodname].keys():
                         patterns = p[prodname][self.tool_name]
+
                         # List of patterns is supported (i.e. several different
                         # patterns for a given tool)
                         if type(pattern) == str:
@@ -153,45 +165,61 @@ class SmartPostcheck:
                             version_detection = '[VERSION]' in pattern
                             pattern = pattern.replace('[VERSION]', VERSION_REGEXP)
 
-                            m = re.search(pattern, self.cmd_output, re.IGNORECASE|re.DOTALL)
+                            m = re.search(pattern, self.cmd_output, re.IGNORECASE)
 
                             # If pattern matches cmd output, add detected product
+                            # Note: For a given product type, only one name(+version)
+                            # can be added.
                             if m:
                                 # Add version if present
-                                if version_detection and m.group('version'):
-                                    version = m.group('version')
+                                if version_detection:
+                                    try:
+                                        version = m.group('version')
+                                    except:
+                                        version = ''
                                 else:
                                     version = ''
 
                                 # Add detected product to context
                                 self.cu.add_product(prodtype, prodname, version)
 
-                                # Move to next product type
-                                break_prodnames = True
-                                break
+                                # Move to next product type if name+version found
+                                # If name not found, or only name but not the version 
+                                # found, give a try to next pattern if existing
+                                if version:
+                                    break_prodnames = True
+                                    break
 
                         if break_prodnames:
                             break
 
 
     def __detect_vulns(self):
-        """Detect vulnerability from command output"""
+        """
+        Detect vulnerability from command output
+        Important: A command output might contain several vulnerabilities with the 
+        same pattern.
+        """
         if self.service.name in vulns_match.keys():
 
             if self.tool_name in vulns_match[self.service.name].keys():
                 p = vulns_match[self.service.name][self.tool_name]
 
                 for pattern in p.keys():
-                    m = re.search(pattern, self.cmd_output, re.IGNORECASE|re.DOTALL)
 
-                    # If pattern matches cmd output, update specific option
-                    if m:
-                        name = self.__replace_tokens(p[pattern], m)
-                        if name is None:
-                            continue
+                    # Important: Multiple search/match
+                    #m = re.search(pattern, self.cmd_output, re.IGNORECASE)
+                    mall = re.finditer(pattern, self.cmd_output, re.IGNORECASE)
 
-                        # Add vulnerability to context
-                        self.cu.add_vuln(name)    
+                    # Process each match
+                    if mall:
+                        for m in mall:
+                            name = self.__replace_tokens(p[pattern], m)
+                            if name is None:
+                                continue
+
+                            # Add vulnerability to context
+                            self.cu.add_vuln(name)    
 
 
     def __replace_tokens(self, string, match):
@@ -213,6 +241,7 @@ class SmartPostcheck:
 
                 if group in match.groupdict():
                     # Replace token by value of matching group
+                    # If value is None, replace by empty string
                     output = output.replace(token, match.group(group) or '')
 
                 else:

@@ -59,6 +59,12 @@ class SmartStart:
             logger.smartinfo('HTTPS protocol detected from URL')
             self.cu.add_option('https', 'true')
 
+        # Check if HTTP service is protected by .htaccess authentication
+        if '401 Unauthorized'.lower() in self.service.http_headers.lower():
+            logger.smartinfo('HTTP authentication (htaccess) detected ' \
+                '(401 Unauthorized)')
+            self.cu.add_option('htaccess', 'true')
+
         # Try to detect web server from Nmap banner
         self.__detect_product_from_banner('web-server')
 
@@ -73,10 +79,11 @@ class SmartStart:
                     if 'wappalyzer' in p[prodname]:
                         pattern = p[prodname]['wappalyzer']
                     
-                        m = re.search(pattern, t['name'], re.IGNORECASE|re.DOTALL)
+                        #m = re.search(pattern, t['name'], re.IGNORECASE|re.DOTALL)
+                        if pattern.lowercase() in t['name'].lowercase():
 
                         # If pattern matches, add detected product
-                        if m:
+                        #if m:
                             # Add version if present
                             version = t['version']
 
@@ -95,10 +102,19 @@ class SmartStart:
 
     #------------------------------------------------------------------------------------
 
+    def __start_ftp(self):
+
+        # Try to detect ftp server from Nmap banner
+        self.__detect_product_from_banner('ftp-server')
+
+
+    #------------------------------------------------------------------------------------
+
     def __start_mssql(self):
 
         # Try to detect mssql server from Nmap banner
         self.__detect_product_from_banner('mssql-server')
+
 
     #------------------------------------------------------------------------------------
 
@@ -107,6 +123,7 @@ class SmartStart:
         # Try to detect mysql server from Nmap banner
         self.__detect_product_from_banner('mysql-server')
 
+
     #------------------------------------------------------------------------------------
 
     def __start_oracle(self):
@@ -114,12 +131,14 @@ class SmartStart:
         # Try to detect oracle server from Nmap banner
         self.__detect_product_from_banner('oracle-server')
 
+
     #------------------------------------------------------------------------------------
 
     def __start_postgresql(self):
 
         # Try to detect postgresql server from Nmap banner
         self.__detect_product_from_banner('postgresql-server')
+
 
     #------------------------------------------------------------------------------------
 
@@ -150,8 +169,11 @@ class SmartStart:
                         # If pattern matches banner, add detected product
                         if m:
                             # Add version if present
-                            if version_detection and m.group('version'):
-                                version = m.group('version')
+                            if version_detection:
+                                try:
+                                    version = m.group('version')
+                                except:
+                                    version = ''
                             else:
                                 version = ''
 

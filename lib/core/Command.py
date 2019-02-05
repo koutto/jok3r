@@ -18,6 +18,7 @@ General Tags
 [URL]             Target URL
 [HOST]            Target host
 [PORT]            Target port
+[URIPATH]         URI Path (e.g. /path/foo/bar/ in http://www.site.com/path/foo/bar/)
 [PROTOCOL]        Protocol tcp/udp
 [SERVICE]         Service name
 [TOOLBOXDIR]      Toolbox directory
@@ -72,6 +73,7 @@ Where PRODUCT_TYPE is replaced by the product type (e.g "web_server").
 """
 import re
 import regex
+import urllib.parse
 
 from lib.core.Config import *
 from lib.core.Constants import *
@@ -132,6 +134,7 @@ class Command:
                 # General tags replacement
                 self.__replace_tag_ip(target.get_ip())
                 self.__replace_tag_url(target.get_url())
+                self.__replace_tag_uripath(target.get_url())
                 self.__replace_tag_host(target.get_host(), target.get_ip())
                 self.__replace_tag_port(target.get_port())
                 self.__replace_tag_protocol(target.get_protocol())
@@ -184,6 +187,23 @@ class Command:
         if not url: return
         pattern = re.compile('\[URL\]', re.IGNORECASE)
         self.formatted_cmdline = pattern.sub(url, self.formatted_cmdline)
+
+
+    def __replace_tag_uripath(self, url):
+        """
+        Replace tag [URIPATH] by the target path in self.formatted_cmdline.
+
+        :param str url: Target URL
+        """
+        if not url: return
+        pattern = re.compile('\[URIPATH\]', re.IGNORECASE)
+        try:
+            o = urllib.parse.urlparse(url)
+            uripath = o.path or '/'
+        except:
+            uripath = '/'
+
+        self.formatted_cmdline = pattern.sub(uripath, self.formatted_cmdline)
 
 
     def __replace_tag_host(self, host, ip):
