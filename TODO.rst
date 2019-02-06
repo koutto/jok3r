@@ -6,13 +6,14 @@ TODO
 Docker Environment
 ==================
 * IMPORTANT: RE INSTALL odat !! 
+* re-install impacket
+
 
 
 BUG FIXES
 ===============================================================================
 
 - db > service -S -> recherche par url semble pas marcher
-
 - db > services - ip ranges selection bug
 
 
@@ -84,19 +85,6 @@ SMART MODULES / REGEXP
 ===============================================================================
 
 
-- Add product detection in ajp:
-        [>] [Recon][Check 02/02] tomcat-version > Fingerprint Tomcat version through AJP
-        match auth lvl: True
-        match specific: True
-        [*] Run command #01
-
-                                                                                                                                                                                                              
-        cmd> python2.7 tomcat.py -v --port 8009 version 10.4.16.53                                                                                                                                            
-
-        [2018-11-16 15:14:13.524] DEBUG    Getting resource at ajp13://10.4.16.53:8009/blablablablabla
-        Apache Tomcat/7.0.27
-
-
 * - ftp patator update smart:
 14:04:27 patator    INFO - 502   29     0.006 | anonymous:                         |     1 | PASS command not implemented.
 14:04:39 patator    INFO - 421   53     0.008 | anonymous:                         |     1 | Too many users logged in, closing control connection 
@@ -159,18 +147,6 @@ root@kali:~/jok3r/toolbox/http/exploit-weblogic-cve2018-2893# echo "[~] Will try
 - dirsearch : -t 40 --timeout= (add --timeout to dirsearch)
 
 - angularjs -> boolean (angularjs can be used with php,asp...)
-
-
-- tool ajpy=> add option --old-version + list applications
-
-- ajp settings: change dir wordlists
-tool        = ajpy
-command_1   = python2.7 tomcat.py -v --port [PORT] bf -U [WORDLISTSDIR]/services/http/creds/app-servers/tomcat-usernames.txt -P [WORDLISTSDIR]/services/http/creds/app-servers/tomcat-passwords.txt
-postrun     = ajpy_valid_creds
-
-
-
-- Replace patator by hydra (more mature, easier to parse outputs, better output)
 
 - DOMI-OWNED  => fonctionne sur 5, 6 et v8
 
@@ -259,13 +235,6 @@ TARGETURI => /
 
 
 
-
-- Sharepoint -> https://github.com/TestingPens/SPartan
-
-
-- add ssh cve enum
-- add ssh libssh vuln
-
 - ftp postexploit list dir
 
 * Weblogic CVE-2018-2628 https://github.com/tdy218/ysoserial-cve-2018-2628
@@ -286,6 +255,8 @@ TARGETURI => /
 
 * cve jquery
 * cve ssh
+* ssh cve enul
+* ssh libssh vuln
 * vulners-lookup
 * cvedetails-lookup
 * wordlists per language
@@ -296,14 +267,6 @@ TARGETURI => /
 
 
 * Java-RMI -> handle case windows ping -n
-
-
-- tool ajpy=> add option --old-version + list applications
-
-
-
-
-
 
 
 
@@ -350,15 +313,6 @@ python2.7 msdat.py xpcmdshell -s 10.244.214.126 -p 1433 -U sa -P sa -v --enable-
 
 - IMPORTANT: encadrer par /bin/bash -c '...' pour toutes les cmds avec <<< any
 
-- impacket reinstall dans docker
-
-
- 
-
-
-
-
-
 
 
 Services to add
@@ -390,7 +344,13 @@ ras- joomlascan
 
 SMARTMODULES / MATCHSTRINGS
 ===============================================================================
-- impacket smbexec/wmiexec/psexec
+* impacket smbexec/wmiexec/psexec
+* whatweb
+* nikto -> too many junk to extract important issues i think
+* davscan
+* wpseku 
+
+drupwn
 
 
 

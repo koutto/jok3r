@@ -63,6 +63,7 @@ options_match = dict()
 products_match = dict()
 from lib.smartmodules.matchstrings.products.AjpServerProducts import *
 from lib.smartmodules.matchstrings.products.FtpServerProducts import *
+from lib.smartmodules.matchstrings.products.HttpWebAppserverProducts import *
 from lib.smartmodules.matchstrings.products.HttpWebCmsProducts import *
 from lib.smartmodules.matchstrings.products.HttpWebFrameworkProducts import *
 from lib.smartmodules.matchstrings.products.HttpWebJslibProducts import *

@@ -5,9 +5,13 @@ from lib.smartmodules.matchstrings.MatchStrings import products_match
 WIG_REGEXP = '- Found JavaScript: {} [VERSION]'
 
 products_match['http']['web-jslib'] = {
-    'AngularJS': {
+    'Angular': {
         'wappalyzer': 'Angular',
+    },
+    'AngularJS': {
+        'wappalyzer': 'AngularJS',
         'wig': WIG_REGEXP.format('AngularJS'),
+        'angularjs-csti-scanner': '\[INFO\] Found AngularJS version [VERSION]',
     },
     'Backbone.js': {
         'wappalyzer': 'Backbone.js',

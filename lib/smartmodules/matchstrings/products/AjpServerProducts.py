@@ -6,4 +6,7 @@ products_match['ajp']['ajp-server'] = {
     'Apache/Jserv': {
         'nmap': 'Apache Jserv(\s+[VERSION])?',
     },
+    'Apache/Tomcat': {
+        'ajpy': 'Apache Tomcat/[VERSION]',
+    }
 }

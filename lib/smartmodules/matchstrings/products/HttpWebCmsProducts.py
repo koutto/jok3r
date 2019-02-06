@@ -8,7 +8,7 @@ from lib.smartmodules.matchstrings.MatchStrings import products_match
 
 
 
-CMSEEK_REGEXP = 'CMS: {}(.*Version: [VERSION])?'
+CMSEEK_REGEXP = 'CMS: {}([\s\S]*Version: [VERSION]?'
 
 # Wig output sample:
 # Error page detection ...
@@ -200,6 +200,12 @@ products_match['http']['web-cms'] = {
         'drupwn': 'Version detected: [VERSION]',
         'fingerprinter': '-a drupal[\s\S]*Intersection of potential versions returned only one version v[VERSION]',
         'cmsmap': 'Drupal Version: [VERSION]',
+        # Droopescan sample:
+        # [+] Possible version(s):
+        # 7.57
+        # 7.58
+        # 7.59
+        #'droopescan': '',
     },
     'E107': {
         'wappalyzer': 'e107',
