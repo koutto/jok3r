@@ -84,11 +84,6 @@ IMPROVEMENTS / NEW FEATURES
 SMART MODULES / REGEXP
 ===============================================================================
 
-
-* - ftp patator update smart:
-14:04:27 patator    INFO - 502   29     0.006 | anonymous:                         |     1 | PASS command not implemented.
-14:04:39 patator    INFO - 421   53     0.008 | anonymous:                         |     1 | Too many users logged in, closing control connection 
-
 * - ftp update smart, add anonymous creds when nmap detect + context req sur bruteforce:
 PORT   STATE SERVICE REASON  VERSION
 21/tcp open  ftp     syn-ack HP JetDirect ftpd
@@ -145,8 +140,6 @@ root@kali:~/jok3r/toolbox/http/exploit-weblogic-cve2018-2893# echo "[~] Will try
 
 
 - dirsearch : -t 40 --timeout= (add --timeout to dirsearch)
-
-- angularjs -> boolean (angularjs can be used with php,asp...)
 
 - DOMI-OWNED  => fonctionne sur 5, 6 et v8
 
@@ -263,9 +256,6 @@ TARGETURI => /
 * jndiat
 * check https://bitvijays.github.io/LFF-IPS-P2-VulnerabilityAnalysis.html
 * correct start module http 
-- nmap command -> IP
-
-
 * Java-RMI -> handle case windows ping -n
 
 
@@ -349,6 +339,8 @@ SMARTMODULES / MATCHSTRINGS
 * nikto -> too many junk to extract important issues i think
 * davscan
 * wpseku 
+* vbscan
+* barmie
 
 drupwn
 

@@ -12,5 +12,6 @@ from lib.smartmodules.matchstrings.MatchStrings import products_match
 products_match['mssql']['mssql-server'] = {
     'Microsoft/SQL Server': {
         'nmap': 'Microsoft SQL Server(\s+[VERSION])?',
+        'msdat': 'Version:\s*[VERSION]',
     },
 }

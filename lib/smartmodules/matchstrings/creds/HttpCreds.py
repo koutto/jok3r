@@ -27,7 +27,6 @@ creds_match['http'] = {
             'type': '$1',
         },
     },
-
     'domiowned': {
         '^(?P<m1>\S+)\s+(?P<m2>\S+)\s+(Admin|User)\s*$': {
             'user': '$1',
@@ -35,7 +34,6 @@ creds_match['http'] = {
             'type': 'domino',
         },
     },
-
     'metasploit': {
         # auxiliary/scanner/http/tomcat_enum
         '- Apache Tomcat (?<m1>\S+) found': {
@@ -48,20 +46,50 @@ creds_match['http'] = {
             'type': 'jboss',
         }
     },
-
     'wpscan': {
         '\|\s+[0-9]+\s+\|\s+(?!None\s+)(?P<m1>\S+)\s+\|.*\|': {
             'user': '$1',
             'type': 'wordpress',
         },
     },
-
     'wpseku': {
         '\|\s+[0-9]+\s+\|.*\|\s+(?!None\s+)(?P<m1>\S+)\s+\|': {
             'user': '$1',
             'type': 'wordpress',
         },
     },
+    'xbruteforcer': {
+        'wp-login\.php\s+.*User:\s*(?<m1>\S+)\s*Pass:\s*(?<m2>\S*)': {
+            'user': '$1',
+            'pass': '$2',
+            'type': 'wordpress',
+        },
+        'administrator/index\.php\s+.*User:\s*(?<m1>\S+)\s*Pass:\s*(?<m2>\S*)': {
+            'user': '$1',
+            'pass': '$2',
+            'type': 'joomla',
+        },
+        'user/login\s+.*User:\s*(?<m1>\S+)\s*Pass:\s*(?<m2>\S*)': {
+            'user': '$1',
+            'pass': '$2',
+            'type': 'drupal',
+        },
+        'admin/index\.php\s+.*User:\s*(?<m1>\S+)\s*Pass:\s*(?<m2>\S*)': {
+            'user': '$1',
+            'pass': '$2',
+            'type': 'opencart',
+        },
+        'admin/index\.php\s+.*User:\s*(?<m1>\S+)\s*Pass:\s*(?<m2>\S*)': {
+            'user': '$1',
+            'pass': '$2',
+            'type': 'opencart',
+        },
+        '/admin\s+.*User:\s*(?<m1>\S+)\s*Pass:\s*(?<m2>\S*)': {
+            'user': '$1',
+            'pass': '$2',
+            'type': 'magento',
+        },
+    }
 
 
 }

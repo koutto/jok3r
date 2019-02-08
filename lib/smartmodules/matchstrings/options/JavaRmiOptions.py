@@ -15,5 +15,9 @@ options_match['java-rmi'] = {
             'value': 'true',
         }
     },
+    'sjet': {
+        'name': 'Successfully loaded MBeanSiberas',
+        'value': 'true',
+    },
 
 }

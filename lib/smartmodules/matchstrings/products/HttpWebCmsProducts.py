@@ -307,6 +307,7 @@ products_match['http']['web-cms'] = {
     'Liferay': {
         'wappalyzer': 'Liferay',
         'fingerprinter': '-a liferay[\s\S]*Intersection of potential versions returned only one version v[VERSION]',
+        'liferayscan': '\+ Version: Liferay .* [VERSION]',
     },
     'Livejournal': {
         'wappalyzer': 'LiveJournal',
@@ -321,6 +322,7 @@ products_match['http']['web-cms'] = {
         'cmseek': CMSEEK_REGEXP.format('Magento'),
         'wig': WIG_REGEXP.format('Magento( (Community|Enterprise) Edition)?'),
         'fingerprinter': '-a magento[\s\S]*Intersection of potential versions returned only one version v[VERSION]',
+        'magescan': 'Version\s+\|\s*[VERSION]',
     },
     'Majordomo': {
         'wig': WIG_REGEXP.format('Majordomo'),
