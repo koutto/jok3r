@@ -13,11 +13,13 @@ options_match['java-rmi'] = {
         'ssl': {
             'name': 'rmissl',
             'value': 'true',
-        }
+        },
     },
     'sjet': {
-        'name': 'Successfully loaded MBeanSiberas',
-        'value': 'true',
+        'Successfully loaded MBeanSiberas': {
+            'name': 'jmx-auth-disabled',
+            'value': 'true',
+        },
     },
 
 }

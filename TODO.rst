@@ -68,6 +68,9 @@ IMPROVEMENTS / NEW FEATURES
 
 * Improve wordlist quality:
     * passwords
+        * More default creds for mssql: https://github.com/mubix/post-exploitation-wiki/blob/master/windows/mssql.md
+        * Idea for wordlist services creds: https://github.com/x90skysn3k/brutespray/tree/master/wordlist
+
     * wordlist per language
     * wordlist per cms
     * wordlist per server
@@ -80,44 +83,17 @@ IMPROVEMENTS / NEW FEATURES
 
 
 
-
-SMART MODULES / REGEXP
+SMARTMODULES / MATCHSTRINGS
 ===============================================================================
-
-* - ftp update smart, add anonymous creds when nmap detect + context req sur bruteforce:
-PORT   STATE SERVICE REASON  VERSION
-21/tcp open  ftp     syn-ack HP JetDirect ftpd
-| ftp-anon: Anonymous FTP login allowed (FTP code 230)
-|_d-w--w--w-   2 JetDirect  public         512 Feb 14  1999 PORT1 [NSE: writeable]
-
-* - add postrun tnscmd_sid
-- add re.IGNORECASE tns sid
-- add sid detection:
-[+] Data received by the database server: ''\x00 \x00\x00\x02\x00\x00\x00\x016\x00\x01\x08\x00\x7f\xff\x00\x01\x01]\x00 \r\x08\x00\x00\x00\x00\x00\x00\x00\x00\x01g\x00\x00\x06\x00\x00\x00\x00\x00(DESCRIPTION=(TMP=)(VSNNUM=153093632)(ERR=0)(ALIAS=LISTENER)(SECURITY=OFF)(VERSION=TNSLSNR for IBM/AIX RISC System/6000: Version 9.2.0.6.0 - Production)(START_DATE=10-NOV-2018 17:56:38)(SIDNUM=1)(LOGFILE=/apps/oracle/9.2.0/network/log/listener.log)(PRMFILE=/apps/oracle/adm/network/listener.ora)(TRACING=off)(UPTIME=23928489)(SNMP=OFF)(PID=7995588))\x02Q\x00\x00\x06\x00\x00\x00\x00\x00(ENDPOINT=(HANDLER=(HANDLER_MAXLOAD=0)(HANDLER_LOAD=0)(ESTABLISHED=0)(REFUSED=0)(HANDLER_ID=7A5359F37007-00C4-E053-9F32E94200C4)(PRE=any)(SESSION=NS)(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=parva7301586)(PORT=1521))))),,(SERVICE=(SERVICE_NAME=METHFRP1_DGMGRL.world)(INSTANCE=(INSTANCE_NAME=METHFRP1)(NUM=1)(INSTANCE_STATUS=UNKNOWN)(NUMREL=1))),,(SERVICE=(SERVICE_NAME=ROG2WDP0_DGMGRL.world)(INSTANCE=(INSTANCE_NAME=ROG2WDP0)(NUM=1)(INSTANCE_STATUS=UNKNOWN)(NUMREL=1))),,(SERVICE=(SERVICE_NAME=RSS0WDP1)(INSTANCE=(INSTANCE_NAME=RSS0WDP1)(NUM=1)(INSTANCE_STATUS=UNKNOWN)(NUMREL=1))),,''
-
-- Check this case where sid=LISTENER ??
-
-         cmd> python2.7 odat.py tnscmd -s 10.190.98.154 -p 1521 -d any --ping -v                                                                                                                               
-
-        16:49:05 INFO -: alias list emptied
-        16:49:05 INFO -: Data received thanks to the 'ping' cmd: '\x00A\x00\x00\x04\x00\x00\x00"\x00\x005(DESCRIPTION=(TMP=)(VSNNUM=0)(ERR=0)(ALIAS=LISTENER))'
-
-        [1] (10.190.98.154:1521): Searching ALIAS on the 10.190.98.154 server, port 1521
-        [+] 1 ALIAS received: ['LISTENER']. You should use this alias (more or less) as Oracle SID.
-
-                                                                                                                                                                                                              
-
-
-        [*] [SMART] Running post-check method "tnscmd_sid" ...
-        [+] [SMART] New detected option: sid = LISTENER
-
-        [?] Run command #02 ? [Y/n/t/w/q] q
-
-
-
-
-
-
+Not done yet:
+* impacket smbexec/wmiexec/psexec
+* whatweb
+* nikto -> too many junk to extract important issues i think
+* davscan
+* wpseku 
+* vbscan
+* barmie
+* snmpwn
 
 
 
@@ -171,7 +147,6 @@ No response , Normal ?
 
 - add exploitations avec clusterd
 
-- [check_mysql-interesting-tables-columns] add context
 
 
 - Add option --webdir-wordlist for check discovery-general-wordlist 
@@ -226,37 +201,27 @@ TARGETURI => /
         else:
             print 'Not Vulnerable to CVE-2017-12617 '
 
-
-
-- ftp postexploit list dir
-
 * Weblogic CVE-2018-2628 https://github.com/tdy218/ysoserial-cve-2018-2628
 * https://github.com/chadillac/mdns_recon
 * nfsshell (sudo apt-get install libreadline-dev ; make)
 * https://github.com/hegusung/RPCScan.git
-* https://www.magereport.com
 * https://github.com/AlisamTechnology/PRESTA-modules-shell-exploit/blob/master/PRESTA-shell-exploit.pl
 * https://github.com/breenmachine/JavaUnserializeExploits
 * https://github.com/DanMcInerney/pentest-machine
 * Sharepoint -> https://github.com/TestingPens/SPartan
 * https://github.com/SecWiki/CMS-Hunter
-* 
-
 * Better exploit for MS17-010 (support for more win versions, only Win7 and 2008 R2 for now)
-
-* For all bruteforce with 'auth_status': NO_AUTH -> create command with username known 
-
 * cve jquery
 * cve ssh
 * ssh cve enul
 * ssh libssh vuln
-* vulners-lookup
-* cvedetails-lookup
-* wordlists per language
 * jndiat
 * check https://bitvijays.github.io/LFF-IPS-P2-VulnerabilityAnalysis.html
 * correct start module http 
 * Java-RMI -> handle case windows ping -n
+
+
+* For all bruteforce with 'auth_status': NO_AUTH -> create command with username known 
 
 
 
@@ -290,23 +255,18 @@ sudo dpkg -i oracle-instantclient12.2-sqlplus_12.2.0.1.0-2_amd64.deb
 /bin/bash -c "export ORACLE_HOME=`file /usr/lib/oracle/*/client64/ | tail -n 1 | cut -d':' -f1`; export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_HOME/lib; export PATH=$ORACLE_HOME/bin:$PATH; python2.7 odat.py passwordguesser -s 10.190.98.114 -p 1521 -d SCAN3 -vv --force-retry --accounts-file accounts/accounts_multiple.txt"
 
 
-- More default creds for mssql
-https://github.com/mubix/post-exploitation-wiki/blob/master/windows/mssql.md
 
-
-- MSSQL - postexploit
-/bin/bash -c 'python2.7 msdat.py all -s 10.244.214.126 -p 1433 -U sa -P sa -v <<< C'; 
-
-- MSSQL postexploit add shell exec:
-python2.7 msdat.py xpcmdshell -s 10.244.214.126 -p 1433 -U sa -P sa -v --enable-xpcmdshell
-/bin/bash -c 'python2.7 msdat.py xpcmdshell -s 10.244.214.126 -p 1433 -U sa -P sa -v --shell <<< "whoami && net user"''
-
-- IMPORTANT: encadrer par /bin/bash -c '...' pour toutes les cmds avec <<< any
 
 
 
-Services to add
-===============
+- IMPORTANT: encadrer par /bin/bash -c '...' pour toutes les cmds avec <<< any
+/bin/bash -c 'python2.7 msdat.py xpcmdshell -s [IP] -p [PORT] -U [USERNAME] -P [PASSWORD] -v --shell <<< "whoami && net user"'
+
+/bin/bash -c 'python3 <<< "print(123)"'
+
+
+SERVICES TO ADD
+===============================================================================
 * NFS
 * MongoDB
 * RPC
@@ -316,33 +276,7 @@ Services to add
 
 
 
-Regexp todo:
-OK- Domiowned
-OK- Fingerprinter
-removed- Cmsexplorer
-OK- drupwn
-OK- cmsmap
-OK- wpseku
-OK- wpscan
-OK- joomscan
-ras- joomlascan
-- joomlavs
-- droopescan
-- xbruteforcer
 
-
-
-SMARTMODULES / MATCHSTRINGS
-===============================================================================
-* impacket smbexec/wmiexec/psexec
-* whatweb
-* nikto -> too many junk to extract important issues i think
-* davscan
-* wpseku 
-* vbscan
-* barmie
-
-drupwn
 
 
 
@@ -351,7 +285,7 @@ drupwn
 WORDLISTS ADDING
 ===============================================================================
 
-- Idea for wordlist services creds: https://github.com/x90skysn3k/brutespray/tree/master/wordlist
+
 
 - Very Minimalist dirs wordlists
 

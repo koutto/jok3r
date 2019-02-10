@@ -23,7 +23,7 @@ options_match['smb'] = {
         'VULNERABLE to MS17-010': {
             'name': 'vuln-ms17-010',
             'value': 'true',
-        }
+        },
     },
 
 }

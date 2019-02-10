@@ -22,6 +22,8 @@ class ContextRequirements:
     - Products: Available product type(s) depend on the service (e.g. web_server and
       web_cms for HTTP).
       Accepted syntax examples:
+            any (means product name must be known)
+            any|version_known (means product name+version must be known)
             vendor/product_name (vendor/ is present only if needed)
             vendor/product_name|version_known
             vendor/product_name|7.*
@@ -144,7 +146,7 @@ class ContextRequirements:
         status = True
 
         for prodtype in self.products:
-            name, version = target.get_product_name(prodtype)
+            name, version = target.get_product_name_version(prodtype)
 
             status &= self.__check_product(prodtype, name, version)
 
@@ -268,6 +270,9 @@ class ContextRequirements:
         None            'undefined'     True
 
         Examples of possible context requirements on versions:
+        any
+        any|version_known
+        vendor/product_name
         vendor/product_name|version_known
         vendor/product_name|7.*
         vendor/product_name|7.1.*
@@ -290,6 +295,15 @@ class ContextRequirements:
             for req_prod in requirement:
                 req_prodname, req_prodvers = VersionUtils.extract_name_version(req_prod)
 
+                # When no requirement on vendor/product_name but must be known
+                if req_prodname.lower() == 'any':
+                    # When version can be unknown
+                    status  = not req_prodvers
+
+                    # When the version must be known (any walue)
+                    status |= req_prodvers.lower() == 'version_known' and prodversion
+
+                # When requirement on a defined vendor/product_name
                 if prodname.lower() == req_prodname.lower():
                     # When no requirement on the version number
                     status  = not req_prodvers
