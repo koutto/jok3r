@@ -17,6 +17,13 @@ admin:password1
 admin:Password123
 admin:password123
 postgres:
+postgres:postgres
+postgres:postgresql
+postgres:password
+postgres:Password1
+postgres:password1
+postgres:Password123
+postgres:password123
 admin:postgres
 admin:postgresql
 admin:password

@@ -123,7 +123,7 @@ sudo apt-get install -y --ignore-missing zlib1g-dev libcurl4-openssl-dev liblzma
 sudo apt-get install -y --ignore-missing libxml2 libxml2-dev libxslt1-dev build-essential 
 sudo apt-get install -y --ignore-missing gcc make automake patch libssl-dev locate
 sudo apt-get install -y --ignore-missing smbclient dnsutils libgmp-dev libffi-dev 
-sudo apt-get install -y --ignore-missing libxml2-utils unixodbc unixodbc-dev
+sudo apt-get install -y --ignore-missing libxml2-utils unixodbc unixodbc-dev alien
 print_delimiter
 
 print_title "[~] Install Python3 libraries required by Jok3r (if missing)"
