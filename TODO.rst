@@ -108,20 +108,6 @@ CHECKS CORRECTIONS
 /jok3r/toolbox/http/exploit-weblogic-cve2017-3248# python2.7 exploits/weblogic/exploit-CVE-2017-3248-bobsecq.py -t 10.2.211.136 -p 443 --ssl --check --ysopath /root/jok3r/toolbox/multi/ysoserial/ysoserial-master.jar
 
 
- - autre bug:
-17:17:05 DEBUG -: Try to connect with APPLYSYSPUB/<UNKNOWN>
-17:17:05 DEBUG -: Oracle connection string: APPLYSYSPUB/<UNKNOWN>@10.190.98.115:1521/LISTENER
-17:17:05 DEBUG -: Error during connection with this account: `ORA-12514: TNS:listener does not currently know of service requested in connect descriptor`
-17:17:05 DEBUG -: Try to connect with APPS/APPS
-17:17:05 DEBUG -: Oracle connection string: APPS/APPS@10.190.98.115:1521/LISTENER
-=> correction:
-/bin/bash -c "export ORACLE_HOME=`file /usr/lib/oracle/*/client64/ | tail -n 1 | cut -d':' -f1`; export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_HOME/lib; export PATH=$ORACLE_HOME/bin:$PATH; python2.7 odat.py passwordguesser -s 10.190.98.114 -p 1521 -d SCAN3 -vv --force-retry --accounts-file accounts/accounts_multiple.txt"
-
-
--ODAT: simple quote après /bin/bash !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! (sinon $var non prise en compte)
-/bin/bash -c 'export ORACLE_HOME=`file /usr/lib/oracle/*/client64/ | tail -n 1 | cut -d":" -f1`; export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_HOME/lib; export PATH=$ORACLE_HOME/bin:$PATH; echo $ORACLE_HOME; python2.7 odat.py passwordguesser -s 10.2.208.173 -p 1521 -d LISTENER -vv --force-retry --accounts-file accounts/accounts_multiple.txt'
-
-
 - dirsearch : -t 40 --timeout= (add --timeout to dirsearch)
 
 - DOMI-OWNED  => fonctionne sur 5, 6 et v8
@@ -147,10 +133,6 @@ CHECKS CORRECTIONS
       File "/usr/local/lib/python3.6/dist-packages/dirhunt-0.5.1-py3.6.egg/dirhunt/sessions.py", line 5, in <module>
         from proxy_db.models import Proxy
     ModuleNotFoundError: No module named 'proxy_db.models'
-
-
-- ./optionsbleed -n 40 -a -u https://www.correspondant-epargne.fr/tpe 
-No response , Normal ?
 
 - add exploitations avec clusterd
 
@@ -397,3 +379,33 @@ www
 xml
 xmlrpc
 
+
+
+MATCHSTRINGS TO ADD
+===============================================================================
+
+- Wordpress usernames
+
+____ _  _ ____ ____ ____ _  _
+|    |\/| [__  |___ |___ |_/  by @r3dhax0r
+|___ |  | ___| |___ |___ | \_ Version 1.1.0 ForumZ
+
+
+ [+]  Deep Scan Results  [+] 
+
+
+ ┏━Target: wordpress.com
+ ┃
+ ┠── CMS: WordPress
+ ┃    │
+ ┃    ╰── URL: https://wordpress.org
+ ┃
+ ┠──[WordPress Deepscan]
+ ┃    │
+ ┃    ├── Usernames harvested: 1
+ ┃    │    ╰── matt
+ ┃    │
+ ┃
+ ┠── Result: /root/jok3r/toolbox/http/cmseek/Result/www.wordpress.com/cms.json
+ ┃
+ ┗━Scan Completed in 11.02 Seconds, using 46 Requests
