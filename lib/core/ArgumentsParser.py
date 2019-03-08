@@ -519,10 +519,10 @@ class ArgumentsParser:
             self.subparser.print_help()
             return False
 
-        status &= self.__check_args_attack_init()
-        status &= self.__check_args_attack_selection()
+        status &= self.__check_args_attack_single_target()
+        status &= self.__check_args_attack_multi_targets()
         status &= self.__check_args_attack_bruteforce()
-        status &= self.__check_args_attack_context()
+        status &= self.__check_args_attack_selection()
 
         return status
 
