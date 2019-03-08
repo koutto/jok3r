@@ -64,6 +64,7 @@ logging.SUCCESS = 35
 logging.PROMPT = 36
 logging.SMARTINFO = 37
 logging.SMARTSUCCESS = 38
+logging.SMARTERROR = 39
 logging.addLevelName(logging.DEBUG, DEBUG)
 logging.addLevelName(logging.INFO, INFO)
 logging.addLevelName(logging.SUCCESS, SUCCESS)

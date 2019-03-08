@@ -934,7 +934,7 @@ class DbController(cmd2.Cmd):
         metavar = '<option_name1> <option_name2> ...', 
         help    = 'Option names to select')
 
-    options_manage = options.add_argument_group('Manage options')\
+    options_manage = options.add_argument_group('Manage options')
     options_manage.add_argument(
         '-d', '--del', 
         action  = 'store_true', 
@@ -1015,7 +1015,7 @@ class DbController(cmd2.Cmd):
         # Operations:
         # -----------
         # --del
-        elif args.delete:
+        if args.delete:
             if not req.filter_applied:
                 if not Output.prompt_confirm('No filter applied. Are you sure you ' \
                         'want to delete ALL options in current mission ?', 
@@ -1078,7 +1078,7 @@ class DbController(cmd2.Cmd):
         metavar = '<product_type1> <product_type2> ...', 
         help    = 'Product types to select')
 
-    products_manage = products.add_argument_group('Manage products')\
+    products_manage = products.add_argument_group('Manage products')
     products_manage.add_argument(
         '-d', '--del', 
         action  = 'store_true', 
@@ -1161,7 +1161,7 @@ class DbController(cmd2.Cmd):
         # Operations:
         # -----------
         # --del
-        elif args.delete:
+        if args.delete:
             if not req.filter_applied:
                 if not Output.prompt_confirm('No filter applied. Are you sure you ' \
                         'want to delete ALL products in current mission ?', 
@@ -1473,7 +1473,7 @@ class DbController(cmd2.Cmd):
         # Operations:
         # -----------
         # --del
-        elif args.delete:
+        if args.delete:
             if not req.filter_applied:
                 if not Output.prompt_confirm('No filter applied. Are you sure you ' \
                         'want to delete ALL vulnerabilities in current mission ?', 

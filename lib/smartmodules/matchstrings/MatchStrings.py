@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+from collections import defaultdict
 
 VERSION_REGEXP = '(?P<version>[0-9.]+)?'
 
@@ -76,7 +77,7 @@ from lib.smartmodules.matchstrings.options.SmbOptions import *
 #          ],
 #      }
 
-products_match = dict()
+products_match = defaultdict(dict)
 from lib.smartmodules.matchstrings.products.AjpServerProducts import *
 from lib.smartmodules.matchstrings.products.FtpServerProducts import *
 from lib.smartmodules.matchstrings.products.HttpWebAppserverProducts import *

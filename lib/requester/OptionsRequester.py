@@ -14,7 +14,7 @@ from lib.output.Logger import logger
 from lib.output.Output import Output
 
 
-class OptionssRequester(Requester):
+class OptionsRequester(Requester):
 
     def __init__(self, sqlsession):
         query = sqlsession.query(Option).join(Service).join(Host).join(Mission)

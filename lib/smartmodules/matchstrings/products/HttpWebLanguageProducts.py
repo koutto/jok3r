@@ -8,7 +8,7 @@ products_match['http']['web-language'] = {
     'Microsoft/ASP.NET': {
         'wappalyzer': 'Microsoft ASP.NET',
         'wig': WIG_REGEXP.format('ASP\.NET'),
-    }
+    },
     'CFML': {
         'wappalyzer': 'CFML',
     },
@@ -26,7 +26,7 @@ products_match['http']['web-language'] = {
     },
     'Perl': {
         'wappalyzer': 'Perl',
-    }
+    },
     'PHP': {
         'wappalyzer': 'PHP',
         'wig': WIG_REGEXP.format('PHP'),
@@ -36,5 +36,5 @@ products_match['http']['web-language'] = {
     },
     'Ruby': {
         'wappalyzer': 'Ruby',
-    }
+    },
 }

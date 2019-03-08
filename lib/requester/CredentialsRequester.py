@@ -77,7 +77,6 @@ class CredentialsRequester(Requester):
             logger.warning('Credential already exists in database')
         else:
             service = self.sqlsess.query(Service).filter(Service.id == service_id)\
-
                                   .first()
             if not service:
                 logger.error('Service id {id} is invalid'.format(id=service_id))

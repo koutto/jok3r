@@ -12,7 +12,7 @@ from lib.db.CommandOutput import CommandOutput
 from lib.db.Result import Result
 from lib.output.Logger import logger
 from lib.output.Output import Output
-from lib.smartmodules.SmartPostCheck import SmartPostCheck
+from lib.smartmodules.SmartPostcheck import SmartPostcheck
 
 
 class Check:
@@ -129,7 +129,7 @@ class Check:
                         outputraw=outputraw))
 
                     # Run smartmodule method on output
-                    postcheck = SmartPostCheck(
+                    postcheck = SmartPostcheck(
                         target.service,
                         sqlsession,
                         self.tool.name,

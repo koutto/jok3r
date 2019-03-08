@@ -104,8 +104,6 @@ CHECKS CORRECTIONS
 
 - samba-rce-cve2015-0240 only if os = *linux*
 
-- Correct path ysoserial:
-/jok3r/toolbox/http/exploit-weblogic-cve2017-3248# python2.7 exploits/weblogic/exploit-CVE-2017-3248-bobsecq.py -t 10.2.211.136 -p 443 --ssl --check --ysopath /root/jok3r/toolbox/multi/ysoserial/ysoserial-master.jar
 
 
 - dirsearch : -t 40 --timeout= (add --timeout to dirsearch)

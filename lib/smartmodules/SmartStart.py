@@ -166,27 +166,27 @@ class SmartStart:
                     
                     m = re.search(pattern, self.service.banner, re.IGNORECASE|re.DOTALL)
 
-                        # If pattern matches banner, add detected product
-                        if m:
-                            # Add version if present
-                            if version_detection:
-                                try:
-                                    version = m.group('version')
-                                except:
-                                    version = ''
-                            else:
+                    # If pattern matches banner, add detected product
+                    if m:
+                        # Add version if present
+                        if version_detection:
+                            try:
+                                version = m.group('version')
+                            except:
                                 version = ''
+                        else:
+                            version = ''
 
-                            logger.smartinfo('Product detected from banner: {type} = ' \
-                                '{name} {version}'.format(
-                                    type=prodtype,
-                                    name=servername,
-                                    version=version))
+                        logger.smartinfo('Product detected from banner: {type} = ' \
+                            '{name} {version}'.format(
+                                type=prodtype,
+                                name=servername,
+                                version=version))
 
-                            # Add detected product to context
-                            self.cu.add_product(prodtype, prodname, version)
+                        # Add detected product to context
+                        self.cu.add_product(prodtype, prodname, version)
 
-                            # Stop product detection from banner if something found
-                            break
+                        # Stop product detection from banner if something found
+                        break
 
 

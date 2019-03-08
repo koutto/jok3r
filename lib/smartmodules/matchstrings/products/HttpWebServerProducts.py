@@ -71,20 +71,3 @@ products_match['http']['web-server'] = {
         'nmap': 'Zeus httpd(\s+Admin Server)?(\s+[VERSION])?',
     },
 }
-
-web-server = 
-    Apache,
-    Hiawatha,
-    IBM/HTTP Server,
-    Lighttpd,
-    LiteSpeed Web Server,
-    Microsoft/IIS,
-    Mongoose,
-    Monkey Http Daemon,
-    Nginx,
-    Oracle/Http Server,
-    Railo,
-    Rejetto/Http File Server,
-    Thttpd,
-    Yaws,
-    Zeus Web Server,

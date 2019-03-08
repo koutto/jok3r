@@ -151,7 +151,7 @@ class SmartPostcheck:
                 p = products_match[self.service.name][prodtype]
                 break_prodnames = False
 
-                for prodname in p.keys()
+                for prodname in p.keys():
                 
                     if self.tool_name in p[prodname].keys():
                         patterns = p[prodname][self.tool_name]
