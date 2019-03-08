@@ -3,7 +3,8 @@
 ###
 ### Core > AttackProfiles
 ###
-
+from lib.output.Output import Output
+from lib.utils.StringUtils import StringUtils
 
 class AttackProfile:
 
@@ -107,6 +108,7 @@ class AttackProfiles:
         ]
 
         for p in self.profiles:
+            #print(p.checks)
             if not filter_service or p.is_service_supported(filter_service):
                 data.append([
                     Output.colored(p.name, attrs='bold'),

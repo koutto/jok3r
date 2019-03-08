@@ -449,7 +449,7 @@ class ServicesConfig:
         if not data:
             logger.warning('No specific option')
         else:
-            Output.table(columns, data)
+            Output.table(columns, data, hrules=False)
 
 
     def show_products(self, filter_service=None):
@@ -482,7 +482,7 @@ class ServicesConfig:
             Output.table(columns, data)
 
 
-    def show_authentication_types(self):
+    def show_authentication_types(self, service='http'):
         """Display list of authentication types for HTTP."""
         Output.title1('Supported {service} authentication types'.format(
             service=service.upper()))

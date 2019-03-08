@@ -179,7 +179,7 @@ class ServiceChecks:
                         if not check.tool.installed:
                             logger.warning('Skipped: the tool "{tool}" used by this ' \
                                 'check is not installed yet'.format(
-                                    tool=check.tool.name_display))
+                                    tool=check.tool.name))
                         else:
                             try:
                                 check.run(target, 
@@ -312,7 +312,7 @@ class ServiceChecks:
                     check.name,
                     category,
                     check.description,
-                    Output.colored(check.tool.name_display, color=color_tool),
+                    Output.colored(check.tool.name, color=color_tool),
                     #len(check.commands),
                 ])
                 

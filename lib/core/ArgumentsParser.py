@@ -188,7 +188,7 @@ class ArgumentsParser:
             action  = 'store',
             dest    = 'show_attack_profiles',
             nargs   = '?',
-            metavar = '[<service>]',
+            metavar = '<service>',
             const   = 'all',
             default = None)
         info_mxg.add_argument(
@@ -478,6 +478,9 @@ class ArgumentsParser:
         # Check option with service name as parameter
         if service \
            and not self.settings.services.is_service_supported(service, multi=False):
+
+            if self.args.show_attack_profiles and service == 'all':
+                return True
 
             logger.error('Service "{service}" is not supported. ' \
                 'Check "info --services".'.format(service=service.upper()))

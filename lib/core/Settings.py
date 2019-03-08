@@ -864,8 +864,8 @@ class Settings:
                 #
                 # In context requirements, product name can also embed requirement on 
                 # product version by appending "|version_requirements" to product name
-                if val == 'undefined':
-                    req_products[cond] = ['undefined']
+                if val in ('undefined', 'any', 'any|version_known'):
+                    req_products[cond] = [val]
                 else:
                     if isinstance(val, str):
                         val = [val]
@@ -873,7 +873,8 @@ class Settings:
                         # Check if [vendor/]product_name is in the list of supported 
                         # product names (ignore version requirements if present)
                         product_name = e[:e.index('|')] if '|' in e else e
-                        if product_name not in self.services[service]['products'][cond]:
+                        if product_name.lower() not in list(map(lambda x: x.lower(), 
+                                self.services[service]['products'][cond])):
                             logger.warning('{prefix} Context requirement "{option}" ' \
                                 'contains an invalid product ("{product}")'.format(
                                     prefix=log_prefix, 
@@ -939,7 +940,8 @@ class Settings:
                 description = self.config_parsers[ATTACK_PROFILES_CONF_FILE].safe_get(
                     section, opt, '', None)
 
-            # List of checks (ordered) for a service
+            # List of checks (ordered) for a service (name of the option must 
+            # correspond to the name of the service)
             elif self.services.is_service_supported(opt, multi=False):
                 list_checks = self.config_parsers[ATTACK_PROFILES_CONF_FILE]\
                     .safe_get_list(section, opt, ',', [])
@@ -957,6 +959,9 @@ class Settings:
                             'for service {service}, the attack profile is ' \
                             'skipped'.format(prefix=log_prefix, check=c, service=opt))
                         return None
+
+                # Add list of checks in dictionnary for the corresponding service
+                checks[opt] = list_checks
 
             # Unsupported option
             else:

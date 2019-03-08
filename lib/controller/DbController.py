@@ -967,9 +967,9 @@ class DbController(cmd2.Cmd):
             filter_.add_condition(Condition(args.hostname.split(','), FilterData.HOST))
 
         # --service <service1,service2...>
-        if args.services:
+        if args.service:
             # OR between ips
-            services = args.services.split(',')
+            services = args.service.split(',')
             for s in services:
                 if not self.settings.services.is_service_supported(s, multi=False):
                     logger.error('Service {name} is not valid/supported'.format(
@@ -1111,9 +1111,9 @@ class DbController(cmd2.Cmd):
             filter_.add_condition(Condition(args.hostname.split(','), FilterData.HOST))
 
         # --service <service1,service2...>
-        if args.services:
+        if args.service:
             # OR between ips
-            services = args.services.split(',')
+            services = args.service.split(',')
             for s in services:
                 if not self.settings.services.is_service_supported(s, multi=False):
                     logger.error('Service {name} is not valid/supported'.format(
@@ -1435,9 +1435,9 @@ class DbController(cmd2.Cmd):
             filter_.add_condition(Condition(args.ip.split(','), FilterData.IP))
 
         # --service <service1,service2...>
-        if args.services:
+        if args.service:
             # OR between ips
-            services = args.services.split(',')
+            services = args.service.split(',')
             for s in services:
                 if not self.settings.services.is_service_supported(s, multi=False):
                     logger.error('Service {name} is not valid/supported'.format(
@@ -1518,7 +1518,7 @@ class DbController(cmd2.Cmd):
         action  = 'store',
         metavar = '<string>',
         help    = 'Search for a string in results (command outputs). ' \
-            'Accept wildcard "%"')
+            'Accept wildcard: %%')
     outputs_filter.add_argument(
         '--nb-words',
         action  = 'store',

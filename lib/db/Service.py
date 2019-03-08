@@ -13,6 +13,7 @@ from lib.db.Credential import Credential
 from lib.db.Option import Option
 from lib.db.Product import Product
 from lib.db.Result import Result
+from lib.db.Vuln import Vuln
 from lib.db.Session import Base
 
 
@@ -44,6 +45,8 @@ class Service(Base):
     products     = relationship('Product', order_by=Product.type, 
         back_populates='service', cascade='save-update, merge, delete, delete-orphan')
     results      = relationship('Result', order_by=Result.id, 
+        back_populates='service', cascade='save-update, merge, delete, delete-orphan')
+    vulns        = relationship('Vuln', order_by=Vuln.id, 
         back_populates='service', cascade='save-update, merge, delete, delete-orphan')
 
 
