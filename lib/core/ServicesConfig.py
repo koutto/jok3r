@@ -155,6 +155,7 @@ class ServicesConfig:
         {'tcp': Protocol.TCP, 'udp': Protocol.UDP}.get(
             self.get_protocol(service))
 
+
     def get_authentication_types(self, service='http'):
         if not self.is_service_supported(service, multi=False):
             return []

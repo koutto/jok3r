@@ -11,6 +11,7 @@ from lib.core.Constants import *
 from lib.core.Exceptions import AttackException, TargetException
 from lib.core.Target import Target
 from lib.controller.Controller import Controller
+from lib.requester.ServicesRequester import ServicesRequester
 from lib.db.Credential import Credential
 from lib.db.Host import Host
 from lib.db.Mission import Mission
