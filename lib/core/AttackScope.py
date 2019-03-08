@@ -6,6 +6,8 @@
 import sys
 import time
 
+from lib.requester.ResultsRequester import ResultsRequester
+from lib.requester.ServicesRequester import ServicesRequester
 from lib.smartmodules.SmartStart import SmartStart
 from lib.utils.StringUtils import StringUtils
 from lib.output.Logger import logger
@@ -20,8 +22,6 @@ class AttackScope:
                  settings, 
                  arguments,
                  sqlsession,
-                 services_requester,
-                 results_requester,
                  filter_categories=None, 
                  filter_checks=None, 
                  attack_profile=None,
@@ -32,8 +32,6 @@ class AttackScope:
         :param Settings settings: Settings
         :param ArgumentsParser arguments: Arguments from command-line
         :param Session sqlsession: SQLAlchemy session
-        :param ServicesRequester services_requester:
-        :param ResultsRequester results_requester: Accessor for Result model
         :param list filter_categories: Selection of categories of checks to run 
             (default is None, for all categories)
         :param list filter_checks: Selection of checks to run
@@ -45,7 +43,8 @@ class AttackScope:
         self.settings            = settings
         self.arguments           = arguments
         self.sqlsess             = sqlsession
-        self.results_requester   = results_requester
+        self.services_requester  = ServicesRequester(self.sqlsess)
+        self.results_requester   = ResultsRequester(self.sqlsess)
         self.targets             = list()
         self.current_targetid    = 1
         self.filter_categories   = filter_categories

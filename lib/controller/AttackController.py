@@ -11,8 +11,6 @@ from lib.core.Constants import *
 from lib.core.Exceptions import AttackException, TargetException
 from lib.core.Target import Target
 from lib.controller.Controller import Controller
-from lib.requester.ResultsRequester import ResultsRequester
-from lib.requester.ServicesRequester import ServicesRequester
 from lib.db.Credential import Credential
 from lib.db.Host import Host
 from lib.db.Mission import Mission
@@ -76,7 +74,6 @@ class AttackController(Controller):
         self.attack_scope = AttackScope(self.settings, 
                                         self.arguments,
                                         self.sqlsess,
-                                        ResultsRequester(self.sqlsess), 
                                         filter_categories=categories, 
                                         filter_checks=args.checks, 
                                         attack_profile=args.profile,
