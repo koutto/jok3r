@@ -12,6 +12,7 @@ from lib.db.CommandOutput import CommandOutput
 from lib.db.Result import Result
 from lib.output.Logger import logger
 from lib.output.Output import Output
+from lib.smartmodules.SmartPostCheck import SmartPostCheck
 
 
 class Check:
@@ -56,7 +57,7 @@ class Check:
     def run(self, 
             target, 
             arguments, 
-            smartmodules_loader, 
+            sqlsession,
             results_requester, 
             fast_mode=False):
         """
@@ -66,6 +67,7 @@ class Check:
 
         :param Target target: Target
         :param ArgumentsParser arguments: Arguments from command-line
+        :param Session sqlsession: SQLAlchemy session
         :param SmartModulesLoader smartmodules_loader: Loader of SmartModules
         :param ResultsRequester results_requester: Accessor for Results Model
         :param bool fast_mode: Set to true to disable prompts
@@ -120,21 +122,24 @@ class Check:
                     Output.delimiter()
                     print()
 
+                    outputraw = StringUtils.remove_ansi_escape(output)
                     command_outputs.append(CommandOutput(
                         cmdline=cmdline, 
                         output=output, 
-                        outputraw=StringUtils.remove_ansi_escape(output)))
+                        outputraw=outputraw))
 
                     # Run smartmodule method on output
-                    # TODO change 
-                    # IMPORTANT cmdline + commandoutput to pass
-                    if self.postrun:
-                        smartmodules_loader.call_postcheck_method(
-                            self.postrun, target.service, output)
+                    postcheck = SmartPostCheck(
+                        target.service,
+                        sqlsession,
+                        self.tool.name,
+                        '{0}\n{1}'.format(cmdline, outputraw))
+                    postcheck.run()
+
 
             else:
                 logger.info('Command #{num:02} does not match requirements: ' \
-                        '{context}'.format(num=i, context=command.context_requirements))
+                    '{context}'.format(num=i, context=command.context_requirements))
             
             i += 1
 

@@ -21,7 +21,19 @@ VERSION_REGEXP = '(?P<version>[0-9.]+)?'
 # }
 
 creds_match = dict()
+from lib.smartmodules.matchstrings.creds.AjpCreds import *
+from lib.smartmodules.matchstrings.creds.FtpCreds import *
 from lib.smartmodules.matchstrings.creds.HttpCreds import *
+from lib.smartmodules.matchstrings.creds.JavaRmiCreds import *
+from lib.smartmodules.matchstrings.creds.MssqlCreds import *
+from lib.smartmodules.matchstrings.creds.MysqlCreds import *
+from lib.smartmodules.matchstrings.creds.OracleCreds import *
+from lib.smartmodules.matchstrings.creds.PostgresqlCreds import *
+from lib.smartmodules.matchstrings.creds.SmtpCreds import *
+from lib.smartmodules.matchstrings.creds.SnmpCreds import *
+from lib.smartmodules.matchstrings.creds.SshCreds import *
+from lib.smartmodules.matchstrings.creds.TelnetCreds import *
+from lib.smartmodules.matchstrings.creds.VncCreds import *
 
 
 #----------------------------------------------------------------------------------------
@@ -38,6 +50,10 @@ from lib.smartmodules.matchstrings.creds.HttpCreds import *
 # }
 
 options_match = dict()
+from lib.smartmodules.matchstrings.options.HttpOptions import *
+from lib.smartmodules.matchstrings.options.JavaRmiOptions import *
+from lib.smartmodules.matchstrings.options.OracleOptions import *
+from lib.smartmodules.matchstrings.options.SmbOptions import *
 
 
 #----------------------------------------------------------------------------------------
@@ -79,8 +95,6 @@ from lib.smartmodules.matchstrings.products.SshServerProducts import *
 
 
 
-
-
 #----------------------------------------------------------------------------------------
 # Vulnerabilities
 #
@@ -92,3 +106,11 @@ from lib.smartmodules.matchstrings.products.SshServerProducts import *
 # } 
 
 vulns_match = dict()
+from lib.smartmodules.matchstrings.vulns.FtpVulns import *
+from lib.smartmodules.matchstrings.vulns.HttpVulns import *
+from lib.smartmodules.matchstrings.vulns.JavaRmiVulns import *
+from lib.smartmodules.matchstrings.vulns.JdwpVulns import *
+from lib.smartmodules.matchstrings.vulns.MssqlVulns import *
+from lib.smartmodules.matchstrings.vulns.OracleVulns import *
+from lib.smartmodules.matchstrings.vulns.SmbVulns import *
+from lib.smartmodules.matchstrings.vulns.SshVulns import *

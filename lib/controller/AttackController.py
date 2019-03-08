@@ -18,7 +18,6 @@ from lib.db.Host import Host
 from lib.db.Mission import Mission
 from lib.db.Option import Option
 from lib.db.Service import Service, Protocol
-from lib.smartmodules.SmartModulesLoader import SmartModulesLoader
 from lib.output.Logger import logger
 
 
@@ -28,10 +27,6 @@ class AttackController(Controller):
         """Run the Attack Controller"""
 
         args = self.arguments.args
-
-        # Load smart modules
-        self.smartmodules_loader = SmartModulesLoader(self.sqlsess, 
-                                                      self.settings.services)
 
         # Context parameters are organized in dict 
         # { service : list of db objects }
@@ -80,8 +75,8 @@ class AttackController(Controller):
         # Run the attack
         self.attack_scope = AttackScope(self.settings, 
                                         self.arguments,
+                                        self.sqlsess,
                                         ResultsRequester(self.sqlsess), 
-                                        self.smartmodules_loader, 
                                         filter_categories=categories, 
                                         filter_checks=args.checks, 
                                         attack_profile=args.profile,
@@ -100,7 +95,6 @@ class AttackController(Controller):
 
     #------------------------------------------------------------------------------------
     # Single-Target mode
-
 
     def __run_for_single_target(self, args):
         """Run attack against a single target specified into args"""

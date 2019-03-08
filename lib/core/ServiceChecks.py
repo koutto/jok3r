@@ -97,7 +97,7 @@ class ServiceChecks:
     def run(self, 
             target, 
             arguments,
-            smartmodules_loader, 
+            sqlsession,
             results_requester, 
             filter_categories=None, 
             filter_checks=None, 
@@ -114,7 +114,7 @@ class ServiceChecks:
 
         :param Target target: Target
         :param ArgumentsParser arguments: Arguments from command-line
-        :param SmartModulesLoader smartmodules_loader: Loader of SmartModules
+        :param Session sqlsession: SQLAlchemy session
         :param ResultsRequester results_requester: Accessor for Results Model
         :param list filter_categories: Selection of categories to run (default: all)
         :param list filter_checks: Selection of checks to run (default: all)
@@ -184,7 +184,7 @@ class ServiceChecks:
                             try:
                                 check.run(target, 
                                           arguments,
-                                          smartmodules_loader, 
+                                          sqlsession,
                                           results_requester, 
                                           fast_mode=fast_mode)
 
@@ -277,7 +277,7 @@ class ServiceChecks:
                 try:
                     check.run(target, 
                               arguments,
-                              smartmodules_loader, 
+                              sqlsession,
                               results_requester, 
                               fast_mode=fast_mode)
                 except KeyboardInterrupt:
