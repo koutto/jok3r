@@ -44,7 +44,13 @@ class ContextRequirements:
       Indeed, several different authentications can be managed for HTTP.
     """
 
-    def __init__(self, specific_options, products, os, auth_status, auth_type=None):
+    def __init__(self, 
+                 specific_options, 
+                 products, 
+                 os, 
+                 auth_status, 
+                 auth_type=None, 
+                 raw='<empty>'):
         """
         Construct ContextRequirements object from information parsed from config file.
 
@@ -65,6 +71,7 @@ class ContextRequirements:
         self.os = os.lower() if os else os
         self.auth_status = auth_status
         self.auth_type = auth_type
+        self.raw_string = raw
         self.is_empty = not self.specific_options \
                         and not self.products \
                         and not self.auth_status \
@@ -194,7 +201,7 @@ class ContextRequirements:
         requirement = self.specific_options[name]
 
         status  = requirement is None
-        status |= val == requirement
+        status |= (val == requirement)
 
         return status
 
@@ -221,7 +228,7 @@ class ContextRequirements:
 
         status  = requirement is None
         status |= val in requirement
-        status |= requirement == ['undefined'] and val is None
+        status |= (requirement == ['undefined'] and val is None)
 
         return status
 
@@ -247,8 +254,8 @@ class ContextRequirements:
         requirement = self.specific_options[name]
 
         status  = requirement is None
-        status |= val is None and requirement == False
-        status |= val is not None and requirement == True
+        status |= (val is None and requirement == False)
+        status |= (val is not None and requirement == True)
 
         return status
 
@@ -302,7 +309,7 @@ class ContextRequirements:
                     status  = not req_prodvers
 
                     # When the version must be known (any walue)
-                    status |= req_prodvers.lower() == 'version_known' and prodversion
+                    status |= (req_prodvers.lower() == 'version_known' and prodversion)
 
                 # When requirement on a defined vendor/product_name
                 if prodname.lower() == req_prodname.lower():
@@ -310,7 +317,7 @@ class ContextRequirements:
                     status  = not req_prodvers
 
                     # When the version must be known but no requirement on its value
-                    status |= req_prodvers.lower() == 'version_known' and prodversion
+                    status |= (req_prodvers.lower() == 'version_known' and prodversion)
 
                     # When explicit requirement on the version number
                     status |= VersionUtils.check_version_requirement(

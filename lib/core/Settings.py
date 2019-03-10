@@ -762,10 +762,14 @@ class Settings:
             return ContextRequirements(specific_options=None, 
                                        products=None, 
                                        os=None, 
-                                       auth_status=None)
+                                       auth_status=None,
+                                       raw='<empty>')
 
         log_prefix = '[{filename}{ext} | Section "{section}"] "context_{i}":'.format(
             filename=service, ext=CONF_EXT, section=section, i=num_context)
+
+        # Keep raw context string for debugging
+        context_str_raw = context_str
 
         # Retrieve value as dict
         # Note: Make sure to replace special constants
@@ -894,7 +898,8 @@ class Settings:
                                    products=req_products,
                                    os=context.get('os'),
                                    auth_status=context.get('auth_status'),
-                                   auth_type=context.get('auth_type'))
+                                   auth_type=context.get('auth_type'),
+                                   raw=context_str_raw)
 
 
     #------------------------------------------------------------------------------------

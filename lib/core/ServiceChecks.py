@@ -127,6 +127,10 @@ class ServiceChecks:
         categories = sorted(self.categories if filter_categories is None \
             else filter_categories, key=self.categories.index)
 
+        if filter_categories:
+            logger.info('Selected categories of checks: {cats}'.format(
+                cats=', '.join(categories)))
+
         # Standard mode 
         # Selected/all categories of checks are run
         if filter_checks is None and attack_profile is None:

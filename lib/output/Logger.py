@@ -6,7 +6,7 @@
 import logging
 import colorlog
 
-DEBUG   = '[.]'
+DEBUG   = '[D]'
 INFO    = '[*]'
 SUCCESS = '[+]'
 PROMPT  = '[?]'
@@ -22,7 +22,7 @@ LOG_FORMAT   = '%(log_color)s%(levelname)s%(reset)s %(message_log_color)s%(messa
 DATE_FORMAT  = '%H:%M:%S'
 
 LOG_COLORS = {
-    DEBUG    : 'cyan',
+    DEBUG    : 'bold,white',
     INFO     : 'bold,blue',
     SUCCESS  : 'bold,green',
     PROMPT   : 'bold,cyan',
@@ -36,6 +36,7 @@ LOG_COLORS = {
 
 SECONDARY_LOG_COLORS = {
         'message': {
+            DEBUG    : 'white',
             SUCCESS  : 'green',
             WARNING  : 'yellow',
             ERROR    : 'red',

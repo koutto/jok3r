@@ -351,6 +351,12 @@ class ArgumentsParser:
             action  = 'store_true', 
             dest    = 'fast_mode', 
             default = False)
+        running.add_argument(
+            '-d',
+            help    = 'Enable debug mode', 
+            action  = 'store_true',
+            dest    = 'debug',
+            default = False)
 
 
         bruteforce = parser.add_argument_group(
@@ -518,6 +524,10 @@ class ArgumentsParser:
             #logger.error('At least one target must be selected')
             self.subparser.print_help()
             return False
+
+        if self.args.debug:
+            logger.setLevel('DEBUG')
+            logger.debug('Debug mode enabled')
 
         status &= self.__check_args_attack_single_target()
         status &= self.__check_args_attack_multi_targets()

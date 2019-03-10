@@ -60,7 +60,8 @@ class SmartPostcheck:
 
                     # Important: Multiple search/match
                     #m = re.search(pattern, self.cmd_output, re.IGNORECASE|re.DOTALL)
-                    print(pattern)
+                    logger.debug('Search for creds pattern: {pattern}'.format(
+                        pattern=pattern))
                     mall = re.finditer(pattern, self.cmd_output, re.IGNORECASE)
 
                     # If pattern matches cmd output, extract username/credentials
@@ -112,7 +113,8 @@ class SmartPostcheck:
                 p = options_match[self.service.name][self.tool_name]
 
                 for pattern in p.keys():
-                    print(pattern)
+                    logger.debug('Search for option pattern: {pattern}'.format(
+                        pattern=pattern))
                     m = re.search(pattern, self.cmd_output, re.IGNORECASE)
 
                     # If pattern matches cmd output, update specific option
@@ -167,7 +169,8 @@ class SmartPostcheck:
                             version_detection = '[VERSION]' in pattern
                             pattern = pattern.replace('[VERSION]', VERSION_REGEXP)
 
-                            print(pattern)
+                            logger.debug('Search for products pattern: {pattern}'.format(
+                                pattern=pattern))
                             m = re.search(pattern, self.cmd_output, re.IGNORECASE)
 
                             # If pattern matches cmd output, add detected product
@@ -209,6 +212,9 @@ class SmartPostcheck:
                 p = vulns_match[self.service.name][self.tool_name]
 
                 for pattern in p.keys():
+
+                    logger.debug('Search for vulns pattern: {pattern}'.format(
+                        pattern=pattern))
 
                     # Important: Multiple search/match
                     #m = re.search(pattern, self.cmd_output, re.IGNORECASE)
