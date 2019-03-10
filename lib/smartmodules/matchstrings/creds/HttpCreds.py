@@ -36,11 +36,11 @@ creds_match['http'] = {
     },
     'metasploit': {
         # auxiliary/scanner/http/tomcat_enum
-        '- Apache Tomcat (?<m1>\S+) found': {
+        '- Apache Tomcat (?P<m1>\S+) found': {
             'user': '$1',
             'type': 'tomcat',
         },
-        'jboss_vulnscan[\s\S]*Authenticated using (?<m1>\S+):(?<m2>\S*) at ': {
+        'jboss_vulnscan[\s\S]*Authenticated using (?P<m1>\S+):(?P<m2>\S*) at ': {
             'user': '$1',
             'pass': '$2',
             'type': 'jboss',

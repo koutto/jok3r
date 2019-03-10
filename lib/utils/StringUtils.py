@@ -4,6 +4,7 @@
 ### Utils > StringUtils
 ###
 import colored
+import re
 import textwrap
 
 

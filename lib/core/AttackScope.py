@@ -86,8 +86,9 @@ class AttackScope:
         for i in range(1,len(self.targets)+1):
 
             # In Multi-targets mode: 
-            # Display summary table and prompt for target selection
-            if not self.fast_mode or len(self.targets) <= 10:
+            # Display summary table and prompt for target selection 
+            # (not if too many target to avoid poor output)
+            if 2 <= len(self.targets) <= 15:
                 self.show_summary()
 
             if not self.fast_mode and len(self.targets) > 1:
@@ -183,7 +184,6 @@ class AttackScope:
         service_checks.run(target, 
                            self.arguments,
                            self.sqlsess,
-                           self.smartmodules_loader,
                            self.results_requester, 
                            filter_categories=self.filter_categories, 
                            filter_checks=self.filter_checks,

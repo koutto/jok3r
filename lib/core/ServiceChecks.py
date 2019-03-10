@@ -122,7 +122,10 @@ class ServiceChecks:
         :param bool fast_mode: Set to true to disable prompts
         :param enlighten.Counter attack_progress: Attack progress
         """
-        categories = self.categories if filter_categories is None else filter_categories
+
+        # Important: We must keep the order of categories
+        categories = sorted(self.categories if filter_categories is None \
+            else filter_categories, key=self.categories.index)
 
         # Standard mode 
         # Selected/all categories of checks are run

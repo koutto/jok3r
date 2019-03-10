@@ -350,7 +350,7 @@ class Settings:
         self.__parse_section_products(service, service_config)
 
         # Add the service configuration from settings
-        print(service_config)
+        #print(service_config)
         self.services.add_service(
             service,
             service_config['default_port'],

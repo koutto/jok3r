@@ -109,6 +109,10 @@ else
 fi
 print_delimiter
 
+print_title "[~] Update Ruby bundler"
+gem install bundler
+print_delimiter
+
 if ! [ -x "$(command -v perl)" ]; then
     print_title "[~] Install Perl and useful related packages"
     apt-get install -y --ignore-missing perl libwhisker2-perl libwww-perl

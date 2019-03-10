@@ -7,6 +7,7 @@ from collections import defaultdict
 
 from lib.core.Config import *
 from lib.core.Constants import *
+from lib.utils.VersionUtils import VersionUtils
 
 
 class ContextRequirements:

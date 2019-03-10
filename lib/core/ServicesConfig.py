@@ -152,7 +152,7 @@ class ServicesConfig:
     def get_protocol2(self, service):
         if not self.is_service_supported(service, multi=False):
             return None        
-        {'tcp': Protocol.TCP, 'udp': Protocol.UDP}.get(
+        return {'tcp': Protocol.TCP, 'udp': Protocol.UDP}.get(
             self.get_protocol(service))
 
 

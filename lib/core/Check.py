@@ -12,6 +12,7 @@ from lib.db.CommandOutput import CommandOutput
 from lib.db.Result import Result
 from lib.output.Logger import logger
 from lib.output.Output import Output
+from lib.utils.StringUtils import StringUtils
 from lib.smartmodules.SmartPostcheck import SmartPostcheck
 
 
@@ -92,7 +93,9 @@ class Check:
                     mode = 'y'
                 else:
                     mode = Output.prompt_choice(
-                        'Run command #{num:02} ? [Y/n/q] '.format(num=i), 
+                        'Run command {num}? [Y/n/q] '.format(
+                            num='' if len(self.commands) == 1 else \
+                                '#{num:02} '.format(num=i)), 
                         choices={
                             'y':'Yes',
                             'n':'No',

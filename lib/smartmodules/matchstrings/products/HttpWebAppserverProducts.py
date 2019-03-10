@@ -17,7 +17,8 @@ products_match['http']['web-appserver'] = {
     'Apache/Axis2': {
         'clusterd': [
             'Matched [0-9]+ fingerprints for service axis2',
-            'Axis2 Server(.+\(version [VERSION]\))?',
+            'Axis2 Server\s+\(version [VERSION]\)',
+            'Axis2 Server\s+\(version Any\)',
         ],
     },
     'Apache/Tomcat': {

@@ -514,7 +514,7 @@ class Command:
         products = self.services_config[service]['products']
 
         for product_type in products:
-            name, version = target.get_product_name_version()
+            name, version = target.get_product_name_version(product_type)
             name = name or ''
             version = version or ''
 

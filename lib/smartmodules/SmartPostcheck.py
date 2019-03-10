@@ -60,6 +60,7 @@ class SmartPostcheck:
 
                     # Important: Multiple search/match
                     #m = re.search(pattern, self.cmd_output, re.IGNORECASE|re.DOTALL)
+                    print(pattern)
                     mall = re.finditer(pattern, self.cmd_output, re.IGNORECASE)
 
                     # If pattern matches cmd output, extract username/credentials
@@ -111,6 +112,7 @@ class SmartPostcheck:
                 p = options_match[self.service.name][self.tool_name]
 
                 for pattern in p.keys():
+                    print(pattern)
                     m = re.search(pattern, self.cmd_output, re.IGNORECASE)
 
                     # If pattern matches cmd output, update specific option
@@ -158,13 +160,14 @@ class SmartPostcheck:
 
                         # List of patterns is supported (i.e. several different
                         # patterns for a given tool)
-                        if type(pattern) == str:
+                        if type(patterns) == str:
                             patterns = [ patterns ]
 
                         for pattern in patterns:
                             version_detection = '[VERSION]' in pattern
                             pattern = pattern.replace('[VERSION]', VERSION_REGEXP)
 
+                            print(pattern)
                             m = re.search(pattern, self.cmd_output, re.IGNORECASE)
 
                             # If pattern matches cmd output, add detected product
