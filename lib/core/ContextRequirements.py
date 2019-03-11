@@ -21,9 +21,19 @@ class ContextRequirements:
     - Specific options: Available parameter(s) depend on the service (e.g. https for
       HTTP, webdav for HTTP, ftps for FTP, snmpv3 for SNMP, ...). 
 
-    - Products: Available product type(s) depend on the service (e.g. web_server and
-      web_cms for HTTP).
-      Accepted syntax examples:
+    - Products: 
+        Possible values:
+        - None: no restriction on the product name (default),
+        - str: restriction on a given product name,
+        - list: restriction on several possible product names,
+        - 'undefined': product must not be defined
+        - 'any': product must be defined (any value)
+        - 'any|version_known': product+version must be defined
+
+        Available product type(s) depend on the service (e.g. web_server and
+        web_cms for HTTP).
+
+        Accepted syntax examples:
             any (means product name must be known)
             any|version_known (means product name+version must be known)
             vendor/product_name (vendor/ is present only if needed)
@@ -33,6 +43,9 @@ class ContextRequirements:
             vendor/product_name|>7.1
             vendor/product_name|<=7.0
             vendor/product_name|7.1.1   
+
+    - OS Type: Linux or Windows. When the OS type of the target is unknown (not
+      detected), this requirement is not taken into account.
 
     - Authentication status ('auth_status'): Level of authentication on the service.
       Possible values are:
@@ -71,7 +84,7 @@ class ContextRequirements:
             isinstance(specific_options, dict) else defaultdict(lambda: None)
         self.products = defaultdict(lambda: None, products) if \
             isinstance(products, dict) else defaultdict(lambda: None)
-        self.os = os.lower() if os else os
+        self.os = os.lower() if os else ''
         self.auth_status = auth_status
         self.auth_type = auth_type
         self.raw_string = raw
@@ -167,19 +180,18 @@ class ContextRequirements:
 
     def __is_target_matching_os(self, target):
         """
-        Check if target complies with requirements on OS typê.
+        Check if target complies with requirements on OS type.
 
         :param Target target: Target to check
         :return: Result
         :rtype: bool
         """
 
-        # If OS type for target is unknown, check is not excluded
+        # If OS type for target is unknown, the requirement is not taken into account
         if not target.get_os():
             return True
 
-        # Otherwise, perform a loose check on OS type
-        return self.os in target.get_os().lower()
+        return (self.os.lower()==target.get_os().lower())
 
 
     #------------------------------------------------------------------------------------
@@ -311,7 +323,7 @@ class ContextRequirements:
                 logger.debug('Target product: type={}, name={}, version={}'.format(
                     prodtype, prodname, prodversion))
 
-                # When no requirement on vendor/product_name but must be known
+                # When no special requirement on vendor/product_name but must be known
                 if req_prodname.lower() == 'any':
                     # When version can be unknown
                     status  = not req_prodvers
@@ -320,8 +332,8 @@ class ContextRequirements:
                     status |= (req_prodvers.lower() == 'version_known' and \
                         prodversion != '')
 
-                # When requirement on a defined vendor/product_name
-                if prodname.lower() == req_prodname.lower():
+                # When requirement on a defined vendor/product_name and it is matching
+                elif req_prodname.lower() == prodname.lower():
                     # When no requirement on the version number
                     status  = not req_prodvers
 

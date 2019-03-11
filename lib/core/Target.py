@@ -328,6 +328,14 @@ class Target:
             self.service.banner = NetUtils.grab_banner_nmap(
                 str(self.service.host.ip), self.service.port)
 
+            # Try to deduce OS from banner if possible
+            if not self.service.host.os:
+                detected_os = NetUtils.os_from_nmap_banner(s.banner)
+                if detected_os:
+                    self.service.host.os = detected_os
+                    logger.info('Detected OS from banner = {os}'.format(os=detected_os))
+
+
         return self.service.up
 
 
@@ -347,7 +355,7 @@ class Target:
         if self.get_http_headers():
             logger.info('HTTP Response headers:')
             for l in self.get_http_headers().splitlines():
-                Output.print(l)
+                Output.print('  | {}'.format(l))
             print()
 
 
@@ -383,9 +391,14 @@ class Target:
 
         # Print products if available
         if self.get_products():
-            logger.info('Products known fot this target:')
+            logger.info('Products detected for this target:')
             data = list()
             columns = ['Type', 'Name', 'Version']
             for p in self.get_products():
                 data.append([p.type, p.name, p.version])
             Output.table(columns, data, hrules=False)
+
+        # Print OS type if available
+        if self.get_os():
+            logger.info('OS type detected for this target: {os}'.format(
+                os=self.get_os()))

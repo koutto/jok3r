@@ -147,10 +147,12 @@ print_delimiter
 
 print_title "[~] Install Python3 libraries required by Jok3r (if missing)"
 pip3 install -r requirements.txt
+print_delimiter
 
 print_title "[~] Disable UserWarning related to psycopg2"
 pip3 uninstall psycopg2-binary -y
 pip3 uninstall psycopg2 -y
 pip3 install psycopg2-binary
+print_delimiter
 
 print_title "[~] Dependencies installation finished. Check if any error has been raised"

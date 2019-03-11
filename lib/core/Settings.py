@@ -866,6 +866,8 @@ class Settings:
                 # - str: restriction on a given product name,
                 # - list: restriction on several possible product names,
                 # - 'undefined': product must not be defined
+                # - 'any': product must be defined (any value)
+                # - 'any|version_known': product+version must be defined
                 #
                 # In context requirements, product name can also embed requirement on 
                 # product version by appending "|version_requirements" to product name

@@ -110,7 +110,7 @@ class NmapResultsParser:
 
                 # Deduce OS from banner if possible
                 if not os:
-                    os = NetUtils.os_from_nmap_banner(s.banner)
+                    host.os = NetUtils.os_from_nmap_banner(s.banner)
 
                 # Clean Nmap banner
                 banner = NetUtils.clean_nmap_banner(s.banner)
