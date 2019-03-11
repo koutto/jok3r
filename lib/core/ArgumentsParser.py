@@ -232,9 +232,6 @@ class ArgumentsParser:
         """Arguments for subcommand Attack"""
         self.mode = Mode.ATTACK 
 
-        # todo:
-        # option --reverse-dns-off
-        #
         parser = self.__create_subcmd_parser()
         singletarget = parser.add_argument_group(
             Output.colored('Mode: Single target', attrs='bold'), 

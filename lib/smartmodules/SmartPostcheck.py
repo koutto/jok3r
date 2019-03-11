@@ -22,6 +22,7 @@ class SmartPostcheck:
         :param Session sqlsess: Sqlalchemy Session
         :param str tool_name: Name of the check that has been run before
         :param str cmd_output: Command output (sanitized / special chars removed)
+            Important: output is prepended by command line
         """
         self.service = service
         self.sqlsess = sqlsess
@@ -62,7 +63,14 @@ class SmartPostcheck:
                     #m = re.search(pattern, self.cmd_output, re.IGNORECASE|re.DOTALL)
                     logger.debug('Search for creds pattern: {pattern}'.format(
                         pattern=pattern))
-                    mall = re.finditer(pattern, self.cmd_output, re.IGNORECASE)
+
+                    try:
+                        mall = re.finditer(pattern, self.cmd_output, re.IGNORECASE)
+                    except Exception as e:
+                        logger.warning('Error with matchstring [{pattern}], you should ' \
+                            'review it. Exception: {exception}'.format(
+                                pattern=pattern, exception=e))
+                        break
 
                     # If pattern matches cmd output, extract username/credentials
                     if mall:
@@ -115,7 +123,15 @@ class SmartPostcheck:
                 for pattern in p.keys():
                     logger.debug('Search for option pattern: {pattern}'.format(
                         pattern=pattern))
-                    m = re.search(pattern, self.cmd_output, re.IGNORECASE)
+
+                    try:
+                        m = re.search(pattern, self.cmd_output, re.IGNORECASE)
+                    except Exception as e:
+                        logger.warning('Error with matchstring [{pattern}], you should '\
+                            'review it. Exception: {exception}'.format(
+                                pattern=pattern, exception=e))
+                        break
+
 
                     # If pattern matches cmd output, update specific option
                     if m:
@@ -171,16 +187,28 @@ class SmartPostcheck:
 
                             logger.debug('Search for products pattern: {pattern}'.format(
                                 pattern=pattern))
-                            m = re.search(pattern, self.cmd_output, re.IGNORECASE)
+
+                            try:
+                                m = re.search(pattern, self.cmd_output, re.IGNORECASE)
+                            except Exception as e:
+                                logger.warning('Error with matchstring [{pattern}], ' \
+                                    'you should review it. Exception: ' \
+                                    '{exception}'.format(
+                                        pattern=pattern, exception=e))
+                                break
+
 
                             # If pattern matches cmd output, add detected product
                             # Note: For a given product type, only one name(+version)
                             # can be added.
                             if m:
+                                logger.debug('Pattern matches')
                                 # Add version if present
                                 if version_detection:
                                     try:
                                         version = m.group('version')
+                                        logger.debug('Version detected: {version}'.format(
+                                            version=version))
                                     except:
                                         version = ''
                                 else:
@@ -218,7 +246,14 @@ class SmartPostcheck:
 
                     # Important: Multiple search/match
                     #m = re.search(pattern, self.cmd_output, re.IGNORECASE)
-                    mall = re.finditer(pattern, self.cmd_output, re.IGNORECASE)
+                    try:
+                        mall = re.finditer(pattern, self.cmd_output, re.IGNORECASE)
+                    except Exception as e:
+                        logger.warning('Error with matchstring [{pattern}], you ' \
+                            'should review it. Exception: {exception}'.format(
+                                pattern=pattern, exception=e))
+                        break
+
 
                     # Process each match
                     if mall:

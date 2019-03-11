@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 from lib.smartmodules.matchstrings.MatchStrings import products_match
 
-WIG_REGEXP = '- Found JavaScript: {} [VERSION]'
+WIG_REGEXP = '- Found JavaScript: {}(\s*[VERSION])?'
+WIG_REGEXP2 = '{}\s*[VERSION]\s*JavaScript' 
 
 products_match['http']['web-jslib'] = {
     'Angular': {
@@ -10,7 +11,10 @@ products_match['http']['web-jslib'] = {
     },
     'AngularJS': {
         'wappalyzer': 'AngularJS',
-        'wig': WIG_REGEXP.format('AngularJS'),
+        'wig': [
+            WIG_REGEXP.format('AngularJS'),
+            WIG_REGEXP2.format('AngularJS'),
+        ],
         'angularjs-csti-scanner': '\[INFO\] Found AngularJS version [VERSION]',
     },
     'Backbone.js': {
@@ -18,7 +22,10 @@ products_match['http']['web-jslib'] = {
     },
     'Dojo': {
         'wappalyzer': 'Dojo',
-        'wig': WIG_REGEXP.format('Dojo'),
+        'wig': [
+            WIG_REGEXP.format('Dojo'),
+            WIG_REGEXP2.format('Dojo'),
+        ],
     },
     'ef.js': {
         'wappalyzer': 'ef.js',
@@ -31,7 +38,10 @@ products_match['http']['web-jslib'] = {
     },
     'Jquery': {
         'wappalyzer': 'jQuery',
-        'wig': WIG_REGEXP.format('jQuery'),
+        'wig': [
+            WIG_REGEXP.format('jQuery'),
+            WIG_REGEXP2.format('jQuery'),
+        ],
     },
     'Jquery UI': {
         'wappalyzer': 'jQuery UI',
@@ -41,21 +51,30 @@ products_match['http']['web-jslib'] = {
     },
     'Modernizr': {
         'wappalyzer': 'Modernizr',
-        'wig': WIG_REGEXP.format('Modernizr'),
+        'wig': [
+            WIG_REGEXP.format('Modernizr'),
+            WIG_REGEXP2.format('Modernizr'),
+        ],
     },
     'Moment.js': {
         'wappalyzer': 'Moment.js'
     },
     'MooTools': {
         'wappalyzer': 'MooTools',
-        'wig': WIG_REGEXP.format('MooTools'),
+        'wig': [
+            WIG_REGEXP.format('MooTools'),
+            WIG_REGEXP2.format('MooTools'),
+        ],
     },
     'Mustache.js': {
         'wappalyzer': 'Mustache',
     },
     'Prototype Javascript Framework': {
         'wappalyzer': 'Prototype',
-        'wig': WIG_REGEXP.format('Prototype'),
+        'wig': [
+            WIG_REGEXP.format('Prototype'),
+            WIG_REGEXP2.format('Prototype'),
+        ],
     },
     'React': {
         'wappalyzer': 'React',

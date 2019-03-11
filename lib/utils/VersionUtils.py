@@ -46,7 +46,9 @@ class VersionUtils:
             - <=7.0
             - 7.1.1
         """
-        if '*' in requirement:
+        if not requirement:
+            return True
+        elif '*' in requirement:
             pattern = requirement.replace('.', '[.]').replace('*', '.*')
             return re.match(pattern, version_number) is not None
         elif requirement.startswith('<'):

@@ -8,7 +8,7 @@ from lib.smartmodules.matchstrings.MatchStrings import products_match
 
 
 
-CMSEEK_REGEXP = 'CMS: {}([\s\S]*Version: [VERSION])?'
+CMSEEK_REGEXP = 'CMS: {}([\s\S]*Version:\s*[VERSION])?'
 
 # Wig output sample:
 # Error page detection ...
@@ -28,7 +28,8 @@ CMSEEK_REGEXP = 'CMS: {}([\s\S]*Version: [VERSION])?'
 # - Found version: WordPress 4.1.3
 # - Found version: WordPress 4.1.2
 # - Found version: WordPress 4.1.1
-WIG_REGEXP = '- Found CMS match: {}\s*Determining CMS version \.\.\.(\s*- Found version: (\S+)\s+[VERSION])?'
+WIG_REGEXP = '- Found CMS match: {}\s*(Determining CMS version \.\.\.(\s*- Found version: (\S+)\s+[VERSION])?)?'
+WIG_REGEXP2 = '{}\s*[VERSION]\s*CMS' 
 
 products_match['http']['web-cms'] = {
     '3dcart': {
@@ -161,7 +162,10 @@ products_match['http']['web-cms'] = {
     'Concrete5': {
         'wappalyzer': 'Concrete5',
         'cmseek': CMSEEK_REGEXP.format('Concrete5 CMS'),
-        'wig': WIG_REGEXP.format('concrete5'),
+        'wig': [
+            WIG_REGEXP.format('concrete5'),
+            WIG_REGEXP2.format('concrete5'),
+        ],
         'fingerprinter': '-a concrete5[\s\S]*Intersection of potential versions returned only one version v[VERSION]',
     },
     'Dedecms': {
@@ -182,21 +186,33 @@ products_match['http']['web-cms'] = {
     },
     'Dokuwiki': {
         'wappalyzer': 'DokuWiki',
-        'wig': WIG_REGEXP.format('DokuWiki'),
+        'wig': [
+            WIG_REGEXP.format('DokuWiki'),
+            WIG_REGEXP2.format('DokuWiki'),
+        ],
     },
     'Dotcms': {
-        'wig': WIG_REGEXP.format('dotCMS'),
+        'wig': [
+            WIG_REGEXP.format('dotCMS'),
+            WIG_REGEXP2.format('dotCMS'),
+        ],
     },
     'Dotnetnuke': {
         'wappalyzer': 'DNN',
         'cmseek': CMSEEK_REGEXP.format('DNN Platform'),
-        'wig': WIG_REGEXP.format('DNN \(DotNetNuke\)'),
+        'wig': [
+            WIG_REGEXP.format('DNN \(DotNetNuke\)'),
+            WIG_REGEXP2.format('DNN \(DotNetNuke\)'),
+        ],
         'fingerprinter': '-a dotnetnuke[\s\S]*Intersection of potential versions returned only one version v[VERSION]',
     },
     'Drupal': {
         'wappalyzer': 'Drupal',
         'cmseek': CMSEEK_REGEXP.format('Drupal'),
-        'wig': WIG_REGEXP.format('Drupal'),
+        'wig': [
+            WIG_REGEXP.format('Drupal'),
+            WIG_REGEXP2.format('Drupal'),
+        ],
         'drupwn': 'Version detected: [VERSION]',
         'fingerprinter': '-a drupal[\s\S]*Intersection of potential versions returned only one version v[VERSION]',
         'cmsmap': 'Drupal Version: [VERSION]',
@@ -286,7 +302,10 @@ products_match['http']['web-cms'] = {
     'Joomla': {
         'wappalyzer': 'Joomla',
         'cmseek': CMSEEK_REGEXP.format('Joomla'),
-        'wig': WIG_REGEXP.format('Joomla\!'),
+        'wig': [
+            WIG_REGEXP.format('Joomla\!'),
+            WIG_REGEXP2.format('Joomla\!'),
+        ],
         'fingerprinter': '-a joomla[\s\S]*Intersection of potential versions returned only one version v[VERSION]',
         'cmsmap': 'Joomla Version: [VERSION]',
         'joomscan': '\[\+\] Detecting Joomla Version\s*\n\s*\[\+\+\] Joomla [VERSION]',
@@ -320,12 +339,18 @@ products_match['http']['web-cms'] = {
     'Magento': {
         'wappalyzer': 'Magento',
         'cmseek': CMSEEK_REGEXP.format('Magento'),
-        'wig': WIG_REGEXP.format('Magento( (Community|Enterprise) Edition)?'),
+        'wig': [
+            WIG_REGEXP.format('Magento( (Community|Enterprise) Edition)?'),
+            WIG_REGEXP2.format('Magento( (Community|Enterprise) Edition)?'),
+        ],
         'fingerprinter': '-a magento[\s\S]*Intersection of potential versions returned only one version v[VERSION]',
         'magescan': 'Version\s+\|\s*[VERSION]',
     },
     'Majordomo': {
-        'wig': WIG_REGEXP.format('Majordomo'),
+        'wig': [
+            WIG_REGEXP.format('Majordomo'),
+            WIG_REGEXP2.format('Majordomo'),
+        ],
     },
     'Mambo': {
         'wappalyzer': 'Mambo',
@@ -337,7 +362,10 @@ products_match['http']['web-cms'] = {
     },
     'Mediawiki': {
         'wappalyzer': 'MediaWiki',
-        'wig': WIG_REGEXP.format('MediaWiki')
+        'wig': [
+            WIG_REGEXP.format('MediaWiki'),
+            WIG_REGEXP2.format('MediaWiki'),
+        ],
     },
     'Minibb': {
         'wappalyzer': 'MiniBB',
@@ -352,7 +380,10 @@ products_match['http']['web-cms'] = {
     },
     'Moodle': {
         'wappalyzer': 'Moodle',
-        'wig': WIG_REGEXP.format('Moodle'),
+        'wig': [
+            WIG_REGEXP.format('Moodle'),
+            WIG_REGEXP2.format('Moodle'),
+        ],
         'fingerprinter': '-a moodle[\s\S]*Intersection of potential versions returned only one version v[VERSION]',
     },
     'Moto Cms': {
@@ -375,7 +406,10 @@ products_match['http']['web-cms'] = {
     'Mybb': {
         'wappalyzer': 'MyBB',
         'cmseek': CMSEEK_REGEXP.format('MyBB'),
-        'wig': WIG_REGEXP.format('MyBB'),
+        'wig': [
+            WIG_REGEXP.format('MyBB'),
+            WIG_REGEXP2.format('MyBB'),
+        ],
     },
     'Nodebb': {
         'cmseek': CMSEEK_REGEXP.format('NodeBB'),
@@ -437,11 +471,17 @@ products_match['http']['web-cms'] = {
     },
     'Phpmyadmin': {
         'wappalyzer': 'phpMyAdmin',
-        'wig': WIG_REGEXP.format('phpMyAdmin'),
+        'wig': [
+            WIG_REGEXP.format('phpMyAdmin'),
+            WIG_REGEXP2.format('phpMyAdmin'),
+        ],
     },
     'Phppgadmin': {
         'wappalyzer': 'phpPgAdmin',
-        'wig': WIG_REGEXP.format('phpPgAdmin'),
+        'wig': [
+            WIG_REGEXP.format('phpPgAdmin'),
+            WIG_REGEXP2.format('phpPgAdmin'),
+        ],
     },
     'Phpwind': {
         'cmseek': CMSEEK_REGEXP.format('phpWind'),
@@ -452,14 +492,23 @@ products_match['http']['web-cms'] = {
     },
     'Plone': {
         'wappalyzer': 'Plone',
-        'wig': WIG_REGEXP.format('Plone'),
+        'wig': [
+            WIG_REGEXP.format('Plone'),
+            WIG_REGEXP2.format('Plone'),
+        ],
     },
     'Presstopia': {
-        'wig': WIG_REGEXP.format('Presstopia'),
+        'wig': [
+            WIG_REGEXP.format('Presstopia'),
+            WIG_REGEXP2.format('Presstopia'),
+        ],
     },
     'Prestashop': {
         'wappalyzer': 'PrestaShop',
-        'wig': WIG_REGEXP.format('PrestaShop'),
+        'wig': [
+            WIG_REGEXP.format('PrestaShop'),
+            WIG_REGEXP2.format('PrestaShop'),
+        ],
         'fingerprinter': '-a prestashop[\s\S]*Intersection of potential versions returned only one version v[VERSION]',
     },
     'Punbb': {
@@ -489,7 +538,10 @@ products_match['http']['web-cms'] = {
     },
     'Roundcube Webmail': {
         'wappalyzer': 'RoundCube',
-        'wig': WIG_REGEXP.format('Roundcube'),
+        'wig': [
+            WIG_REGEXP.format('Roundcube'),
+            WIG_REGEXP2.format('Roundcube'),
+        ],
     },
     'Seamlesscms': {
         'cmseek': CMSEEK_REGEXP.format('SeamlessCMS'),
@@ -501,7 +553,10 @@ products_match['http']['web-cms'] = {
     'Sharepoint': {
         'wappalyzer': 'Microsoft SharePoint',
         'cmseek': CMSEEK_REGEXP.format('Microsoft Sharepoint'),
-        'wig': WIG_REGEXP.format('SharePoint'),
+        'wig': [
+            WIG_REGEXP.format('SharePoint'),
+            WIG_REGEXP2.format('SharePoint'),
+        ],
     },
     'Silva': {
         'wappalyzer': 'Silva',
@@ -517,7 +572,10 @@ products_match['http']['web-cms'] = {
     'Sitecore': {
         'wappalyzer': 'Sitecore',
         'cmseek': CMSEEK_REGEXP.format('Sitecore'),
-        'wig': WIG_REGEXP.format('Sitecore'),
+        'wig': [
+            WIG_REGEXP.format('Sitecore'),
+            WIG_REGEXP2.format('Sitecore'),
+        ],
     },
     'Sitefinity': {
         'wappalyzer': 'Sitefinity',
@@ -536,7 +594,10 @@ products_match['http']['web-cms'] = {
     },
     'Squirrelmail': {
         'wappalyzer': 'SquirrelMail',
-        'wig': WIG_REGEXP.format('SquirrelMail'),
+        'wig': [
+            WIG_REGEXP.format('SquirrelMail'),
+            WIG_REGEXP2.format('SquirrelMail'),
+        ],
     },
     'Subrion Cms': {
         'wappalyzer': 'Subrion',
@@ -576,7 +637,10 @@ products_match['http']['web-cms'] = {
     },
     'Umbraco': {
         'wappalyzer': 'Umbraco',
-        'wig': WIG_REGEXP.format('Umbraco'),
+        'wig': [
+            WIG_REGEXP.format('Umbraco'),
+            WIG_REGEXP2.format('Umbraco'),
+        ],
     },
     'Umi Cms': {
         'cmseek': CMSEEK_REGEXP.format('UMI.CMS'),
@@ -587,7 +651,10 @@ products_match['http']['web-cms'] = {
     },
     'Vbulletin': {
         'wappalyzer': 'vBulletin',
-        'wig': WIG_REGEXP.format('vBulletin'),
+        'wig': [
+            WIG_REGEXP.format('vBulletin'),
+            WIG_REGEXP2.format('vBulletin'),
+        ],
     },
     'Webflow Cms': {
         'cmseek': CMSEEK_REGEXP.format('Webflow CMS'),
@@ -607,7 +674,10 @@ products_match['http']['web-cms'] = {
     'Wordpress': {
         'wappalyzer': 'WordPress',
         'cmseek': CMSEEK_REGEXP.format('WordPress'),
-        'wig': WIG_REGEXP.format('WordPress'),
+        'wig': [
+            WIG_REGEXP.format('WordPress'),
+            WIG_REGEXP2.format('WordPress'),
+        ],
         'fingerprinter': '-a wordpress[\s\S]*Intersection of potential versions returned only one version v[VERSION]',
         'cmsmap': 'Wordpress Version: [VERSION]',
         'wpscan': 'WordPress version [VERSION] identified',
@@ -623,7 +693,10 @@ products_match['http']['web-cms'] = {
     'Xoops': {
         'wappalyzer': 'XOOPS',
         'cmseek': CMSEEK_REGEXP.format('XOOPS'),
-        'wig': WIG_REGEXP.format('XOOPS'),
+        'wig': [
+            WIG_REGEXP.format('XOOPS'),
+            WIG_REGEXP2.format('XOOPS'),
+        ],
     },
     'Yabb': {
         'wappalyzer': 'YaBB',
@@ -637,9 +710,15 @@ products_match['http']['web-cms'] = {
     },
     'Zen Cart': {
         'wappalyzer': 'Zen Cart',
-        'wig': WIG_REGEXP.format('Zen Cart'),
+        'wig': [
+            WIG_REGEXP.format('Zen Cart'),
+            WIG_REGEXP2.format('Zen Cart'),
+        ],
     },
     'Zen Photos': {
-        'wig': WIG_REGEXP.format('Zenphoto'),
+        'wig': [
+            WIG_REGEXP.format('Zenphoto'),
+            WIG_REGEXP2.format('Zenphoto'),
+        ],
     },
 }

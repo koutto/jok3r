@@ -123,13 +123,36 @@ class AttackController(Controller):
         for u in self.users[args.service]   : service.credentials.append(u)
         for o in self.options[args.service] : service.options.append(o)
 
-        # Initialize Target and check if reachable 
-        # (optionally perform reverve DNS lookup & Nmap banner grabbing)
+        # Initialize Target
         try:
             target = Target(service, self.settings.services)
         except TargetException as e:
             logger.error(e)
             sys.exit(1)
+
+        # Check if target is reachable 
+        # (by default, perform reverve DNS lookup & Nmap banner grabbing)
+        reachable = target.smart_check(
+            reverse_dns=(args.reverse_dns is None or args.reverse_dns == 'on'),
+            availability_check=True,
+            grab_banner_nmap=(args.nmap_banner_grab is None \
+                or args.nmap_banner_grab == 'on'))
+
+        if args.target_mode == TargetMode.IP:
+            msg = 'Target {neg}reachable: {target}'.format(
+                neg='not ' if not reachable else '',
+                target=target)
+        else:
+            msg = 'Target URL {url} is {neg}reachable'.format(
+                url=target.get_url(),
+                neg='not ' if not reachable else '')
+
+        if reachable:
+            logger.success(msg)
+        else: 
+            # Skip target if not reachable
+            logger.error(msg)
+            return
 
         # Commit new data into database if target must be added to a mission
         if mission:

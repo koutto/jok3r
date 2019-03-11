@@ -159,9 +159,8 @@ class Toolbox:
             i = 1
             for tool in self.tools[service]:
                 if i>1: print()
-                Output.title2('[{i:02}/{max:02}] Install {tool_name}:'.format(
-                    i         = i,
-                    max       = len(self.tools[service]),
+                Output.title2('[{svc}][{i:02}/{max:02}] Install {tool_name}:'.format(
+                    svc=service, i=i, max=len(self.tools[service]),
                     tool_name = tool.name))
 
                 tool.install(self.settings, fast_mode=fast_mode)
@@ -192,16 +191,18 @@ class Toolbox:
         if service not in self.services: return
         Output.title1('Update tools for service: {service}'.format(service=service))
 
-        i = 1
-        for tool in self.tools[service]:
-            if i>1: print()
-            Output.title2('[{i:02}/{max:02}] Update {tool_name}:'.format(
-                i         = i,
-                max       = len(self.tools[service]),
-                tool_name = tool.name))
+        if not self.tools[service]:
+            logger.info('No tool specific to this service in the toolbox')
+        else:
+            i = 1
+            for tool in self.tools[service]:
+                if i>1: print()
+                Output.title2('[{svc}][{i:02}/{max:02}] Update {tool_name}:'.format(
+                    svc=service, i=i, max=len(self.tools[service]),
+                    tool_name = tool.name))
 
-            tool.update(self.settings, fast_mode=fast_mode)
-            i += 1
+                tool.update(self.settings, fast_mode=fast_mode)
+                i += 1
 
 
     #------------------------------------------------------------------------------------
@@ -223,31 +224,34 @@ class Toolbox:
         if service not in self.services: return
         Output.title1('Remove tools for service: {service}'.format(service=service))
 
-        i = 1
-        status = True
-        for tool in self.tools[service]:
-            if i>1: print()
-            Output.title2('[{i:02}/{max:02}] Remove {tool_name}:'.format(
-                i         = i,
-                max       = len(self.tools[service]),
-                tool_name = tool.name))
+        if not self.tools[service]:
+            logger.info('No tool specific to this service in the toolbox')
+        else:
+            i = 1
+            status = True
+            for tool in self.tools[service]:
+                if i>1: print()
+                Output.title2('[{svc}][{i:02}/{max:02}] Remove {tool_name}:'.format(
+                    svc=service, i=i, max=len(self.tools[service]),
+                    tool_name = tool.name))
 
-            status &= tool.remove(self.settings)
-            i += 1
+                status &= tool.remove(self.settings)
+                i += 1
 
-        # Remove the service directory if all tools successfully removed
-        if status:
-            short_svc_path = '{toolbox}/{service}'.format(toolbox=TOOLBOX_DIR, 
-                                                          service=service)
+            # Remove the service directory if all tools successfully removed
+            if status:
+                short_svc_path = '{toolbox}/{service}'.format(toolbox=TOOLBOX_DIR, 
+                                                              service=service)
 
-            full_svc_path = FileUtils.absolute_path(short_svc_path)
+                full_svc_path = FileUtils.absolute_path(short_svc_path)
 
-            if FileUtils.remove_directory(full_svc_path):
-                logger.success('Toolbox service directory "{path}" deleted'.format(
-                    path=short_svc_path))
-            else:
-                logger.warning('Toolbox service directory "{path}" cannot be deleted ' \
-                    'because it still stores some files'.format(path=short_svc_path))
+                if FileUtils.remove_directory(full_svc_path):
+                    logger.success('Toolbox service directory "{path}" deleted'.format(
+                        path=short_svc_path))
+                else:
+                    logger.warning('Toolbox service directory "{path}" cannot be ' \
+                        'deleted because it still stores some files'.format(
+                            path=short_svc_path))
 
 
     def remove_tool(self, tool_name):

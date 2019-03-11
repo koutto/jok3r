@@ -324,7 +324,7 @@ class Target:
            and self.service.protocol == Protocol.TCP \
            and not self.service.banner:
 
-            logger.info('Grab targeted service via Nmap...')
+            logger.info('Grab banner for [{service}] via Nmap...'.format(service=self))
             self.service.banner = NetUtils.grab_banner_nmap(
                 str(self.service.host.ip), self.service.port)
 

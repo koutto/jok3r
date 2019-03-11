@@ -8,6 +8,7 @@ from collections import defaultdict
 from lib.core.Config import *
 from lib.core.Constants import *
 from lib.utils.VersionUtils import VersionUtils
+from lib.output.Logger import logger
 
 
 class ContextRequirements:
@@ -63,6 +64,8 @@ class ContextRequirements:
         :param str os: Requirement on the OS
         :param int auth_status: Level of authentication required on the service
         :param str auth_type: Authentication type (for HTTP only)
+        :param str raw: Raw context requirements string as in .conf file (only
+            for debugging purpose)
         """
         self.specific_options = defaultdict(lambda: None, specific_options) if \
             isinstance(specific_options, dict) else defaultdict(lambda: None)
@@ -155,6 +158,7 @@ class ContextRequirements:
 
         for prodtype in self.products:
             name, version = target.get_product_name_version(prodtype)
+            # (None, None) when not product detected for this type
 
             status &= self.__check_product(prodtype, name, version)
 
@@ -295,21 +299,26 @@ class ContextRequirements:
         requirement = self.products[prodtype]
 
         status  = requirement is None
-        status |= requirement == ['undefined'] and prodname is None
+        status |= (requirement == ['undefined'] and prodname is None)
         if status: 
             return True
 
         if prodname:
             for req_prod in requirement:
                 req_prodname, req_prodvers = VersionUtils.extract_name_version(req_prod)
+                logger.debug('Required product: type={}, name={}, version={}'.format(
+                    prodtype, req_prodname, req_prodvers))
+                logger.debug('Target product: type={}, name={}, version={}'.format(
+                    prodtype, prodname, prodversion))
 
                 # When no requirement on vendor/product_name but must be known
                 if req_prodname.lower() == 'any':
                     # When version can be unknown
                     status  = not req_prodvers
 
-                    # When the version must be known (any walue)
-                    status |= (req_prodvers.lower() == 'version_known' and prodversion)
+                    # When the version must be known (any value)
+                    status |= (req_prodvers.lower() == 'version_known' and \
+                        prodversion != '')
 
                 # When requirement on a defined vendor/product_name
                 if prodname.lower() == req_prodname.lower():
@@ -317,14 +326,15 @@ class ContextRequirements:
                     status  = not req_prodvers
 
                     # When the version must be known but no requirement on its value
-                    status |= (req_prodvers.lower() == 'version_known' and prodversion)
+                    status |= (req_prodvers.lower() == 'version_known' \
+                        and prodversion != '')
 
-                    # When explicit requirement on the version number
+                    # When explicit requirement on the version number 
                     status |= VersionUtils.check_version_requirement(
-                        prodversion, req_prodvers) 
+                        prodversion, req_prodvers)
 
-                    if status:
-                        return True
+                if status:
+                    return True
         return False
 
 
@@ -338,9 +348,9 @@ class ContextRequirements:
             requirements[o] = self.specific_options[o]
         for p in self.products:
             requirements[p] = self.products[p]
-        if auth_status:
+        if self.auth_status:
             requirements['auth_status'] = auth_status
-        if auth_type:
+        if self.auth_type:
             requirements['auth_type'] = auth_type
 
         return str(requirements)

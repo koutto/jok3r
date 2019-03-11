@@ -114,10 +114,13 @@ class AttackScope:
             # Check the current target
             # For single target mode: already done in AttackController
             if len(self.targets) > 1:
+                # By default, do NOT perform reverve DNS lookup & Nmap banner grabbing
+                # because we assume it has been added via Nmap results in most cases
+                # and thus, has already been done (behaviour can be changed with opt)
                 reachable = target.smart_check(
-                    reverse_dns=self.arguments.args.reverse_dns == 'on',
+                    reverse_dns=(self.arguments.args.reverse_dns == 'on'),
                     availability_check=True,
-                    grab_banner_nmap=self.arguments.args.nmap_banner_grab == 'on')
+                    grab_banner_nmap=(self.arguments.args.nmap_banner_grab == 'on'))
 
                 if self.arguments.args.target_mode == TargetMode.IP:
                     msg = 'Target {neg}reachable: {target}'.format(

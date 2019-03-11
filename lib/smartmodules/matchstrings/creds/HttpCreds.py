@@ -40,6 +40,12 @@ creds_match['http'] = {
             'user': '$1',
             'type': 'tomcat',
         },
+        # auxiliary/scanner/http/tomcat_mgr_login
+        'tomcat_mgr_login[\s\S]*Login Successful:\s*(?P<m1>\S+):(?P<m2>\S*)': {
+            'user': '$1',
+            'pass': '$2',
+            'type': 'tomcat',
+        },
         'jboss_vulnscan[\s\S]*Authenticated using (?P<m1>\S+):(?P<m2>\S*) at ': {
             'user': '$1',
             'pass': '$2',

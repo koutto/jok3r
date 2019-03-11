@@ -175,7 +175,7 @@ class ContextUpdater:
                         # Version detected is inferior to the one in db, updating
                         # i.e. Keep the oldest version (smallest number) found (to 
                         # avoid missing issues/checks...)
-                        elif match_product.version > product.version:
+                        elif match_product.version != product.version:
                             logger.smartsuccess('Version for product ' \
                                 '{product} updated: {oldvers} -> {newvers}'.format(
                                     product=product_str,
@@ -185,14 +185,14 @@ class ContextUpdater:
 
                         # Version detected is superior (newer version) to the one in 
                         # db, no update
-                        elif match_product.version < product.version:
-                            logger.smartsuccess('Version for product ' \
-                                '{product} detected: {newvers}. Not updated in db ' \
-                                'because older version {oldvers} already detected'.format(
-                                    product=product_str,
-                                    newvers=product.version,
-                                    oldvers=match_product.version))
-                            match_product.version = product.version
+                        # elif match_product.version < product.version:
+                        #     logger.smartsuccess('Version for product ' \
+                        #         '{product} detected: {newvers}. Not updated in db ' \
+                        #         'because older version {oldvers} already detected'.format(
+                        #             product=product_str,
+                        #             newvers=product.version,
+                        #             oldvers=match_product.version))
+                        #     match_product.version = product.version
 
                         # Same version as already detected
                         else:
@@ -204,7 +204,7 @@ class ContextUpdater:
                     # Version not detected
                     else:
                         logger.smartinfo('Product detected (already in db): ' \
-                            '{product} (version unknown)'.format(product_str))
+                            '{product} (version unknown)'.format(product=product_str))
 
                 # Different product name detected
                 else:

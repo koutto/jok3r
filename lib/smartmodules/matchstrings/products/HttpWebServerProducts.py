@@ -7,22 +7,26 @@ from lib.smartmodules.matchstrings.MatchStrings import products_match
 # product: Apache httpd version: 2.2.4 extrainfo: (Unix) DAV/2
 # product: Apache httpd version: 2.0.63 extrainfo: DAV/2 hostname
 
-WIG_REGEXP = '- Found platform {} [VERSION]'
+WIG_REGEXP = '- Found platform {}(\s*[VERSION])?'
+WIG_REGEXP2 = '{}\s*[VERSION]\s*Platform' 
 
 products_match['http']['web-server'] = {
 
     'Apache': {
         'wappalyzer': 'Apache',
-        'nmap': 'Apache httpd(\s+[VERSION])?',
-        'wig': WIG_REGEXP.format('Apache'),
+        'nmap': 'Apache httpd(\s*[VERSION])?',
+        'wig': [
+            WIG_REGEXP.format('Apache'),
+            WIG_REGEXP2.format('Apache'),
+        ],
     },
     'Hiawatha': {
         'wappalyzer': 'Hiawatha',
-        'nmap': 'Hiawatha(\s+httpd)?(\s+[VERSION])?',
+        'nmap': 'Hiawatha(\s*httpd)?(\s*[VERSION])?',
     },
     'IBM/HTTP Server': {
         'wappalyzer': 'IBM HTTP Server',
-        'nmap': 'IBM(\s+ (HTTP Server|httpd))(\s+[VERSION])?',
+        'nmap': 'IBM(\s*(HTTP Server|httpd))?(\s*[VERSION])?',
     },
     'LiteSpeed Web Server': {
         'wappalyzer': 'LiteSpeed',
@@ -30,44 +34,50 @@ products_match['http']['web-server'] = {
     },
     'Microsoft/IIS': {
         'wappalyzer': 'IIS',
-        'nmap': 'Microsoft IIS (httpd|WebDAV)(\s+[VERSION])?',
-        'wig': WIG_REGEXP.format('IIS'),
+        'nmap': 'Microsoft IIS (httpd|WebDAV)(\s*[VERSION])?',
+        'wig': [
+            WIG_REGEXP.format('IIS'),
+            WIG_REGEXP2.format('IIS'),
+        ],
     },
     'Mongoose': {
-        'nmap': 'Mongoose httpd(\s+[VERSION])?',
+        'nmap': 'Mongoose httpd(\s*[VERSION])?',
     },
     'Monkey Http Daemon': {
         'wappalyzer': 'Monkey HTTP Server',
-        'nmap': 'Monkey httpd(\s+[VERSION])?',
+        'nmap': 'Monkey httpd(\s*[VERSION])?',
     },
     'Nginx': {
         'wappalyzer': 'Nginx',
-        'nmap': 'nginx(\s+[VERSION])?',
-        'wig': WIG_REGEXP.format('nginx'),
+        'nmap': 'nginx(\s*[VERSION])?',
+        'wig': [
+            WIG_REGEXP.format('nginx'),
+            WIG_REGEXP2.format('nginx'),
+        ],
     },
     'Oracle/Http Server': {
         'wappalyzer': 'Oracle HTTP Server',
-        'nmap': 'Oracle HTTP Server(\s+(9iAS httpd|Powered by Apache))?(.+\(version [VERSION]\))?',
+        'nmap': 'Oracle HTTP Server(\s*(9iAS httpd|Powered by Apache))?(.+\(version [VERSION]\))?',
     },
     'Railo': {
         'clusterd': [
             'Matched [0-9]+ fingerprints for service railo',
-            'Railo (Server|Web Administrator|Server Administrator|AJP)\s+\(version [VERSION]\)',
-            'Railo (Server|Web Administrator|Server Administrator|AJP)\s+\(version Any\)',
+            'Railo (Server|Web Administrator|Server Administrator|AJP)\s*\(version [VERSION]\)',
+            'Railo (Server|Web Administrator|Server Administrator|AJP)\s*\(version Any\)',
         ],
     },
     'Rejetto/Http File Server': {
-        'nmap': 'HttpFileServer httpd(\s+[VERSION])?',
+        'nmap': 'HttpFileServer httpd(\s*[VERSION])?',
     },
     'Thttpd': {
         'wappalyzer': 'thttpd',
-        'nmap': 'thttpd(\s+[VERSION])?',
+        'nmap': 'thttpd(\s*[VERSION])?',
     },
     'Yaws': {
         'wappalyzer': 'Yaws',
-        'nmap': 'Yaws httpd(\s+[VERSION])?',
+        'nmap': 'Yaws httpd(\s*[VERSION])?',
     },
     'Zeus Web Server': {
-        'nmap': 'Zeus httpd(\s+Admin Server)?(\s+[VERSION])?',
+        'nmap': 'Zeus httpd(\s*Admin Server)?(\s*[VERSION])?',
     },
 }

@@ -3,6 +3,8 @@
 ###
 ### SmartModules > Smart Start
 ###
+import re
+
 from lib.output.Logger import logger
 from lib.smartmodules.ContextUpdater import ContextUpdater
 from lib.smartmodules.matchstrings.MatchStrings import *
@@ -32,19 +34,19 @@ class SmartStart:
         """Run start method corresponding to target service if available"""
         list_methods = [method_name for method_name in dir(self) \
                                     if callable(getattr(self, method_name))]
-        start_method_name = '__start_{}'.format(self.service.name)
+        start_method_name = 'start_{}'.format(self.service.name)
 
         if start_method_name in list_methods:
             logger.smartinfo('SmartStart processing to initialize context...')
             start_method = getattr(self, start_method_name)
             self.cu = ContextUpdater(self.service, self.sqlsess)
             start_method()
-            cu.update()
+            self.cu.update()
 
 
     #------------------------------------------------------------------------------------
 
-    def __start_ftp(self):
+    def start_ftp(self):
 
         # Try to detect ftp server from Nmap banner
         self.__detect_product_from_banner('ftp-server')
@@ -52,7 +54,7 @@ class SmartStart:
 
     #------------------------------------------------------------------------------------
 
-    def __start_http(self):
+    def start_http(self):
 
         # Autodetect HTTPS
         if self.service.url.lower().startswith('https://'):
@@ -72,6 +74,9 @@ class SmartStart:
         detector = WebTechnoDetector(self.service.url)
         technos = detector.detect()
 
+        logger.info('Web technologies detected by Wappalyzer:')
+        logger.info(technos)
+
         for t in technos:
             for prodtype in products_match['http']:
                 p = products_match['http'][prodtype]
@@ -80,18 +85,18 @@ class SmartStart:
                         pattern = p[prodname]['wappalyzer']
                     
                         #m = re.search(pattern, t['name'], re.IGNORECASE|re.DOTALL)
-                        if pattern.lowercase() in t['name'].lowercase():
+                        if pattern.lower()==t['name'].lower():
 
                         # If pattern matches, add detected product
                         #if m:
                             # Add version if present
                             version = t['version']
 
-                            logger.smartinfo('Web technology detected using ' \
-                                'Wappalyzer: {type} = {name} {version}'.format(
-                                    type=prodtype,
-                                    name=servername,
-                                    version=version))
+                            # logger.smartinfo('Web technology detected using ' \
+                            #     'Wappalyzer: {type} = {name} {version}'.format(
+                            #         type=prodtype,
+                            #         name=prodname,
+                            #         version=version))
 
                             # Add detected product to context
                             self.cu.add_product(prodtype, prodname, version)
@@ -102,7 +107,7 @@ class SmartStart:
 
     #------------------------------------------------------------------------------------
 
-    def __start_ftp(self):
+    def start_ftp(self):
 
         # Try to detect ftp server from Nmap banner
         self.__detect_product_from_banner('ftp-server')
@@ -110,7 +115,7 @@ class SmartStart:
 
     #------------------------------------------------------------------------------------
 
-    def __start_mssql(self):
+    def start_mssql(self):
 
         # Try to detect mssql server from Nmap banner
         self.__detect_product_from_banner('mssql-server')
@@ -118,7 +123,7 @@ class SmartStart:
 
     #------------------------------------------------------------------------------------
 
-    def __start_mysql(self):
+    def start_mysql(self):
 
         # Try to detect mysql server from Nmap banner
         self.__detect_product_from_banner('mysql-server')
@@ -126,7 +131,7 @@ class SmartStart:
 
     #------------------------------------------------------------------------------------
 
-    def __start_oracle(self):
+    def start_oracle(self):
 
         # Try to detect oracle server from Nmap banner
         self.__detect_product_from_banner('oracle-server')
@@ -134,7 +139,7 @@ class SmartStart:
 
     #------------------------------------------------------------------------------------
 
-    def __start_postgresql(self):
+    def start_postgresql(self):
 
         # Try to detect postgresql server from Nmap banner
         self.__detect_product_from_banner('postgresql-server')
@@ -142,7 +147,7 @@ class SmartStart:
 
     #------------------------------------------------------------------------------------
 
-    def __start_ssh(self):
+    def start_ssh(self):
 
         # Try to detect ssh server from Nmap banner
         self.__detect_product_from_banner('ssh-server')
@@ -164,7 +169,14 @@ class SmartStart:
                     version_detection = '[VERSION]' in pattern
                     pattern = pattern.replace('[VERSION]', VERSION_REGEXP)
                     
-                    m = re.search(pattern, self.service.banner, re.IGNORECASE|re.DOTALL)
+                    try:
+                        m = re.search(pattern, self.service.banner, 
+                            re.IGNORECASE|re.DOTALL)
+                    except Exception as e:
+                        logger.warning('Error with matchstring [{pattern}], you should ' \
+                            'review it. Exception: {exception}'.format(
+                                pattern=pattern, exception=e))
+                        break
 
                     # If pattern matches banner, add detected product
                     if m:

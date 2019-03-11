@@ -204,16 +204,9 @@ TARGETURI => /
 * ssh libssh vuln
 * jndiat
 * check https://bitvijays.github.io/LFF-IPS-P2-VulnerabilityAnalysis.html
-* correct start module http 
-* Java-RMI -> handle case windows ping -n
 
 
 * For all bruteforce with 'auth_status': NO_AUTH -> create command with username known 
-
-
-
-
-
 
 
 
@@ -239,143 +232,6 @@ SERVICES TO ADD
 * LDAP
 
 
-
-
-
-
-
-
-
-
-WORDLISTS ADDING
-===============================================================================
-
-
-
-- Very Minimalist dirs wordlists
-
-root@kali:~/jok3r/toolbox/http/dirsearch# cat dirs_minimalist.txt 
-account
-accounts
-adm
-admin
-_admin
-Admin
-ADMIN
-admin2
-adminarea
-administrator
-api
-app
-appli
-application
-applis
-auth
-back
-backup
-_backup
-bak
-cache
-_cache
-common
-component
-components
-conf
-config
-configuration
-control
-controller
-controllers
-core
-data
-debug
-dev
-development
-doc
-docs
-document
-download
-downloads
-Downloads
-en
-error
-file
-files
-Files
-fr
-ftp
-help
-html
-image
-images
-img
-inc
-Inc
-include
-_include
-includes
-_includes
-Includes
-install
-lib
-manager
-modules
-old
-page
-pages
-pdf
-phpmyadmin
-plugins
-priv
-_priv
-_private
-pub
-public
-_public
-report
-reports
-require
-script
-scripts
-secure
-service
-services
-share
-site
-sites
-sql
-src
-stat
-stats
-status
-temp
-Temp
-template
-templates
-test
-Test
-test1
-test2
-testing
-tests
-tmp
-tool
-tools
-tpl
-update
-updates
-upload
-uploads
-Uploads
-user
-users
-util
-utils
-webadmin
-WEB-INF
-www
-xml
-xmlrpc
 
 
 
