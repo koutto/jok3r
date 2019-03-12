@@ -4,6 +4,6 @@ from lib.smartmodules.matchstrings.MatchStrings import products_match
 
 products_match['mysql']['mysql-server'] = {
     'MySQL': {
-        'nmap': 'MySQL(\s+[VERSION])?',
+        'nmap-banner': 'MySQL(\s+[VERSION])?',
     },
 }

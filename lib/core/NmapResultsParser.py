@@ -84,7 +84,7 @@ class NmapResultsParser:
                 # Recheck for HTTP/HTTPS for services undetermined by Nmap
                 if http_recheck \
                    and s.protocol == 'tcp' \
-                   and not services_config.is_service_supported(name, multi=False):
+                   and not self.services_config.is_service_supported(name, multi=False):
 
                     url = WebUtils.is_returning_http_data(host.hostname or host.ip, 
                                                           s.port)

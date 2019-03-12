@@ -8,7 +8,8 @@ from lib.smartmodules.matchstrings.MatchStrings import products_match
 
 
 
-CMSEEK_REGEXP = 'CMS: {}([\s\S]*Version:\s*[VERSION])?'
+#CMSEEK_REGEXP = 'CMS: {}([\s\S]*Version:\s*[VERSION])?'
+CMSEEK_REGEXP = '"cms_name":\s*"{}"(,[\s\S]*"cms_version":\s*"[VERSION]")?'
 
 # Wig output sample:
 # Error page detection ...

@@ -6,6 +6,7 @@
 import re
 
 from lib.output.Logger import logger
+from lib.output.Output import Output
 from lib.smartmodules.ContextUpdater import ContextUpdater
 from lib.smartmodules.matchstrings.MatchStrings import *
 from lib.smartmodules.webtechnologies.WebTechnoDetector import WebTechnoDetector
@@ -75,7 +76,7 @@ class SmartStart:
         technos = detector.detect()
 
         logger.info('Web technologies detected by Wappalyzer:')
-        logger.info(technos)
+        Output.print('    {}'.format(technos))
 
         for t in technos:
             for prodtype in products_match['http']:
@@ -164,8 +165,8 @@ class SmartStart:
         if self.service.banner:
             p = products_match[self.service.name][prodtype]
             for servername in p:
-                if 'nmap' in p[servername]:
-                    pattern = p[servername]['nmap']
+                if 'nmap-banner' in p[servername]:
+                    pattern = p[servername]['nmap-banner']
                     version_detection = '[VERSION]' in pattern
                     pattern = pattern.replace('[VERSION]', VERSION_REGEXP)
                     
@@ -173,7 +174,7 @@ class SmartStart:
                         m = re.search(pattern, self.service.banner, 
                             re.IGNORECASE|re.DOTALL)
                     except Exception as e:
-                        logger.warning('Error with matchstring [{pattern}], you should ' \
+                        logger.warning('Error with matchstring [{pattern}], you should '\
                             'review it. Exception: {exception}'.format(
                                 pattern=pattern, exception=e))
                         break
@@ -196,7 +197,7 @@ class SmartStart:
                                 version=version))
 
                         # Add detected product to context
-                        self.cu.add_product(prodtype, prodname, version)
+                        self.cu.add_product(prodtype, servername, version)
 
                         # Stop product detection from banner if something found
                         break

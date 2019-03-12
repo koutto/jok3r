@@ -27,7 +27,7 @@ products_match['http']['web-appserver'] = {
     },
     'Apache/Tomcat': {
         'wappalyzer': 'Apache Tomcat',
-        'nmap': 'Apache Tomcat(\s+[VERSION])?',
+        'nmap-banner': 'Apache Tomcat(\s+[VERSION])?',
         'clusterd': [
             'Matched [0-9]+ fingerprints for service tomcat',
             'Tomcat (Manager|Admin)?\s*\(version [VERSION]\)',
@@ -40,7 +40,7 @@ products_match['http']['web-appserver'] = {
     },
     'Domino': {
         'wappalyzer': 'Lotus Domino',
-        'nmap': 'Lotus Domino(\s*(International|Go))?\s*httpd(\s*[VERSION])?',
+        'nmap-banner': 'Lotus Domino(\s*(International|Go))?\s*httpd(\s*[VERSION])?',
         'wig': [
             WIG_REGEXP.format('Lotus Domino'),
             WIG_REGEXP2.format('Lotus Domino'),
@@ -49,11 +49,11 @@ products_match['http']['web-appserver'] = {
     },
     'Eclipse/Jetty': {
         'wappalyzer': 'Jetty',
-        'nmap': 'Jetty(\s*[VERSION])?',
+        'nmap-banner': 'Jetty(\s*[VERSION])?',
     },
     'Jboss': {
         'wappalyzer': 'JBoss Application Server',
-        'nmap': 'JBoss (service httpd|Administrator|WildFly Application Server|Enterprise Application Platform)(\s*[VERSION])?',
+        'nmap-banner': 'JBoss (service httpd|Administrator|WildFly Application Server|Enterprise Application Platform)(\s*[VERSION])?',
         # Clusterd example:
         # [2018-11-15 05:04PM] Matched 5 fingerprints for service jboss
         # [2018-11-15 05:04PM]    JBoss Web Manager (version 5.1)
@@ -77,11 +77,11 @@ products_match['http']['web-appserver'] = {
     },
     'Jenkins': {
         'wappalyzer': 'Jenkins',
-        'nmap': 'Jenkins(\s*[VERSION])?',
+        'nmap-banner': 'Jenkins(\s*[VERSION])?',
     },
     'Oracle/Glassfish': {
         'wappalyzer': 'GlassFish',
-        'nmap': 'GlassFish(\s*(Open Source Edition|Communications Server|Administration Console|application server))?(\s*[VERSION])?',
+        'nmap-banner': 'GlassFish(\s*(Open Source Edition|Communications Server|Administration Console|application server))?(\s*[VERSION])?',
         'clusterd': [
             'Matched [0-9]+ fingerprints for service glassfish',
             'GlassFish (Admin|JMX RMI|HTTP Headers \(Unreliable\))\s*\(version [VERSION]\)',
@@ -89,7 +89,7 @@ products_match['http']['web-appserver'] = {
         ],
     },
     'Oracle/Weblogic Server': {
-        'nmap': 'WebLogic (applications server|admin httpd|httpd|Server)(\s+[VERSION])?',
+        'nmap-banner': 'WebLogic (applications server|admin httpd|httpd|Server)(\s+[VERSION])?',
         'clusterd': [
             'Matched [0-9]+ fingerprints for service weblogic',
             'WebLogic Admin Console (\(https\))?\s*\(version [VERSION]\)',
@@ -98,11 +98,11 @@ products_match['http']['web-appserver'] = {
     },
     'Websphere Application Server': {
         'wappalyzer': 'IBM WebSphere (Commerce|Portal)',
-        'nmap': 'WebSphere (Application Server|httpd)(\s*[VERSION])?',
+        'nmap-banner': 'WebSphere (Application Server|httpd)(\s*[VERSION])?',
     },
     'Zope': {
         'wappalyzer': 'Zope',
-        'nmap': 'Zope httpd(\s*[VERSION])?',
+        'nmap-banner': 'Zope httpd(\s*[VERSION])?',
         'wig': [
             WIG_REGEXP.format('Zope'),
             WIG_REGEXP2.format('Zope'),

@@ -325,12 +325,12 @@ class Target:
            and not self.service.banner:
 
             logger.info('Grab banner for [{service}] via Nmap...'.format(service=self))
-            self.service.banner = NetUtils.grab_banner_nmap(
-                str(self.service.host.ip), self.service.port)
+            self.service.banner = NetUtils.clean_nmap_banner(
+                NetUtils.grab_banner_nmap(str(self.service.host.ip), self.service.port))
 
             # Try to deduce OS from banner if possible
             if not self.service.host.os:
-                detected_os = NetUtils.os_from_nmap_banner(s.banner)
+                detected_os = NetUtils.os_from_nmap_banner(self.service.banner)
                 if detected_os:
                     self.service.host.os = detected_os
                     logger.info('Detected OS from banner = {os}'.format(os=detected_os))
@@ -355,7 +355,7 @@ class Target:
         if self.get_http_headers():
             logger.info('HTTP Response headers:')
             for l in self.get_http_headers().splitlines():
-                Output.print('  | {}'.format(l))
+                Output.print('    | {}'.format(l))
             print()
 
 

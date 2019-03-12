@@ -24,26 +24,6 @@ IMPROVEMENTS / NEW FEATURES
 ===============================================================================
 - Ctrl+C -> add possibility to switch fast mode on/off
 
-- AttackProfiles:
-    - weak-creds (weak, common, default)
-        http -> changeme, htaccess bruteforce quick with common creds admin:admin, admin:password...
-        mssql -> msdat passwordguesser sa:sa sa:
-        oracle -> tnscmd pour sid, odat passwordguesser avec sid
-        ajp -> ajp bf
-        ...
-
-    - advanced-creds-bruteforce
-        (include weak-creds checks)
-
-    - fast-scan
-    - vuln-lookup-banner (require banner grabbing enabled or banner already retrieved in imported nmap scan)
-
-    - web-scan-appserver
-    - web-scan-cms
-    - web-discovery
-    - web-discovery-fast
-
-
 - discovery-* checks:
     - appserver-wordlist
     - cms-wordlist
@@ -54,7 +34,6 @@ IMPROVEMENTS / NEW FEATURES
 - Auth types:
     - supported auth-type => only type that support various status/lvl (can be added in cmdline)
     - can accept other values (eg creds trouvés par changeme) and can be displayed in db>creds
-    - method for creds retrieval in postrun
 
 * Reporting HTML:
     * Template https://www.jqueryscript.net/menu/Bootstrap-Sidebar-Extension-With-jQuery-CSS-CSS3.html
@@ -64,13 +43,8 @@ IMPROVEMENTS / NEW FEATURES
 
 * Do not re-run checks already done
 
-* Nmap import: filter on nmap results to add
-
 * Improve wordlist quality:
     * passwords
-        * More default creds for mssql: https://github.com/mubix/post-exploitation-wiki/blob/master/windows/mssql.md
-        * Idea for wordlist services creds: https://github.com/x90skysn3k/brutespray/tree/master/wordlist
-
     * wordlist per language
     * wordlist per cms
     * wordlist per server
@@ -81,6 +55,8 @@ IMPROVEMENTS / NEW FEATURES
         * Administration: https://github.com/fnk0c/cangibrina/tree/master/wordlists
 
 
+
+https://github.com/govolution/betterdefaultpasslist
 
 
 SMARTMODULES / MATCHSTRINGS
@@ -102,40 +78,8 @@ CHECKS CORRECTIONS
 ===============================================================================
 
 
-- samba-rce-cve2015-0240 only if os = *linux*
-
-
-
 - dirsearch : -t 40 --timeout= (add --timeout to dirsearch)
-
-- DOMI-OWNED  => fonctionne sur 5, 6 et v8
-
-- bug dirhunt
-    cmd> dirhunt https://www.correspondant-assurance.fr/bnppere                                                                                                                                           
-
-    Traceback (most recent call last):
-      File "/usr/local/bin/dirhunt", line 11, in <module>
-        load_entry_point('dirhunt==0.5.1', 'console_scripts', 'dirhunt')()
-      File "/usr/lib/python3/dist-packages/pkg_resources/__init__.py", line 484, in load_entry_point
-        return get_distribution(dist).load_entry_point(group, name)
-      File "/usr/lib/python3/dist-packages/pkg_resources/__init__.py", line 2707, in load_entry_point
-        return ep.load()
-      File "/usr/lib/python3/dist-packages/pkg_resources/__init__.py", line 2325, in load
-        return self.resolve()
-      File "/usr/lib/python3/dist-packages/pkg_resources/__init__.py", line 2331, in resolve
-        module = __import__(self.module_name, fromlist=['__name__'], level=0)
-      File "/usr/local/lib/python3.6/dist-packages/dirhunt-0.5.1-py3.6.egg/dirhunt/management.py", line 13, in <module>
-        from dirhunt.crawler import Crawler
-      File "/usr/local/lib/python3.6/dist-packages/dirhunt-0.5.1-py3.6.egg/dirhunt/crawler.py", line 16, in <module>
-        from dirhunt.sessions import Sessions
-      File "/usr/local/lib/python3.6/dist-packages/dirhunt-0.5.1-py3.6.egg/dirhunt/sessions.py", line 5, in <module>
-        from proxy_db.models import Proxy
-    ModuleNotFoundError: No module named 'proxy_db.models'
-
 - add exploitations avec clusterd
-
-
-
 - Add option --webdir-wordlist for check discovery-general-wordlist 
 
 
@@ -143,6 +87,7 @@ CHECKS CORRECTIONS
 
 CHECKS ADDING
 ===============================================================================
+
 
 
 - Jenkins scripts:
@@ -206,21 +151,6 @@ TARGETURI => /
 * check https://bitvijays.github.io/LFF-IPS-P2-VulnerabilityAnalysis.html
 
 
-* For all bruteforce with 'auth_status': NO_AUTH -> create command with username known 
-
-
-
-
-
-
-
-
-
-
-- IMPORTANT: encadrer par /bin/bash -c '...' pour toutes les cmds avec <<< any
-/bin/bash -c 'python2.7 msdat.py xpcmdshell -s [IP] -p [PORT] -U [USERNAME] -P [PASSWORD] -v --shell <<< "whoami && net user"'
-
-/bin/bash -c 'python3 <<< "print(123)"'
 
 
 SERVICES TO ADD

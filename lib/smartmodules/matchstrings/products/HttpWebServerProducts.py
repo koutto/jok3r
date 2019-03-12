@@ -14,7 +14,7 @@ products_match['http']['web-server'] = {
 
     'Apache': {
         'wappalyzer': 'Apache',
-        'nmap': 'Apache httpd(\s*[VERSION])?',
+        'nmap-banner': 'Apache httpd(\s*[VERSION])?',
         'wig': [
             WIG_REGEXP.format('Apache'),
             WIG_REGEXP2.format('Apache'),
@@ -22,34 +22,34 @@ products_match['http']['web-server'] = {
     },
     'Hiawatha': {
         'wappalyzer': 'Hiawatha',
-        'nmap': 'Hiawatha(\s*httpd)?(\s*[VERSION])?',
+        'nmap-banner': 'Hiawatha(\s*httpd)?(\s*[VERSION])?',
     },
     'IBM/HTTP Server': {
         'wappalyzer': 'IBM HTTP Server',
-        'nmap': 'IBM(\s*(HTTP Server|httpd))?(\s*[VERSION])?',
+        'nmap-banner': 'IBM(\s*(HTTP Server|httpd))?(\s*[VERSION])?',
     },
     'LiteSpeed Web Server': {
         'wappalyzer': 'LiteSpeed',
-        'nmap': 'LiteSpeed httpd(\s+[VERSION])?',
+        'nmap-banner': 'LiteSpeed httpd(\s+[VERSION])?',
     },
     'Microsoft/IIS': {
         'wappalyzer': 'IIS',
-        'nmap': 'Microsoft IIS (httpd|WebDAV)(\s*[VERSION])?',
+        'nmap-banner': 'Microsoft IIS (httpd|WebDAV)(\s*[VERSION])?',
         'wig': [
             WIG_REGEXP.format('IIS'),
             WIG_REGEXP2.format('IIS'),
         ],
     },
     'Mongoose': {
-        'nmap': 'Mongoose httpd(\s*[VERSION])?',
+        'nmap-banner': 'Mongoose httpd(\s*[VERSION])?',
     },
     'Monkey Http Daemon': {
         'wappalyzer': 'Monkey HTTP Server',
-        'nmap': 'Monkey httpd(\s*[VERSION])?',
+        'nmap-banner': 'Monkey httpd(\s*[VERSION])?',
     },
     'Nginx': {
         'wappalyzer': 'Nginx',
-        'nmap': 'nginx(\s*[VERSION])?',
+        'nmap-banner': 'nginx(\s*[VERSION])?',
         'wig': [
             WIG_REGEXP.format('nginx'),
             WIG_REGEXP2.format('nginx'),
@@ -57,7 +57,7 @@ products_match['http']['web-server'] = {
     },
     'Oracle/Http Server': {
         'wappalyzer': 'Oracle HTTP Server',
-        'nmap': 'Oracle HTTP Server(\s*(9iAS httpd|Powered by Apache))?(.+\(version [VERSION]\))?',
+        'nmap-banner': 'Oracle HTTP Server(\s*(9iAS httpd|Powered by Apache))?(.+\(version [VERSION]\))?',
     },
     'Railo': {
         'clusterd': [
@@ -67,17 +67,17 @@ products_match['http']['web-server'] = {
         ],
     },
     'Rejetto/Http File Server': {
-        'nmap': 'HttpFileServer httpd(\s*[VERSION])?',
+        'nmap-banner': 'HttpFileServer httpd(\s*[VERSION])?',
     },
     'Thttpd': {
         'wappalyzer': 'thttpd',
-        'nmap': 'thttpd(\s*[VERSION])?',
+        'nmap-banner': 'thttpd(\s*[VERSION])?',
     },
     'Yaws': {
         'wappalyzer': 'Yaws',
-        'nmap': 'Yaws httpd(\s*[VERSION])?',
+        'nmap-banner': 'Yaws httpd(\s*[VERSION])?',
     },
     'Zeus Web Server': {
-        'nmap': 'Zeus httpd(\s*Admin Server)?(\s*[VERSION])?',
+        'nmap-banner': 'Zeus httpd(\s*Admin Server)?(\s*[VERSION])?',
     },
 }
