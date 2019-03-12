@@ -42,6 +42,7 @@ class WebUtils:
             newurl = 'http://' + url[8:]
         return newurl
 
+
     @staticmethod
     def is_valid_url(url):
         """Check if given URL is valid"""
@@ -115,6 +116,7 @@ class WebUtils:
             return int(parsed.port)
         else:
             return 443 if parsed.scheme == 'https' else 80
+
 
     @staticmethod
     def grab_html_title(url):

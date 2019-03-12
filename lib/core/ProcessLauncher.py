@@ -83,20 +83,27 @@ class ProcessLauncher:
                                     shell=True, 
                                     stdout=subprocess.PIPE, 
                                     stderr=subprocess.STDOUT)
-            #subprocess.call(cmd, 
-            #                shell=True, 
-            #                stdout=self.output_file, 
-            #                stderr=subprocess.STDOUT)
-            #subprocess.Popen(cmd, shell=True)
-            #subprocess.call(cmd, shell=True)
 
-            for line in iter(proc.stdout.readline, b''):
-                out = line.decode(sys.stdout.encoding)
-                sys.stdout.write(out)
-                output += out
+            # for line in iter(proc.stdout.readline, b''):
+            #     out = line.decode(sys.stdout.encoding)
+            #     sys.stdout.write(out)
+            #     output += out
 
             #output = proc.stdout.read()
             #print(output)
+
+
+            output = ''
+            # Agressivelly get the output
+            while True:
+                out = proc.stdout.read(1)
+                out = out.decode(sys.stdout.encoding)
+                sys.stdout.write(out)
+                output += out
+
+                # Break if process has finished
+                if out == ''  and proc.poll() != None:
+                    break
 
         except Exception as e:
             logger.error('Error when trying to run command: {exception}'.format(

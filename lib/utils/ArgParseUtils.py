@@ -10,6 +10,7 @@ from lib.core.Config import *
 
 
 class LineWrapRawTextHelpFormatter(argparse.RawDescriptionHelpFormatter):
+
     def _split_lines(self, text, width):
         """
         For custom max width
@@ -17,6 +18,7 @@ class LineWrapRawTextHelpFormatter(argparse.RawDescriptionHelpFormatter):
         #text = self._whitespace_matcher.sub(' ', text).strip()
         #return textwrap.wrap(text, ARGPARSE_MAX_WIDTH)
         return text.splitlines()
+
 
     def _format_args(self, action, default_metavar):
         """
@@ -27,6 +29,7 @@ class LineWrapRawTextHelpFormatter(argparse.RawDescriptionHelpFormatter):
             return get_metavar(1)[0]
         else:
             return super()._format_args(action, default_metavar)
+
 
     def _format_action_invocation(self, action):
         """
@@ -54,8 +57,10 @@ class LineWrapRawTextHelpFormatter(argparse.RawDescriptionHelpFormatter):
 
             return ', '.join(parts)
 
+
     def _get_default_metavar_for_optional(self, action):
         return action.dest.upper()
+
 
     def _get_default_metavar_for_positional(self, action):
         return action.dest.upper()
@@ -73,6 +78,7 @@ class Store1or2Append(argparse._AppendAction):
             raise argparse.ArgumentError(self, "%s takes 2 or 3 values, %d given" % \
                 (option_string, len(values)))
         super(TwoOrThree, self).__call__(parser, namespace, values, option_string)
+
 
 class Store2or3Append(argparse._AppendAction):
     """

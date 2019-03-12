@@ -184,7 +184,10 @@ class SmartStart:
                         # Add version if present
                         if version_detection:
                             try:
-                                version = m.group('version')
+                                if m.group('version') is not None:
+                                    version = m.group('version')
+                                else:
+                                    version = ''
                             except:
                                 version = ''
                         else:
