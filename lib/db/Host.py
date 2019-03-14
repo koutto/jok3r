@@ -8,7 +8,8 @@ import ipaddress
 from sqlalchemy import ForeignKey, Column, Integer, String, Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.hybrid import hybrid_method
-from sqlalchemy_utils import IPAddressType
+#from sqlalchemy_utils import IPAddressType
+from lib.db.IPAddressType import IPAddressType
 
 from lib.db.Session import Base
 from lib.db.Service import Service
@@ -39,6 +40,7 @@ class Host(Base):
         """
         if dst.hostname: self.hostname = dst.hostname
         if dst.os: self.os = dst.os
+        return
 
 
     @hybrid_method
@@ -51,7 +53,9 @@ class Host(Base):
         :rtype: bool
         """
         net = ipaddress.ip_network(ip_range, strict=False)
-        return min(net) <= self.ip <= max(net)  
+
+        # return min(net) <= self.ip <= max(net) # Too slow  
+        return net[0] <= self.ip <= net[-1]
 
 
     @is_in_ip_range.expression
@@ -64,7 +68,7 @@ class Host(Base):
         :rtype: bool
         """
         net = ipaddress.ip_network(ip_range, strict=False)
-        return cls.ip.between(min(net), max(net))
+        return cls.ip.between(net[0], net[-1])
 
 
     #------------------------------------------------------------------------------------

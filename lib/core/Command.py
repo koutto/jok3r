@@ -146,7 +146,7 @@ class Command:
                 # Bruteforce options tags replacement
                 self.__replace_tag_bruteforce_option('USERLIST', arguments.args.userlist)
                 self.__replace_tag_bruteforce_option('PASSLIST', arguments.args.passlist)
-                self.__replace_tag_bruteforce_option('WEBLIST', arguments.args.weblist)
+                #self.__replace_tag_bruteforce_option('WEBLIST', arguments.args.weblist)
 
                 # Credentials tags replacement
                 self.__replace_tags_credentials(target)

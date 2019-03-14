@@ -22,21 +22,20 @@ BUG FIXES
 
 IMPROVEMENTS / NEW FEATURES
 ===============================================================================
-- Ctrl+C -> add possibility to switch fast mode on/off
+* Ctrl+C -> add possibility to switch fast mode on/off
 
-- discovery-* checks:
+* discovery-* checks:
     - appserver-wordlist
     - cms-wordlist
     - language-wordlist (per language => lots of work to produce wordlists for each language + add generic ie HTML, XML, LOG, TXT...)
     - general-minimal-wordlist
     - general-wordlist (raft directory)
 
-- Auth types:
+* Auth types:
     - supported auth-type => only type that support various status/lvl (can be added in cmdline)
     - can accept other values (eg creds trouvés par changeme) and can be displayed in db>creds
 
 * Reporting HTML:
-    * Template https://www.jqueryscript.net/menu/Bootstrap-Sidebar-Extension-With-jQuery-CSS-CSS3.html
     * https://www.jqueryscript.net/demo/Bootstrap-Sidebar-Extension-With-jQuery-CSS-CSS3/
     * http://www.finalhints.com/live-search-in-html-table-using-jquery/
     * At the end, prompt to open in browser like in eyewitness
@@ -55,8 +54,6 @@ IMPROVEMENTS / NEW FEATURES
         * Administration: https://github.com/fnk0c/cangibrina/tree/master/wordlists
 
 
-
-https://github.com/govolution/betterdefaultpasslist
 
 
 SMARTMODULES / MATCHSTRINGS
@@ -80,8 +77,6 @@ CHECKS CORRECTIONS
 
 - dirsearch : -t 40 --timeout= (add --timeout to dirsearch)
 - add exploitations avec clusterd
-- Add option --webdir-wordlist for check discovery-general-wordlist 
-
 
 
 
@@ -91,32 +86,31 @@ CHECKS ADDING
 
 
 - Jenkins scripts:
-Attention; TARGETURI / et /jenkins/
+        Attention; TARGETURI / et /jenkins/
 
-msf auxiliary(scanner/http/jenkins_command) > show options 
+        msf auxiliary(scanner/http/jenkins_command) > show options 
 
-Module options (auxiliary/scanner/http/jenkins_command):
+        Module options (auxiliary/scanner/http/jenkins_command):
 
 
-msf auxiliary(scanner/http/jenkins_command) > run
+        msf auxiliary(scanner/http/jenkins_command) > run
 
-[+] [2018.11.19-14:37:28] 10.2.153.123:8080     nt authority\system
-[*] [2018.11.19-14:37:28] Scanned 1 of 1 hosts (100% complete)
-[*] Auxiliary module execution completed
-msf auxiliary(scanner/http/jenkins_command) > 
-msf auxiliary(scanner/http/jenkins_command) > 
-msf auxiliary(scanner/http/jenkins_command) > set TARGETURI /jenkins/
-TARGETURI => /jenkins/
-msf auxiliary(scanner/http/jenkins_command) > run
+        [+] [2018.11.19-14:37:28] 10.2.153.123:8080     nt authority\system
+        [*] [2018.11.19-14:37:28] Scanned 1 of 1 hosts (100% complete)
+        [*] Auxiliary module execution completed
+        msf auxiliary(scanner/http/jenkins_command) > 
+        msf auxiliary(scanner/http/jenkins_command) > 
+        msf auxiliary(scanner/http/jenkins_command) > set TARGETURI /jenkins/
+        TARGETURI => /jenkins/
+        msf auxiliary(scanner/http/jenkins_command) > run
 
-[-] [2018.11.19-14:37:51] 10.2.153.123:8080     This system is not running Jenkins-CI at /jenkins/
-[*] [2018.11.19-14:37:51] Scanned 1 of 1 hosts (100% complete)
-[*] Auxiliary module execution completed
-msf auxiliary(scanner/http/jenkins_command) > set TARGETURI /
-TARGETURI => /
+        [-] [2018.11.19-14:37:51] 10.2.153.123:8080     This system is not running Jenkins-CI at /jenkins/
+        [*] [2018.11.19-14:37:51] Scanned 1 of 1 hosts (100% complete)
+        [*] Auxiliary module execution completed
+        msf auxiliary(scanner/http/jenkins_command) > set TARGETURI /
+        TARGETURI => /
 
 - Jenkins deserialize
-
 - add exploit/linux/misc/jenkins_java_deserialize (attention: os linux)
 - add exploit/windows/misc/ibm_websphere_java_deserialize (os win)
 - add auxiliary/scanner/http/jenkins_login

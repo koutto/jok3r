@@ -34,6 +34,7 @@ class Result(Base):
         """
         for output in dst.command_outputs:
             self.command_outputs.append(output)
+        return
 
 
     #------------------------------------------------------------------------------------

@@ -93,13 +93,16 @@ class ProcessLauncher:
             #print(output)
 
 
-            output = ''
             # Agressivelly get the output
             while True:
                 out = proc.stdout.read(1)
-                out = out.decode(sys.stdout.encoding)
-                sys.stdout.write(out)
-                output += out
+                # We put that inside try block to avoid utf8 decoding error
+                try:
+                    out = out.decode(sys.stdout.encoding)
+                    sys.stdout.write(out)
+                    output += out
+                except:
+                    pass
 
                 # Break if process has finished
                 if out == ''  and proc.poll() != None:

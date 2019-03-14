@@ -319,7 +319,11 @@ class ServicesConfig:
             return False
 
         services = self.list_services() if service is None else [service]
+
+        # print(self.services)
         for service in services:
+            # print('--{}--'.format(self.services[service]['products']))
+            # print('--{}--'.format(self.services[service]['products'].keys()))
             if product_type in self.services[service]['products'].keys():
                 return True
         return False

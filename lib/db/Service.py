@@ -87,6 +87,7 @@ class Service(Base):
                 else:
                     self.options.append(o)
                     o.service_id^= self.id
+        return
 
 
     #------------------------------------------------------------------------------------
@@ -98,7 +99,7 @@ class Service(Base):
         Get a specific option related to the service.
         :param str name: Option name to look for
         :return: Specific option
-        :rtype: Option
+        :rtype: Option|None
         """
         for opt in self.options:
             if opt.name == name.lower():
@@ -112,7 +113,7 @@ class Service(Base):
         Get product corresponding to given product type.
         :param str product_type: Product type to look for
         :return: Product
-        :rtype: Product
+        :rtype: Product|None
         """
         for prod in self.products:
             if prod.type == product_type.lower():
@@ -126,7 +127,7 @@ class Service(Base):
         Get vulnerability matching (exactly) given name.
         :param str name: Name of vulnerability to look for
         :return: Vulnerability
-        :rtype: Vuln
+        :rtype: Vuln|None
         """
         for vuln in self.vulns:
             if vuln.name.lower() == name.lower():
@@ -141,7 +142,7 @@ class Service(Base):
         :param str username: Username to look for
         :param str auth_type: Authentication type (for HTTP service)
         :return: Credential
-        :rtype: Credential
+        :rtype: Credential|None
         """
         for cred in self.credentials:
             if cred.type == auth_type and cred.username == username:

@@ -50,7 +50,7 @@ class Check:
         i = 1
         for command in self.commands:
             logger.debug('{check} - Command #{i} context requirements: {rawstr}'.format(
-                check=self.name, i=i, rawstr=command.context_requirements.raw_string))
+                check=self.name, i=i, rawstr=command.context_requirements))
             i += 1
             if command.context_requirements.check_target_compliance(target):
                 return True
@@ -148,7 +148,7 @@ class Check:
                 logger.info('Command #{num:02} does not match requirements: ' \
                     '{context}'.format(num=i, context=command.context_requirements))
                 logger.debug('Context string: {rawstr}'.format(
-                    rawstr=command.context_requirements.raw_string))
+                    rawstr=command.context_requirements))
             
             i += 1
 

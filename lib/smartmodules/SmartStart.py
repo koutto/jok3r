@@ -3,6 +3,7 @@
 ###
 ### SmartModules > Smart Start
 ###
+import pprint
 import re
 
 from lib.output.Logger import logger
@@ -76,7 +77,8 @@ class SmartStart:
         technos = detector.detect()
 
         logger.info('Web technologies detected by Wappalyzer:')
-        Output.print('    {}'.format(technos))
+        #Output.print('    {}'.format(technos))
+        pprint.pprint(technos)
 
         for t in technos:
             for prodtype in products_match['http']:

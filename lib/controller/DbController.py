@@ -277,6 +277,7 @@ class DbController(cmd2.Cmd):
             req.add_filter(filter_)
         except FilterException as e:
             logger.error(e)
+            print()
             return
 
         # Operations:
@@ -284,20 +285,14 @@ class DbController(cmd2.Cmd):
         # Edit comment : --comment <comment>
         if args.comment:
             if not req.filter_applied:
-                if not Output.prompt_confirm('No filter applied. Are you sure you ' \
-                        'want to edit comment for ALL hosts in current mission ?', 
-                        default=False):
-                    logger.info('Canceled')
+                if not self.__confirm_for_all('edit comment for ALL hosts'):
                     return
             req.edit_comment(args.comment)
 
         # Delete : --del 
         elif args.delete:
             if not req.filter_applied:
-                if not Output.prompt_confirm('No filter applied. Are you sure you ' \
-                        'want to delete ALL hosts and related services in current ' \
-                        'mission', default=False):
-                    logger.info('Canceled')
+                if not self.__confirm_for_all('delete ALL hosts and related services'):
                     return
             req.delete()
 
@@ -435,6 +430,7 @@ class DbController(cmd2.Cmd):
                 if not self.settings.services.is_service_supported(n, multi=False):
                     logger.error('Service {name} is not valid/supported'.format(
                         name=n.lower()))
+                    print()
                     return
             filter_.add_condition(Condition(args.names, FilterData.SERVICE_EXACT))
 
@@ -479,6 +475,7 @@ class DbController(cmd2.Cmd):
             req.add_filter(filter_)
         except FilterException as e:
             logger.error(e)
+            print()
             return
 
         # Operations:
@@ -500,6 +497,7 @@ class DbController(cmd2.Cmd):
                 ip = NetUtils.dns_lookup(host)
                 if not ip:
                     logger.error('Cannot resolve hostname')
+                    print()
                     return
                 hostname = host
                 logger.info('DNS lookup on {hostname} -> IP: {ip}'.format(
@@ -528,20 +526,14 @@ class DbController(cmd2.Cmd):
         # --del
         elif args.delete:
             if not req.filter_applied:
-                if not Output.prompt_confirm('No filter applied. Are you sure you ' \
-                        'want to delete ALL services in current mission ?', 
-                        default=False):
-                    logger.info('Canceled')
+                if not self.__confirm_for_all('delete ALL services'):
                     return
             req.delete()
 
         # --comment <comment>
         elif args.comment:
             if not req.filter_applied:
-                if not Output.prompt_confirm('No filter applied. Are you sure you ' \
-                        'want to edit comment for ALL services in current mission ?', 
-                        default=False):
-                    logger.info('Canceled')
+                if not self.__confirm_for_all('edit comment for ALL services'):
                     return
             req.edit_comment(args.comment)
 
@@ -549,21 +541,16 @@ class DbController(cmd2.Cmd):
         # --https
         elif args.https:
             if not req.filter_applied:
-                if not Output.prompt_confirm('No filter applied. Are you sure you ' \
-                        'want to apply switch for ALL URLs in current mission ?', 
-                        default=False):
-                    logger.info('Canceled')
+                if not self.__confirm_for_all('apply switch for ALL URLs'):
                     return
             req.switch_https()      
 
         # --addcred <user> <pass>   
         elif args.addcred:
             if not req.filter_applied:
-                if not Output.prompt_confirm('No filter applied. Are you sure you ' \
-                        'want to add same creds for ALL services in current mission ?', 
-                        default=False):
-                    logger.info('Canceled')
+                if not self.__confirm_for_all('add same creds for ALL services'):
                     return
+
             req.add_cred(username=args.addcred[0], 
                          password=args.addcred[1], 
                          auth_type=None) 
@@ -573,6 +560,7 @@ class DbController(cmd2.Cmd):
             if not req.are_only_http_services_selected():
                 logger.warning('Some non-HTTP services are selected. Use --addcred ' \
                     'instead for non-HTTP services')
+                print()
                 return
             if not self.settings.services.is_valid_auth_type(args.addcred_http[2]):
                 logger.warning('Invalid HTTP authentication type')
@@ -581,10 +569,7 @@ class DbController(cmd2.Cmd):
                     logger.info('- {type}'.format(type=auth_type))
                 return
             if not req.filter_applied:
-                if not Output.prompt_confirm('No filter applied. Are you sure you ' \
-                        'want to add same creds for ALL HTTP services in current ' \
-                        'mission ?', default=False):
-                    logger.info('Canceled')
+                if not self.__confirm_for_all('add same creds for ALL HTTP services'):
                     return
             req.add_cred(username=args.addcred_http[0], 
                          password=args.addcred_http[1], 
@@ -593,11 +578,9 @@ class DbController(cmd2.Cmd):
         # --adduser <user>
         elif args.adduser:
             if not req.filter_applied:
-                if not Output.prompt_confirm('No filter applied. Are you sure you ' \
-                        'want to add same username for ALL services in current ' \
-                        'mission ?', default=False):
-                    logger.info('Canceled')
+                if not self.__confirm_for_all('add same username for ALL services'):
                     return
+
             req.add_cred(username=args.adduser[0], 
                          password=None, 
                          auth_type=None)
@@ -607,19 +590,19 @@ class DbController(cmd2.Cmd):
             if not req.are_only_http_services_selected():
                 logger.warning('Some non-HTTP services are selected. Use --adduser ' \
                     'instead for non-HTTP services')
+                print()
                 return
             if not self.settings.services.is_valid_auth_type(args.adduser_http[1]):
                 logger.warning('Invalid HTTP authentication type')
                 logger.info('List of supported authentication types: ')
                 for auth_type in self.settings.services.get_authentication_types('http'):
                     logger.info('- {type}'.format(type=auth_type))
+                print()
                 return
             if not req.filter_applied:
-                if not Output.prompt_confirm('No filter applied. Are you sure you ' \
-                        'want to add same username for ALL HTTP services in current ' \
-                        'mission ?', default=False):
-                    logger.info('Canceled')
+                if not self.__confirm_for_all('add same username for ALL HTTP services'):
                     return
+
             req.add_cred(username=args.adduser_http[0], 
                          password=None, 
                          auth_type=args.adduser_http[1]) 
@@ -783,6 +766,7 @@ class DbController(cmd2.Cmd):
                 if not self.settings.services.is_service_supported(s, multi=False):
                     logger.error('Service {name} is not valid/supported'.format(
                         name=s.lower()))
+                    print()
                     return
             filter_.add_condition(Condition(args.service.split(','), 
                 FilterData.SERVICE_EXACT))
@@ -805,6 +789,7 @@ class DbController(cmd2.Cmd):
             req.add_filter(filter_)
         except FilterException as e:
             logger.error(e)
+            print()
             return
 
         # Operations:
@@ -832,6 +817,7 @@ class DbController(cmd2.Cmd):
                     for auth_type in self.settings.services\
                             .get_authentication_types('http'):
                         logger.info('- {type}'.format(type=auth_type))
+                    print()
                     return
                 req.add_cred(service_id=service_id, 
                              username=args.addcred_http[1], 
@@ -850,6 +836,7 @@ class DbController(cmd2.Cmd):
                     for auth_type in self.settings.services\
                             .get_authentication_types('http'):
                         logger.info('- {type}'.format(type=auth_type))
+                    print()
                     return
                 req.add_cred(service_id=service_id, 
                              username=args.adduser_http[1], 
@@ -859,19 +846,15 @@ class DbController(cmd2.Cmd):
         # --comment <comment>
         elif args.comment:
             if not req.filter_applied:
-                if not Output.prompt_confirm('No filter applied. Are you sure you ' \
-                        'want to edit comment for ALL creds in current mission ?', 
-                        default=False):
-                    logger.info('Canceled')
+                if not self.__confirm_for_all('edit comment for ALL creds'):
                     return
+
             req.edit_comment(args.comment)
 
         # --del
         elif args.delete:
             if not req.filter_applied:
-                if not Output.prompt_confirm('No filter applied. Are you sure you ' \
-                        'want to delete ALL creds in current mission ?', default=False):
-                    logger.info('Canceled')
+                if not self.__confirm_for_all('delete ALL creds'):
                     return
             req.delete()
 
@@ -974,6 +957,7 @@ class DbController(cmd2.Cmd):
                 if not self.settings.services.is_service_supported(s, multi=False):
                     logger.error('Service {name} is not valid/supported'.format(
                         name=s.lower()))
+                    print()
                     return
             filter_.add_condition(Condition(services, FilterData.SERVICE_EXACT))
 
@@ -999,6 +983,7 @@ class DbController(cmd2.Cmd):
                 if not self.settings.services.is_specific_option_name_supported(n):
                     logger.error('Option "{name}" is not valid/supported'.format(
                         name=n.lower()))
+                    print()
                     return
             filter_.add_condition(Condition(args.names, FilterData.OPTION_NAME))
 
@@ -1010,6 +995,7 @@ class DbController(cmd2.Cmd):
             req.add_filter(filter_)
         except FilterException as e:
             logger.error(e)
+            print()
             return
 
         # Operations:
@@ -1017,16 +1003,15 @@ class DbController(cmd2.Cmd):
         # --del
         if args.delete:
             if not req.filter_applied:
-                if not Output.prompt_confirm('No filter applied. Are you sure you ' \
-                        'want to delete ALL options in current mission ?', 
-                        default=False):
-                    logger.info('Canceled')
+                if not self.__confirm_for_all('delete ALL options'):
                     return
             req.delete()
 
         # Display (default)
         else:
             req.show() 
+
+        print()
 
 
     #------------------------------------------------------------------------------------
@@ -1118,6 +1103,7 @@ class DbController(cmd2.Cmd):
                 if not self.settings.services.is_service_supported(s, multi=False):
                     logger.error('Service {name} is not valid/supported'.format(
                         name=s.lower()))
+                    print()
                     return
             filter_.add_condition(Condition(services, FilterData.SERVICE_EXACT))
 
@@ -1144,9 +1130,10 @@ class DbController(cmd2.Cmd):
             for t in args.types:
                 if not self.settings.services.is_product_type_supported(t):
                     logger.error('Product type "{type}" is not valid/supported'.format(
-                        name=t.lower()))
+                        type=t.lower()))
+                    print()
                     return
-            filter_.add_condition(Condition(args.names, FilterData.PRODUCT_TYPE))
+            filter_.add_condition(Condition(args.types, FilterData.PRODUCT_TYPE))
 
         # --order <column>
         if args.order:
@@ -1156,6 +1143,7 @@ class DbController(cmd2.Cmd):
             req.add_filter(filter_)
         except FilterException as e:
             logger.error(e)
+            print()
             return
 
         # Operations:
@@ -1163,16 +1151,15 @@ class DbController(cmd2.Cmd):
         # --del
         if args.delete:
             if not req.filter_applied:
-                if not Output.prompt_confirm('No filter applied. Are you sure you ' \
-                        'want to delete ALL products in current mission ?', 
-                        default=False):
-                    logger.info('Canceled')
+                if not self.__confirm_for_all('delete ALL products'):
                     return
             req.delete()
 
         # Display (default)
         else:
             req.show() 
+
+        print()
 
 
     #------------------------------------------------------------------------------------
@@ -1205,6 +1192,7 @@ class DbController(cmd2.Cmd):
         file = os.path.expanduser(args.file[0])
         if not FileUtils.can_read(file):
             logger.error('Cannot read specified file')
+            print()
             return
 
         logger.info('Importing Nmap results from {file}'.format(file=file))
@@ -1442,6 +1430,7 @@ class DbController(cmd2.Cmd):
                 if not self.settings.services.is_service_supported(s, multi=False):
                     logger.error('Service {name} is not valid/supported'.format(
                         name=s.lower()))
+                    print()
                     return
             filter_.add_condition(Condition(services, FilterData.SERVICE_EXACT))
 
@@ -1468,6 +1457,7 @@ class DbController(cmd2.Cmd):
             req.add_filter(filter_)
         except FilterException as e:
             logger.error(e)
+            print()
             return
 
         # Operations:
@@ -1475,16 +1465,16 @@ class DbController(cmd2.Cmd):
         # --del
         if args.delete:
             if not req.filter_applied:
-                if not Output.prompt_confirm('No filter applied. Are you sure you ' \
-                        'want to delete ALL vulnerabilities in current mission ?', 
-                        default=False):
-                    logger.info('Canceled')
+                if not self.__confirm_for_all('delete ALL vulnerabilities'):
                     return
+
             req.delete()
 
         # Display (default)
         else:
-            req.show() 
+            req.show()
+
+        print()
 
 
     #------------------------------------------------------------------------------------
@@ -1538,11 +1528,13 @@ class DbController(cmd2.Cmd):
         if (args.service_id or args.check_name) and (args.check_id or args.search):
             logger.error('--service-id|--check-name and --check-id|--search are '\
                 'mutually exclusive')
+            print()
             return
 
         if not args.service_id and not args.check_name and not args.check_id \
                 and not args.search:
             logger.error('At least one argument required')
+            print()
             return
 
         results_req = ResultsRequester(self.sqlsess)
@@ -1560,6 +1552,7 @@ class DbController(cmd2.Cmd):
                     service_id = int(args.service_id)
                 except:
                     logger.error('Invalid service id (wrong format)')
+                    print()
                     return
 
                 # Check service id exists
@@ -1589,6 +1582,7 @@ class DbController(cmd2.Cmd):
                     check_id = int(args.check_id)
                 except:
                     logger.error('Invalid check id (wrong format)')
+                    print()
                     return
 
                 filter_.add_condition(Condition(args.check_id, FilterData.CHECK_ID))
@@ -1606,3 +1600,20 @@ class DbController(cmd2.Cmd):
 
         print()             
 
+
+    def __confirm_for_all(self, action):
+        """
+        Print a prompt to confirm an action
+
+        :param str action: Action to perform
+        :return: Answer from the user
+        :rtype: bool
+        """
+        if not Output.prompt_confirm('No filter applied. Are you sure you ' \
+                'want to {action} in current mission ?'.format(action=action), 
+                default=False):
+            logger.info('Canceled')
+            print()
+            return False
+        else:
+            return True

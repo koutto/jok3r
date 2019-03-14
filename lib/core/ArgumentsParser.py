@@ -371,12 +371,12 @@ class ArgumentsParser:
             action  = 'store',
             dest    = 'passlist',
             default = None)
-        bruteforce.add_argument(
-            '--weblist',
-            help    = 'Wordlist for web content discovery',
-            action  = 'store',
-            dest    = 'weblist',
-            default = None)
+        # bruteforce.add_argument(
+        #     '--weblist',
+        #     help    = 'Wordlist for web content discovery',
+        #     action  = 'store',
+        #     dest    = 'weblist',
+        #     default = None)
 
 
         context = parser.add_argument_group(
@@ -724,7 +724,8 @@ class ArgumentsParser:
     def __check_args_attack_bruteforce(self):
         """Check arguments for subcommand Attack > Bruteforce options"""
 
-        for f in self.args.userlist, self.args.passlist, self.args.weblist:
+        #for f in self.args.userlist, self.args.passlist, self.args.weblist:
+        for f in self.args.userlist, self.args.passlist:
             if f:
                 if not FileUtils.can_read(f):
                     logger.error('File {file} does not exist or cannot be read'.format(

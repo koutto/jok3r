@@ -48,7 +48,7 @@ class VulnsRequester(Requester):
                     r.service.name,
                     r.service.port,
                     {Protocol.TCP: 'tcp', Protocol.UDP: 'udp'}.get(r.service.protocol),
-                    StringUtils.wrap(r.name, 80),
+                    StringUtils.wrap(r.name, 100),
                 ])
             Output.table(columns, data, hrules=False)
 

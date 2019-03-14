@@ -4,6 +4,7 @@
 from .CommandOutput import *
 from .Credential import *
 from .Host import *
+from .IPAddressType import *
 from .Mission import *
 from .Option import *
 from .Product import *

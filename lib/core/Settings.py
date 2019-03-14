@@ -350,7 +350,6 @@ class Settings:
         self.__parse_section_products(service, service_config)
 
         # Add the service configuration from settings
-        #print(service_config)
         self.services.add_service(
             service,
             service_config['default_port'],
@@ -554,6 +553,7 @@ class Settings:
 
         # First, check if config file has a [products] section
         if not self.config_parsers[service].has_section('products'):
+            service_config['products'] = dict()
             return
 
         log_prefix = '[{filename}{ext} | Section "products"]'.format(
@@ -585,6 +585,7 @@ class Settings:
 
         # Update service configuration with supported products
         service_config['products'] = products
+        return
 
 
     #------------------------------------------------------------------------------------

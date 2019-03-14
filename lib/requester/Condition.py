@@ -11,6 +11,8 @@ from lib.db.CommandOutput import CommandOutput
 from lib.db.Credential import Credential
 from lib.db.Host import Host
 from lib.db.Mission import Mission
+from lib.db.Option import Option
+from lib.db.Product import Product
 from lib.db.Result import Result
 from lib.db.Service import Service, Protocol
 from lib.db.Vuln import Vuln

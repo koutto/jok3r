@@ -86,7 +86,7 @@ class ResultsRequester(Requester):
                 service  = result.service.name))
 
             print()
-            for o in command_outputs:
+            for o in result.command_outputs:
                 Output.title3(o.cmdline)
                 print()
                 print(o.output)

@@ -355,14 +355,16 @@ class ContextRequirements:
 
     def __repr__(self):
         """Print context requirements in dict style"""
-        requirements = dict()
-        for o in self.specific_options:
-            requirements[o] = self.specific_options[o]
-        for p in self.products:
-            requirements[p] = self.products[p]
-        if self.auth_status:
-            requirements['auth_status'] = auth_status
-        if self.auth_type:
-            requirements['auth_type'] = auth_type
+        return self.raw_string
+        
+        # requirements = dict()
+        # for o in self.specific_options:
+        #     requirements[o] = self.specific_options[o]
+        # for p in self.products:
+        #     requirements[p] = self.products[p]
+        # if self.auth_status:
+        #     requirements['auth_status'] = self.auth_status
+        # if self.auth_type:
+        #     requirements['auth_type'] = self.auth_type
 
-        return str(requirements)
+        # return str(requirements)

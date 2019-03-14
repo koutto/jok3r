@@ -257,9 +257,9 @@ class SmartPostcheck:
                                 pattern=pattern, exception=e))
                         break
 
-
                     # Process each match
                     if mall:
+                        logger.debug('Pattern matches')
                         for m in mall:
                             name = self.__replace_tokens(p[pattern], m)
                             if name is None:
@@ -274,14 +274,14 @@ class SmartPostcheck:
         Replace tokens $1, $2 ... with the corresponding value of matching group.
         E.g. : $1 <-> (?P<m1>...)
 
-        :param str string: String that may contain some tokens
+        :param str string: String that may contain some tokens ($1, $2 ...)
         :param _sre.SRE_Match match: Match object resulting from re.search()
         :return: String with tokens replaced with correct values (or None in case of
             error)
         :rtype: str|None
         """
         output = string
-        for i in range(10):
+        for i in range(1,10):
             token = '${}'.format(i)
             if token in string:
                 group = 'm{}'.format(i)
