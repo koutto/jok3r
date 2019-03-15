@@ -54,6 +54,80 @@ IMPROVEMENTS / NEW FEATURES
         * Administration: https://github.com/fnk0c/cangibrina/tree/master/wordlists
 
 
+[v] Checking if the website is in HTTPS ...
+[v] Checking headers ...
+[I] Server: nginx/1.10.3 (Ubuntu)
+[L] X-Frame-Options: Not Enforced
+[I] Strict-Transport-Security: Not Enforced
+[I] X-Content-Security-Policy: Not Enforced
+[I] X-Content-Type-Options: Not Enforced
+[v] Checking Robots.txt File ...
+[L] Robots.txt Found: https://miniwick.com/robots.txt
+[I] CMS Detection: WordPress
+[v] Checking WordPress version ...
+[I] Wordpress Version: 5.1.1
+[v] Core vulnerabilities for version 5.1.1
+[v] Checking WordPress theme ...
+[I] Wordpress Theme: focusblog
+[v] Searching vulnerable theme (focusblog) from local ExploitDB repository ...
+[v] Checking old WordPress config files ...
+[v] Enumerating Wordpress usernames via "Feed" ...
+[v] Enumerating Wordpress usernames via "Author" ...
+[-] WordPress usernames identified: 
+[M] Miniwick
+[v] Checking if XML-RPC services are enabled ...
+[M] XML-RPC services are enabled
+[v] Starting XML-RPC Brute Forcing
+[v] Trying Credentials: Miniwick password
+[v] Trying Credentials: Miniwick admin
+[v] Trying Credentials: Miniwick 123456
+[v] Trying Credentials: Miniwick Password1
+[v] Trying Credentials: Miniwick Miniwick
+[v] Checking XML-RPC Pingback Vulnerability ...
+[v] Checking XML-RPC Brute Force Vulnerability ...
+[M] Website vulnerable to XML-RPC Brute Force Vulnerability
+[v] Checking WordPress forgotten password ...
+[v] Checking Autocomplete Off on the login page ...
+[I] Autocomplete Off Not Found: https://miniwick.com/wp-login.php
+[v] Checking WordPres default files...
+[-] Default WordPress Files:
+
+
+>>> m = regex.search('(\[v\] Trying Credentials:\s*(?P<user>\S+)\s*(?P<password>\S+)\s*\n)+', text)
+>>> m.capturesdict()
+{'user': ['Miniwick', 'Miniwick', 'Miniwick', 'Miniwick', 'Miniwick'], 'password': ['password', 'admin', '123456', 'Password1', 'Miniwick']}
+>>> m = regex.search('WordPress[\s\S]*?(\[v\] Trying Credentials:\s*(?P<user>\S+)\s*(?P<password>\S+)\s*\n)+', text)
+>>> m.capturesdict()
+{'user': ['Miniwick', 'Miniwick', 'Miniwick', 'Miniwick', 'Miniwick'], 'password': ['password', 'admin', '123456', 'Password1', 'Miniwick']}
+>>> m = regex.search('WoordPress[\s\S]*?(\[v\] Trying Credentials:\s*(?P<user>\S+)\s*(?P<password>\S+)\s*\n)+', text)
+>>> m.capturesdict()
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+AttributeError: 'NoneType' object has no attribute 'capturesdict'
+
+
+[+] Enumerating Users (via Passive and Aggressive Methods)
+ Brute Forcing Author IDs - Time: 00:00:10 <========================================================================================================================> (50 / 50) 100.00% Time: 00:00:10
+
+[i] User(s) Identified:
+
+[+] vedam
+ | Detected By: Wp Json Api (Aggressive Detection)
+ |  - https://miniwick.com/wp-json/wp/v2/users/?per_page=100&page=1
+ | Confirmed By: Login Error Messages (Aggressive Detection)
+
+[+] Miniwick
+ | Detected By: Rss Generator (Aggressive Detection)
+
+[+] Finished: Fri Mar 15 14:46:51 2019
+[+] Requests Done: 57
+[+] Cached Requests: 50
+[+] Data Sent: 11.196 KB
+[+] Data Received: 6.433 MB
+[+] Memory used: 48.129 MB
+[+] Elapsed time: 00:00:22
+
+
 
 
 SMARTMODULES / MATCHSTRINGS
@@ -67,7 +141,9 @@ Not done yet:
 * vbscan
 * barmie
 * snmpwn
-
+* metasploit:
+    - exploit/linux/misc/jenkins_java_deserialize
+    - exploit/windows/misc/ibm_websphere_java_deserialize
 
 
 
@@ -75,8 +151,8 @@ CHECKS CORRECTIONS
 ===============================================================================
 
 
-- dirsearch : -t 40 --timeout= (add --timeout to dirsearch)
-- add exploitations avec clusterd
+* dirsearch : -t 40 --timeout= (add --timeout to dirsearch)
+* add exploitations avec clusterd
 
 
 
@@ -84,39 +160,8 @@ CHECKS ADDING
 ===============================================================================
 
 
-
-- Jenkins scripts:
-        Attention; TARGETURI / et /jenkins/
-
-        msf auxiliary(scanner/http/jenkins_command) > show options 
-
-        Module options (auxiliary/scanner/http/jenkins_command):
-
-
-        msf auxiliary(scanner/http/jenkins_command) > run
-
-        [+] [2018.11.19-14:37:28] 10.2.153.123:8080     nt authority\system
-        [*] [2018.11.19-14:37:28] Scanned 1 of 1 hosts (100% complete)
-        [*] Auxiliary module execution completed
-        msf auxiliary(scanner/http/jenkins_command) > 
-        msf auxiliary(scanner/http/jenkins_command) > 
-        msf auxiliary(scanner/http/jenkins_command) > set TARGETURI /jenkins/
-        TARGETURI => /jenkins/
-        msf auxiliary(scanner/http/jenkins_command) > run
-
-        [-] [2018.11.19-14:37:51] 10.2.153.123:8080     This system is not running Jenkins-CI at /jenkins/
-        [*] [2018.11.19-14:37:51] Scanned 1 of 1 hosts (100% complete)
-        [*] Auxiliary module execution completed
-        msf auxiliary(scanner/http/jenkins_command) > set TARGETURI /
-        TARGETURI => /
-
-- Jenkins deserialize
-- add exploit/linux/misc/jenkins_java_deserialize (attention: os linux)
-- add exploit/windows/misc/ibm_websphere_java_deserialize (os win)
-- add auxiliary/scanner/http/jenkins_login
-- add exploit/windows/misc/ibm_websphere_java_deserialize
 - add https://github.com/Coalfire-Research/java-deserialization-exploits (websphere rce, jenkins rce...)
-- add exploit/multi/http/jenkins_script_console
+
 - add msfmodules for different appservers.....
 - RCE Tomcat CVE-2017-12617 /usr/share/exploitdb/exploits/jsp/webapps/42966.py
     WARNING: Add verify=False !
@@ -125,7 +170,7 @@ CHECKS ADDING
                 print bcolors.WARNING+url+"/"+checker+bcolors.ENDC
                 
         else:
-            print 'Not Vulnerable to CVE-2017-12617 '
+            print 'Not Vulnerable to CVE-2017-12617 ' 
 
 * Weblogic CVE-2018-2628 https://github.com/tdy218/ysoserial-cve-2018-2628
 * https://github.com/chadillac/mdns_recon
@@ -139,9 +184,6 @@ CHECKS ADDING
 * Better exploit for MS17-010 (support for more win versions, only Win7 and 2008 R2 for now)
 * cve jquery
 * cve ssh
-* ssh cve enul
-* ssh libssh vuln
-* jndiat
 * check https://bitvijays.github.io/LFF-IPS-P2-VulnerabilityAnalysis.html
 
 

@@ -349,7 +349,7 @@ class Command:
             auth_type = None
 
         # Auth status set to USER_ONLY
-        if self.context.requirements.auth_status == USER_ONLY:
+        if self.context_requirements.auth_status == USER_ONLY:
             usernames = target.get_usernames_only(auth_type)
             for user in usernames:
                 cmd += self.__replace_tag_username(self.formatted_cmdline, user) + '; '

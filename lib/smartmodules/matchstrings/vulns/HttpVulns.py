@@ -10,7 +10,7 @@ vulns_match['http'] = {
     # }
 
     'angularjs-csti-scanner': {
-        'Found .* vulnerable request': 'AngularJS Client-Side Template Injection (CSTI)',
+        'Found\s*.*\s*vulnerable request': 'AngularJS Client-Side Template Injection (CSTI)',
     },
     'domiowned': {
         '(?P<m1>.+) does not require authentication': 'Domino - No auth on $1',
@@ -51,6 +51,7 @@ vulns_match['http'] = {
         '\[\+\] \S+:[0-9]+ (?P<m1>.*) \(404\)': 'JBoss: $1',
         '\[\+\] \S+:[0-9]+ Got authentication bypass via HTTP verb tampering': 'JBoss: Auth bypass via HTTP verb tampering',
         'jenkins_enum[\s\S]*does not require authentication \(200\)': 'Jenkins: Authentication disabled',
+        'Unauthenticated Jenkins console vulnerability': 'Jenkins: Unauthenticated Jenkins-CI script console (RCE)',
     },
     'shocker': {
         'looks vulnerable': 'Shellshock (CVE-2014-6271)',

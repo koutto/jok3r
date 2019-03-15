@@ -56,7 +56,7 @@ class ServicesRequester(Requester):
                     '{}'.format(Output.colored(str(nb_userpass),  color='green' \
                             if nb_userpass > 0 else None)) if nb_userpass > 0 else '',
                     '/' if nb_userpass > 0 and nb_usernames > 0 else '',
-                    '{} users'.format(Output.colored(str(nb_usernames), color='yellow' \
+                    '{} user(s)'.format(Output.colored(str(nb_usernames), color='yellow' \
                             if nb_usernames > 0 else None)) if nb_usernames > 0 else '')
 
                 data.append([

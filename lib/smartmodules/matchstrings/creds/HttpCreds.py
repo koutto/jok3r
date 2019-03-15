@@ -35,6 +35,12 @@ creds_match['http'] = {
         },
     },
     'metasploit': {
+        # auxiliary/scanner/http/jenkins_login
+        'jenkins_login[\s\S]*- Login Successful:\s*(?P<m1>\S+):(?P<m2>\S*)': {
+            'user': '$1',
+            'pass': '$2',
+            'type': 'jenkins',
+        },
         # auxiliary/scanner/http/tomcat_enum
         '- Apache Tomcat (?P<m1>\S+) found': {
             'user': '$1',
@@ -46,13 +52,23 @@ creds_match['http'] = {
             'pass': '$2',
             'type': 'tomcat',
         },
-        'jboss_vulnscan[\s\S]*Authenticated using (?P<m1>\S+):(?P<m2>\S*) at ': {
+        'jboss_vulnscan[\s\S]*Authenticated using\s*(?P<m1>\S+):(?P<m2>\S*) at ': {
             'user': '$1',
             'pass': '$2',
             'type': 'jboss',
         }
     },
     'wpscan': {
+        # [i] User(s) Identified:
+
+        # [+] user1
+        #  | Detected By: Wp Json Api (Aggressive Detection)
+        #  |  - https://miniwick.com/wp-json/wp/v2/users/?per_page=100&page=1
+        #  | Confirmed By: Login Error Messages (Aggressive Detection)
+
+        # [+] user2
+        #  | Detected By: Rss Generator (Aggressive Detection)
+
         '\|\s+[0-9]+\s+\|\s+(?!None\s+)(?P<m1>\S+)\s+\|.*\|': {
             'user': '$1',
             'type': 'wordpress',

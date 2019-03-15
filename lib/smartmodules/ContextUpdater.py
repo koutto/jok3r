@@ -38,11 +38,21 @@ class ContextUpdater:
 
 
     def add_username(self, username, auth_type=None):
+        # Do not add too times the same username
+        for u in self.usernames:
+            if u.type == auth_type and u.username == username and u.password == None:
+                return
+                
         self.usernames.append(
             Credential(type=auth_type, username=username, password=None))
 
 
     def add_credentials(self, username, password, auth_type=None):
+        # Do not add too times the same credentials
+        for c in self.credentials:
+            if c.type == auth_type and c.username == username and c.password == password:
+                return
+
         self.credentials.append(
             Credential(type=auth_type, username=username, password=password))
 

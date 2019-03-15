@@ -44,8 +44,8 @@ class ContextRequirements:
             vendor/product_name|<=7.0
             vendor/product_name|7.1.1   
 
-    - OS Type: Linux or Windows. When the OS type of the target is unknown (not
-      detected), this requirement is not taken into account.
+    - OS Type: Linux or Windows. This requirement is not excluding check when
+      target's OS is unknown/undetected.
 
     - Authentication status ('auth_status'): Level of authentication on the service.
       Possible values are:
@@ -187,8 +187,9 @@ class ContextRequirements:
         :rtype: bool
         """
 
-        # If OS type for target is unknown, the requirement is not taken into account
-        if not target.get_os():
+        # OS requirement is excluding a check only when target's OS is known and there
+        # is a defined requirement and they do not match
+        if not target.get_os() or not self.os:
             return True
 
         return (self.os.lower()==target.get_os().lower())
