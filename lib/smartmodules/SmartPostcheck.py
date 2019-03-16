@@ -4,6 +4,7 @@
 ### SmartModules > Smart Postcheck
 ###
 import re
+import regex
 
 from lib.output.Logger import logger
 from lib.smartmodules.ContextUpdater import ContextUpdater
@@ -64,40 +65,58 @@ class SmartPostcheck:
                     logger.debug('Search for creds pattern: {pattern}'.format(
                         pattern=pattern))
 
+                    if 'user' not in p[pattern]:
+                        logger.smarterror('Invalid matchstring for service={service}, ' \
+                            ' tool={tool}: Missing "user" key'.format(
+                                service=self.service.name,
+                                tool=self.tool_name))
+                        continue
+
+                    # Matching method
+                    if 'meth' in p[pattern] \
+                            and p[pattern]['meth'] in ('finditer', 'search'):
+                        method = p[pattern]['meth']
+                    else:
+                        method = p[pattern]['meth']
+
+
+                    # Perform regexp matching
                     try:
-                        mall = re.finditer(pattern, self.cmd_output, re.IGNORECASE)
+                        if method == 'finditer':
+                            m = re.finditer(pattern, self.cmd_output, re.IGNORECASE)
+                        else:
+                            m = regex.search(pattern, self.cmd_output, regex.IGNORECASE)
                     except Exception as e:
                         logger.warning('Error with matchstring [{pattern}], you should ' \
                             'review it. Exception: {exception}'.format(
                                 pattern=pattern, exception=e))
                         break
 
-                    # If pattern matches cmd output, extract username/credentials
-                    if mall:
-                        for m in mall:
+                    if not m:
+                        continue
+
+                    pattern_match = False
+
+                    if method == 'finditer':
+                        for match in m:
+                            pattern_match = True
                             cred = dict()
-                            if 'user' in p[pattern]:
-                                cred['user'] = self.__replace_tokens(
-                                    p[pattern]['user'], m)
-                                if cred['user'] is None:
-                                    continue
-                            else:
-                                logger.smarterror('Invalid matchstring for ' \
-                                    'service={service}, tool={tool}: Missing ' \
-                                    '"user" key'.format(
-                                        service=self.service.name,
-                                        tool=self.tool_name))
+
+                            # Replace tokens in user, pass, type
+                            cred['user'] = self.__replace_tokens_from_matchobj(
+                                p[pattern]['user'], match)
+                            if cred['user'] is None:
                                 continue
 
                             if 'pass' in p[pattern]:
-                                cred['pass'] = self.__replace_tokens(
-                                    p[pattern]['pass'], m)
+                                cred['pass'] = self.__replace_tokens_from_matchobj(
+                                    p[pattern]['pass'], match)
                                 if cred['pass'] is None:
                                     continue
 
                             if 'type' in p[pattern]:
-                                cred['type'] = self.__replace_tokens(
-                                    p[pattern]['type'], m)
+                                cred['type'] = self.__replace_tokens_from_matchobj(
+                                    p[pattern]['type'], match)
                                 if cred['type'] is None:
                                     continue
 
@@ -107,11 +126,63 @@ class SmartPostcheck:
                                     username=cred.get('user'),
                                     password=cred.get('pass'),
                                     auth_type=cred.get('type'))
-                            else:
+                            elif 'user' in cred:
                                 self.cu.add_username(
                                     username=cred.get('user'),
                                     auth_type=cred.get('type'))
 
+                    else:
+                        pattern_match = True
+                        matchs = m.capturesdict()
+                        if 'm1' not in matchs:
+                            logger.smarterror('Invalid matchstring for ' \
+                                'service={service}, tool={tool}: Missing match ' \
+                                'group'.format(
+                                    service=self.service.name,
+                                    tool=self.tool_name))
+                            return
+
+                        nb_groups = len(matchs['m1'])
+
+                        for i in range(nb_groups):
+                            cred = dict()
+
+                            # Replace tokens in user, pass, type
+                            cred['user'] = self.__replace_tokens_from_captdict(
+                                p[pattern]['user'], matchs, i)
+                            if cred['user'] is None:
+                                continue
+
+                            if 'pass' in p[pattern]:
+                                cred['pass'] = self.__replace_tokens_from_captdict(
+                                    p[pattern]['pass'], matchs, i)
+                                if cred['pass'] is None:
+                                    continue
+
+                            if 'type' in p[pattern]:
+                                cred['type'] = self.__replace_tokens_from_captdict(
+                                    p[pattern]['type'], matchs, i)
+                                if cred['type'] is None:
+                                    continue
+
+                            # Add username/cred to context
+                            if 'pass' in cred:
+                                self.cu.add_credentials(
+                                    username=cred.get('user'),
+                                    password=cred.get('pass'),
+                                    auth_type=cred.get('type'))
+                            elif 'user' in cred:
+                                self.cu.add_username(
+                                    username=cred.get('user'),
+                                    auth_type=cred.get('type'))
+
+                    # If a pattern has matched, skip the next patterns
+                    if pattern_match:
+                        logger.debug('Creds pattern matches (user only)')
+                        return
+
+
+    #------------------------------------------------------------------------------------
 
     def __detect_specific_options(self):
         """Detect specific option update from command output"""
@@ -135,8 +206,10 @@ class SmartPostcheck:
 
                     # If pattern matches cmd output, update specific option
                     if m:
+                        logger.debug('Option pattern matches')
                         if 'name' in p[pattern]:
-                            name = self.__replace_tokens(p[pattern]['name'], m)
+                            name = self.__replace_tokens_from_matchobj(
+                                p[pattern]['name'], m)
                             if name is None:
                                 continue
                         else:
@@ -148,7 +221,8 @@ class SmartPostcheck:
                             continue
 
                         if 'value' in p[pattern]:
-                            value = self.__replace_tokens(p[pattern]['value'], m)
+                            value = self.__replace_tokens_from_matchobj(
+                                p[pattern]['value'], m)
                             if value is None:
                                 continue
                         else:
@@ -162,6 +236,8 @@ class SmartPostcheck:
                         # Add specific option to context
                         self.cu.add_option(name, value)                           
 
+
+    #------------------------------------------------------------------------------------
 
     def __detect_products(self):
         """Detect product from command output"""
@@ -197,12 +273,11 @@ class SmartPostcheck:
                                         pattern=pattern, exception=e))
                                 break
 
-
                             # If pattern matches cmd output, add detected product
                             # Note: For a given product type, only one name(+version)
                             # can be added.
                             if m:
-                                logger.debug('Pattern matches')
+                                logger.debug('Product pattern matches')
                                 # Add version if present
                                 if version_detection:
                                     try:
@@ -220,16 +295,17 @@ class SmartPostcheck:
                                 # Add detected product to context
                                 self.cu.add_product(prodtype, prodname, version)
 
-                                # Move to next product type if name+version found
-                                # If name not found, or only name but not the version 
-                                # found, give a try to next pattern if existing
-                                if version:
-                                    break_prodnames = True
-                                    break
+                                # Move to next product type because only one name 
+                                # (potentially with version) is supported per type.
+                                # If name not found yet, give a try to next pattern
+                                break_prodnames = True
+                                break
 
                         if break_prodnames:
                             break
 
+
+    #------------------------------------------------------------------------------------
 
     def __detect_vulns(self):
         """
@@ -259,20 +335,23 @@ class SmartPostcheck:
 
                     # Process each match
                     if mall:
-                        logger.debug('Pattern matches')
                         for m in mall:
-                            name = self.__replace_tokens(p[pattern], m)
+                            name = self.__replace_tokens_from_matchobj(p[pattern], m)
                             if name is None:
                                 continue
 
                             # Add vulnerability to context
+                            logger.debug('Vuln pattern matches')
                             self.cu.add_vuln(name)    
 
 
-    def __replace_tokens(self, string, match):
+    #------------------------------------------------------------------------------------
+
+    def __replace_tokens_from_matchobject(self, string, match):
         """
         Replace tokens $1, $2 ... with the corresponding value of matching group.
         E.g. : $1 <-> (?P<m1>...)
+        This method is used when the matching method "finditer" is used (default)
 
         :param str string: String that may contain some tokens ($1, $2 ...)
         :param _sre.SRE_Match match: Match object resulting from re.search()
@@ -305,3 +384,35 @@ class SmartPostcheck:
         return output
 
 
+    def __replace_tokens_from_captdict(self, string, captdict, index):
+        """
+        Replace tokens $1, $2 ... with the corresponding value of matching group.
+        E.g. : $1 <-> (?P<m1>...)
+        This method is used when the matching method "search" is used (default)
+
+        :param str string: String that may contain some tokens ($1, $2 ...)
+        :param dict captdict: Captures dict resulting from regex.search().capturesdict()
+        :return: String with tokens replaced with correct values (or None in case of
+            error)
+        :rtype: str|None
+        """
+        output = string
+        for i in range(1,10):
+            token = '${}'.format(i)
+            if token in string:
+                group = 'm{}'.format(i)
+
+                if group in captdict and index < len(captdict[group]):
+                    output = output.replace(token, captdict[group][index])
+                else:
+                    logger.smarterror('Invalid matchstring for service={service}, ' \
+                        'tool={tool}'.format(
+                            service=self.service.name,
+                            tool=self.tool_name))
+                    return None
+
+            else:
+                # Token must be sequentials ($1, $2...)
+                break
+
+        return output

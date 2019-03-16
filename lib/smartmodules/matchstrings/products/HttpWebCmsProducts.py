@@ -29,8 +29,8 @@ CMSEEK_REGEXP = '"cms_name":\s*"{}"(,[\s\S]*"cms_version":\s*"[VERSION]")?'
 # - Found version: WordPress 4.1.3
 # - Found version: WordPress 4.1.2
 # - Found version: WordPress 4.1.1
-WIG_REGEXP = '- Found CMS match: {}\s*(Determining CMS version \.\.\.(\s*- Found version: (\S+)\s+[VERSION])?)?'
-WIG_REGEXP2 = '{}\s*[VERSION]\s*CMS' 
+WIG_REGEXP = '{}\s*[VERSION]\s*CMS' 
+WIG_REGEXP2 = '- Found CMS match: {}\s*(Determining CMS version \.\.\.(\s*- Found version: (\S+)\s+[VERSION])?)?'
 
 products_match['http']['web-cms'] = {
     '3dcart': {
@@ -302,7 +302,7 @@ products_match['http']['web-cms'] = {
     },
     'Joomla': {
         'wappalyzer': 'Joomla',
-        'cmseek': CMSEEK_REGEXP.format('Joomla'),
+        'cmseek': '"cms_name":\s*"Joomla"(,[\s\S]*"joomla_version":\s*"[VERSION]")?',
         'wig': [
             WIG_REGEXP.format('Joomla\!'),
             WIG_REGEXP2.format('Joomla\!'),
@@ -674,7 +674,7 @@ products_match['http']['web-cms'] = {
     },
     'Wordpress': {
         'wappalyzer': 'WordPress',
-        'cmseek': CMSEEK_REGEXP.format('WordPress'),
+        'cmseek': '"cms_name":\s*"WordPress"(,[\s\S]*"wp_version":\s*"[VERSION]")?',
         'wig': [
             WIG_REGEXP.format('WordPress'),
             WIG_REGEXP2.format('WordPress'),

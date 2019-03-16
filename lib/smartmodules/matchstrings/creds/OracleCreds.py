@@ -7,6 +7,7 @@ creds_match['oracle'] = {
 
     'odat': {
         'Valid credential: (?P<m1>\S+)/(?P<m2>\S+)': {
+        	'meth': 'finditer',
             'user': '$1',
             'pass': '$2',
         },

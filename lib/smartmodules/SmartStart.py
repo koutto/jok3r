@@ -76,7 +76,7 @@ class SmartStart:
         detector = WebTechnoDetector(self.service.url)
         technos = detector.detect()
 
-        logger.info('Web technologies detected by Wappalyzer:')
+        logger.smartinfo('Web technologies detected by Wappalyzer:')
         #Output.print('    {}'.format(technos))
         pprint.pprint(technos)
 

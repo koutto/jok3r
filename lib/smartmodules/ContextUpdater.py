@@ -43,6 +43,9 @@ class ContextUpdater:
             if u.type == auth_type and u.username == username and u.password == None:
                 return
                 
+        if auth_type:
+            auth_type = auth_type.lower()
+
         self.usernames.append(
             Credential(type=auth_type, username=username, password=None))
 
@@ -53,6 +56,9 @@ class ContextUpdater:
             if c.type == auth_type and c.username == username and c.password == password:
                 return
 
+        if auth_type:
+            auth_type = auth_type.lower()
+            
         self.credentials.append(
             Credential(type=auth_type, username=username, password=password))
 

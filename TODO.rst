@@ -14,9 +14,6 @@ BUG FIXES
 ===============================================================================
 
 - db > service -S -> recherche par url semble pas marcher
-- db > services - ip ranges selection bug
-
-
 
 
 
@@ -30,10 +27,6 @@ IMPROVEMENTS / NEW FEATURES
     - language-wordlist (per language => lots of work to produce wordlists for each language + add generic ie HTML, XML, LOG, TXT...)
     - general-minimal-wordlist
     - general-wordlist (raft directory)
-
-* Auth types:
-    - supported auth-type => only type that support various status/lvl (can be added in cmdline)
-    - can accept other values (eg creds trouvés par changeme) and can be displayed in db>creds
 
 * Reporting HTML:
     * https://www.jqueryscript.net/demo/Bootstrap-Sidebar-Extension-With-jQuery-CSS-CSS3/
@@ -54,43 +47,8 @@ IMPROVEMENTS / NEW FEATURES
         * Administration: https://github.com/fnk0c/cangibrina/tree/master/wordlists
 
 
-[v] Checking if the website is in HTTPS ...
-[v] Checking headers ...
-[I] Server: nginx/1.10.3 (Ubuntu)
-[L] X-Frame-Options: Not Enforced
-[I] Strict-Transport-Security: Not Enforced
-[I] X-Content-Security-Policy: Not Enforced
-[I] X-Content-Type-Options: Not Enforced
-[v] Checking Robots.txt File ...
-[L] Robots.txt Found: https://miniwick.com/robots.txt
-[I] CMS Detection: WordPress
-[v] Checking WordPress version ...
-[I] Wordpress Version: 5.1.1
-[v] Core vulnerabilities for version 5.1.1
-[v] Checking WordPress theme ...
-[I] Wordpress Theme: focusblog
-[v] Searching vulnerable theme (focusblog) from local ExploitDB repository ...
-[v] Checking old WordPress config files ...
-[v] Enumerating Wordpress usernames via "Feed" ...
-[v] Enumerating Wordpress usernames via "Author" ...
-[-] WordPress usernames identified: 
-[M] Miniwick
-[v] Checking if XML-RPC services are enabled ...
-[M] XML-RPC services are enabled
-[v] Starting XML-RPC Brute Forcing
-[v] Trying Credentials: Miniwick password
-[v] Trying Credentials: Miniwick admin
-[v] Trying Credentials: Miniwick 123456
-[v] Trying Credentials: Miniwick Password1
-[v] Trying Credentials: Miniwick Miniwick
-[v] Checking XML-RPC Pingback Vulnerability ...
-[v] Checking XML-RPC Brute Force Vulnerability ...
-[M] Website vulnerable to XML-RPC Brute Force Vulnerability
-[v] Checking WordPress forgotten password ...
-[v] Checking Autocomplete Off on the login page ...
-[I] Autocomplete Off Not Found: https://miniwick.com/wp-login.php
-[v] Checking WordPres default files...
-[-] Default WordPress Files:
+
+
 
 
 >>> m = regex.search('(\[v\] Trying Credentials:\s*(?P<user>\S+)\s*(?P<password>\S+)\s*\n)+', text)
@@ -106,26 +64,6 @@ Traceback (most recent call last):
 AttributeError: 'NoneType' object has no attribute 'capturesdict'
 
 
-[+] Enumerating Users (via Passive and Aggressive Methods)
- Brute Forcing Author IDs - Time: 00:00:10 <========================================================================================================================> (50 / 50) 100.00% Time: 00:00:10
-
-[i] User(s) Identified:
-
-[+] vedam
- | Detected By: Wp Json Api (Aggressive Detection)
- |  - https://miniwick.com/wp-json/wp/v2/users/?per_page=100&page=1
- | Confirmed By: Login Error Messages (Aggressive Detection)
-
-[+] Miniwick
- | Detected By: Rss Generator (Aggressive Detection)
-
-[+] Finished: Fri Mar 15 14:46:51 2019
-[+] Requests Done: 57
-[+] Cached Requests: 50
-[+] Data Sent: 11.196 KB
-[+] Data Received: 6.433 MB
-[+] Memory used: 48.129 MB
-[+] Elapsed time: 00:00:22
 
 
 
@@ -144,15 +82,6 @@ Not done yet:
 * metasploit:
     - exploit/linux/misc/jenkins_java_deserialize
     - exploit/windows/misc/ibm_websphere_java_deserialize
-
-
-
-CHECKS CORRECTIONS
-===============================================================================
-
-
-* dirsearch : -t 40 --timeout= (add --timeout to dirsearch)
-* add exploitations avec clusterd
 
 
 
@@ -185,7 +114,8 @@ CHECKS ADDING
 * cve jquery
 * cve ssh
 * check https://bitvijays.github.io/LFF-IPS-P2-VulnerabilityAnalysis.html
-
+* dirsearch : -t 40 --timeout= (add --timeout to dirsearch)
+* add exploitations avec clusterd
 
 
 
@@ -203,29 +133,3 @@ SERVICES TO ADD
 
 MATCHSTRINGS TO ADD
 ===============================================================================
-
-- Wordpress usernames
-
-____ _  _ ____ ____ ____ _  _
-|    |\/| [__  |___ |___ |_/  by @r3dhax0r
-|___ |  | ___| |___ |___ | \_ Version 1.1.0 ForumZ
-
-
- [+]  Deep Scan Results  [+] 
-
-
- ┏━Target: wordpress.com
- ┃
- ┠── CMS: WordPress
- ┃    │
- ┃    ╰── URL: https://wordpress.org
- ┃
- ┠──[WordPress Deepscan]
- ┃    │
- ┃    ├── Usernames harvested: 1
- ┃    │    ╰── matt
- ┃    │
- ┃
- ┠── Result: /root/jok3r/toolbox/http/cmseek/Result/www.wordpress.com/cms.json
- ┃
- ┗━Scan Completed in 11.02 Seconds, using 46 Requests
