@@ -77,8 +77,12 @@ class SmartStart:
         technos = detector.detect()
 
         logger.smartinfo('Web technologies detected by Wappalyzer:')
-        #Output.print('    {}'.format(technos))
-        pprint.pprint(technos)
+        #pprint.pprint(technos)
+        data = list()
+        columns = ['Name', 'Version']
+        for t in technos:
+            data.append([t['name'], t['version']])
+        Output.table(columns, data, hrules=False)
 
         for t in technos:
             for prodtype in products_match['http']:

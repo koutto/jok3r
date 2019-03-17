@@ -127,13 +127,13 @@ class ServiceChecks:
         categories = sorted(self.categories if filter_categories is None \
             else filter_categories, key=self.categories.index)
 
-        if filter_categories:
-            logger.info('Selected categories of checks: {cats}'.format(
-                cats=', '.join(categories)))
-
         # Standard mode 
         # Selected/all categories of checks are run
         if filter_checks is None and attack_profile is None:
+
+            logger.info('Categories of checks that will be run: {cats}'.format(
+                cats=', '.join(categories)))
+
             nb_checks = self.nb_checks()
 
             # Initialize sub status/progress bar
@@ -232,6 +232,13 @@ class ServiceChecks:
                         'service {service}'.format(service=target.get_service_name()))
                     return
 
+                logger.info('Selected check(s) that will be run:')
+                for c in filter_checks:
+                    check = self.get_check(c)
+                    if check:
+                        Output.print('    | - {name} ({category})'.format(
+                            name=c, category=check.category))
+
             # User has submitted an attack profile
             else:
                 if not attack_profile.is_service_supported(target.get_service_name()):
@@ -242,6 +249,8 @@ class ServiceChecks:
                 else:
                     filter_checks = attack_profile.get_checks_for_service(
                         target.get_service_name())
+
+                    logger.info('Selected attack profile: {}'.format(attack_profile))
  
 
             # Initialize sub status/progress bar

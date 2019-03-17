@@ -347,7 +347,7 @@ class SmartPostcheck:
 
     #------------------------------------------------------------------------------------
 
-    def __replace_tokens_from_matchobject(self, string, match):
+    def __replace_tokens_from_matchobj(self, string, match):
         """
         Replace tokens $1, $2 ... with the corresponding value of matching group.
         E.g. : $1 <-> (?P<m1>...)

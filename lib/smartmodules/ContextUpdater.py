@@ -117,7 +117,7 @@ class ContextUpdater:
         for username in self.usernames:
             username_str = '{username} {auth_type}'.format(
                 username=username.username or '<empty>',
-                auth_type='('+username.type+')' if username.type else '')
+                auth_type='(type='+username.type+')' if username.type else '')
 
             match_cred = self.service.get_credential(username.username, username.type)
             if match_cred:
@@ -140,7 +140,7 @@ class ContextUpdater:
             credential_str = '{username}/{password} {auth_type}'.format(
                 username=credential.username or '<empty>',
                 password=credential.password or '<empty>',
-                auth_type='('+credential.type+')' if credential.type else '')
+                auth_type='(type='+credential.type+')' if credential.type else '')
 
             match_cred = self.service.get_credential(
                 credential.username, credential.type)
