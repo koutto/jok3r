@@ -15,6 +15,9 @@ toolbox/*
 # Tools install status
 settings/_install_status.conf
 
+# Reports
+reports/*
+
 # Local database
 local.db
 

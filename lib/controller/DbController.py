@@ -19,6 +19,7 @@ from lib.utils.FileUtils import FileUtils
 from lib.utils.NetUtils import NetUtils
 from lib.utils.WebUtils import WebUtils
 from lib.db.Mission import Mission
+from lib.reporter.Reporter import Reporter
 from lib.requester.Condition import Condition
 from lib.requester.Filter import Filter
 from lib.requester.CommandOutputsRequester import CommandOutputsRequester
@@ -40,6 +41,7 @@ class DbController(cmd2.Cmd):
     CMD_CAT_MISSION_SCOPE = 'Missions data'
     CMD_CAT_IMPORT        = 'Import'
     CMD_CAT_RESULTS       = 'Attacks results'
+    CMD_CAT_REPORTING     = 'Reporting'
 
     intro = DB_INTRO
     formatter_class = lambda prog: LineWrapRawTextHelpFormatter(
@@ -1600,6 +1602,40 @@ class DbController(cmd2.Cmd):
 
         print()             
 
+
+    #------------------------------------------------------------------------------------
+    # Report
+
+    report = argparse.ArgumentParser(
+        description='Generate an HTML Report with all data and checks outputs from \n' \
+            'the current mission',
+        formatter_class=formatter_class)
+    report.add_argument(
+        'path', 
+        nargs   = '?', 
+        metavar = '<path>', 
+        default = REPORT_PATH,
+        help    = 'Output path (default: reports/)')
+
+    @cmd2.with_category(CMD_CAT_REPORTING)
+    @cmd2.with_argparser(report)
+    def do_report(self, args):
+        """HTML Reporting"""
+        print()
+
+        # Check output path
+        if not FileUtils.exists(args.path):
+            logger.error('Output path does not exist !')
+            print()
+            return
+
+        reporter = Reporter(self.current_mission, self.sqlsess, args.path)
+        reporter.run()
+
+        print()
+
+
+    #------------------------------------------------------------------------------------
 
     def __confirm_for_all(self, action):
         """

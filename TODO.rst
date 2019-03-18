@@ -30,7 +30,7 @@ IMPROVEMENTS / NEW FEATURES
 
 * Reporting HTML:
     * https://www.jqueryscript.net/demo/Bootstrap-Sidebar-Extension-With-jQuery-CSS-CSS3/
-    * http://www.finalhints.com/live-search-in-html-table-using-jquery/
+    * https://www.jqueryscript.net/demo/Live-Search-Through-Table-Rows-Using-jQuery/
     * At the end, prompt to open in browser like in eyewitness
 
 * Do not re-run checks already done

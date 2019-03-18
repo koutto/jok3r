@@ -62,19 +62,21 @@ TARGET_FILTERS           = {
 #----------------------------------------------------------------------------------------
 # Basic Settings
 
-TOOL_BASEPATH      = os.path.dirname(os.path.realpath(__file__+os.sep +'..'+os.sep+'..'))
-TOOLBOX_DIR        = TOOL_BASEPATH + os.sep + 'toolbox'
+TOOL_BASEPATH      = os.path.dirname(os.path.realpath(__file__+'/../..'))
+TOOLBOX_DIR        = TOOL_BASEPATH + '/toolbox'
 DEFAULT_OUTPUT_DIR = 'output'
-WEBSHELLS_DIR      = TOOL_BASEPATH + os.sep + 'webshells'
-WORDLISTS_DIR      = TOOL_BASEPATH + os.sep + 'wordlists'
-DB_FILE            = TOOL_BASEPATH + os.sep + 'local.db'
-DB_HIST_FILE       = TOOL_BASEPATH + os.sep + '.dbhistory'
+WEBSHELLS_DIR      = TOOL_BASEPATH + '/webshells'
+WORDLISTS_DIR      = TOOL_BASEPATH + '/wordlists'
+DB_FILE            = TOOL_BASEPATH + '/local.db'
+DB_HIST_FILE       = TOOL_BASEPATH + '/.dbhistory'
+REPORT_TPL_DIR     = TOOL_BASEPATH + '/lib/reporter/templates'
+REPORT_PATH        = TOOL_BASEPATH + '/reports'
 
 
 #----------------------------------------------------------------------------------------
 # Settings Files
 
-SETTINGS_DIR              = TOOL_BASEPATH + os.sep + 'settings'
+SETTINGS_DIR              = TOOL_BASEPATH + '/settings'
 CONF_EXT                  = '.conf'
 TOOLBOX_CONF_FILE         = 'toolbox'
 INSTALL_STATUS_CONF_FILE  = '_install_status'

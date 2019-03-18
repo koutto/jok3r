@@ -43,6 +43,17 @@ class FileUtils:
 
 
     @staticmethod
+    def write(filename, content):
+        try:
+            with open(filename, 'w') as fd:
+                fd.write(content)
+        except:
+            return False
+
+        return True
+
+
+    @staticmethod
     def get_lines(fileName):
         with open(fileName, 'r') as fd:
             for line in fd.readlines():
