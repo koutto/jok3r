@@ -45,7 +45,8 @@ class CredentialsRequester(Requester):
             for r in results:
                 data.append([
                     r.service.host.ip,
-                    r.service.host.hostname,
+                    r.service.host.hostname \
+                        if r.service.host.hostname != str(r.service.host.ip) else '',
                     r.service.name,
                     r.service.port,
                     {Protocol.TCP: 'tcp', Protocol.UDP: 'udp'}.get(r.service.protocol),

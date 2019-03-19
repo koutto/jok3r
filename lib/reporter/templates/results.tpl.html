@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Jok3r Report - Mission:: {{MISSION_NAME}}</title>
+    <title>Jok3r Report - Mission:: {{MISSION_NAME}} - Service:: {{SERVICE}}</title>
 
     <!-- Bootstrap Core CSS -->
     <style type="text/css">
@@ -24,7 +24,7 @@
     <style type="text/css">
     body {
         background: #212121;
-        color: #dddddd;
+        color: #e0e0e0;
         padding-top: 50px;
     }
     #header {
@@ -52,7 +52,7 @@
         border-bottom: 0;
     }
     .nav-tabs a {
-        width: 250px;
+        width: 300px;
     }
     .nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover{
         margin: 0;
@@ -67,16 +67,16 @@
     }
 
     #wrapper.toggled {
-        padding-left: 250px;
+        padding-left: 300px;
     }
 
     #sidebar-wrapper {
         z-index: 1000;
         position: fixed;
-        left: 250px;
+        left: 300px;
         width: 0;
         height: 100%;
-        margin-left: -250px;
+        margin-left: -300px;
         overflow-y: auto;
         background: #000;
         -webkit-transition: all 0.5s ease;
@@ -86,7 +86,7 @@
     }
 
     #wrapper.toggled #sidebar-wrapper {
-        width: 250px;
+        width: 300px;
     }
 
     #page-content-wrapper {
@@ -97,7 +97,7 @@
 
     #wrapper.toggled #page-content-wrapper {
         position: absolute;
-        margin-right: -250px;
+        margin-right: -300px;
     }
 
     /* Sidebar Styles */
@@ -105,7 +105,7 @@
     .sidebar-nav {
         position: absolute;
         top: 0;
-        width: 250px;
+        width: 300px;
         margin: 0;
         padding: 0;
         list-style: none;
@@ -113,7 +113,8 @@
 
     .sidebar-nav li {
         text-indent: 20px;
-        line-height: 40px;
+        line-height: 25px;
+        font-size: 0.9em;
     }
 
     .sidebar-nav li a {
@@ -177,9 +178,13 @@
         width: 50%;
     }
 
+    pre {
+        color: #f6f6f6;
+    }
+
     @media(min-width:768px) {
         #wrapper {
-            padding-left: 250px;
+            padding-left: 300px;
         }
 
         #wrapper.toggled {
@@ -187,7 +192,7 @@
         }
 
         #sidebar-wrapper {
-            width: 250px;
+            width: 300px;
         }
 
         #wrapper.toggled #sidebar-wrapper {
@@ -212,7 +217,7 @@
 
     <nav class="navbar fixed-top navbar-light bg-faded">
         <div id="header">
-            <h1><span class="text-green font-weight-bold">Jok3r Report</span> > Mission:: {{MISSION_NAME}}</h1>
+            <h1><span class="text-green font-weight-bold">Jok3r Report</span> > Mission:: {{MISSION_NAME}} > Service:: {{SERVICE}}</h1>
         </div>
     </nav>
 
@@ -221,29 +226,10 @@
         <!-- Sidebar -->
         <div id="sidebar-wrapper">
             <ul class="sidebar-nav nav nav-tabs" id="sidebar-nav">
-                <!--<li class="sidebar-brand">
-                    <a href="#">
-                        Jok3r
-                    </a>
-                </li>-->
-                <li class="active">
-                    <a href="#services">Services</a>
+                <li class="sidebar-brand">
+                    <a href="index.html">Back to index</a>
                 </li>
-                <li>
-                    <a href="#hosts">Hosts</a>
-                </li>
-                <li>
-                    <a href="#options">Options</a>
-                </li>
-                <li>
-                    <a href="#products">Products</a>
-                </li>
-                <li>
-                    <a href="#credentials">Credentials</a>
-                </li>
-                <li>
-                    <a href="#vulnerabilities">Vulnerabilities</a>
-                </li>
+                {{SIDEBAR_CHECKS}}
             </ul>
         </div>
         <!-- /#sidebar-wrapper -->
@@ -251,188 +237,7 @@
         <!-- Page Content -->
         <div class="tab-content">
 
-            <!-- Services -->
-            <div class="tab-pane active" id="services">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <h1 class="title-page">Services</h1>
-
-                            <input type="text" class="form-control search-field" placeholder="Search...">
-
-                            <table class="table table-sm table-dark table-hover">
-                                <thead>
-                                    <tr class="table-head">
-                                        <th>IP</th>
-                                        <th>Port</th>
-                                        <th>Proto</th>
-                                        <th>Service</th>
-                                        <th>Banner</th>
-                                        <th>URL</th>
-                                        <th>Comment</th>
-                                        <th>Checks</th>
-                                        <th>Creds</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {{TABLE_SERVICES_CONTENT}}
-                                </tbody>
-                            </table>
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Hosts -->
-            <div class="tab-pane" id="hosts">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <h1 class="title-page">Hosts</h1>
-
-                            <input type="text" class="form-control search-field" placeholder="Search...">
-
-                            <table class="table table-sm table-dark table-hover">
-                                <thead>
-                                    <tr class="table-head">
-                                        <th>IP</th>
-                                        <th>Hostname</th>
-                                        <th>OS</th>
-                                        <th>Comment</th>
-                                        <th># Services</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {{TABLE_HOSTS_CONTENT}}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Options -->
-            <div class="tab-pane" id="options">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <h1 class="title-page">Options</h1>
-
-                            <input type="text" class="form-control search-field" placeholder="Search...">
-
-                            <table class="table table-sm table-dark table-hover">
-                                <thead>
-                                    <tr class="table-head">
-                                        <th>IP</th>
-                                        <th>Hostname</th>
-                                        <th>Service</th>
-                                        <th>Port</th>
-                                        <th>Proto</th>
-                                        <th>Option Name</th>
-                                        <th>Option Value</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {{TABLE_OPTIONS_CONTENT}}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Products -->
-            <div class="tab-pane" id="products">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <h1 class="title-page">Products</h1>
-
-                            <input type="text" class="form-control search-field" placeholder="Search...">
-
-                            <table class="table table-sm table-dark table-hover">
-                                <thead>
-                                    <tr class="table-head">
-                                        <th>IP</th>
-                                        <th>Hostname</th>
-                                        <th>Service</th>
-                                        <th>Port</th>
-                                        <th>Proto</th>
-                                        <th>Type</th>
-                                        <th>Name</th>
-                                        <th>Version</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {{TABLE_PRODUCTS_CONTENT}}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Credentials -->
-            <div class="tab-pane" id="credentials">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <h1 class="title-page">Credentials</h1>
-
-                            <input type="text" class="form-control search-field" placeholder="Search...">
-
-                            <table class="table table-sm table-dark table-hover">
-                                <thead>
-                                    <tr class="table-head">
-                                        <th>IP</th>
-                                        <th>Hostname</th>
-                                        <th>Service</th>
-                                        <th>Port</th>
-                                        <th>Proto</th>
-                                        <th>Type</th>
-                                        <th>Username</th>
-                                        <th>Password</th>
-                                        <th>URL</th>
-                                        <th>Comment</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {{TABLE_CREDS_CONTENT}}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Vulnerabilities -->
-            <div class="tab-pane" id="vulnerabilities">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <h1 class="title-page">Vulnerabilities</h1>
-
-                            <input type="text" class="form-control search-field" placeholder="Search...">
-
-                            <table class="table table-sm table-dark table-hover">
-                                <thead>
-                                    <tr class="table-head">
-                                        <th>IP</th>
-                                        <th>Service</th>
-                                        <th>Port</th>
-                                        <th>Proto</th>
-                                        <th>Vulnerability</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {{TABLE_VULNS_CONTENT}}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            {{RESULTS}}
 
         </div>
     </div>
@@ -468,27 +273,6 @@
         e.preventDefault()
         $(this).tab('show')
     })
-
-    // Table live search
-    $('.search-field').on('keyup', function() {
-        var value = $(this).val();
-        var patt = new RegExp(value, "i");
-
-        $('.table').find('tr').each(function() {
-        if (!($(this).find('td').text().search(patt) >= 0)) {
-            $(this).not('.table-head').hide();
-        }
-        if (($(this).find('td').text().search(patt) >= 0)) {
-            $(this).show();
-        }
-
-        });     
-    });
-
-    // Clickable rows
-    $(".clickable-row").click(function() {
-        window.location = $(this).data("href");
-    });
     </script>
 
 </body>

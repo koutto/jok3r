@@ -1,3 +1,4 @@
+ansi2html>=1.5.2
 argparse
 blessed>=1.15.0
 bs4

@@ -3,14 +3,24 @@
 ###
 ### Reporter > Reporter
 ###
+import ansi2html
 import datetime
+import re
+import webbrowser
 
 from lib.db.Service import Protocol
 from lib.core.Config import *
 from lib.output.Logger import logger
-from lib.requester.ServicesRequester import ServicesRequester
+from lib.output.Output import Output
+from lib.requester.Condition import Condition
+from lib.requester.CredentialsRequester import CredentialsRequester
+from lib.requester.Filter import Filter
 from lib.requester.HostsRequester import HostsRequester
 from lib.requester.OptionsRequester import OptionsRequester
+from lib.requester.ProductsRequester import ProductsRequester
+from lib.requester.ResultsRequester import ResultsRequester
+from lib.requester.ServicesRequester import ServicesRequester
+from lib.requester.VulnsRequester import VulnsRequester
 from lib.utils.FileUtils import FileUtils
 from lib.utils.StringUtils import StringUtils
 
@@ -44,26 +54,62 @@ class Reporter:
             return False
 
         # Create index.html
-        index = self.__generate_index()
-        if FileUtils.write(report_dir + '/index.html', index):
+        html = self.__generate_index()
+        if FileUtils.write(report_dir + '/index.html', html):
             logger.info('index.html file generated')
         else:
             logger.error('An error occured while generating index.html')
             return False
 
+        # Create results-<service>.html (1 for each service)
+        req = ServicesRequester(self.sqlsession)
+        req.select_mission(self.mission)
+        services = req.get_results()
+        for service in services:
+            # Useless to create page when no check has been run for the service
+            if len(service.results) == 0:
+                continue
+
+            html = self.__generate_results_page(service)
+            # Create a unique name for the service HTML file
+            filename = 'results-{ip}-{port}-{service}-{id}.html'.format(
+                ip=str(service.host.ip),
+                port=service.port,
+                service=service.name,
+                id=service.id)
+            if FileUtils.write(report_dir + '/' + filename, html):
+                logger.info('{filename} file generated'.format(
+                    filename=filename))
+            else:
+                logger.error('An error occured while generating {filename}'.format(
+                    filename=filename))
+                return False
+
         logger.success('HTML Report written with success in: {path}'.format(
             path=report_dir))
+        if Output.prompt_confirm('Would you like to open the report now ?', 
+                default=True):
+            webbrowser.open(report_dir + '/index.html')
 
         return True
 
 
+    #------------------------------------------------------------------------------------
+    # Index.html generation
+
     def __generate_index(self):
-        """Generate HTML index file from template"""
+        """
+        Generate HTML index code from template "index.tpl.html"
+        """
         tpl = FileUtils.read(REPORT_TPL_DIR + '/index.tpl.html')
 
         tpl = tpl.replace('{{MISSION_NAME}}', self.mission)
         tpl = tpl.replace('{{TABLE_SERVICES_CONTENT}}', self.__generate_table_services())
         tpl = tpl.replace('{{TABLE_HOSTS_CONTENT}}', self.__generate_table_hosts())
+        tpl = tpl.replace('{{TABLE_OPTIONS_CONTENT}}', self.__generate_table_options())
+        tpl = tpl.replace('{{TABLE_PRODUCTS_CONTENT}}', self.__generate_table_products())
+        tpl = tpl.replace('{{TABLE_CREDS_CONTENT}}', self.__generate_table_credentials())
+        tpl = tpl.replace('{{TABLE_VULNS_CONTENT}}', self.__generate_table_vulns())
 
         return tpl
 
@@ -95,9 +141,14 @@ class Reporter:
                     '/' if nb_userpass > 0 and nb_usernames > 0 else '',
                     '<span class="text-yellow">{}</span> user(s)'.format(
                         str(nb_usernames)) if nb_usernames > 0 else '')
+                results = 'results-{ip}-{port}-{service}-{id}.html'.format(
+                    ip=str(service.host.ip),
+                    port=service.port,
+                    service=service.name,
+                    id=service.id)
 
                 html += """
-                <tr>
+                <tr{clickable}>
                     <td>{ip}</td>
                     <td>{port}</td>
                     <td>{proto}</td>
@@ -109,6 +160,8 @@ class Reporter:
                     <td>{creds}</td>
                 </tr>
                 """.format(
+                    clickable=' class="clickable-row" data-href="{results}"'.format(
+                        results=results) if len(service.results) > 0 else '',
                     ip=service.host.ip,
                     port=service.port,
                     proto={Protocol.TCP: 'tcp', Protocol.UDP: 'udp'}.get(
@@ -163,14 +216,14 @@ class Reporter:
 
     def __generate_table_options(self):
         """
-        Generate the table with all context-specific options registered in the mission
+        Generate the table with all context-specific options registered in the mission 
         """
         
         req = OptionsRequester(self.sqlsession)
         req.select_mission(self.mission)
         options = req.get_results()
 
-        if len(hosts) == 0:
+        if len(options) == 0:
             html = """
             <tr class="notfound">
                 <td colspan="7">No record found</td>
@@ -178,21 +231,277 @@ class Reporter:
             """
         else:
             html = ''
-            for host in hosts:
+            for option in options:
 
                 html += """
                 <tr>
                     <td>{ip}</td>
                     <td>{hostname}</td>
-                    <td>{os}</td>
-                    <td>{comment}</td>
-                    <td>{nb_services}</td>
+                    <td>{service}</td>
+                    <td>{port}</td>
+                    <td>{proto}</td>
+                    <td class="font-weight-bold">{optionname}</td>
+                    <td class="font-weight-bold">{optionvalue}</td>
                 </tr>
                 """.format(
-                    ip=host.ip,
-                    hostname=host.hostname if host.hostname != str(host.ip) else '',
-                    os=host.os,
-                    comment=host.comment,
-                    nb_services=len(host.services))
+                    ip=option.service.host.ip,
+                    hostname=option.service.host.hostname \
+                        if option.service.host.hostname != str(option.service.host.ip) \
+                        else '',
+                    service=option.service.name,
+                    port=option.service.port,
+                    proto={Protocol.TCP: 'tcp', Protocol.UDP: 'udp'}.get(
+                        option.service.protocol),
+                    optionname=option.name,
+                    optionvalue=option.value)
+
+        return html
+
+
+    def __generate_table_products(self):
+        """
+        Generate the table with all products registered in the mission 
+        """
+        
+        req = ProductsRequester(self.sqlsession)
+        req.select_mission(self.mission)
+        products = req.get_results()
+
+        if len(products) == 0:
+            html = """
+            <tr class="notfound">
+                <td colspan="8">No record found</td>
+            </tr>
+            """
+        else:
+            html = ''
+            for product in products:
+
+                html += """
+                <tr>
+                    <td>{ip}</td>
+                    <td>{hostname}</td>
+                    <td>{service}</td>
+                    <td>{port}</td>
+                    <td>{proto}</td>
+                    <td class="font-weight-bold">{producttype}</td>
+                    <td class="font-weight-bold">{productname}</td>
+                    <td class="font-weight-bold">{productversion}</td>
+                </tr>
+                """.format(
+                    ip=product.service.host.ip,
+                    hostname=product.service.host.hostname \
+                        if product.service.host.hostname != str(product.service.host.ip)\
+                        else '',
+                    service=product.service.name,
+                    port=product.service.port,
+                    proto={Protocol.TCP: 'tcp', Protocol.UDP: 'udp'}.get(
+                        product.service.protocol),
+                    producttype=product.type,
+                    productname=product.name,
+                    productversion=product.version)
+
+        return html
+
+
+    def __generate_table_credentials(self):
+        """
+        Generate the table with all credentials registered in the mission 
+        """
+        
+        req = CredentialsRequester(self.sqlsession)
+        req.select_mission(self.mission)
+        credentials = req.get_results()
+
+        if len(credentials) == 0:
+            html = """
+            <tr class="notfound">
+                <td colspan="10">No record found</td>
+            </tr>
+            """
+        else:
+            html = ''
+            for cred in credentials:
+
+                html += """
+                <tr>
+                    <td>{ip}</td>
+                    <td>{hostname}</td>
+                    <td>{service}</td>
+                    <td>{port}</td>
+                    <td>{proto}</td>
+                    <td>{type}</td>
+                    <td class="font-weight-bold">{username}</td>
+                    <td class="font-weight-bold">{password}</td>
+                    <td>{url}</td>
+                    <td>{comment}</td>
+                </tr>
+                """.format(
+                    ip=cred.service.host.ip,
+                    hostname=cred.service.host.hostname \
+                        if cred.service.host.hostname != str(cred.service.host.ip)\
+                        else '',
+                    service=cred.service.name,
+                    port=cred.service.port,
+                    proto={Protocol.TCP: 'tcp', Protocol.UDP: 'udp'}.get(
+                        cred.service.protocol),
+                    type=cred.type or '',
+                    username='<empty>' if cred.username == '' else cred.username,
+                    password={'': '<empty>', None: '<???>'}.get(
+                        cred.password, cred.password),
+                    url='<a href="{}" title="{}">{}</a>'.format(
+                        cred.service.url, cred.service.url, 
+                        StringUtils.shorten(cred.service.url, 50)) \
+                            if cred.service.url else '',
+                    comment=cred.comment)                    
+
+        return html
+
+
+    def __generate_table_vulns(self):
+        """
+        Generate the table with all vulnerabilities registered in the mission 
+        """
+        
+        req = VulnsRequester(self.sqlsession)
+        req.select_mission(self.mission)
+        vulnerabilities = req.get_results()
+
+        if len(vulnerabilities) == 0:
+            html = """
+            <tr class="notfound">
+                <td colspan="5">No record found</td>
+            </tr>
+            """
+        else:
+            html = ''
+            for vuln in vulnerabilities:
+
+                html += """
+                <tr>
+                    <td>{ip}</td>
+                    <td>{service}</td>
+                    <td>{port}</td>
+                    <td>{proto}</td>
+                    <td>{vulnerability}</td>
+                </tr>
+                """.format(
+                    ip=vuln.service.host.ip,
+                    service=vuln.service.name,
+                    port=vuln.service.port,
+                    proto={Protocol.TCP: 'tcp', Protocol.UDP: 'udp'}.get(
+                        vuln.service.protocol),
+                    vulnerability=vuln.name)
+
+        return html
+
+
+    #------------------------------------------------------------------------------------
+    # Results-<service>.html files generation
+
+    def __generate_results_page(self, service):
+        """
+        Generate HTML code that contains command outputs of all the checks that have
+        been run for the specified service.
+
+        :param Service service: Service Model
+        """
+        tpl = FileUtils.read(REPORT_TPL_DIR + '/results.tpl.html')
+
+        service_string = 'host <span class="font-weight-bold">{ip}</span> | ' \
+            'port <span class="font-weight-bold">{port}/{proto}</span> | ' \
+            'service <span class="font-weight-bold">{service}</span>'.format(
+                ip=str(service.host.ip),
+                port=service.port,
+                proto={Protocol.TCP: 'tcp', Protocol.UDP: 'udp'}.get(
+                    service.protocol),
+                service=service.name)
+
+        tpl = tpl.replace('{{MISSION_NAME}}', self.mission)
+        tpl = tpl.replace('{{SERVICE}}', service_string)
+        tpl = tpl.replace('{{SIDEBAR_CHECKS}}', self.__generate_sidebar_checks(service))
+        tpl = tpl.replace('{{RESULTS}}', self.__generate_command_outputs(service))
+
+        return tpl
+
+
+    def __generate_sidebar_checks(self, service):
+        """
+        Generate the sidebar with the list of checks that have been run for the
+        specified service.
+
+        :param Service service: Service Model
+        """
+        req = ResultsRequester(self.sqlsession)
+        req.select_mission(self.mission)
+        results = req.get_results()
+
+        html = ''
+        i = 0
+        for r in results:
+            html += """
+            <li{class_}>
+                <a href="#{id}">{check}</a>
+            </li>  
+            """.format(
+                class_=' class="active"' if i==0 else '',
+                id=r.check,
+                check=r.check)    
+            i += 1
+
+        return html
+
+
+    def __generate_command_outputs(self, service):
+        """
+        Generate HTML code with all command outputs for the specified service.
+
+        :param Service service: Service Model
+        """
+        req = ResultsRequester(self.sqlsession)
+        req.select_mission(self.mission)
+
+        # Filter on service id
+        filter_ = Filter(FilterOperator.AND)
+        filter_.add_condition(Condition(service.id, FilterData.SERVICE_ID))
+        req.add_filter(filter_)
+        results = req.get_results()
+
+        html = ''
+        i = 0
+        for r in results:
+            html += """
+            <div class="tab-pane{active}" id="{id}">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <h1 class="title-page">{category} > {check}</h1>
+            """.format(
+                active=' active' if i==0 else '',
+                id=r.check,
+                category=r.category,
+                check=r.check)
+
+            for o in r.command_outputs:
+                # Convert command output (with ANSI codes) to HTML
+                conv = ansi2html.Ansi2HTMLConverter(inline=True)
+                output = conv.convert(o.output)
+                # Warning: ansi2html generates HTML document with <html>, <style>...
+                # tags. We only keep the content inside <pre> ... </pre>
+                m = re.search('<pre class="ansi2html-content">(?P<output>.*)' \
+                    '</pre>\n</body>', output, re.DOTALL)
+                if m:
+                    output = m.group('output')
+
+                    html += """
+                    <pre>{output}</pre>
+                    """.format(output=output)
+
+            html += """
+                        </div>
+                    </div>
+                </div>
+            </div>
+            """          
 
         return html
