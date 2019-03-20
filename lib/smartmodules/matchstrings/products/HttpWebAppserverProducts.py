@@ -96,6 +96,13 @@ products_match['http']['web-appserver'] = {
             'WebLogic Admin Console (\(https\))?\s*\(version Any\)',
         ],
     },
+    'Railo': {
+        'clusterd': [
+            'Matched [0-9]+ fingerprints for service railo',
+            'Railo (Server|Web Administrator|Server Administrator|AJP)\s*\(version [VERSION]\)',
+            'Railo (Server|Web Administrator|Server Administrator|AJP)\s*\(version Any\)',
+        ],
+    },
     'Websphere Application Server': {
         'wappalyzer': 'IBM WebSphere (Commerce|Portal)',
         'nmap-banner': 'WebSphere (Application Server|httpd)(\s*[VERSION])?',

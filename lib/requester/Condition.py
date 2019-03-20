@@ -93,7 +93,7 @@ class Condition:
                     result = (translated)
                 else:
                     result = result | (translated)
-        print(result)
+        #print(result)
         return result
 
 

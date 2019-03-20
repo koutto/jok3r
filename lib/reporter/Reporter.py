@@ -10,6 +10,7 @@ import webbrowser
 
 from lib.db.Service import Protocol
 from lib.core.Config import *
+from lib.core.Constants import *
 from lib.output.Logger import logger
 from lib.output.Output import Output
 from lib.requester.Condition import Condition
@@ -434,6 +435,11 @@ class Reporter:
         """
         req = ResultsRequester(self.sqlsession)
         req.select_mission(self.mission)
+
+        # Filter on service id
+        filter_ = Filter(FilterOperator.AND)
+        filter_.add_condition(Condition(service.id, FilterData.SERVICE_ID))
+        req.add_filter(filter_)
         results = req.get_results()
 
         html = ''
@@ -484,7 +490,7 @@ class Reporter:
 
             for o in r.command_outputs:
                 # Convert command output (with ANSI codes) to HTML
-                conv = ansi2html.Ansi2HTMLConverter(inline=True)
+                conv = ansi2html.Ansi2HTMLConverter(inline=True, scheme='solarized', linkify=True)
                 output = conv.convert(o.output)
                 # Warning: ansi2html generates HTML document with <html>, <style>...
                 # tags. We only keep the content inside <pre> ... </pre>

@@ -1270,7 +1270,7 @@ class DbController(cmd2.Cmd):
             logger.error('Cannot read specified file')
             return
 
-        logger.info('Importing targets from the file {file}'.format(file=file))
+        logger.info('Importing targets from the file "{file}"'.format(file=file))
 
         # Parse file
         f = open(file, 'r').read().splitlines()
@@ -1329,7 +1329,7 @@ class DbController(cmd2.Cmd):
             # For line with syntax: <URL>
             elif l.lower().startswith('http://') or l.lower().startswith('https://'):
 
-                if not WebUtils.is_valid_url(args.url):
+                if not WebUtils.is_valid_url(l):
                     logger.error('URL is invalid')
                 else:
                     # Add the URL in current mission scope

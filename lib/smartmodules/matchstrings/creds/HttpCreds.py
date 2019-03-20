@@ -31,6 +31,15 @@ creds_match['http'] = {
             'type': '$1',
         },
     },
+    'clusterd': {
+        # --ax-lfi
+        'Attempting to retrieve admin username and password[\s\S]*?Found credentials: (?P<m1>\S*):(?P<m2>\S*)': {
+            'meth': 'search',
+            'user': '$1',
+            'pass': '$2',
+            'type': 'axis2',
+        },
+    },
     'cmseek': {
         '"wp_users":\s*"((?P<m1>\S+?),)+"': {
             'meth': 'search',

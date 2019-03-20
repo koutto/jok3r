@@ -59,13 +59,6 @@ products_match['http']['web-server'] = {
         'wappalyzer': 'Oracle HTTP Server',
         'nmap-banner': 'Oracle HTTP Server(\s*(9iAS httpd|Powered by Apache))?(.+\(version [VERSION]\))?',
     },
-    'Railo': {
-        'clusterd': [
-            'Matched [0-9]+ fingerprints for service railo',
-            'Railo (Server|Web Administrator|Server Administrator|AJP)\s*\(version [VERSION]\)',
-            'Railo (Server|Web Administrator|Server Administrator|AJP)\s*\(version Any\)',
-        ],
-    },
     'Rejetto/Http File Server': {
         'nmap-banner': 'HttpFileServer httpd(\s*[VERSION])?',
     },

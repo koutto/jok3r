@@ -113,11 +113,15 @@ class ServicesRequester(Requester):
                 if grab_banner_nmap:
                     logger.info('Grabbing banner from {ip}:{port} with Nmap...'.format(
                         ip=ip, port=port))
-                    banner = NetUtils.grab_banner_nmap(ip, port)
+                    banner = NetUtils.clean_nmap_banner(
+                        NetUtils.grab_banner_nmap(ip, port))
                     logger.info('Banner: {}'.format(banner or 'None'))
                     os = NetUtils.os_from_nmap_banner(banner)
                     if os:
                         logger.info('Detected Host OS: {}'.format(os))
+                else:
+                    banner = ''
+                    os = ''
             else:
                 logger.error('Port seems to be closed !')
                 return False
@@ -149,7 +153,7 @@ class ServicesRequester(Requester):
 
             logger.success('Service added: host {ip} | port {port}/{proto} | ' \
                 'service {service}'.format(
-                    ip=ip, port=port, proto=protocol, service=service))
+                    ip=ip, port=port, proto=protocol, service=service.name))
             return True
 
 
@@ -194,7 +198,9 @@ class ServicesRequester(Requester):
                     http_headers = '\n'.join("{}: {}".format(key,val) \
                         for (key,val) in resp_headers.items())
                     logger.info('HTTP Headers:')
-                    print(http_headers)
+                    #print(http_headers)
+                    for l in http_headers.splitlines():
+                        Output.print('    | {}'.format(l))
 
                 # Grab HTML title
                 if grab_html_title:
@@ -207,7 +213,8 @@ class ServicesRequester(Requester):
                 if grab_banner_nmap:
                     logger.info('Grabbing banner from {ip}:{port} with Nmap...'.format(
                         ip=ip, port=port))
-                    banner = NetUtils.grab_banner_nmap(ip, port)
+                    banner = NetUtils.clean_nmap_banner(
+                        NetUtils.grab_banner_nmap(ip, port))
                     logger.info('Banner: {}'.format(banner or 'None'))
                     os = NetUtils.os_from_nmap_banner(banner)
                     if os:

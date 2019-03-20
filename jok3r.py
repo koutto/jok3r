@@ -13,7 +13,6 @@ from lib.core.Settings import Settings
 from lib.controller.MainController import MainController
 from lib.db.Mission import Mission
 from lib.db.Session import *
-from lib.output.Output import Output
 from lib.output.Logger import logger
 
 
@@ -46,9 +45,8 @@ class Program:
 
         except KeyboardInterrupt:
             print()
-            if Output.prompt_confirm('Are you sure you want to exit ?', default=False):
-                logger.error('User aborted')
-                sys.exit(0)
+            logger.error('Ctrl+C received ! User aborted')
+            sys.exit(0)
         except (SettingsException, AttackException) as e:
             logger.error(e)
             sys.exit(1)

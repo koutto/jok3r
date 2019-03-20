@@ -12,8 +12,16 @@ vulns_match['http'] = {
     'angularjs-csti-scanner': {
         'Found\s*.*\s*vulnerable request': 'AngularJS Client-Side Template Injection (CSTI)',
     },
+    'clusterd': {
+        # -a coldfusion --cf-hash
+        'Administrative hash:': 'Coldfusion: Administrative hash disclosure',
+        # -a jboss --verb-tamper
+        'Vulnerable to verb tampering, attempting to deploy': 'JBoss: Verb Tampering (CVE-2010-0738)',
+        # -a railo --rl-pw
+        'Fetched encrypted password, decrypting': 'Railo: Password leakage via LFI',
+    },
     'domiowned': {
-        '(?P<m1>.+) does not require authentication': 'Domino - No auth on $1',
+        '(?P<m1>.+) does not require authentication': 'Domino: No auth on $1',
     },
     'iis-shortname-scanner': {
         'Result: Vulnerable': 'IIS short filename (8.3) disclosure vulnerability',

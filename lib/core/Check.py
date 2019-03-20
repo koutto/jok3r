@@ -101,11 +101,12 @@ class Check:
                             num='' if len(self.commands) == 1 else \
                                 '#{num:02} '.format(num=i)), 
                         choices={
-                            'y':'Yes',
-                            'n':'No',
-                            #'t':'New tab',
-                            #'w':'New window',
-                            'q':'Quit the program'
+                            'y': 'Yes',
+                            'n': 'No',
+                            #'t': 'New tab',
+                            #'w': 'New window',
+                            'f': 'Switch to fast mode (do not prompt anymore)',
+                            'q': 'Quit the program',
                         },
                         default='y')
 
@@ -116,9 +117,13 @@ class Check:
                     logger.info('Skipping this command')
                     continue
                 else:
+                    if mode == 'f':
+                        logger.info('Switch to fast mode')
+                        arguments.args.fast_mode = True
+
                     Output.begin_cmd(cmdline)
                     process = ProcessLauncher(cmdline)
-                    if mode == 'y':
+                    if mode == 'y' or mode == 'f':
                         output = process.start()
                     # elif mode == 't':
                     #     output = process.start_in_new_tab()

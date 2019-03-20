@@ -1,6 +1,13 @@
 admin
+ADMIN
+both
+cxsdk
+demo
+j2deployer
 manager
+ovwebusr
+QCC
 role1
 root
 tomcat
-both
+server_admin

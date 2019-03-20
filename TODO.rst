@@ -10,28 +10,14 @@ Docker Environment
 
 
 
-BUG FIXES
-===============================================================================
-
-- db > service -S -> recherche par url semble pas marcher
-
-
-
 IMPROVEMENTS / NEW FEATURES
 ===============================================================================
-* Ctrl+C -> add possibility to switch fast mode on/off
-
 * discovery-* checks:
     - appserver-wordlist
     - cms-wordlist
     - language-wordlist (per language => lots of work to produce wordlists for each language + add generic ie HTML, XML, LOG, TXT...)
     - general-minimal-wordlist
     - general-wordlist (raft directory)
-
-* Reporting HTML:
-    * https://www.jqueryscript.net/demo/Bootstrap-Sidebar-Extension-With-jQuery-CSS-CSS3/
-    * https://www.jqueryscript.net/demo/Live-Search-Through-Table-Rows-Using-jQuery/
-    * At the end, prompt to open in browser like in eyewitness
 
 * Do not re-run checks already done
 
@@ -50,18 +36,6 @@ IMPROVEMENTS / NEW FEATURES
 
 
 
-
->>> m = regex.search('(\[v\] Trying Credentials:\s*(?P<user>\S+)\s*(?P<password>\S+)\s*\n)+', text)
->>> m.capturesdict()
-{'user': ['Miniwick', 'Miniwick', 'Miniwick', 'Miniwick', 'Miniwick'], 'password': ['password', 'admin', '123456', 'Password1', 'Miniwick']}
->>> m = regex.search('WordPress[\s\S]*?(\[v\] Trying Credentials:\s*(?P<user>\S+)\s*(?P<password>\S+)\s*\n)+', text)
->>> m.capturesdict()
-{'user': ['Miniwick', 'Miniwick', 'Miniwick', 'Miniwick', 'Miniwick'], 'password': ['password', 'admin', '123456', 'Password1', 'Miniwick']}
->>> m = regex.search('WoordPress[\s\S]*?(\[v\] Trying Credentials:\s*(?P<user>\S+)\s*(?P<password>\S+)\s*\n)+', text)
->>> m.capturesdict()
-Traceback (most recent call last):
-  File "<stdin>", line 1, in <module>
-AttributeError: 'NoneType' object has no attribute 'capturesdict'
 
 
 
@@ -83,9 +57,22 @@ Not done yet:
     - exploit/linux/misc/jenkins_java_deserialize
     - exploit/windows/misc/ibm_websphere_java_deserialize
 
+>>> m = regex.search('(\[v\] Trying Credentials:\s*(?P<user>\S+)\s*(?P<password>\S+)\s*\n)+', text)
+>>> m.capturesdict()
+{'user': ['Miniwick', 'Miniwick', 'Miniwick', 'Miniwick', 'Miniwick'], 'password': ['password', 'admin', '123456', 'Password1', 'Miniwick']}
+>>> m = regex.search('WordPress[\s\S]*?(\[v\] Trying Credentials:\s*(?P<user>\S+)\s*(?P<password>\S+)\s*\n)+', text)
+>>> m.capturesdict()
+{'user': ['Miniwick', 'Miniwick', 'Miniwick', 'Miniwick', 'Miniwick'], 'password': ['password', 'admin', '123456', 'Password1', 'Miniwick']}
+>>> m = regex.search('WoordPress[\s\S]*?(\[v\] Trying Credentials:\s*(?P<user>\S+)\s*(?P<password>\S+)\s*\n)+', text)
+>>> m.capturesdict()
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+AttributeError: 'NoneType' object has no attribute 'capturesdict'
 
 
-CHECKS ADDING
+
+
+CHECKS TO ADD
 ===============================================================================
 
 
@@ -116,7 +103,7 @@ CHECKS ADDING
 * check https://bitvijays.github.io/LFF-IPS-P2-VulnerabilityAnalysis.html
 * dirsearch : -t 40 --timeout= (add --timeout to dirsearch)
 * add exploitations avec clusterd
-
+* https://github.com/hlldz/wildPwn
 
 
 SERVICES TO ADD
@@ -129,7 +116,3 @@ SERVICES TO ADD
 
 
 
-
-
-MATCHSTRINGS TO ADD
-===============================================================================
