@@ -137,6 +137,14 @@ else
 fi
 print_delimiter
 
+if ! [ -x "$(command -v firefox)" ]; then
+    print_title "[~] Install Firefox (for HTML reports)"
+    apt-get install -y --ignore-missing default-jdk
+else
+    print_title "[+] Firefox is already installed"
+fi
+print_delimiter
+
 print_title "[~] Install other required packages (if missing)"
 apt-get install -y --ignore-missing zlib1g-dev libcurl4-openssl-dev liblzma-dev 
 apt-get install -y --ignore-missing libxml2 libxml2-dev libxslt1-dev build-essential 

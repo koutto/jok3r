@@ -33,11 +33,39 @@ creds_match['http'] = {
     },
     'clusterd': {
         # --ax-lfi
-        'Attempting to retrieve admin username and password[\s\S]*?Found credentials: (?P<m1>\S*):(?P<m2>\S*)': {
+        'Attempting to retrieve admin username and password[\s\S]*?Found credentials: (?P<m1>\S+):(?P<m2>\S*)': {
             'meth': 'search',
             'user': '$1',
             'pass': '$2',
             'type': 'axis2',
+        },
+        # -a railo --deploy (default creds check) (railo does not have username)
+        '-a railo --deploy[\s\S]*?Successfully authenticated with \'(?P<m1>\S+)\'': {
+            'meth': 'finditer',
+            'user': '',
+            'pass': '$1',
+            'type': 'railo',
+        },
+        # -a <appserver> --deploy (default creds check)
+        '-a (?P<m1>\S+) --deploy[\s\S]*?Successfully authenticated with (?P<m2>\S+):(?P<m3>\S*)': {
+            'meth': 'finditer',
+            'user': '$2',
+            'pass': '$3',
+            'type': '$1',
+        },
+        # -a railo --wordlist --deploy (bruteforce with wordlist)(railo does not have username)
+        '-a railo .*?--wordlist[\s\S]*?Brute forcing password[\s\S]*?Successful login with (?P<m1>\S+)': {
+            'meth': 'finditer',
+            'user': '',
+            'pass': '$1',
+            'type': 'railo',
+        },
+        # -a <appserver> --wordlist --deploy (bruteforce with wordlist)
+        '-a (?P<m1>\S+) .*?--wordlist[\s\S]*?Brute forcing[\s\S]*?Successful login (?P<m2>\S+):(?P<m3>\S*)': {
+            'meth': 'finditer',
+            'user': '$2',
+            'pass': '$3',
+            'type': '$1',
         },
     },
     'cmseek': {
