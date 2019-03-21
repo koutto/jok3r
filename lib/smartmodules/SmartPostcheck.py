@@ -52,6 +52,22 @@ class SmartPostcheck:
         Detect usernames/credentials from command output
         Important: A command output might contain several usernames/passwords with the
         same pattern.
+
+        Example method "search":
+
+        >>> text = "
+        ... Prefix
+        ... Found credentials: 
+        ...     admin:pass
+        ...     toto:pwd
+        ... lorem ipsum
+        ... lorem ipsum"
+        >>> import regex
+        >>> m = regex.search('Pre[\s\S]*?Found credentials:(\s*(?P<m1>\S+):(?P<m2>\S+)\s*\n)+', text)
+        >>> matchs = m.capturesdict()
+        >>> matchs
+        {'m1': ['admin', 'toto'], 'm2': ['pass', 'pwd']}
+
         """
         if self.service.name in creds_match.keys():
 
@@ -97,6 +113,7 @@ class SmartPostcheck:
 
                     pattern_match = False
 
+                    # Method "finditer"
                     if method == 'finditer':
                         for match in m:
                             pattern_match = True
@@ -131,6 +148,7 @@ class SmartPostcheck:
                                     username=cred.get('user'),
                                     auth_type=cred.get('type'))
 
+                    # Method "search"
                     else:
                         pattern_match = True
                         matchs = m.capturesdict()

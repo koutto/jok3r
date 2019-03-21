@@ -32,12 +32,19 @@ creds_match['http'] = {
         },
     },
     'clusterd': {
-        # --ax-lfi
-        'Attempting to retrieve admin username and password[\s\S]*?Found credentials: (?P<m1>\S+):(?P<m2>\S*)': {
-            'meth': 'search',
+        # -a axis2 --ax-lfi
+        '--ax-lfi[\s\S]*?Found credentials: (?P<m1>\S+):(?P<m2>\S*)': {
+            'meth': 'finditer',
             'user': '$1',
             'pass': '$2',
             'type': 'axis2',
+        },
+        # -a tomcat --tc-ofetch
+        '--tc-ofetch[\s\S]*?Found credentials:(\s*(?P<m1>\S+):(?P<m2>\S+)\s*\n)+': {
+            'meth': 'search',
+            'user': '$1',
+            'pass': '$2',
+            'type': 'tomcat',
         },
         # -a railo --deploy (default creds check) (railo does not have username)
         '-a railo --deploy[\s\S]*?Successfully authenticated with \'(?P<m1>\S+)\'': {

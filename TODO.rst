@@ -53,9 +53,7 @@ Not done yet:
 * vbscan
 * barmie
 * snmpwn
-* metasploit:
-    - exploit/linux/misc/jenkins_java_deserialize
-    - exploit/windows/misc/ibm_websphere_java_deserialize
+
 
 >>> m = regex.search('(\[v\] Trying Credentials:\s*(?P<user>\S+)\s*(?P<password>\S+)\s*\n)+', text)
 >>> m.capturesdict()
@@ -77,18 +75,7 @@ CHECKS TO ADD
 
 
 - add https://github.com/Coalfire-Research/java-deserialization-exploits (websphere rce, jenkins rce...)
-
 - add msfmodules for different appservers.....
-- RCE Tomcat CVE-2017-12617 /usr/share/exploitdb/exploits/jsp/webapps/42966.py
-    WARNING: Add verify=False !
-            if 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAA' in con:
-                print bcolors.WARNING+url+' it\'s Vulnerable to CVE-2017-12617'+bcolors.ENDC
-                print bcolors.WARNING+url+"/"+checker+bcolors.ENDC
-                
-        else:
-            print 'Not Vulnerable to CVE-2017-12617 ' 
-
-* Weblogic CVE-2018-2628 https://github.com/tdy218/ysoserial-cve-2018-2628
 * https://github.com/chadillac/mdns_recon
 * nfsshell (sudo apt-get install libreadline-dev ; make)
 * https://github.com/hegusung/RPCScan.git
@@ -102,7 +89,6 @@ CHECKS TO ADD
 * cve ssh
 * check https://bitvijays.github.io/LFF-IPS-P2-VulnerabilityAnalysis.html
 * dirsearch : -t 40 --timeout= (add --timeout to dirsearch)
-* add exploitations avec clusterd
 * https://github.com/hlldz/wildPwn
 
 
