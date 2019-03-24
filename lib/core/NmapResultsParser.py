@@ -69,6 +69,7 @@ class NmapResultsParser:
                 name = NmapResultsParser.nmap_to_joker_service_name(s.service)
                 url = ''
                 comment = ''
+                html_title = ''
 
                 # Get URL for http services
                 if name == 'http':
@@ -95,7 +96,7 @@ class NmapResultsParser:
 
                 # Grab page title for HTTP services 
                 if grab_html_title and name == 'http':
-                    comment = WebUtils.grab_html_title(url)
+                    html_title = WebUtils.grab_html_title(url)
 
                 # Only keep services supported by Jok3r
                 if not self.services_config.is_service_supported(name, multi=False):
@@ -117,13 +118,14 @@ class NmapResultsParser:
 
                 # Create Service object
                 service = Service(
-                    name     = name,
-                    port     = s.port,
-                    protocol = {'tcp': Protocol.TCP,'udp': Protocol.UDP}.get(s.protocol),
-                    url      = url,
-                    up       = True,
-                    banner   = banner,
-                    comment  = comment)
+                    name       = name,
+                    port       = s.port,
+                    protocol   = {'tcp': Protocol.TCP,'udp': Protocol.UDP}.get(s.protocol),
+                    url        = url,
+                    up         = True,
+                    banner     = banner,
+                    comment    = comment,
+                    html_title = html_title)
 
                 # Already add specific option https=True if possible
                 if name == 'http' and url.startswith('https://'):

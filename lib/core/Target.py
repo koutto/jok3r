@@ -18,6 +18,7 @@ from lib.db.Credential import Credential
 from lib.db.Option import Option
 from lib.output.Logger import logger
 from lib.output.Output import Output
+from lib.webtechdetector.WebTechnoDetector import WebTechnoDetector
 
 
 class Target:
@@ -251,7 +252,8 @@ class Target:
     def smart_check(self, 
                     reverse_dns=True, 
                     availability_check=True, 
-                    grab_banner_nmap=False):
+                    grab_banner_nmap=False,
+                    web_technos_detection=True):
         """
         Check if the target is reachable and update target information
 
@@ -260,6 +262,8 @@ class Target:
         :param bool availability_check: Set to True to check for availability of the
             target, and also grab headers and HTML title for HTTP services
         :param bool grab_banner_nmap: Set to True to grab the Nmap banner (for TCP)
+        :param bool web_technos_detection: Set to True to run WebTechnoDetector if 
+            target service is HTTP
         :return: Result of check
         :rtype: bool
         """
@@ -297,13 +301,13 @@ class Target:
                 self.service.up = is_reachable
 
                 if resp_headers:
-                    self.service.http_headers = '\n'.join("{}: {}".format(key,val) \
+                    self.service.http_headers = '\n'.join('{}: {}'.format(key,val) \
                         for (key,val) in resp_headers.items())
                 else:
                     self.service.http_headers = ''
 
-                if not self.service.comment:
-                    self.service.comment = WebUtils.grab_html_title(self.service.url)
+                if not self.service.html_title:
+                    self.service.html_title = WebUtils.grab_html_title(self.service.url)
                 
             # For any other service: Simple port check
             elif self.service.protocol == Protocol.TCP:
@@ -334,6 +338,15 @@ class Target:
                 if detected_os:
                     self.service.host.os = detected_os
                     logger.info('Detected OS from banner = {os}'.format(os=detected_os))
+
+
+        # Web technologies detection for HTTP
+        if self.service.name == 'http' and web_technos_detection:
+            logger.info('Web technologies detection using Wappalyzer...')
+            detector = WebTechnoDetector(self.service.url)
+            technos = detector.detect()
+            self.service.web_technos = str(technos)
+            detector.print_technos()
 
 
         return self.service.up

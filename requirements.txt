@@ -8,10 +8,12 @@ colored>=1.3.93
 colorlog>=3.1.4
 enlighten>=1.0.7
 humanfriendly>=4.12.1
+Pillow
 prettytable>=0.7.2
 python-libnmap>=0.7.0
 regex>=2018.6.9
 requests
+selenium
 six>=1.11.0
 SQLAlchemy>=1.2.8
 SQLAlchemy-Utils>=0.33.3

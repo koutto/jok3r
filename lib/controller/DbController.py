@@ -1611,6 +1611,10 @@ class DbController(cmd2.Cmd):
             'the current mission',
         formatter_class=formatter_class)
     report.add_argument(
+        '--no-screen',
+        action = 'store_true',
+        help   = 'Disable not take web page screenshots')
+    report.add_argument(
         'path', 
         nargs   = '?', 
         metavar = '<path>', 
@@ -1629,7 +1633,10 @@ class DbController(cmd2.Cmd):
             print()
             return
 
-        reporter = Reporter(self.current_mission, self.sqlsess, args.path)
+        reporter = Reporter(self.current_mission, 
+                            self.sqlsess, 
+                            args.path, 
+                            do_screens=not args.no_screens)
         reporter.run()
 
         print()

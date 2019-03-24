@@ -9,6 +9,7 @@ from .Mission import *
 from .Option import *
 from .Product import *
 from .Result import *
+from .Screenshot import *
 from .Service import *
 from .Session import *
 pass

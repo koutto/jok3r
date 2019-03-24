@@ -1,2 +1,0 @@
-from .Fingerprint import *
-pass

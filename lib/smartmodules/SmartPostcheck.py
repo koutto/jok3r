@@ -68,6 +68,13 @@ class SmartPostcheck:
         >>> matchs
         {'m1': ['admin', 'toto'], 'm2': ['pass', 'pwd']}
 
+        >>> m = regex.search('(\[v\] Trying Credentials:\s*(?P<user>\S+)\s*(?P<password>\S+)\s*\n)+', text)
+        >>> m.capturesdict()
+        {'user': ['Miniwick', 'Miniwick', 'Miniwick', 'Miniwick', 'Miniwick'], 'password': ['password', 'admin', '123456', 'Password1', 'Miniwick']}
+        >>> m = regex.search('WordPress[\s\S]*?(\[v\] Trying Credentials:\s*(?P<user>\S+)\s*(?P<password>\S+)\s*\n)+', text)
+        >>> m.capturesdict()
+        {'user': ['Miniwick', 'Miniwick', 'Miniwick', 'Miniwick', 'Miniwick'], 'password': ['password', 'admin', '123456', 'Password1', 'Miniwick']}
+
         """
         if self.service.name in creds_match.keys():
 

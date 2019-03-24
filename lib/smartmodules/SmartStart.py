@@ -3,6 +3,7 @@
 ###
 ### SmartModules > Smart Start
 ###
+import ast
 import pprint
 import re
 
@@ -10,7 +11,6 @@ from lib.output.Logger import logger
 from lib.output.Output import Output
 from lib.smartmodules.ContextUpdater import ContextUpdater
 from lib.smartmodules.matchstrings.MatchStrings import *
-from lib.smartmodules.webtechnologies.WebTechnoDetector import WebTechnoDetector
 
 
 
@@ -72,44 +72,29 @@ class SmartStart:
         # Try to detect web server from Nmap banner
         self.__detect_product_from_banner('web-server')
 
-        # Try to detect web technologies
-        detector = WebTechnoDetector(self.service.url)
-        technos = detector.detect()
+        # Try to detect supported products from web technologies
+        if self.service.web_technos:
+            try:
+                technos = ast.literal_eval(self.service.web_technos)
+            except Exception as e:
+                logger.debug('Error when retrieving "web_technos" field ' \
+                    'from db: {}'.format(e))
+                technos = list()
 
-        logger.smartinfo('Web technologies detected by Wappalyzer:')
-        #pprint.pprint(technos)
-        data = list()
-        columns = ['Name', 'Version']
-        for t in technos:
-            data.append([t['name'], t['version']])
-        Output.table(columns, data, hrules=False)
+            for t in technos:
+                for prodtype in products_match['http']:
+                    p = products_match['http'][prodtype]
+                    for prodname in p:
+                        if 'wappalyzer' in p[prodname]:
+                            pattern = p[prodname]['wappalyzer']
+                        
+                            #m = re.search(pattern, t['name'], re.IGNORECASE|re.DOTALL)
+                            if pattern.lower() == t['name'].lower():
+                                version = t['version']
+                                self.cu.add_product(prodtype, prodname, version)
 
-        for t in technos:
-            for prodtype in products_match['http']:
-                p = products_match['http'][prodtype]
-                for prodname in p:
-                    if 'wappalyzer' in p[prodname]:
-                        pattern = p[prodname]['wappalyzer']
-                    
-                        #m = re.search(pattern, t['name'], re.IGNORECASE|re.DOTALL)
-                        if pattern.lower()==t['name'].lower():
-
-                        # If pattern matches, add detected product
-                        #if m:
-                            # Add version if present
-                            version = t['version']
-
-                            # logger.smartinfo('Web technology detected using ' \
-                            #     'Wappalyzer: {type} = {name} {version}'.format(
-                            #         type=prodtype,
-                            #         name=prodname,
-                            #         version=version))
-
-                            # Add detected product to context
-                            self.cu.add_product(prodtype, prodname, version)
-
-                            # Move to next product type if something found
-                            break
+                                # Move to next product type if something found
+                                break
 
 
     #------------------------------------------------------------------------------------

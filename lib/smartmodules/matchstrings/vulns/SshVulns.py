@@ -13,5 +13,11 @@ vulns_match['ssh'] = {
     'libssh-scanner': {
         'likely VULNERABLE to authentication bypass': 'SSH: Authentication bypass in libssh (CVE-2018-10933)',
     },
+    'osueta': {
+        '\[\+\] User: \S+ exists': 'OpenSSH User Enumeration timing attack',
+    },
+    'ssh-user-enum-cve2018-15473': {
+        '\[\+\] \S+ found!': 'OpenSSH user enumeration (CVE-2018-10933)',
+    },
 
 } 

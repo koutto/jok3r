@@ -118,10 +118,11 @@ class AttackController(Controller):
         host = Host(ip=ip) # Will be updated when initializing Target()
         host.services.append(service)
 
-        # Update credentials and options if needed
-        for c in self.creds[args.service]   : service.credentials.append(c)
-        for u in self.users[args.service]   : service.credentials.append(u)
-        for o in self.options[args.service] : service.options.append(o)
+        # Update credentials, options, products if specified in command-line
+        for c in self.creds[args.service]    : service.credentials.append(c)
+        for u in self.users[args.service]    : service.credentials.append(u)
+        for p in self.products[args.service] : service.products.append(p)
+        for o in self.options[args.service]  : service.options.append(o)
 
         # Initialize Target
         try:
@@ -203,10 +204,11 @@ class AttackController(Controller):
         # Add each targeted service into Attack scope 
         for service in services:
 
-            # Update credentials and options if needed
-            for c in self.creds[service.name]   : service.credentials.append(c)
-            for u in self.users[service.name]   : service.credentials.append(u)
-            for o in self.options[service.name] : service.options.append(o)
+            # Update credentials, options, products if specified in command-line
+            for c in self.creds[service.name]    : service.credentials.append(c)
+            for u in self.users[service.name]    : service.credentials.append(u)
+            for p in self.products[service.name] : service.products.append(p)
+            for o in self.options[service.name]  : service.options.append(o)
 
             # Initialize Target 
             try:

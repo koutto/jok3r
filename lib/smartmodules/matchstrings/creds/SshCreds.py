@@ -10,5 +10,9 @@ creds_match['ssh'] = {
             'user': '$1',
         },
     },
-
+    'ssh-user-enum-cve2018-15473': {
+        '\[\+\] (?P<m1>\S+) found!': {
+            'user': '$1',
+        },
+    },
 }

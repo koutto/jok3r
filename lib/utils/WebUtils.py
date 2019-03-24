@@ -128,6 +128,10 @@ class WebUtils:
             # Remove non-ASCII characters and duplicate spaces
             title = StringUtils.remove_non_printable_chars(html.title.text.strip())
             title = " ".join(title.split())
+
+            # Shorten if necessary
+            title = StringUtils.shorten(title, 250)
+            
             return title
         except:
             return ''

@@ -32,8 +32,9 @@ class Service(Base):
     url          = Column(String(3000), nullable=False, default='')
     up           = Column(Boolean, default=True)
     banner       = Column(String(255), nullable=False, default='')
+    html_title   = Column(String(255), nullable=False, default='')
     http_headers = Column(Text, nullable=False, default='')
-    #info         = Column(Text)
+    web_technos  = Column(Text, nullable=False, default='')
     comment      = Column(Text, nullable=False, default='')
     host_id      = Column(Integer, ForeignKey('hosts.id'))
 
@@ -48,6 +49,8 @@ class Service(Base):
         back_populates='service', cascade='save-update, merge, delete, delete-orphan')
     vulns        = relationship('Vuln', order_by=Vuln.id, 
         back_populates='service', cascade='save-update, merge, delete, delete-orphan')
+    screenshot   = relationship('Screenshot', uselist=False, 
+        back_populates='service', cascade='save-update, merge, delete, delete-orphan')
 
 
     #------------------------------------------------------------------------------------
@@ -56,21 +59,29 @@ class Service(Base):
     def merge(self, dst):
         """
         Merge with another Service
-        :param Service dst: Service to merge with
+        matching_service.merge(new_service)
+
+        :param Service dst: Service that we want to merge with (this is typîcally
+            a new service that we want to add but there is already a matching 
+            service in db, so we will not add this new service but update the matching
+            one)
         """
         if dst.up != self.up:
             self.up = dst.up
+
         if dst.banner: 
             self.banner = dst.banner
+
         if dst.http_headers: 
             self.http_headers = dst.http_headers
+
         if dst.credentials:
             # Update credentials with same username and auth-type
             if self.credentials:    
                 for c1 in self.credentials:
-                    print(c1)
+                    #print(c1)
                     for c2 in dst.credentials:
-                        print(c2)
+                        #print(c2)
                         if c1.username == c2.username and c1.type == c2.type:
                             c1.password = c2.password
                             dst.credentials.remove(c2)
@@ -78,6 +89,7 @@ class Service(Base):
             for c in dst.credentials:
                 c.service_id = self.id
                 self.credentials.append(c)
+
         if dst.options:
             # Update options with same name
             for o in dst.options:
@@ -87,6 +99,18 @@ class Service(Base):
                 else:
                     self.options.append(o)
                     o.service_id^= self.id
+
+        if dst.products:
+            # Update products
+            for p in dst.products:
+                matching_product = self.get_product(p.type)
+                if matching_product:
+                    matching_product.name = p.name
+                    matching_product.version = p.version
+                else:
+                    self.products.append(p)
+                    p.service_id = self.id
+
         return
 
 

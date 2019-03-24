@@ -1,7 +1,7 @@
 FROM kalilinux/kali-linux-docker
 
 # NOTE: This Dockerfile is used to rebuild Jok3r Docker Image from scratch from
-# kalilinux/kali-linux-docker. It is recommended to directly pulll koutto/jok3r image instead
+# kalilinux/kali-linux-docker. It is recommended to directly pull koutto/jok3r image instead
 
 LABEL maintainer="xst3nz@gmail.com"
 LABEL description="Docker Image for Jok3r - Network and Web Pentest Framework \

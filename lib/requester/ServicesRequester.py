@@ -45,11 +45,12 @@ class ServicesRequester(Requester):
                 'Service',
                 'Banner',
                 'URL',
-                'Comment',
+                'Comment/Title',
                 'Checks',
                 'Creds',
             ]
             for r in results:
+                # Creds numbers
                 nb_userpass  = r.get_nb_credentials(single_username=False)
                 nb_usernames = r.get_nb_credentials(single_username=True)
                 nb_creds = '{}{}{}'.format(
@@ -58,6 +59,12 @@ class ServicesRequester(Requester):
                     '/' if nb_userpass > 0 and nb_usernames > 0 else '',
                     '{} user(s)'.format(Output.colored(str(nb_usernames), color='yellow' \
                             if nb_usernames > 0 else None)) if nb_usernames > 0 else '')
+
+                # Col "Comment/Title" (title is for HTML title for HTTP)
+                if r.html_title:
+                    comment = r.html_title
+                else:
+                    comment = r.comment
 
                 data.append([
                     r.id,
@@ -68,7 +75,7 @@ class ServicesRequester(Requester):
                     r.name,
                     StringUtils.wrap(r.banner, 55),
                     StringUtils.wrap(r.url, 50),
-                    StringUtils.shorten(r.comment, 40),
+                    StringUtils.shorten(comment, 40),
                     len(r.results),
                     nb_creds,
                 ])
@@ -204,10 +211,10 @@ class ServicesRequester(Requester):
 
                 # Grab HTML title
                 if grab_html_title:
-                    comment = WebUtils.grab_html_title(url)
-                    logger.info('Title: {}'.format(comment))
+                    html_title = WebUtils.grab_html_title(url)
+                    logger.info('Title: {}'.format(html_title))
                 else:
-                    comment = ''
+                    html_title = ''
 
                 # Grab Nmap banner
                 if grab_banner_nmap:
@@ -237,7 +244,7 @@ class ServicesRequester(Requester):
                               up           = is_reachable,
                               http_headers = http_headers,
                               banner       = banner,
-                              comment      = comment)
+                              html_title   = html_title)
 
             matching_host = self.sqlsess.query(Host).join(Mission)\
                                         .filter(Mission.name == self.current_mission)\

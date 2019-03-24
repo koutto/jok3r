@@ -1,9 +1,15 @@
 #!/usr/bin/env bash
 
 print_title() {
-        BOLD=$(tput bold ; tput setaf 2)
-        NORMAL=$(tput sgr0)
-        echo "${BOLD} $1 ${NORMAL}"
+    BOLD_GREEN=$(tput bold ; tput setaf 2)
+    NORMAL=$(tput sgr0)
+    echo "${BOLD_GREEN} $1 ${NORMAL}"
+}
+
+print_yellow() {
+    BOLD_YELLOW=$(tput bold ; tput setaf 3)
+    NORMAL=$(tput sgr0)
+    echo "${BOLD_YELLOW} $1 ${NORMAL}"
 }
 
 print_delimiter() {
@@ -12,6 +18,7 @@ print_delimiter() {
     echo
 }
 
+clear
 
 echo
 echo
@@ -19,11 +26,23 @@ print_title "=============================="
 print_title "Install dependencies for Jok3r"
 print_title "=============================="
 echo
+print_yellow ""
 
-if [ "$EUID" -ne 0 ]
-  then echo "Please run as root"
-  exit
+# Make sure we are root !
+if [ "$EUID" -ne 0 ]; then 
+    print_yellow "Please run as root"
+    exit
 fi
+
+# Make sure we are on Kali
+if [[ `(lsb_release -sd || grep ^PRETTY_NAME /etc/os-release) 2>/dev/null | grep "Kali GNU/Linux.*\(2\|Rolling\)"` ]]; then
+    echo "Kali Linux detected !"
+else
+    print_yellow "Kali Linux not detected ! There is no guarantee Jok3r will be working correctly."
+    print_yellow "It is strongly advised to use Docker environment instead !"
+fi
+
+# -----------------------------------------------------------------------------
 
 if ! [ -x "$(command -v git)" ]; then
     print_title "[~] Install git ..."
@@ -33,6 +52,8 @@ else
 fi
 print_delimiter
 
+# -----------------------------------------------------------------------------
+
 if ! [ -x "$(command -v msfconsole)" ]; then
     print_title "[~] Install Metasploit ..."
     apt-get install -y metasploit-framework 
@@ -40,6 +61,8 @@ else
     print_title "[+] Metasploit is already installed"
 fi
 print_delimiter
+
+# -----------------------------------------------------------------------------
 
 if ! [ -x "$(command -v nmap)" ]; then
     print_title "[~] Install Nmap ..."
@@ -49,6 +72,8 @@ else
 fi
 print_delimiter
 
+# -----------------------------------------------------------------------------
+
 if ! [ -x "$(command -v tcpdump)" ]; then
     print_title "[~] Install tcpdump ..."
     apt-get install -y tcpdump
@@ -56,6 +81,8 @@ else
     print_title "[+] tcpdump is already installed"
 fi
 print_delimiter
+
+# -----------------------------------------------------------------------------
 
 if ! [ -x "$(command -v npm)" ]; then
     print_title "[~] Install NodeJS ..."
@@ -66,6 +93,8 @@ else
 fi
 print_delimiter   
 
+# -----------------------------------------------------------------------------
+
 print_title "[~] Install Python 2.7 + 3 and useful related packages (if missing)"
 apt-get install -y --ignore-missing python python2.7 python3 python-pip python3-pip 
 apt-get install -y --ignore-missing python-dev python3-dev python-setuptools 
@@ -75,6 +104,8 @@ pip3 uninstall -y psycopg2
 pip3 install psycopg2-binary
 print_delimiter
 
+# -----------------------------------------------------------------------------
+
 if ! [ -x "$(command -v jython)" ]; then
     print_title "[~] Install Jython"
     apt-get install -y jython
@@ -83,6 +114,7 @@ else
 fi
 print_delimiter
 
+# -----------------------------------------------------------------------------
 
 if ! [ -x "$(command -v rvm)" ]; then
     print_title "[~] Install Ruby latest + old version (2.3) required for some tools"
@@ -113,6 +145,8 @@ print_title "[~] Update Ruby bundler"
 gem install bundler
 print_delimiter
 
+# -----------------------------------------------------------------------------
+
 if ! [ -x "$(command -v perl)" ]; then
     print_title "[~] Install Perl and useful related packages"
     apt-get install -y --ignore-missing perl libwhisker2-perl libwww-perl
@@ -120,6 +154,8 @@ else
     print_title "[+] Perl is already installed"
 fi
 print_delimiter
+
+# -----------------------------------------------------------------------------
 
 if ! [ -x "$(command -v php)" ]; then
     print_title "[~] Install PHP"
@@ -129,6 +165,8 @@ else
 fi
 print_delimiter
 
+# -----------------------------------------------------------------------------
+
 if ! [ -x "$(command -v java)" ]; then
     print_title "[~] Install Java"
     apt-get install -y --ignore-missing default-jdk
@@ -137,13 +175,45 @@ else
 fi
 print_delimiter
 
+# -----------------------------------------------------------------------------
+
 if ! [ -x "$(command -v firefox)" ]; then
-    print_title "[~] Install Firefox (for HTML reports)"
-    apt-get install -y --ignore-missing default-jdk
+    print_title "[~] Install Firefox (for HTML reports and web screenshots)"
+    apt-get install -y --ignore-missing firefox-esr
 else
     print_title "[+] Firefox is already installed"
 fi
 print_delimiter
+
+if ! [ -x "$(command -v geckodriver)" ]; then
+    print_title "[~] Install Geckodriver (for web screenshots)"
+    mv /tmp/
+    MACHINE_TYPE=`uname -m`
+    if [ ${MACHINE_TYPE} == 'x86_64' ]; then
+        wget https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux64.tar.gz
+        tar -xvf geckodriver-v0.24.0-linux64.tar.gz
+        rm geckodriver-v0.24.0-linux64.tar.gz
+        mv geckodriver /usr/sbin
+        if [ -e /usr/bin/geckodriver ]; then
+            rm /usr/bin/geckodriver
+        fi
+        ln -s /usr/sbin/geckodriver /usr/bin/geckodriver
+    else
+        wget https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux32.tar.gz
+        tar -xvf geckodriver-v0.24.0-linux32.tar.gz
+        rm geckodriver-v0.24.0-linux32.tar.gz
+        mv geckodriver /usr/sbin
+        if [ -e /usr/bin/geckodriver ]; then
+            rm /usr/bin/geckodriver
+        fi
+        ln -s /usr/sbin/geckodriver /usr/bin/geckodriver
+    fi
+else
+    print_title "[+] Geckodriver is already installed"
+fi
+print_delimiter
+
+# -----------------------------------------------------------------------------
 
 print_title "[~] Install other required packages (if missing)"
 apt-get install -y --ignore-missing zlib1g-dev libcurl4-openssl-dev liblzma-dev 
@@ -153,9 +223,13 @@ apt-get install -y --ignore-missing smbclient dnsutils libgmp-dev libffi-dev
 apt-get install -y --ignore-missing libxml2-utils unixodbc unixodbc-dev alien
 print_delimiter
 
+# -----------------------------------------------------------------------------
+
 print_title "[~] Install Python3 libraries required by Jok3r (if missing)"
 pip3 install -r requirements.txt
 print_delimiter
+
+# -----------------------------------------------------------------------------
 
 print_title "[~] Disable UserWarning related to psycopg2"
 pip3 uninstall psycopg2-binary -y
@@ -163,4 +237,8 @@ pip3 uninstall psycopg2 -y
 pip3 install psycopg2-binary
 print_delimiter
 
-print_title "[~] Dependencies installation finished. Check if any error has been raised"
+# -----------------------------------------------------------------------------
+
+print_title "[~] Dependencies installation finished."
+print_title "[~] IMPORTANT: Make sure to check if any error has been raised"
+echo

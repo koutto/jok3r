@@ -382,9 +382,9 @@ class ArgumentsParser:
         context = parser.add_argument_group(
             Output.colored('Context parameters', attrs='bold'),
             'Define manually some known information about the target(s).\n' \
-            'In most cases, you do not have to use these parameters because Jok3r ' \
-            'does its best\nto detect the context automatically, based on the results ' \
-            'of various checks.')
+            'Not Recommended: in most cases, you do not have to use these parameters ' \
+            'because Jok3r does its best\nto detect the context automatically, based ' \
+            'on the results of various checks.')
 
         context.add_argument(
             '--cred', 

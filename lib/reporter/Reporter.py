@@ -28,16 +28,19 @@ from lib.utils.StringUtils import StringUtils
 
 class Reporter:
 
-    def __init__(self, mission, sqlsession, output_path):
+    def __init__(self, mission, sqlsession, output_path, do_screens=True):
         """
         :param str mission: Mission for which the HTML report will be generated
         :param Session sqlsession: SQLAlchemy session
         :param str output_path: Output path where directory storing HTML files must
             be written
+        :param bool do_screens: Boolean indicating if web page screenshots must be
+            taken or not
         """
         self.mission = mission
         self.sqlsession = sqlsession
         self.output_path = output_path
+        self.do_screens = do_screens
 
 
     def run(self):
@@ -54,6 +57,35 @@ class Reporter:
                 path=self.output_path))
             return False
 
+        # Retrieve all services in selected mission
+        req = ServicesRequester(self.sqlsession)
+        req.select_mission(self.mission)
+        services = req.get_results()
+
+        # Generate screenshots 
+        processor = ScreenshotsProcessor(self.mission, self.sqlsession)
+        processor.run()
+
+        screens_dir = report_dir + '/screenshots'
+        if not FileUtils.create_directory(screens_dir):
+            logger.warning('Unable to create screenshots directory: "{path}"'.format(
+                path=screens_dir))
+        else:
+            for service in services:
+                if service.name == 'http' and service.screenshot is not None \
+                        and service.screenshot.status == ScreenStatus.OK:
+
+                    img_name = 'scren-{ip}-{port}-{id}'.format(
+                        ip=str(service.host.ip),
+                        port=service.port,
+                        id=service.id)
+                    path = screens_dir + '/' + img_name
+                    
+                    ImageUtils.save_image(
+                        service.screenshot.image, path + '.png')
+                    ImageUtils.save_image(
+                        service.screenshot.thumbnail, path + '.thumb.png')
+
         # Create index.html
         html = self.__generate_index()
         if FileUtils.write(report_dir + '/index.html', html):
@@ -63,9 +95,6 @@ class Reporter:
             return False
 
         # Create results-<service>.html (1 for each service)
-        req = ServicesRequester(self.sqlsession)
-        req.select_mission(self.mission)
-        services = req.get_results()
         for service in services:
             # Useless to create page when no check has been run for the service
             if len(service.results) == 0:
@@ -134,6 +163,7 @@ class Reporter:
             html = ''
             for service in services:
 
+                # Creds numbers
                 nb_userpass  = service.get_nb_credentials(single_username=False)
                 nb_usernames = service.get_nb_credentials(single_username=True)
                 nb_creds = '{}{}{}'.format(
@@ -142,6 +172,14 @@ class Reporter:
                     '/' if nb_userpass > 0 and nb_usernames > 0 else '',
                     '<span class="text-yellow">{}</span> user(s)'.format(
                         str(nb_usernames)) if nb_usernames > 0 else '')
+
+                # Col "Comment/Title" (title is for HTML title for HTTP)
+                if service.html_title:
+                    comment = service.html_title
+                else:
+                    comment = service.comment
+
+                # Results HTML page name
                 results = 'results-{ip}-{port}-{service}-{id}.html'.format(
                     ip=str(service.host.ip),
                     port=service.port,
@@ -172,7 +210,7 @@ class Reporter:
                     url='<a href="{}" title="{}">{}</a>'.format(
                         service.url, service.url, StringUtils.shorten(service.url, 50)) \
                         if service.url else '',
-                    comment=StringUtils.shorten(service.comment, 40),
+                    comment=StringUtils.shorten(comment, 40),
                     checks=len(service.results),
                     creds=nb_creds)
         return html
