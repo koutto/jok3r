@@ -295,12 +295,13 @@ class Reporter:
 
                 # Web technos
                 try:
-                    technos = ast.literal_eval(self.service.web_technos)
+                    technos = ast.literal_eval(service.web_technos)
                 except Exception as e:
                     logger.debug('Error when retrieving "web_technos" field ' \
                         'from db: {exc} for {service}'.format(
                             exc=e, service=service))
                     technos = list()
+
                 tmp = list()
                 for t in technos:
                     tmp.append('{}{}{}'.format(

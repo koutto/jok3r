@@ -173,7 +173,6 @@ class WebScreenshoter:
 
         # Take the screenshot if everything is ok so far
         if status == ScreenStatus.OK:
-            print('toto')
             for i in range(1, self.max_attempts+1):
                 try:
                     #driver.save_screenshot('screen.png')
