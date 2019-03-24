@@ -12,7 +12,7 @@ Docker Environment
 
 IMPROVEMENTS / NEW FEATURES
 ===============================================================================
-* Do not re-run checks already done
+
 
 * Improve wordlist quality:
     * passwords
@@ -30,8 +30,10 @@ IMPROVEMENTS / NEW FEATURES
 
 
 
-* Screenshoter : https://github.com/FortyNorthSecurity/EyeWitness/blob/master/modules/selenium_module.py
-* In table services: screenshot_status, screenshot
+* Remove debug traces for screenshoter
+* Refactoring Screenshoter
+* Do not re-run checks already done
+* Attack single target -> add to default mission if nothing specified
 * ssh-audit mastchstring
 
 

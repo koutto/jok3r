@@ -43,7 +43,7 @@ class WebScreenshoter:
         self.driver = None 
 
 
-    def create_driver():
+    def create_driver(self):
         """
         Creates a selenium FirefoxDriver.
 
@@ -100,7 +100,7 @@ class WebScreenshoter:
             return False
 
 
-    def take_screenshot(url):
+    def take_screenshot(self, url):
         """
         Take screenshot of a web page and return it as binary data.
 
@@ -115,6 +115,7 @@ class WebScreenshoter:
             try:
                 self.driver.get(url)
                 status = ScreenStatus.OK
+                break
 
             except KeyboardInterrupt:
                 logger.warning('Web Screenshot: Skipping {url}'.format(url=url))
@@ -145,10 +146,22 @@ class WebScreenshoter:
                 break
 
             except WebDriverException:
-                logger.warning('Web Screenshot: WebDriverError when connecting to ' \
-                    '{url}'.format(url=url))
-                status = ScreenStatus.BADSTATUS
-                break
+                if i < self.max_attempts:
+                    logger.info('Web Screenshot: WebDriverError when connecting to ' \
+                        '{url}, retrying...'.format(url=url))
+                    # Re-create driver
+                    self.driver.quit()
+                    self.create_driver()
+                    if not self.driver:
+                        logger.warning('Web Screenshot: An error occured when retrying ' \
+                            'to connect to ')
+                        status = ScreenStatus.ERROR
+                        break
+                else:
+                    logger.warning('Web Screenshot: WebDriverError when connecting to ' \
+                        'to {url}...'.format(url=url))
+                    status = ScreenStatus.BADSTATUS
+                    break
 
             # Dismiss any alerts present on the page
             # Will not work for basic auth dialogs!
@@ -160,14 +173,31 @@ class WebScreenshoter:
 
         # Take the screenshot if everything is ok so far
         if status == ScreenStatus.OK:
-            try:
-                #driver.save_screenshot('screen.png')
-                screenshot = self.driver.get_screenshot_as_png()
-            except WebDriverException as e:
-                logger.warning('Web Screenshot: WebDriverError when taking web page ' \
-                    'screenshot for {url}'.format(url=url))
-                status = ScreenStatus.BADSTATUS
-                screenshot = None
+            print('toto')
+            for i in range(1, self.max_attempts+1):
+                try:
+                    #driver.save_screenshot('screen.png')
+                    screenshot = self.driver.get_screenshot_as_png()
+                    break
+                except WebDriverException as e:
+                    if i < self.max_attempts:
+                        logger.info('Web Screenshot: WebDriverError when taking web page ' \
+                            'screenshot for {url}, retrying...'.format(url=url))
+                        
+                        # Re-create driver
+                        self.driver.quit()
+                        self.create_driver()
+                        if not self.driver:
+                            logger.warning('Web Screenshot: An error occured when retrying ' \
+                                'to connect to ')
+                            status = ScreenStatus.ERROR
+                            screenshot = None
+                            break
+                    else:
+                        logger.warning('Web Screenshot: WebDriverError when taking web page ' \
+                            'screenshot for {url}'.format(url=url))
+                        status = ScreenStatus.BADSTATUS
+                        screenshot = None
         else:
             screenshot = None
 

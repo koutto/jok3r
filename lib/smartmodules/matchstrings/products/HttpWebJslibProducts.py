@@ -2,8 +2,10 @@
 # -*- coding: utf-8 -*-
 from lib.smartmodules.matchstrings.MatchStrings import products_match
 
-WIG_REGEXP = '- Found JavaScript: {}(\s*[VERSION])?'
-WIG_REGEXP2 = '{}\s*[VERSION]\s*JavaScript' 
+
+WIG_REGEXP = '{}\s*[VERSION]\s*JavaScript' 
+WIG_REGEXP2 = '- Found JavaScript: {}(\s*[VERSION])?'
+
 
 products_match['http']['web-jslib'] = {
     'Angular': {

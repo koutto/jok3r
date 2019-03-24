@@ -9,27 +9,29 @@ from PIL import Image
 
 class ImageUtils:
 
-	@staticmethod
+    @staticmethod
     def create_thumbnail(source, width, height):
-    	"""
-    	Create a thumbnail from an image (ratio is kept).
+        """
+        Create a thumbnail as binary data from an image (ratio is kept).
 
-    	:param bytearray source: Source image as binary data
-    	:param int width: Requested max width for thumbnail
-    	:param int height: Requested max height for thumbnail
-    	:return: Thumbnail as binary data
-    	:rtype: BytesIO|None
-    	"""
-    	size = width, height
+        :param bytearray source: Source image as binary data
+        :param int width: Requested max width for thumbnail
+        :param int height: Requested max height for thumbnail
+        :return: Thumbnail as binary data
+        :rtype: bytearray|None
+        """
+        size = width, height
 
-    	try:
-			image = Image.open(io.BytesIO(source))
-			image.thumbnail(size, Image.ANTIALIAS)
-			thumb = io.BytesIO()
-			image.save(thumb)
-		except:
-			thumb = None
-		return thumb
+        try:
+            image = Image.open(io.BytesIO(source))
+            image.thumbnail(size, Image.ANTIALIAS)
+            thumbio = io.BytesIO()
+            image.save(thumbio, format='PNG')
+            thumbio.seek(0) # Important: pointer back to beginning of "memory file"
+            thumb = thumbio.read()
+        except:
+            thumb = None
+        return thumb
 
 
     @staticmethod
@@ -44,7 +46,7 @@ class ImageUtils:
         """
         try:
             image = Image.open(io.BytesIO(source))
-            image.save(filepath)
+            image.save(filepath, format='PNG')
         except:
             return False
         return True

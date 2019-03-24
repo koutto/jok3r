@@ -21,3 +21,6 @@ local.db
 # History of commands in db
 .dbhistory
 
+# Firefox/geckodriver files
+core
+geckodriver.log

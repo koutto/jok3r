@@ -41,6 +41,8 @@ else
     print_yellow "Kali Linux not detected ! There is no guarantee Jok3r will be working correctly."
     print_yellow "It is strongly advised to use Docker environment instead !"
 fi
+echo
+echo
 
 # -----------------------------------------------------------------------------
 

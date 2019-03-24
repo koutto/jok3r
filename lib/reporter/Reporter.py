@@ -4,10 +4,13 @@
 ### Reporter > Reporter
 ###
 import ansi2html
+import ast
+import base64
 import datetime
 import re
 import webbrowser
 
+from lib.db.Screenshot import ScreenStatus
 from lib.db.Service import Protocol
 from lib.core.Config import *
 from lib.core.Constants import *
@@ -22,7 +25,9 @@ from lib.requester.ProductsRequester import ProductsRequester
 from lib.requester.ResultsRequester import ResultsRequester
 from lib.requester.ServicesRequester import ServicesRequester
 from lib.requester.VulnsRequester import VulnsRequester
+from lib.screenshoter.ScreenshotsProcessor import ScreenshotsProcessor
 from lib.utils.FileUtils import FileUtils
+from lib.utils.ImageUtils import ImageUtils
 from lib.utils.StringUtils import StringUtils
 
 
@@ -50,10 +55,10 @@ class Reporter:
             mission=StringUtils.clean(self.mission.replace(' ','_'), 
                 allowed_specials=('_', '-')),
             datetime=datetime.datetime.now().strftime('%Y%m%d%H%M%S'))
-        report_dir = self.output_path + '/' + dirname
+        self.output_path = self.output_path + '/' + dirname
 
-        if not FileUtils.create_directory(report_dir):
-            logger.error('Unable to create report directory inside "{path}"'.format(
+        if not FileUtils.create_directory(self.output_path):
+            logger.error('Unable to create report directory: "{path}"'.format(
                 path=self.output_path))
             return False
 
@@ -66,7 +71,7 @@ class Reporter:
         processor = ScreenshotsProcessor(self.mission, self.sqlsession)
         processor.run()
 
-        screens_dir = report_dir + '/screenshots'
+        screens_dir = self.output_path + '/screenshots'
         if not FileUtils.create_directory(screens_dir):
             logger.warning('Unable to create screenshots directory: "{path}"'.format(
                 path=screens_dir))
@@ -80,7 +85,7 @@ class Reporter:
                         port=service.port,
                         id=service.id)
                     path = screens_dir + '/' + img_name
-                    
+
                     ImageUtils.save_image(
                         service.screenshot.image, path + '.png')
                     ImageUtils.save_image(
@@ -88,7 +93,7 @@ class Reporter:
 
         # Create index.html
         html = self.__generate_index()
-        if FileUtils.write(report_dir + '/index.html', html):
+        if FileUtils.write(self.output_path + '/index.html', html):
             logger.info('index.html file generated')
         else:
             logger.error('An error occured while generating index.html')
@@ -107,7 +112,7 @@ class Reporter:
                 port=service.port,
                 service=service.name,
                 id=service.id)
-            if FileUtils.write(report_dir + '/' + filename, html):
+            if FileUtils.write(self.output_path + '/' + filename, html):
                 logger.info('{filename} file generated'.format(
                     filename=filename))
             else:
@@ -116,10 +121,10 @@ class Reporter:
                 return False
 
         logger.success('HTML Report written with success in: {path}'.format(
-            path=report_dir))
+            path=self.output_path))
         if Output.prompt_confirm('Would you like to open the report now ?', 
                 default=True):
-            webbrowser.open(report_dir + '/index.html')
+            webbrowser.open(self.output_path + '/index.html')
 
         return True
 
@@ -136,6 +141,7 @@ class Reporter:
         tpl = tpl.replace('{{MISSION_NAME}}', self.mission)
         tpl = tpl.replace('{{TABLE_SERVICES_CONTENT}}', self.__generate_table_services())
         tpl = tpl.replace('{{TABLE_HOSTS_CONTENT}}', self.__generate_table_hosts())
+        tpl = tpl.replace('{{TABLE_WEB_CONTENT}}', self.__generate_table_web())
         tpl = tpl.replace('{{TABLE_OPTIONS_CONTENT}}', self.__generate_table_options())
         tpl = tpl.replace('{{TABLE_PRODUCTS_CONTENT}}', self.__generate_table_products())
         tpl = tpl.replace('{{TABLE_CREDS_CONTENT}}', self.__generate_table_credentials())
@@ -206,7 +212,7 @@ class Reporter:
                     proto={Protocol.TCP: 'tcp', Protocol.UDP: 'udp'}.get(
                         service.protocol),
                     service=service.name,
-                    banner=StringUtils.wrap(service.banner, 55),
+                    banner=service.banner,
                     url='<a href="{}" title="{}">{}</a>'.format(
                         service.url, service.url, StringUtils.shorten(service.url, 50)) \
                         if service.url else '',
@@ -249,6 +255,103 @@ class Reporter:
                     os=host.os,
                     comment=host.comment,
                     nb_services=len(host.services))
+
+        return html
+
+
+    def __generate_table_web(self):
+        """
+        Generate the table with HTTP services registered in the mission
+        """
+
+        req = ServicesRequester(self.sqlsession)
+        req.select_mission(self.mission)
+        filter_ = Filter(FilterOperator.AND)
+        filter_.add_condition(Condition('http', FilterData.SERVICE_EXACT))
+        req.add_filter(filter_)
+        services = req.get_results()
+
+        if len(services) == 0:
+            html = """
+            <tr class="notfound">
+                <td colspan="5">No record found</td>
+            </tr>
+            """
+        else:
+            html = ''
+
+            # Unavailable thumbnail
+            with open(REPORT_TPL_DIR + '/../img/unavailable.png', 'rb') as f:
+                unavailable_b64 = base64.b64encode(f.read()).decode('ascii')
+
+            for service in services:
+
+                # Results HTML page name
+                results = 'results-{ip}-{port}-{service}-{id}.html'.format(
+                    ip=str(service.host.ip),
+                    port=service.port,
+                    service=service.name,
+                    id=service.id)
+
+                # Web technos
+                try:
+                    technos = ast.literal_eval(self.service.web_technos)
+                except Exception as e:
+                    logger.debug('Error when retrieving "web_technos" field ' \
+                        'from db: {exc} for {service}'.format(
+                            exc=e, service=service))
+                    technos = list()
+                tmp = list()
+                for t in technos:
+                    tmp.append('{}{}{}'.format(
+                        t['name'],
+                        ' ' if t['version'] else '',
+                        t['version'] if t['version'] else ''))
+                webtechnos = ' | '.join(tmp)
+
+                # Screenshot
+                if service.screenshot is not None \
+                        and service.screenshot.status == ScreenStatus.OK:
+
+                    img_name = 'scren-{ip}-{port}-{id}'.format(
+                        ip=str(service.host.ip),
+                        port=service.port,
+                        id=service.id)
+                    path = self.output_path + '/screenshots'
+
+                    screenshot = """
+                    <a href="{screenlarge}" title="{title}" class="image-link">
+                        <img src="{screenthumb}" class="border rounded">
+                    </a>
+                    """.format(
+                        screenlarge='screenshots/' + img_name + '.png',
+                        title=service.html_title,
+                        screenthumb='screenshots/' + img_name + '.thumb.png')
+
+                else:
+                    screenshot = """
+                    <img src="data:image/png;base64,{unavailable}">
+                    """.format(unavailable=unavailable_b64)
+
+
+                html += """
+                <tr{clickable}>
+                    <td>{url}</td>
+                    <td>{title}</td>
+                    <td>{webtechnos}</td>
+                    <td>{screenshot}</td>
+                    <td>{checks}</td>
+                </tr>
+                """.format(
+                    clickable=' class="clickable-row" data-href="{results}"'.format(
+                        results=results) if len(service.results) > 0 else '',
+                    url='<a href="{}" title="{}">{}</a>'.format(
+                        service.url, service.url, StringUtils.shorten(service.url, 50)) \
+                        if service.url else '',
+                    title=StringUtils.shorten(service.html_title, 40),
+                    webtechnos=webtechnos,
+                    screenshot=screenshot,
+                    checks=len(service.results))
 
         return html
 
@@ -546,6 +649,7 @@ class Reporter:
                     </div>
                 </div>
             </div>
-            """          
+            """   
+            i += 1       
 
         return html

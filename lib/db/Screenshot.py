@@ -6,6 +6,7 @@
 import enum
 from sqlalchemy import ForeignKey, Column, Integer, String, LargeBinary
 from sqlalchemy.orm import relationship
+from sqlalchemy.types import Enum
 
 from lib.db.Session import Base
 

@@ -9,8 +9,8 @@ from lib.smartmodules.matchstrings.MatchStrings import products_match
 # product: Apache httpd version: 2.2.4 extrainfo: (Unix) DAV/2
 # product: Apache httpd version: 2.0.63 extrainfo: DAV/2 hostname
 
-WIG_REGEXP = '- Found platform {}(\s*[VERSION])?'
-WIG_REGEXP2 = '{}\s*[VERSION]\s*Platform' 
+WIG_REGEXP = '{}\s*[VERSION]\s*Platform'
+WIG_REGEXP2 = '- Found platform {}(\s*[VERSION])?' 
 
 products_match['http']['web-server'] = {
 

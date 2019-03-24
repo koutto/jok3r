@@ -1636,7 +1636,7 @@ class DbController(cmd2.Cmd):
         reporter = Reporter(self.current_mission, 
                             self.sqlsess, 
                             args.path, 
-                            do_screens=not args.no_screens)
+                            do_screens=not args.no_screen)
         reporter.run()
 
         print()
