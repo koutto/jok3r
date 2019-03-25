@@ -30,10 +30,6 @@ IMPROVEMENTS / NEW FEATURES
 
 
 
-* ssh-audit mastchstring
-
-
-
 
 
 
@@ -70,10 +66,7 @@ CHECKS TO ADD
 * https://github.com/hlldz/wildPwn
 
 
-update bruteforce - done for:
-- ftp
-- ssh
-- telnet
+
 
 * attack profiles
 
@@ -89,6 +82,10 @@ SERVICES TO ADD
 * LDAP
 * MDNS
     * https://github.com/chadillac/mdns_recon
-
+* POP3
+* REXEC
+* RLOGIN
+* RSH
+* IMAP
 
 

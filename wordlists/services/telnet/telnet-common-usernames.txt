@@ -10,7 +10,6 @@ tel123
 telnetadmin
 cisco
 apc
-pass
 security
 user
 sys

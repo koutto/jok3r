@@ -7,7 +7,7 @@ vulns_match['ssh'] = {
 
     # 'tool-name': {
     #     'match string (?P<m1>\S+) lorem ispum': 'MS17-010: $1',
-    # }
+    # } 
 
 
     'libssh-scanner': {
@@ -15,6 +15,10 @@ vulns_match['ssh'] = {
     },
     'osueta': {
         '\[\+\] User: \S+ exists': 'OpenSSH User Enumeration timing attack',
+    },
+    'ssh-audit': {
+        'SSH(-)?1': 'Obsolete SSHv1 detected',
+        '\(cve\)\s*(?P<m1>\S+)\s+--\s*(?P<m2>.*)\n': 'SSH: $1 - $2',
     },
     'ssh-user-enum-cve2018-15473': {
         '\[\+\] \S+ found!': 'OpenSSH user enumeration (CVE-2018-10933)',
