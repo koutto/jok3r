@@ -5,10 +5,13 @@
 ###
 import time
 
+from lib.core.Constants import *
 from lib.utils.OrderedDefaultDict import OrderedDefaultDict
 from lib.output.Logger import logger
 from lib.output.Output import Output
 from lib.output.StatusBar import *
+from lib.requester.Filter import Filter
+from lib.requester.Condition import Condition
 
 class ServiceChecks:
     """All Security Checks for a Service"""
@@ -106,7 +109,7 @@ class ServiceChecks:
             attack_progress=None):
         """
         Run checks for the service.
-        By default, all the checks are runned (but commands are actually run only if 
+        By default, all the checks are run (but commands are actually run only if 
         target complies with context requirements). It is however possible to apply 
         filters to select the checks to run:
             - Filter on categories,
@@ -131,49 +134,108 @@ class ServiceChecks:
         # Selected/all categories of checks are run
         if filter_checks is None and attack_profile is None:
 
-            logger.info('Categories of checks that will be run: {cats}'.format(
-                cats=', '.join(categories)))
+            self.__run_standard_mode(target,
+                                     arguments,
+                                     sqlsession,
+                                     results_requester,
+                                     categories,
+                                     fast_mode,
+                                     attack_progress)
 
-            nb_checks = self.nb_checks()
+        # Special mode
+        # User has provided either an attack profile or a list of checks to run 
+        # (may be one single check)
+        else:
 
-            # Initialize sub status/progress bar
-            checks_progress = manager.counter(total=nb_checks+1, 
-                                              desc='', 
-                                              unit='check',
-                                              leave=False,
-                                              bar_format=STATUSBAR_FORMAT)
-            time.sleep(.5) # hack for progress bar display
+             self.__run_special_mode(target, 
+                                     arguments,
+                                     sqlsession,
+                                     results_requester,
+                                     filter_checks,
+                                     attack_profile,
+                                     fast_mode,
+                                     attack_progress)
 
-            j = 1
-            for category in categories:
-
-                Output.title1('Category > {cat}'.format(cat=category.capitalize()))
-
-                i = 1
-                for check in self.checks[category]:
-
-                    # Update status/progress bar
-                    status = ' +--> Current check [{cur}/{total}]: {category} > ' \
-                        '{checkname}'.format(
-                            cur       = j,
-                            total     = nb_checks,
-                            category  = check.category,
-                            checkname = check.name)
-
-                    checks_progress.desc = '{status}{fill}'.format(
-                        status = status,
-                        fill   = ' '*(DESC_LENGTH-len(status)))
-                    checks_progress.update()
-                    if attack_progress:
-                        # Hack to refresh the attack progress bar without incrementing
-                        # useful if the tool run during the check has cleared the screen
-                        attack_progress.refresh()
+        return
 
 
-                    # Run the check if and only if:
-                    #   - Target is compliant with the check,
-                    #   - The tool used for the check is well installed.
-                    if i > 1: print()
+    def __run_standard_mode(self,
+                            target, 
+                            arguments,
+                            sqlsession,
+                            results_requester, 
+                            categories, 
+                            fast_mode=False,
+                            attack_progress=None):
+        """
+        Run checks for the service in standard mode, i.e. when all or a subset of
+        categories of checks must be run against the target.
+
+        :param Target target: Target
+        :param ArgumentsParser arguments: Arguments from command-line
+        :param Session sqlsession: SQLAlchemy session
+        :param ResultsRequester results_requester: Accessor for Results Model
+        :param list categories: Sorted list of categories to run
+        :param enlighten.Counter attack_progress: Attack progress
+        """
+
+        logger.info('Categories of checks that will be run: {cats}'.format(
+            cats=', '.join(categories)))
+
+        nb_checks = self.nb_checks()
+
+        # Initialize sub status/progress bar
+        checks_progress = manager.counter(total=nb_checks+1, 
+                                          desc='', 
+                                          unit='check',
+                                          leave=False,
+                                          bar_format=STATUSBAR_FORMAT)
+        time.sleep(.5) # hack for progress bar display
+
+        j = 1
+        for category in categories:
+
+            Output.title1('Category > {cat}'.format(cat=category.capitalize()))
+
+            i = 1
+            for check in self.checks[category]:
+
+                # Update status/progress bar
+                status = ' +--> Current check [{cur}/{total}]: {category} > ' \
+                    '{checkname}'.format(
+                        cur       = j,
+                        total     = nb_checks,
+                        category  = check.category,
+                        checkname = check.name)
+
+                checks_progress.desc = '{status}{fill}'.format(
+                    status = status,
+                    fill   = ' '*(DESC_LENGTH-len(status)))
+                checks_progress.update()
+                if attack_progress:
+                    # Hack to refresh the attack progress bar without incrementing
+                    # useful if the tool run during the check has cleared the screen
+                    attack_progress.refresh()
+
+
+                # Run the check if and only if:
+                #   - The check has not been already run for this target (except 
+                #       if --recheck is specified in command-line)
+                #   - Target is compliant with the check,
+                #   - The tool used for the check is well installed.
+                if i > 1: print()
+                
+                results_req = ResultsRequester(sqlsession)
+                results_req.select_mission(target.service.host.mission.name)
+                filter_ = Filter(FilterOperator.AND)
+                filter_.add_condition(Condition(target.service.id, 
+                    FilterData.SERVICE_ID))
+                filter_.add_condition(Condition(check.name, FilterData.CHECK_NAME))
+                results_req.add_filter(filter_)
+                result = results_req.get_first_result()
+
+                if result is None or arguments.args.recheck == True:
+
                     if check.check_target_compliance(target):
                         Output.title2('[{category}][Check {num:02}/{total:02}] ' \
                             '{name} > {description}'.format(
@@ -184,8 +246,8 @@ class ServiceChecks:
                                 description = check.description))
 
                         if not check.tool.installed:
-                            logger.warning('Skipped: the tool "{tool}" used by this ' \
-                                'check is not installed yet'.format(
+                            logger.warning('Skipped: the tool "{tool}" used by ' \
+                                'this check is not installed yet'.format(
                                     tool=check.tool.name))
                         else:
                             try:
@@ -201,111 +263,187 @@ class ServiceChecks:
                                     check=check.name))
 
                     else:
-                        logger.info('[{category}][Check {num:02}/{total:02}] {name} > ' \
-                            'Skipped because context requirements does not apply to ' \
-                            'the target'.format(
+                        logger.info('[{category}][Check {num:02}/{total:02}] ' \
+                            '{name} > Skipped because context requirements are ' \
+                            'not matching the target'.format(
                                 name     = check.name,
                                 category = category.capitalize(),
                                 num      = j,
                                 total    = nb_checks))
                         time.sleep(.2)
-                    i += 1
-                    j += 1
-
-            checks_progress.update()
-            time.sleep(.5)
-
-            checks_progress.close()     
-
-        # Special mode
-        # User has provided either an attack profile or a list of checks to run 
-        # (may be one single check)
-        else:
-
-            # User has submitted list of checks
-            if filter_checks:
-                filter_checks = list(filter(
-                    lambda x: self.is_existing_check(x), filter_checks))
-
-                if not filter_checks:
-                    logger.warning('None of the selected checks is existing for the ' \
-                        'service {service}'.format(service=target.get_service_name()))
-                    return
-
-                logger.info('Selected check(s) that will be run:')
-                for c in filter_checks:
-                    check = self.get_check(c)
-                    if check:
-                        Output.print('    | - {name} ({category})'.format(
-                            name=c, category=check.category))
-
-            # User has submitted an attack profile
-            else:
-                if not attack_profile.is_service_supported(target.get_service_name()):
-                    logger.warning('The attack profile {profile} is not supported for ' \
-                        'target service {service}'.format(
-                            profile=attack_profile, service=target.get_service_name()))
-                    return
                 else:
-                    filter_checks = attack_profile.get_checks_for_service(
-                        target.get_service_name())
 
-                    logger.info('Selected attack profile: {}'.format(attack_profile))
- 
+                    logger.info('[{category}][Check {num:02}/{total:02}] ' \
+                            '{name} > Skipped because the check has already ' \
+                            'been run'.format(
+                                name     = check.name,
+                                category = category.capitalize(),
+                                num      = j,
+                                total    = nb_checks))
+                    time.sleep(.2)
 
-            # Initialize sub status/progress bar
-            checks_progress = manager.counter(total=len(filter_checks)+1, 
-                                              desc='', 
-                                              unit='check',
-                                              leave=False,
-                                              bar_format=STATUSBAR_FORMAT)
-            time.sleep(.5) # hack for progress bar display
+                i += 1
+                j += 1
 
-            i = 1
-            for checkname in filter_checks:
-                print()
-                check = self.get_check(checkname)
+        checks_progress.update()
+        time.sleep(.5)
 
-                # Update status/progress bar
-                status = ' +--> Current check [{cur}/{total}]: {category} > ' \
-                    '{checkname}'.format(
-                        cur       = i,
-                        total     = len(filter_checks),
-                        category  = check.category,
-                        checkname = checkname)
+        checks_progress.close()
+        return
 
-                checks_progress.desc = '{status}{fill}'.format(
-                    status = status,
-                    fill   = ' '*(DESC_LENGTH-len(status)))
-                checks_progress.update()
-                if attack_progress:
-                    # Hack to refresh the attack progress bar without incrementing
-                    # useful if the tool run during the check has cleared the screen
-                    attack_progress.update(incr=0, force=True) 
 
-                # Run the check
-                Output.title2('[Check {num:02}/{total:02}] {name} > ' \
-                    '{description}'.format(
-                        num         = i,
-                        total       = len(filter_checks),
-                        name        = check.name,
-                        description = check.description))
-                try:
-                    check.run(target, 
-                              arguments,
-                              sqlsession,
-                              results_requester, 
-                              fast_mode=fast_mode)
-                except KeyboardInterrupt:
-                    print()
-                    logger.warning('Check {check} skipped !'.format(check=check.name))
+    def __run_special_mode(self
+                           target, 
+                           arguments,
+                           sqlsession,
+                           results_requester, 
+                           filter_checks=None, 
+                           attack_profile=None,
+                           fast_mode=False,
+                           attack_progress=None):
+        """
+        Run checks for the service in special mode, i.e. when user has provided
+        either an attack profile (pre-selection of checks) or a list of checks
+        (may even be one single check to run)
 
-                i += 1     
+        :param Target target: Target
+        :param ArgumentsParser arguments: Arguments from command-line
+        :param Session sqlsession: SQLAlchemy session
+        :param ResultsRequester results_requester: Accessor for Results Model
+        :param list filter_checks: Selection of checks to run (default: all)
+        :param AttackProfile attack_profile: Attack profile (default: no profile)
+        :param bool fast_mode: Set to true to disable prompts
+        :param enlighten.Counter attack_progress: Attack progress        
+        """
 
+        # User has submitted list of checks
+        if filter_checks:
+            filter_checks = list(filter(
+                lambda x: self.is_existing_check(x), filter_checks))
+
+            if not filter_checks:
+                logger.warning('None of the selected checks is existing for the ' \
+                    'service {service}'.format(service=target.get_service_name()))
+                return
+
+            logger.info('Selected check(s) that will be run:')
+            for c in filter_checks:
+                check = self.get_check(c)
+                if check:
+                    Output.print('    | - {name} ({category})'.format(
+                        name=c, category=check.category))
+
+        # User has submitted an attack profile
+        else:
+            if not attack_profile.is_service_supported(target.get_service_name()):
+                logger.warning('The attack profile {profile} is not supported for ' \
+                    'target service {service}'.format(
+                        profile=attack_profile, service=target.get_service_name()))
+                return
+            else:
+                filter_checks = attack_profile.get_checks_for_service(
+                    target.get_service_name())
+
+                logger.info('Selected attack profile: {}'.format(attack_profile))
+
+
+        # Initialize sub status/progress bar
+        checks_progress = manager.counter(total=len(filter_checks)+1, 
+                                          desc='', 
+                                          unit='check',
+                                          leave=False,
+                                          bar_format=STATUSBAR_FORMAT)
+        time.sleep(.5) # hack for progress bar display
+
+        i = 1
+        for checkname in filter_checks:
+            print()
+            check = self.get_check(checkname)
+
+            # Update status/progress bar
+            status = ' +--> Current check [{cur}/{total}]: {category} > ' \
+                '{checkname}'.format(
+                    cur       = i,
+                    total     = len(filter_checks),
+                    category  = check.category,
+                    checkname = checkname)
+
+            checks_progress.desc = '{status}{fill}'.format(
+                status = status,
+                fill   = ' '*(DESC_LENGTH-len(status)))
             checks_progress.update()
-            time.sleep(.5)
+            if attack_progress:
+                # Hack to refresh the attack progress bar without incrementing
+                # useful if the tool run during the check has cleared the screen
+                attack_progress.update(incr=0, force=True) 
 
-            checks_progress.close()               
+            # Run the check if:
+            #   - The check has not been already run for this target (except 
+            #       if --recheck is specified in command-line)
+            #   - Target is compliant with the check,
+            #   - The tool used for the check is well installed.
+
+            results_req = ResultsRequester(sqlsession)
+            results_req.select_mission(target.service.host.mission.name)
+            filter_ = Filter(FilterOperator.AND)
+            filter_.add_condition(Condition(target.service.id, 
+                FilterData.SERVICE_ID))
+            filter_.add_condition(Condition(check.name, FilterData.CHECK_NAME))
+            results_req.add_filter(filter_)
+            result = results_req.get_first_result()
+
+            if result is None or arguments.args.recheck == True:
+
+                if check.check_target_compliance(target):
+
+                    Output.title2('[Check {num:02}/{total:02}] {name} > ' \
+                        '{description}'.format(
+                            num         = i,
+                            total       = len(filter_checks),
+                            name        = check.name,
+                            description = check.description))
+
+                    if not check.tool.installed:
+                        logger.warning('Skipped: the tool "{tool}" used by ' \
+                            'this check is not installed yet'.format(
+                                tool=check.tool.name))
+                    else:
+                        try:
+                            check.run(target, 
+                                      arguments,
+                                      sqlsession,
+                                      results_requester, 
+                                      fast_mode=fast_mode)
+                        except KeyboardInterrupt:
+                            print()
+                            logger.warning('Check {check} skipped !'.format(
+                                check=check.name))
+
+                else:
+                    logger.info('[Check {num:02}/{total:02}] ' \
+                        '{name} > Skipped because context requirements are ' \
+                        'not matching the target'.format(
+                            name     = check.name,
+                            num      = j,
+                            total    = nb_checks))
+                    time.sleep(.2)
+
+            else:
+
+                logger.info('[Check {num:02}/{total:02}] ' \
+                        '{name} > Skipped because the check has already ' \
+                        'been run'.format(
+                            name     = check.name,
+                            num      = j,
+                            total    = nb_checks))
+                time.sleep(.2)
+
+            i += 1     
+
+        checks_progress.update()
+        time.sleep(.5)
+
+        checks_progress.close()  
 
 
     #------------------------------------------------------------------------------------

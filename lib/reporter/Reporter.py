@@ -311,14 +311,16 @@ class Reporter:
                 webtechnos = ' | '.join(tmp)
 
                 # Screenshot
-                if service.screenshot is not None \
-                        and service.screenshot.status == ScreenStatus.OK:
-
-                    img_name = 'scren-{ip}-{port}-{id}'.format(
+                img_name = 'scren-{ip}-{port}-{id}'.format(
                         ip=str(service.host.ip),
                         port=service.port,
                         id=service.id)
-                    path = self.output_path + '/screenshots'
+                path = self.output_path + '/screenshots'
+
+                if service.screenshot is not None \
+                        and service.screenshot.status == ScreenStatus.OK \
+                        and FileUtils.exists(path + '/' + img_name + '.png') \
+                        and FileUtils.exists(path + '/' + img_name + '.thumb.png'):
 
                     screenshot = """
                     <a href="{screenlarge}" title="{title}" class="image-link">
@@ -334,7 +336,7 @@ class Reporter:
                     <img src="data:image/png;base64,{unavailable}">
                     """.format(unavailable=unavailable_b64)
 
-
+                # HTML for table row
                 html += """
                 <tr{clickable}>
                     <td>{url}</td>

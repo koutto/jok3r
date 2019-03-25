@@ -69,6 +69,8 @@ class ScreenshotsProcessor:
                 # Create thumbnail if status is OK
                 if status == ScreenStatus.OK:
                     thumb = ImageUtils.create_thumbnail(screen, 300, 300)
+                    if not thumb:
+                        status = ScreenStatus.ERROR
                     s.screenshot.status = status
                     s.screenshot.image = screen
                     s.screenshot.thumbnail = thumb

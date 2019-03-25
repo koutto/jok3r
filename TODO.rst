@@ -31,10 +31,7 @@ IMPROVEMENTS / NEW FEATURES
 
 
 
-* Remove debug traces for screenshoter
-* Refactoring Screenshoter
 * Do not re-run checks already done
-* Attack single target -> add to default mission if nothing specified
 * ssh-audit mastchstring
 
 

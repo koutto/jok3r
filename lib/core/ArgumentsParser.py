@@ -253,11 +253,11 @@ class ArgumentsParser:
             default = None)
         singletarget.add_argument(
             '--add2db',
-            help    = 'Add/update the target into a given mission scope in the database',
+            help    = 'Add/update the target into a given mission scope in the database (default: mission "default")',
             action  = 'store',
             dest    = 'add',
             metavar = '<mission>',
-            default = None)
+            default = 'default')
 
 
         multitargets = parser.add_argument_group(
@@ -347,6 +347,12 @@ class ArgumentsParser:
             help    = 'Fast mode, disable prompts',
             action  = 'store_true', 
             dest    = 'fast_mode', 
+            default = False)
+        running.add_argument(
+            '--recheck',
+            help    = 'Do not skip checks when already run',
+            action  = 'store_true',
+            dest    = 'recheck',
             default = False)
         running.add_argument(
             '-d',
