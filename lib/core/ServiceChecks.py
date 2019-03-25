@@ -292,7 +292,7 @@ class ServiceChecks:
         return
 
 
-    def __run_special_mode(self
+    def __run_special_mode(self,
                            target, 
                            arguments,
                            sqlsession,

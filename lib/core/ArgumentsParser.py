@@ -421,7 +421,7 @@ class ArgumentsParser:
             metavar = '<name=value>',
             default = None)
 
-
+        parser.epilog = ATTACK_EXAMPLES
         self.subparser = parser
         self.args = parser.parse_args(sys.argv[2:])       
    

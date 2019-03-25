@@ -33,8 +33,25 @@ Supported commands:
    toolbox    Manage the toolbox
    info       View supported services/options/checks
    db         Define missions scopes, keep tracks of targets & view attacks results
-   attack     Run checks against targets
+   attack     Run security checks against targets
    
+"""
+
+ATTACK_EXAMPLES = colored.stylize('Examples:', colored.attr('bold')) + """
+  - Run all security checks against an URL in interactive mode (stop before each check):
+  python3 jok3r.py attack -t http://www.example.com/ 
+
+  - Run all security checks against a MS-SQL service (without user interaction) and add results to the mission "mayhem" in db:
+  python3 jok3r.py attack -t 192.168.1.42:1433 -s mssql --add2db mayhem
+
+  - Run only "recon" and "vulnscan" security checks against an FTP service and add results to the mission "mayhem" in db:
+  python3 jok3r.py attack -t 192.168.1.142:21 -s ftp --cat-only recon,vulnscan --add2db mayhem
+
+  - Run the "bruteforce" attack profile against an SSH service:
+  python3 jok3r.py attack -t 192.168.1.242:22 -s ssh --profile bruteforce
+
+  - Run security checks against all FTP services running on 2121/tcp and all HTTP services from the mission "mayhem" in db:
+  python3 jok3r.py attack -m mayhem -f "port=2121;service=ftp" -f "service=http" 
 """
 
 DB_INTRO = """

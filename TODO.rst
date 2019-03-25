@@ -30,8 +30,6 @@ IMPROVEMENTS / NEW FEATURES
 
 
 
-
-* Do not re-run checks already done
 * ssh-audit mastchstring
 
 
