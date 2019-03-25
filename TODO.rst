@@ -16,9 +16,6 @@ IMPROVEMENTS / NEW FEATURES
 
 
 * Improve wordlist quality:
-    * passwords
-        * https://github.com/1N3/BruteX/blob/master/wordlists/password_medium.txt
-        * https://github.com/1N3/BruteX/blob/master/wordlists/password_weak.txt
     * wordlist per language
     * wordlist per cms
     * wordlist per server
