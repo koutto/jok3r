@@ -47,33 +47,33 @@ class ScreenshotsProcessor:
 
         i = 1
         for s in services:
-            # if s.screenshot is not None \
-            #         and s.screenshot.status == ScreenStatus.OK \
-            #         and s.screenshot.image is not None \
-            #         and s.screenshot.thumbnail is not None:
-            #     logger.info('[{i}/{nb}] Screenshot already in database for {url}'.format(
-            #         i=i, nb=len(services), url=s.url))
+            if s.screenshot is not None \
+                    and s.screenshot.status == ScreenStatus.OK \
+                    and s.screenshot.image is not None \
+                    and s.screenshot.thumbnail is not None:
+                logger.info('[{i}/{nb}] Screenshot already in database for {url}'.format(
+                    i=i, nb=len(services), url=s.url))
 
-            # else:
-            logger.info('[{i}/{nb}] Taking screenshot for {url}...'.format(
-                i=i, nb=len(services), url=s.url))
-            status, screen = screenshoter.take_screenshot(s.url)
-
-            # Create Screenshot entry in database if necessary
-            if s.screenshot is None:
-                screenshot = Screenshot(status=status)
-                self.sqlsession.add(screenshot)
-                s.screenshot = screenshot
-                self.sqlsession.commit()
-
-            # Create thumbnail if status is OK
-            if status == ScreenStatus.OK:
-                thumb = ImageUtils.create_thumbnail(screen, 300, 300)
-                s.screenshot.status = status
-                s.screenshot.image = screen
-                s.screenshot.thumbnail = thumb
             else:
-                s.screenshot.status = status
+                logger.info('[{i}/{nb}] Taking screenshot for {url}...'.format(
+                    i=i, nb=len(services), url=s.url))
+                status, screen = screenshoter.take_screenshot(s.url)
+
+                # Create Screenshot entry in database if necessary
+                if s.screenshot is None:
+                    screenshot = Screenshot(status=status)
+                    self.sqlsession.add(screenshot)
+                    s.screenshot = screenshot
+                    self.sqlsession.commit()
+
+                # Create thumbnail if status is OK
+                if status == ScreenStatus.OK:
+                    thumb = ImageUtils.create_thumbnail(screen, 300, 300)
+                    s.screenshot.status = status
+                    s.screenshot.image = screen
+                    s.screenshot.thumbnail = thumb
+                else:
+                    s.screenshot.status = status
             self.sqlsession.commit()
 
             i += 1

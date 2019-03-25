@@ -125,12 +125,7 @@ class WebScreenshoter:
                 if i < self.max_attempts:
                     logger.info('Web Screenshot: Hit timeout limit when connecting ' \
                         'to {url}, retrying...'.format(url=url))
-                    # Re-create driver
-                    self.driver.quit()
-                    self.create_driver()
-                    if not self.driver:
-                        logger.warning('Web Screenshot: An error occured when retrying ' \
-                            'to connect to ')
+                    if not self.__recreate_driver():
                         status = ScreenStatus.ERROR
                         break
                 else:
@@ -149,12 +144,7 @@ class WebScreenshoter:
                 if i < self.max_attempts:
                     logger.info('Web Screenshot: WebDriverError when connecting to ' \
                         '{url}, retrying...'.format(url=url))
-                    # Re-create driver
-                    self.driver.quit()
-                    self.create_driver()
-                    if not self.driver:
-                        logger.warning('Web Screenshot: An error occured when retrying ' \
-                            'to connect to ')
+                    if not self.__recreate_driver():
                         status = ScreenStatus.ERROR
                         break
                 else:
@@ -184,11 +174,7 @@ class WebScreenshoter:
                             'screenshot for {url}, retrying...'.format(url=url))
                         
                         # Re-create driver
-                        self.driver.quit()
-                        self.create_driver()
-                        if not self.driver:
-                            logger.warning('Web Screenshot: An error occured when retrying ' \
-                                'to connect to ')
+                        if not self.__recreate_driver():
                             status = ScreenStatus.ERROR
                             screenshot = None
                             break
@@ -202,6 +188,23 @@ class WebScreenshoter:
 
         return status, screenshot
 
+
+    def __recreate_driver(self):
+        """
+        Attempt to re-create selenium FirefoxDriver.
+        Called when an error has occured and before making a retry.
+
+        :return: Boolean indicating status
+        :rtype: bool
+        """
+        self.driver.quit()
+        self.create_driver()
+        if not self.driver:
+            logger.warning('Web Screenshot: An error occured when reinitializing ' \
+                'WebDriver')
+            return False
+        else:
+            return True
 
 
 

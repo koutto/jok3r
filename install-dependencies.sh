@@ -46,6 +46,12 @@ echo
 
 # -----------------------------------------------------------------------------
 
+print_title "[~] Update repositories"
+apt-get update
+print_delimiter
+
+# -----------------------------------------------------------------------------
+
 if ! [ -x "$(command -v git)" ]; then
     print_title "[~] Install git ..."
     apt-get install -y git
