@@ -48,19 +48,15 @@ CHECKS TO ADD
 ===============================================================================
 
 
-* add https://github.com/Coalfire-Research/java-deserialization-exploits (websphere rce, jenkins rce...)
-
-
-
+* https://github.com/Coalfire-Research/java-deserialization-exploits/blob/master/OpenNMS/opennms_rce.py
 * https://github.com/AlisamTechnology/PRESTA-modules-shell-exploit/blob/master/PRESTA-shell-exploit.pl
-* https://github.com/breenmachine/JavaUnserializeExploits
-* https://github.com/DanMcInerney/pentest-machine
 * Sharepoint -> https://github.com/TestingPens/SPartan
 * Better exploit for MS17-010 (support for more win versions, only Win7 and 2008 R2 for now)
+
 * cve jquery
 * check https://bitvijays.github.io/LFF-IPS-P2-VulnerabilityAnalysis.html
 * dirsearch : -t 40 --timeout= (add --timeout to dirsearch)
-* https://github.com/hlldz/wildPwn
+
 
 
 
