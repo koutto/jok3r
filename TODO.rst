@@ -51,17 +51,17 @@ CHECKS TO ADD
 * https://github.com/Coalfire-Research/java-deserialization-exploits/blob/master/OpenNMS/opennms_rce.py
 * https://github.com/AlisamTechnology/PRESTA-modules-shell-exploit/blob/master/PRESTA-shell-exploit.pl
 * Sharepoint -> https://github.com/TestingPens/SPartan
-* Better exploit for MS17-010 (support for more win versions, only Win7 and 2008 R2 for now)
-
-* cve jquery
 * check https://bitvijays.github.io/LFF-IPS-P2-VulnerabilityAnalysis.html
-* dirsearch : -t 40 --timeout= (add --timeout to dirsearch)
-
-
 
 
 
 * attack profiles
+
+
+DOCUMENTATION
+===============================================================================
+* Important note: need to be reachable directly from target for exploit with reverse shell !
+
 
 
 SERVICES TO ADD

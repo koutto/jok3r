@@ -66,6 +66,9 @@ vulns_match['http'] = {
     'jexboss': {
         '\[\*\]\s*Checking\s+(?P<m1>.*):\s*\[\s*(EXPOSED|VULNERABLE)\s*\]': '$1 vulnerable',
     },
+    'jqshell': {
+        'Potential Shell Uploaded': 'Arbitrary file upload in jQuery File Upload widget (CVE-2018-9206)',
+    },
     'metasploit': {
         'webdav_internal_ip[\s\S]*Found internal IP in WebDAV response (?P<m1>.*)': 'WebDAV response leaks internal IP: $1',
         'webdav_website_content[\s\S]*Found file or directory in WebDAV response (?P<m1>.*)': 'WebDAV misconfiguration - Webserver discloses its content',
@@ -76,7 +79,7 @@ vulns_match['http'] = {
         'jenkins_java_deserialize[\s\S]*?session [1-9] open': 'Jenkins: Java Deserialization RCE (CVE-2015-8103',
         'jenkins_enum[\s\S]*?does not require authentication \(200\)': 'Jenkins: Authentication disabled',
         'joomla_comfields_sqli_rce[\s\S]*?Joomla comfields SQLi to RCE vulnerability OK': 'Joomla: Component Fields SQLi Remote Code Execution (CVE-2017-8917)',
-        'struts2_code_exec_showcase[\s\S]*Apache Struts2 CVE-2017-9791 vulnerability OK': 'Apache Struts2 RCE Showcase OGNL (CVE-2017-9791)',
+        'struts2_code_exec_showcase[\s\S]*?session [1-9] open': 'Apache Struts2 RCE Showcase OGNL (CVE-2017-9791)',
         'Unauthenticated Jenkins console vulnerability OK': 'Jenkins: Unauthenticated Jenkins-CI script console (RCE)',
         'weblogic_deserialize[\s\S]*?session [1-9] open': 'Weblogic T3 Java Deserialize (CVE-2018-2628)',
     },
