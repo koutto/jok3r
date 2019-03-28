@@ -69,8 +69,9 @@ class SmartStart:
                 '(401 Unauthorized)')
             self.cu.add_option('htaccess', 'true')
 
-        # Try to detect web server from Nmap banner
+        # Try to detect web server and/or appserver from Nmap banner
         self.__detect_product_from_banner('web-server')
+        self.__detect_product_from_banner('web-appserver')
 
         # Try to detect supported products from web technologies
         if self.service.web_technos:

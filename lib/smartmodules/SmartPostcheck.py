@@ -265,7 +265,12 @@ class SmartPostcheck:
     #------------------------------------------------------------------------------------
 
     def __detect_products(self):
-        """Detect product from command output"""
+        """
+        Detect product from command output
+        
+        For a given tool, and for a given product, if there are several matchstrings
+        defined, their order is important because it stops after the first match.
+        """
         if self.service.name in products_match.keys():
 
             for prodtype in products_match[self.service.name].keys():
@@ -324,7 +329,7 @@ class SmartPostcheck:
                                 # (potentially with version) is supported per type.
                                 # If name not found yet, give a try to next pattern
                                 break_prodnames = True
-                                break
+                                #break
 
                         if break_prodnames:
                             break

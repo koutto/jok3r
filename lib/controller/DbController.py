@@ -257,11 +257,13 @@ class DbController(cmd2.Cmd):
         filter_ = Filter(FilterOperator.AND)
 
         if args.addrs:
+            filter_addrs = Filter(FilterOperator.OR)
             for addr in args.addrs:
                 if NetUtils.is_valid_ip(addr) or NetUtils.is_valid_ip_range(addr):
-                    filter_.add_condition(Condition(addr, FilterData.IP))
+                    filter_addrs.add_condition(Condition(addr, FilterData.IP))
                 else:
-                    filter_.add_condition(Condition(addr, FilterData.HOST))
+                    filter_addrs.add_condition(Condition(addr, FilterData.HOST))
+            filter_.add_condition(filter_addrs)
 
         # --search <string>
         if args.search:
@@ -486,45 +488,35 @@ class DbController(cmd2.Cmd):
         if args.add:
             host, port, service = args.add
 
-            if NetUtils.is_valid_ip(host):
-                ip = host
-                hostname = NetUtils.reverse_dns_lookup(ip) 
-                logger.info('Reverse DNS lookup for {ip}...'.format(ip=ip))
-                if hostname != ip:
-                    logger.info('{ip} -> {hostname}'.format(ip=ip, hostname=hostname))
-                else:
-                    logger.info('No DNS name found for IP')
-
-            else:
-                ip = NetUtils.dns_lookup(host)
-                if not ip:
-                    logger.error('Cannot resolve hostname')
-                    print()
-                    return
-                hostname = host
-                logger.info('DNS lookup on {hostname} -> IP: {ip}'.format(
-                    hostname=host, ip=ip))
-
             if not NetUtils.is_valid_port(port):
                 logger.error('Port is invalid, not in range [0-65535]')
             elif not self.settings.services.is_service_supported(service, multi=False):
                 logger.error('Service {name} is not valid/supported'.format(
                     name=service.lower()))
             else:
-                req.add_service(ip, 
-                                hostname, 
-                                port, 
-                                self.settings.services.get_protocol(service), 
-                                service)
-        
+                req.add_service(
+                    host, 
+                    port, 
+                    self.settings.services.get_protocol(service), 
+                    service, 
+                    self.settings.services,
+                    grab_banner_nmap=True,
+                    reverse_dns=True, 
+                    availability_check=True)
+
         # --url <url>
         elif args.url:
             args.url = WebUtils.add_prefix_http(args.url)
             if not WebUtils.is_valid_url(args.url):
                 logger.error('URL is invalid')
             else:
-                req.add_url(args.url)
-
+                req.add_url(
+                    args.url, 
+                    self.settings.services,
+                    reverse_dns=True,
+                    availability_check=True,
+                    grab_banner_nmap=True,
+                    web_technos_detection=True)
         # --del
         elif args.delete:
             if not req.filter_applied:
@@ -1238,10 +1230,10 @@ class DbController(cmd2.Cmd):
             '- For any service: <IP/HOST>:<PORT>,<SERVICE>\n' \
             '- For HTTP service: <URL> (must begin with http(s)://)', 
         formatter_class=formatter_class)
-    file.add_argument(
-        '--no-html-title', 
-        action = 'store_true', 
-        help   = 'Do not grab HTML title for HTTP services')
+    # file.add_argument(
+    #     '--no-html-title', 
+    #     action = 'store_true', 
+    #     help   = 'Do not grab HTML title for HTTP services')
     file.add_argument(
         '--no-dns-reverse',
         action = 'store_true',
@@ -1297,34 +1289,16 @@ class DbController(cmd2.Cmd):
                         'Line skipped')
                     continue
 
-                # IP submitted
-                if NetUtils.is_valid_ip(ip):
-                    if not args.no_dns_reverse:
-                        logger.info('Reverse DNS lookup for {ip}...'.format(ip=ip))
-                        hostname = NetUtils.reverse_dns_lookup(ip) 
-                        if hostname != ip:
-                            logger.info('{ip} -> {hostname}'.format(
-                                ip=ip, hostname=hostname))
-                    else:
-                        hostname = ip
-
-                # Hostname submitted
-                else:
-                    hostname = ip
-                    ip = NetUtils.dns_lookup(hostname)
-                    if not ip:
-                        logger.error('Cannot resolve hostname. Line skipped')
-                        continue
-                    logger.info('DNS lookup on {hostname} -> IP: {ip}'.format(
-                        hostname=hostname, ip=ip))
-
                 # Add the service in current mission scope
-                req.add_service(ip=ip, 
-                                hostname=hostname, 
-                                port=port, 
-                                protocol=self.settings.services.get_protocol(service), 
-                                service=service,
-                                grab_banner_nmap=not args.no_nmap_banner)
+                up = req.add_service(
+                    ip, 
+                    port, 
+                    self.settings.services.get_protocol(service),
+                    service, 
+                    self.settings.services,
+                    grab_banner_nmap=not args.no_nmap_banner,
+                    reverse_dns=not args.no_dns_reverse, 
+                    availability_check=True)
 
             # For line with syntax: <URL>
             elif l.lower().startswith('http://') or l.lower().startswith('https://'):
@@ -1333,9 +1307,12 @@ class DbController(cmd2.Cmd):
                     logger.error('URL is invalid')
                 else:
                     # Add the URL in current mission scope
-                    req.add_url(url=l,
+                    req.add_url(l,
+                                self.settings.services,
+                                reverse_dns=not args.no_dns_reverse,
+                                availability_check=True,
                                 grab_banner_nmap=not args.no_nmap_banner,
-                                grab_html_title=not args.no_html_title)
+                                web_technos_detection=True)
 
         print()
 
@@ -1344,7 +1321,7 @@ class DbController(cmd2.Cmd):
         """Complete with filename"""
         flag_dict = {
             'file': self.path_complete,
-            '--no-html-title'  : self.path_complete,
+            #'--no-html-title'  : self.path_complete,
             '--no-dns-reverse' : self.path_complete,
             '--no-nmap-banner' : self.path_complete,
 

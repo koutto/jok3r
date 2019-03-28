@@ -12,6 +12,7 @@ from lib.output.Output import Output
 from lib.output.StatusBar import *
 from lib.requester.Filter import Filter
 from lib.requester.Condition import Condition
+from lib.requester.ResultsRequester import ResultsRequester
 
 class ServiceChecks:
     """All Security Checks for a Service"""
@@ -424,8 +425,8 @@ class ServiceChecks:
                         '{name} > Skipped because context requirements are ' \
                         'not matching the target'.format(
                             name     = check.name,
-                            num      = j,
-                            total    = nb_checks))
+                            num      = i,
+                            total    = len(filter_checks)))
                     time.sleep(.2)
 
             else:
@@ -434,8 +435,8 @@ class ServiceChecks:
                         '{name} > Skipped because the check has already ' \
                         'been run'.format(
                             name     = check.name,
-                            num      = j,
-                            total    = nb_checks))
+                            num      = i,
+                            total    = len(filter_checks)))
                 time.sleep(.2)
 
             i += 1     

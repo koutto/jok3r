@@ -23,8 +23,8 @@ from lib.webtechdetector.WebTechnoDetector import WebTechnoDetector
 
 class Target:
     """
-    Target object is used during an attack in order to:
-    - Gives access to information about targeted service, 
+    Target object contains a Service db object and implements method to:
+    - Give access to information about targeted service, 
     - Check availability of targeted service,
     """
 
@@ -56,6 +56,7 @@ class Target:
 
         if NetUtils.is_valid_ip(url.hostname):
             self.service.host.ip = url.hostname
+            print(self.service.host.ip)
             self.service.host.hostname = url.hostname # updated in smart_check
 
         else:
@@ -82,7 +83,11 @@ class Target:
             # host.ip actually stores a hostname at this point, a DNS lookup is needed
             self.service.host.hostname = self.service.host.ip
             self.service.host.ip = NetUtils.dns_lookup(self.service.host.hostname) 
-            if not self.service.host.ip:
+            if self.service.host.ip:
+                logger.info('DNS lookup on {hostname} -> IP: {ip}'.format(
+                    hostname=self.service.host.hostname, 
+                    ip=self.service.host.ip))
+            else:
                 raise TargetException('Unable to resolve {}'.format(
                     self.service.host.hostname))
 
@@ -94,7 +99,7 @@ class Target:
                 proto = 'http'
 
             self.service.url = '{proto}://{ip}:{port}'.format(
-                proto=proto, host=self.service.host.ip, port=self.service.port)
+                proto=proto, ip=self.service.host.ip, port=self.service.port)
 
 
     #------------------------------------------------------------------------------------
@@ -331,6 +336,7 @@ class Target:
             logger.info('Grab banner for [{service}] via Nmap...'.format(service=self))
             self.service.banner = NetUtils.clean_nmap_banner(
                 NetUtils.grab_banner_nmap(str(self.service.host.ip), self.service.port))
+            logger.info('Banner: {banner}'.format(banner=self.service.banner))
 
             # Try to deduce OS from banner if possible
             if not self.service.host.os:

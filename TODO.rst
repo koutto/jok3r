@@ -2,7 +2,6 @@
 TODO
 =====
 
-sudo docker run -i -t --name jok3r-container -w /root/jok3r -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix --shm-size 2g --net=host koutto/jok3r
 
 Docker Environment
 ==================
@@ -62,6 +61,8 @@ DOCUMENTATION
 ===============================================================================
 * Important note: need to be reachable directly from target for exploit with reverse shell !
 
+sudo docker run -i -t --name jok3r-container -w /root/jok3r -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix --shm-size 2g --net=host koutto/jok3r
+
 
 
 SERVICES TO ADD
@@ -82,3 +83,32 @@ SERVICES TO ADD
 * IMAP
 
 
+
+
+
+
+root@kali:~/jok3r/toolbox/http/wfuzz# ./wfuzz -c -u http://31.204.93.90:8181//FUZZ/ -w "/root/jok3r/wordlists/services/http/discovery/raft-large-directories.txt" -t 30 --hc 400,404,405,406,429,500,502,503,504,000 
+********************************************************
+* Wfuzz 2.3.4 - The Web Fuzzer                         *
+********************************************************
+
+Target: http://31.204.93.90:8181//FUZZ/
+Total requests: 76114
+
+==================================================================
+ID   Response   Lines      Word         Chars          Payload    
+==================================================================
+
+000103:  C=200    225 L     1269 W    16805 Ch    "docs"
+000167:  C=302      0 L        0 W        0 Ch    "manager"
+003761:  C=200    202 L      498 W    11432 Ch    ""
+008497:  C=404      0 L       47 W     1016 Ch    "ClickInfo"
+Unhandled exception: Invalid IPv6 URL
+
+
+
+
+set THREADS 5
+
+* test add_service
+* test add_url

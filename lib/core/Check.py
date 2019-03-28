@@ -97,7 +97,7 @@ class Check:
                     mode = 'y'
                 else:
                     mode = Output.prompt_choice(
-                        'Run command {num}? [Y/n/q] '.format(
+                        'Run command {num}? [Y/n/f/q] '.format(
                             num='' if len(self.commands) == 1 else \
                                 '#{num:02} '.format(num=i)), 
                         choices={

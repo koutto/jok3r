@@ -545,6 +545,9 @@ class ArgumentsParser:
 
         target = self.args.target_ip_or_url
 
+        if not target:
+            return True
+
         # Target specified is an URL
         if target.lower().startswith('http://') or target.lower().startswith('https://'):
             self.args.target_mode = TargetMode.URL

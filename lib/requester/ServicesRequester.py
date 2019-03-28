@@ -6,6 +6,7 @@
 from six.moves.urllib.parse import urlparse
 from sqlalchemy.orm import contains_eager
 
+from lib.core.Target import Target
 from lib.requester.Requester import Requester
 from lib.utils.NetUtils import NetUtils
 from lib.utils.StringUtils import StringUtils
@@ -84,8 +85,15 @@ class ServicesRequester(Requester):
 
     #------------------------------------------------------------------------------------
     
-    def add_service(self, ip, hostname, port, protocol, service, 
-                    grab_banner_nmap=True):
+    def add_service(self, 
+                    ip, 
+                    port, 
+                    protocol, 
+                    service, 
+                    services_config,
+                    grab_banner_nmap=True,
+                    reverse_dns=True, 
+                    availability_check=True):
         """
         Add a service into the current mission scope in database.
 
@@ -99,72 +107,72 @@ class ServicesRequester(Requester):
         :rtype: bool
         """
         proto = {'tcp': Protocol.TCP, 'udp': Protocol.UDP}.get(protocol, Protocol.TCP)
+
+        service = Service(
+            port     = int(port),
+            protocol = proto,
+            name     = service)
+        service.host = Host(ip=ip)
+        # try:
+        target = Target(service, services_config)
+        # except Exception as e:
+        #     logger.error(e)
+        #     return False
+
         matching_service = self.sqlsess.query(Service).join(Host).join(Mission)\
                                        .filter(Mission.name == self.current_mission)\
-                                       .filter(Host.ip == ip)\
+                                       .filter(Host.ip == service.host.ip)\
                                        .filter(Service.port == int(port))\
                                        .filter(Service.protocol == proto).first()
-
-        # Check if port is open
-        if proto == Protocol.TCP:
-            up = NetUtils.is_tcp_port_open(ip, port)
-        else:
-            up = NetUtils.is_udp_port_open(ip, port)
 
         if matching_service:
             logger.warning('Service already present into database')
             return False
+
         else:
+
+            up = target.smart_check(
+                reverse_dns, 
+                availability_check, 
+                grab_banner_nmap)
+
             if up:
-                 # Grab Nmap banner
-                if grab_banner_nmap:
-                    logger.info('Grabbing banner from {ip}:{port} with Nmap...'.format(
-                        ip=ip, port=port))
-                    banner = NetUtils.clean_nmap_banner(
-                        NetUtils.grab_banner_nmap(ip, port))
-                    logger.info('Banner: {}'.format(banner or 'None'))
-                    os = NetUtils.os_from_nmap_banner(banner)
-                    if os:
-                        logger.info('Detected Host OS: {}'.format(os))
+                # Add service in db (and host if not existing)
+                matching_host = self.sqlsess.query(Host).join(Mission)\
+                                        .filter(Mission.name == self.current_mission)\
+                                        .filter(Host.ip == service.host.ip).first()
+                new_host = Host(ip=service.host.ip, hostname=service.host.hostname)
+                if matching_host:
+                    matching_host.merge(new_host)
+                    self.sqlsess.commit()
+                    service.host = matching_host
                 else:
-                    banner = ''
-                    os = ''
+                    mission = self.sqlsess.query(Mission)\
+                                  .filter(Mission.name == self.current_mission).first()
+                    new_host.mission = mission
+                    service.host = new_host
+                    self.sqlsess.add(new_host)
+
+                self.sqlsess.add(service)
+                self.sqlsess.commit()
+
+                logger.success('Service added: host {ip} | port {port}/{proto} | ' \
+                'service {service}'.format(
+                    ip=service.host.ip, port=port, proto=protocol, service=service.name))
+                return True
+
             else:
-                logger.error('Port seems to be closed !')
+                logger.error('Service is not reachable, therefore it is not added')
                 return False
 
-            # Add service in db (and host if not existing)
-            service = Service(name     = service,
-                              port     = int(port),
-                              protocol = proto,
-                              up       = up,
-                              banner   = banner)
 
-            matching_host = self.sqlsess.query(Host).join(Mission)\
-                                        .filter(Mission.name == self.current_mission)\
-                                        .filter(Host.ip == ip).first()
-            new_host = Host(ip=ip, hostname=hostname, os=os)
-            if matching_host:
-                matching_host.merge(new_host)
-                self.sqlsess.commit()
-                service.host = matching_host
-            else:
-                mission = self.sqlsess.query(Mission)\
-                              .filter(Mission.name == self.current_mission).first()
-                new_host.mission = mission
-                service.host = new_host
-                self.sqlsess.add(new_host)
-
-            self.sqlsess.add(service)
-            self.sqlsess.commit()
-
-            logger.success('Service added: host {ip} | port {port}/{proto} | ' \
-                'service {service}'.format(
-                    ip=ip, port=port, proto=protocol, service=service.name))
-            return True
-
-
-    def add_url(self, url, grab_banner_nmap=True, grab_html_title=True):
+    def add_url(self, 
+                url,
+                services_config,
+                reverse_dns=True, 
+                availability_check=True, 
+                grab_banner_nmap=True,
+                web_technos_detection=True):
         """
         Add a URL into the current mission scope in database.
 
@@ -181,90 +189,49 @@ class ServicesRequester(Requester):
         if matching_service:
             logger.warning('URL already present into database')
             return False
+
         else:
-
-            # Parse URL: Get IP, hostname, port
-            parsed = urlparse(url)
-            if NetUtils.is_valid_ip(parsed.hostname):
-                ip = parsed.hostname
-                hostname = NetUtils.reverse_dns_lookup(parsed.hostname)
-            else:
-                ip = NetUtils.dns_lookup(parsed.hostname)
-                if not ip:
-                    logger.error('Host cannot be resolved')
-                    return
-                hostname = parsed.hostname
-            port = WebUtils.get_port_from_url(url)
-
-            # Check URL, grab headers, html title
-            is_reachable, status, resp_headers = WebUtils.is_url_reachable(url)
-            if is_reachable:
-
-                # Display HTTP Headers
-                if resp_headers:
-                    http_headers = '\n'.join("{}: {}".format(key,val) \
-                        for (key,val) in resp_headers.items())
-                    logger.info('HTTP Headers:')
-                    #print(http_headers)
-                    for l in http_headers.splitlines():
-                        Output.print('    | {}'.format(l))
-
-                # Grab HTML title
-                if grab_html_title:
-                    html_title = WebUtils.grab_html_title(url)
-                    logger.info('Title: {}'.format(html_title))
-                else:
-                    html_title = ''
-
-                # Grab Nmap banner
-                if grab_banner_nmap:
-                    logger.info('Grabbing banner from {ip}:{port} with Nmap...'.format(
-                        ip=ip, port=port))
-                    banner = NetUtils.clean_nmap_banner(
-                        NetUtils.grab_banner_nmap(ip, port))
-                    logger.info('Banner: {}'.format(banner or 'None'))
-                    os = NetUtils.os_from_nmap_banner(banner)
-                    if os:
-                        logger.info('Detected Host OS: {}'.format(os))
-                else:
-                    banner = ''
-                    os = ''
-
-            else:
-                # comment = 'Not reachable'
-                # banner = http_headers = ''
-                logger.error('URL is not reachable, therefore it is not added')
+            service = Service(
+                name     = 'http',
+                protocol = Protocol.TCP,
+                url      = url)
+            service.host = Host() # Update in target.smart_check()
+            try:
+                target = Target(service, services_config)
+            except Exception as e:
+                logger.error(e)
                 return False
 
-            # Add service in db (and host if not existing)
-            service = Service(name         = 'http',
-                              port         = port,
-                              protocol     = Protocol.TCP,
-                              url          = url,
-                              up           = is_reachable,
-                              http_headers = http_headers,
-                              banner       = banner,
-                              html_title   = html_title)
+            up = target.smart_check(
+                reverse_dns, 
+                availability_check, 
+                grab_banner_nmap,
+                web_technos_detection)
 
-            matching_host = self.sqlsess.query(Host).join(Mission)\
-                                        .filter(Mission.name == self.current_mission)\
-                                        .filter(Host.ip == ip).first()
-            new_host = Host(ip=ip, hostname=hostname, os=os)
-            if matching_host:
-                matching_host.merge(new_host)
+            if up:
+                matching_host = self.sqlsess.query(Host).join(Mission)\
+                                            .filter(Mission.name == self.current_mission)\
+                                            .filter(Host.ip == service.host.ip).first()
+                new_host = Host(ip=service.host.ip, hostname=service.host.hostname)
+                if matching_host:
+                    matching_host.merge(new_host)
+                    self.sqlsess.commit()
+                    service.host = matching_host
+                else:
+                    mission = self.sqlsess.query(Mission)\
+                                  .filter(Mission.name == self.current_mission).first()
+                    new_host.mission = mission
+                    service.host = new_host
+                    self.sqlsess.add(new_host)
+
+                self.sqlsess.add(service)
                 self.sqlsess.commit()
-                service.host = matching_host
-            else:
-                mission = self.sqlsess.query(Mission)\
-                              .filter(Mission.name == self.current_mission).first()
-                new_host.mission = mission
-                service.host = new_host
-                self.sqlsess.add(new_host)
+                logger.success('Service/URL added: {url}'.format(url=url))
+                return True
 
-            self.sqlsess.add(service)
-            self.sqlsess.commit()
-            logger.success('Service/URL added: {url}'.format(url=url))
-            return True
+            else:
+                logger.error('URL is not reachable, therefore it is not added')
+                return False
 
 
     def add_target(self, target):
@@ -420,8 +387,15 @@ class ServicesRequester(Requester):
                         r.protocol)))
 
                 self.sqlsess.delete(r)
+                self.sqlsess.commit()
 
-            self.sqlsess.commit()
+                # Delete host if no more service in it
+                if len(r.host.services) == 0:
+                    self.sqlsess.delete(r.host)
+
+
+
+            
 
 
     #------------------------------------------------------------------------------------
