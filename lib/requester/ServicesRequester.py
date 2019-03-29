@@ -113,11 +113,11 @@ class ServicesRequester(Requester):
             protocol = proto,
             name     = service)
         service.host = Host(ip=ip)
-        # try:
-        target = Target(service, services_config)
-        # except Exception as e:
-        #     logger.error(e)
-        #     return False
+        try:
+            target = Target(service, services_config)
+        except Exception as e:
+            logger.error(e)
+            return False
 
         matching_service = self.sqlsess.query(Service).join(Host).join(Mission)\
                                        .filter(Mission.name == self.current_mission)\
@@ -157,14 +157,19 @@ class ServicesRequester(Requester):
                 self.sqlsess.commit()
 
                 logger.success('Service added: host {ip} | port {port}/{proto} | ' \
-                'service {service}'.format(
-                    ip=service.host.ip, port=port, proto=protocol, service=service.name))
+                    'service {service}'.format(
+                        ip=service.host.ip, 
+                        port=port, 
+                        proto=protocol, 
+                        service=service.name))
                 return True
 
             else:
                 logger.error('Service is not reachable, therefore it is not added')
                 return False
 
+
+    #------------------------------------------------------------------------------------
 
     def add_url(self, 
                 url,
@@ -234,9 +239,12 @@ class ServicesRequester(Requester):
                 return False
 
 
+    #------------------------------------------------------------------------------------
+
     def add_target(self, target):
         """
-        Add a target into the current mission scope in database.
+        Add a new service into the current mission scope in database from a Target 
+        object.
 
         :param Target target: Target to add
         """
@@ -253,17 +261,16 @@ class ServicesRequester(Requester):
                               .filter(Service.protocol == target.get_protocol2())\
                               .filter(Service.url == target.get_url()).first()
 
+        # If service already exists in db, update it if necessary
         if matching_service:
-            # If service exists in db, update it if necessary
             logger.info('A matching service has been found in the database')
             matching_service.merge(target.service)
             self.sqlsess.commit()
             # Make sure to replace target info by newly created service
             target.service = matching_service 
 
-        
+        # Add host in db if it does not exist or update its info (merging)
         else:
-            # Add host in db if it does not exist or update its info (merging)
             host = self.sqlsess.query(Host).join(Mission)\
                                .filter(Mission.name == self.current_mission)\
                                .filter(Host.ip == target.get_ip()).first()
@@ -279,6 +286,7 @@ class ServicesRequester(Requester):
             # Add service in db
             self.sqlsess.add(target.service)
             self.sqlsess.commit()
+
         logger.success('{action}: host {ip} | port {port}/{proto} | ' \
             'service {service}'.format(
             action  = 'Updated' if matching_service else 'Added',

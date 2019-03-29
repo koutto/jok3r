@@ -1272,8 +1272,13 @@ class DbController(cmd2.Cmd):
             return
 
         # Process all lines
+        i = 1
         for l in f:
-            logger.info('Processing line "{line}" ...'.format(line=l))
+            if i > 1:
+                print()
+            logger.info('Processing line [{i}/{total}]: "{line}" ...'.format(
+                i=i, total=len(f), line=l))
+            i += 1
 
             # For line with syntax: <IP/HOST>:<PORT>,<SERVICE>
             if ',' in l:
@@ -1313,6 +1318,9 @@ class DbController(cmd2.Cmd):
                                 availability_check=True,
                                 grab_banner_nmap=not args.no_nmap_banner,
                                 web_technos_detection=True)
+
+            else:
+                logger.error('Incorrect syntax, line skipped')
 
         print()
 

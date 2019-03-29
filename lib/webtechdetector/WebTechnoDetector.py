@@ -5,6 +5,7 @@
 ###
 from lib.webtechdetector.Wappalyzer import Wappalyzer
 from lib.output.Output import Output
+from lib.output.Logger import logger
 
 
 class WebTechnoDetector:
@@ -32,11 +33,14 @@ class WebTechnoDetector:
         """
         Display web technologies detected in a table.
         """
-        data = list()
-        columns = ['Name', 'Version']
-        for t in self.technos:
-            data.append([t['name'], t['version']])
-        Output.table(columns, data, hrules=False)
+        if len(self.technos) > 0:
+            data = list()
+            columns = ['Name', 'Version']
+            for t in self.technos:
+                data.append([t['name'], t['version']])
+            Output.table(columns, data, hrules=False)
+        else:
+            logger.warning('No technology detected')
 
 
     def __run_wappalyzer(self):

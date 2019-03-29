@@ -38,10 +38,13 @@ class Target:
         self.service = service
         self.services_config = services_config
 
-        if self.service.url: 
-            self.__init_with_url()
-        else: 
-            self.__init_with_ip()   
+        if not self.service.host.ip or not self.service.host.hostname \
+                or not self.service.port:
+
+            if self.service.url: 
+                self.__init_with_url()
+            else: 
+                self.__init_with_ip()   
 
 
     def __init_with_url(self):
@@ -297,7 +300,7 @@ class Target:
 
         # Perform availability check
         if availability_check:
-            logger.info('Check if target is reachable...')
+            logger.info('Check if service is reachable...')
 
             # For HTTP: Check URL availability, grab headers, grab HTML title
             if self.service.url: 
@@ -305,14 +308,16 @@ class Target:
                     self.service.url)
                 self.service.up = is_reachable
 
-                if resp_headers:
-                    self.service.http_headers = '\n'.join('{}: {}'.format(key,val) \
-                        for (key,val) in resp_headers.items())
-                else:
-                    self.service.http_headers = ''
+                if is_reachable:
+                    if resp_headers:
+                        self.service.http_headers = '\n'.join('{}: {}'.format(key,val) \
+                            for (key,val) in resp_headers.items())
+                    else:
+                        self.service.http_headers = ''
 
-                if not self.service.html_title:
-                    self.service.html_title = WebUtils.grab_html_title(self.service.url)
+                    if not self.service.html_title:
+                        self.service.html_title = WebUtils.grab_html_title(
+                            self.service.url)
                 
             # For any other service: Simple port check
             elif self.service.protocol == Protocol.TCP:
@@ -321,6 +326,9 @@ class Target:
             else:
                 self.service.up = NetUtils.is_udp_port_open(
                     str(self.service.host.ip), self.service.port)
+
+            if not self.service.up:
+                return False
 
         else:
             self.service.up = True # consider it as up anyway

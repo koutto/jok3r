@@ -112,3 +112,4 @@ set THREADS 5
 
 * test add_service
 * test add_url
+* __init_with_ip/url fix !
