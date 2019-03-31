@@ -142,7 +142,7 @@ class NetUtils:
 
         for ostype in matches.keys():
             for string in matches[ostype]:
-                if string in banner.lower():
+                if string.lower() in banner.lower():
                     return ostype
 
         return ''

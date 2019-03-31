@@ -229,6 +229,7 @@ apt-get install -y --ignore-missing libxml2 libxml2-dev libxslt1-dev build-essen
 apt-get install -y --ignore-missing gcc make automake patch libssl-dev locate
 apt-get install -y --ignore-missing smbclient dnsutils libgmp-dev libffi-dev 
 apt-get install -y --ignore-missing libxml2-utils unixodbc unixodbc-dev alien
+apt-get install -y --ignore-missing bc
 print_delimiter
 
 # -----------------------------------------------------------------------------

@@ -9,7 +9,6 @@ vulns_match['java-rmi'] = {
     #     'match string (?P<m1>\S+) lorem ispum': 'MS17-010: $1',
     # }
 
-
     'jexboss': {
         #'\[\*\]\s*Checking\s+(?P<m1>.*):\s*\[\s*(EXPOSED|VULNERABLE)\s*\]': 'JBoss: $1 exposed/vulnerable',
         'Captured ICMP traffic:[\s\S]*ICMP echo request.*\n.*ICMP echo reply': 'Java-RMI Deserialize RCE in Tomcat JMX (CVE-2016-3427, CVE-2016-8735)',

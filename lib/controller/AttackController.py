@@ -75,6 +75,7 @@ class AttackController(Controller):
         self.attack_scope = AttackScope(self.settings, 
                                         self.arguments,
                                         self.sqlsess,
+                                        args.mission or args.add,
                                         filter_categories=categories, 
                                         filter_checks=args.checks, 
                                         attack_profile=args.profile,

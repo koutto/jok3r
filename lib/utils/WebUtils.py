@@ -21,10 +21,16 @@ class WebUtils:
     @staticmethod
     def add_prefix_http(url):
         """If protocol not present, add http:// prefix"""
-        if not url:
-            return False
         if not url.startswith('http://') and not url.startswith('https://'):
             return 'http://{0}'.format(url)
+        return url
+
+
+    @staticmethod
+    def remove_ending_slash(url):
+        """Remove optional ending slash at end of URL"""
+        while url.endswith('/'):
+            url = url[:-1]
         return url
 
 

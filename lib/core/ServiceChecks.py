@@ -102,7 +102,6 @@ class ServiceChecks:
             target, 
             arguments,
             sqlsession,
-            results_requester, 
             filter_categories=None, 
             filter_checks=None, 
             attack_profile=None,
@@ -119,7 +118,6 @@ class ServiceChecks:
         :param Target target: Target
         :param ArgumentsParser arguments: Arguments from command-line
         :param Session sqlsession: SQLAlchemy session
-        :param ResultsRequester results_requester: Accessor for Results Model
         :param list filter_categories: Selection of categories to run (default: all)
         :param list filter_checks: Selection of checks to run (default: all)
         :param AttackProfile attack_profile: Attack profile (default: no profile)
@@ -127,19 +125,18 @@ class ServiceChecks:
         :param enlighten.Counter attack_progress: Attack progress
         """
 
-        # Important: We must keep the order of categories
-        categories = sorted(self.categories if filter_categories is None \
-            else filter_categories, key=self.categories.index)
+        # # Important: We must keep the order of categories
+        # categories = sorted(filter_categories, key=self.categories.index)
+        if filter_categories is None:
+            filter_categories = self.categories
 
         # Standard mode 
         # Selected/all categories of checks are run
         if filter_checks is None and attack_profile is None:
-
             self.__run_standard_mode(target,
                                      arguments,
                                      sqlsession,
-                                     results_requester,
-                                     categories,
+                                     filter_categories,
                                      fast_mode,
                                      attack_progress)
 
@@ -151,7 +148,6 @@ class ServiceChecks:
              self.__run_special_mode(target, 
                                      arguments,
                                      sqlsession,
-                                     results_requester,
                                      filter_checks,
                                      attack_profile,
                                      fast_mode,
@@ -164,8 +160,7 @@ class ServiceChecks:
                             target, 
                             arguments,
                             sqlsession,
-                            results_requester, 
-                            categories, 
+                            filter_categories, 
                             fast_mode=False,
                             attack_progress=None):
         """
@@ -175,13 +170,12 @@ class ServiceChecks:
         :param Target target: Target
         :param ArgumentsParser arguments: Arguments from command-line
         :param Session sqlsession: SQLAlchemy session
-        :param ResultsRequester results_requester: Accessor for Results Model
         :param list categories: Sorted list of categories to run
         :param enlighten.Counter attack_progress: Attack progress
         """
 
-        logger.info('Categories of checks that will be run: {cats}'.format(
-            cats=', '.join(categories)))
+        # logger.info('Categories of checks that will be run: {cats}'.format(
+        #     cats=', '.join(categories)))
 
         nb_checks = self.nb_checks()
 
@@ -194,7 +188,10 @@ class ServiceChecks:
         time.sleep(.5) # hack for progress bar display
 
         j = 1
-        for category in categories:
+        for category in self.categories:
+            # Apply filter on categories
+            if category not in filter_categories:
+                continue
 
             Output.title1('Category > {cat}'.format(cat=category.capitalize()))
 
@@ -255,7 +252,6 @@ class ServiceChecks:
                                 check.run(target, 
                                           arguments,
                                           sqlsession,
-                                          results_requester, 
                                           fast_mode=fast_mode)
 
                             except KeyboardInterrupt:
@@ -297,7 +293,6 @@ class ServiceChecks:
                            target, 
                            arguments,
                            sqlsession,
-                           results_requester, 
                            filter_checks=None, 
                            attack_profile=None,
                            fast_mode=False,
@@ -310,7 +305,6 @@ class ServiceChecks:
         :param Target target: Target
         :param ArgumentsParser arguments: Arguments from command-line
         :param Session sqlsession: SQLAlchemy session
-        :param ResultsRequester results_requester: Accessor for Results Model
         :param list filter_checks: Selection of checks to run (default: all)
         :param AttackProfile attack_profile: Attack profile (default: no profile)
         :param bool fast_mode: Set to true to disable prompts
@@ -413,7 +407,6 @@ class ServiceChecks:
                             check.run(target, 
                                       arguments,
                                       sqlsession,
-                                      results_requester, 
                                       fast_mode=fast_mode)
                         except KeyboardInterrupt:
                             print()

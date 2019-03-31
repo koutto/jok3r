@@ -22,6 +22,7 @@ class AttackScope:
                  settings, 
                  arguments,
                  sqlsession,
+                 mission,
                  filter_categories=None, 
                  filter_checks=None, 
                  attack_profile=None,
@@ -32,6 +33,7 @@ class AttackScope:
         :param Settings settings: Settings
         :param ArgumentsParser arguments: Arguments from command-line
         :param Session sqlsession: SQLAlchemy session
+        :param str mission: Mission name
         :param list filter_categories: Selection of categories of checks to run 
             (default is None, for all categories)
         :param list filter_checks: Selection of checks to run
@@ -43,14 +45,16 @@ class AttackScope:
         self.settings            = settings
         self.arguments           = arguments
         self.sqlsess             = sqlsession
+        self.mission_name        = mission
         self.services_requester  = ServicesRequester(self.sqlsess)
-        self.results_requester   = ResultsRequester(self.sqlsess)
         self.targets             = list()
         self.current_targetid    = 1
         self.filter_categories   = filter_categories
         self.filter_checks       = filter_checks
         self.attack_profile      = attack_profile
         self.fast_mode           = fast_mode
+
+        self.services_requester.select_mission(self.mission_name)
 
 
     #------------------------------------------------------------------------------------
@@ -120,22 +124,23 @@ class AttackScope:
                 reachable = target.smart_check(
                     reverse_dns=(self.arguments.args.reverse_dns == 'on'),
                     availability_check=True,
-                    grab_banner_nmap=(self.arguments.args.nmap_banner_grab == 'on'))
+                    grab_banner_nmap=(self.arguments.args.nmap_banner_grab == 'on'),
+                    web_technos_detection=False)
 
-                if self.arguments.args.target_mode == TargetMode.IP:
-                    msg = 'Target {neg}reachable: {target}'.format(
-                        neg='not ' if not reachable else '',
-                        target=target)
-                else:
+                if target.service.name == 'http':
                     msg = 'Target URL {url} is {neg}reachable'.format(
                         url=target.get_url(),
                         neg='not ' if not reachable else '')
+                else:
+                    msg = 'Target {neg}reachable: {target}'.format(
+                        neg='not ' if not reachable else '',
+                        target=target)
 
                 # Update info into database if needed
                 self.services_requester.add_target(target)
 
                 if reachable:
-                    service.up = True
+                    #target.service.up = True
                     logger.success(msg)
                 else: 
                     # Skip target if not reachable
@@ -187,7 +192,6 @@ class AttackScope:
         service_checks.run(target, 
                            self.arguments,
                            self.sqlsess,
-                           self.results_requester, 
                            filter_categories=self.filter_categories, 
                            filter_checks=self.filter_checks,
                            attack_profile=self.attack_profile,

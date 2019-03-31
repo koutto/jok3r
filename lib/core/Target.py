@@ -55,11 +55,11 @@ class Target:
         :raises TargetException: Exception raised if DNS lookup fails
         """
         self.service.url = WebUtils.add_prefix_http(self.service.url)
+        self.service.url = WebUtils.remove_ending_slash(self.service.url)
         url = urlparse(self.service.url)
 
         if NetUtils.is_valid_ip(url.hostname):
             self.service.host.ip = url.hostname
-            print(self.service.host.ip)
             self.service.host.hostname = url.hostname # updated in smart_check
 
         else:

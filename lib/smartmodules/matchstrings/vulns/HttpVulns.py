@@ -35,6 +35,10 @@ vulns_match['http'] = {
         # -a weblogic --deploy
         '-a weblogic --deploy[\s\S]*?deployed at': 'Weblogic: Web shell deployment possible',
     },
+    'cvedetails-lookup': {
+        'CVE-(?P<m1>\S+)\s+\|\s+(?P<m2>\S+)\s+\|\s+\S+\s+\|\s*(?P<m3>.*?)\s*\|\s*(?P<m4>\S+)\s*\|\s*1': 'CVE-$1 ($2): $3... ($4) - Exploit available',
+        'CVE-(?P<m1>\S+)\s+\|\s+(?P<m2>\S+)\s+\|\s+\S+\s+\|\s*(?P<m3>.*?)\s*\|\s*(?P<m4>\S+)\s*\|\s*None': 'CVE-$1 ($2): $3... ($4)',
+    },
     'domiowned': {
         '(?P<m1>.+) does not require authentication': 'Domino: No auth on $1',
     },
@@ -50,7 +54,7 @@ vulns_match['http'] = {
         'Weblogic T3 Deserialize CVE-2018-2893 Exploit[\s\S]*?Malicious packet sent[\s\S]*?Captured ICMP traffic:[\s\S]*?ICMP echo request.*\n.*ICMP echo reply': 'Weblogic T3 Deserialize (CVE-2018-2893)',
         'Weblogic T3 Deserialize CVE-2016-3510 Exploit[\s\S]*?Malicious packet sent[\s\S]*?Captured ICMP traffic:[\s\S]*?ICMP echo request.*\n.*ICMP echo reply': 'Weblogic T3 Deserialize (CVE-2016-3510)',
         'Weblogic RCE CVE-2018-2894 Exploit[\s\S]*?vulnerable to CVE-2018-2894': 'Weblogic RCE (CVE-2018-2894)',
-        'Vulnerable to CVE-2017-12617': 'Apache Tomcat JSP Upload Bypass RCE (CVE-2017-12617)',
+        'it\'s Vulnerable to CVE-2017-12617': 'Apache Tomcat JSP Upload Bypass RCE (CVE-2017-12617)',
         'JBoss Deserialize CVE-2015-7501 Exploit[\s\S]*?\[\+\] Command executed successfully': 'JBoss Deserialize (CVE-2015-7501)',
         'Jenkins Groovy XML RCE CVE-2016-0792 Exploit[\s\S]*?\[\+\] Command executed successfully': 'Jenkins Groovy XML RCE (CVE-2016-0792)',
         'Rails exploit CVE-2019-5418 \+ CVE-2019-5420[\s\S]*?Checking if vulnerable to CVE-2019-5418 =>\s*OK': 'Rails File Disclosure (CVE-2019-5418) + RCE (CVE-2019-5420)',
@@ -73,7 +77,7 @@ vulns_match['http'] = {
         'webdav_internal_ip[\s\S]*Found internal IP in WebDAV response (?P<m1>.*)': 'WebDAV response leaks internal IP: $1',
         'webdav_website_content[\s\S]*Found file or directory in WebDAV response (?P<m1>.*)': 'WebDAV misconfiguration - Webserver discloses its content',
         'http_put[\s\S]*File uploaded:': 'HTTP PUT enabled',
-        '\[\+\] \S+:[0-9]+ (?P<m1>.*) \(404\)': 'JBoss: $1',
+        '\[\+\] \S+:[0-9]+ (?P<m1>.*) \(200\)': 'JBoss: $1',
         '\[\+\] \S+:[0-9]+ Got authentication bypass via HTTP verb tampering': 'JBoss: Auth bypass via HTTP verb tampering (CVE-2010-0738)',
         'ibm_websphere_java_deserialize[\s\S]*?Meterpreter session [1-9] open': 'Websphere: Java Deserialization RCE (CVE-2015-7450)',
         'jenkins_java_deserialize[\s\S]*?session [1-9] open': 'Jenkins: Java Deserialization RCE (CVE-2015-8103',

@@ -37,6 +37,7 @@ class ContextRequirements:
             any (means product name must be known)
             any|version_known (means product name+version must be known)
             vendor/product_name (vendor/ is present only if needed)
+            vendor/product_name|version_unknown
             vendor/product_name|version_known
             vendor/product_name|7.*
             vendor/product_name|7.1.*
@@ -333,6 +334,10 @@ class ContextRequirements:
                     status |= (req_prodvers.lower() == 'version_known' and \
                         prodversion != '')
 
+                    # When the version is unknown
+                    status |= (req_prodvers.lower() == 'version_unknown' and \
+                        prodversion == '')
+
                 # When requirement on a defined vendor/product_name and it is matching
                 elif req_prodname.lower() == prodname.lower():
                     # When no requirement on the version number
@@ -341,6 +346,10 @@ class ContextRequirements:
                     # When the version must be known but no requirement on its value
                     status |= (req_prodvers.lower() == 'version_known' \
                         and prodversion != '')
+
+                    # When the version is unknown
+                    status |= (req_prodvers.lower() == 'version_unknown' and \
+                        prodversion == '')
 
                     # When explicit requirement on the version number 
                     status |= VersionUtils.check_version_requirement(

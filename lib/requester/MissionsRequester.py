@@ -4,7 +4,16 @@
 ### Requester > Missions
 ###
 from lib.requester.Requester import Requester
+from lib.db.CommandOutput import CommandOutput
+from lib.db.Credential import Credential
+from lib.db.Host import Host
 from lib.db.Mission import Mission
+from lib.db.Option import Option
+from lib.db.Product import Product
+from lib.db.Result import Result
+from lib.db.Screenshot import Screenshot
+from lib.db.Service import Service
+from lib.db.Vuln import Vuln
 from lib.utils.StringUtils import StringUtils
 from lib.output.Logger import logger
 from lib.output.Output import Output
@@ -92,6 +101,15 @@ class MissionsRequester(Requester):
     def reset(self):
         """Delete all missions in database (re-create a fresh "default" mission)"""
         self.sqlsess.query(Mission).delete()
+        self.sqlsess.query(CommandOutput).delete()
+        self.sqlsess.query(Credential).delete()
+        self.sqlsess.query(Host).delete()
+        self.sqlsess.query(Option).delete()
+        self.sqlsess.query(Product).delete()
+        self.sqlsess.query(Result).delete()
+        self.sqlsess.query(Screenshot).delete()
+        self.sqlsess.query(Service).delete()
+        self.sqlsess.query(Vuln).delete()
         self.sqlsess.commit()
         self.sqlsess.add(Mission(name='default', comment='Default scope'))
         self.sqlsess.commit()

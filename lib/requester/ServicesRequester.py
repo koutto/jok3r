@@ -141,7 +141,10 @@ class ServicesRequester(Requester):
                 matching_host = self.sqlsess.query(Host).join(Mission)\
                                         .filter(Mission.name == self.current_mission)\
                                         .filter(Host.ip == service.host.ip).first()
-                new_host = Host(ip=service.host.ip, hostname=service.host.hostname)
+                new_host = Host(
+                    ip=service.host.ip, 
+                    hostname=service.host.hostname,
+                    os=service.host.os)
                 if matching_host:
                     matching_host.merge(new_host)
                     self.sqlsess.commit()
@@ -217,7 +220,10 @@ class ServicesRequester(Requester):
                 matching_host = self.sqlsess.query(Host).join(Mission)\
                                             .filter(Mission.name == self.current_mission)\
                                             .filter(Host.ip == service.host.ip).first()
-                new_host = Host(ip=service.host.ip, hostname=service.host.hostname)
+                new_host = Host(
+                    ip=service.host.ip, 
+                    hostname=service.host.hostname,
+                    os=service.host.os)
                 if matching_host:
                     matching_host.merge(new_host)
                     self.sqlsess.commit()

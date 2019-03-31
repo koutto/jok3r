@@ -26,6 +26,24 @@ IMPROVEMENTS / NEW FEATURES
 
 
 
+* 7.0 -> 7.0.36
+nope: [+] [SMART] Version for product web-appserver=Jboss updated: 4.2.3. -> 4.2
+nope: Jboss updated: 4.2 -> 4.0.3
+ok: [+] [SMART] Version for product web-appserver=Jboss updated: 5.0 -> 5.0.0
+* print move to next target / end of target
+
+* attack profiles
+* nikto out of fastscan
+* profile redteam (fast + critical)
+* example avec profile
+
+* jexboss deploy
+* test add_service
+* test add_url
+* hydra -e nsr / -I
+* --unscanned
+* clusterd specify version if knwown (major version)
+* fork clusterd : remove .capture_input , return
 
 
 
@@ -54,8 +72,6 @@ CHECKS TO ADD
 
 
 
-* attack profiles
-
 
 DOCUMENTATION
 ===============================================================================
@@ -83,33 +99,3 @@ SERVICES TO ADD
 * IMAP
 
 
-
-
-
-
-root@kali:~/jok3r/toolbox/http/wfuzz# ./wfuzz -c -u http://31.204.93.90:8181//FUZZ/ -w "/root/jok3r/wordlists/services/http/discovery/raft-large-directories.txt" -t 30 --hc 400,404,405,406,429,500,502,503,504,000 
-********************************************************
-* Wfuzz 2.3.4 - The Web Fuzzer                         *
-********************************************************
-
-Target: http://31.204.93.90:8181//FUZZ/
-Total requests: 76114
-
-==================================================================
-ID   Response   Lines      Word         Chars          Payload    
-==================================================================
-
-000103:  C=200    225 L     1269 W    16805 Ch    "docs"
-000167:  C=302      0 L        0 W        0 Ch    "manager"
-003761:  C=200    202 L      498 W    11432 Ch    ""
-008497:  C=404      0 L       47 W     1016 Ch    "ClickInfo"
-Unhandled exception: Invalid IPv6 URL
-
-
-
-
-set THREADS 5
-
-* test add_service
-* test add_url
-* __init_with_ip/url fix !

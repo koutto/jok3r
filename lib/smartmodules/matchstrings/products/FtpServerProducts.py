@@ -16,14 +16,14 @@ products_match['ftp']['ftp-server'] = {
         'nmap-banner': 'ProFTPD(\s+[VERSION])?',
     },
     'Pureftpd': {
-        'nmap-banner' 'Pure-FTPd(\s+[VERSION])?',
+        'nmap-banner': 'Pure-FTPd(\s+[VERSION])?',
     },
     'Serv-u': {
         'nmap-banner': 'Serv-U ftpd(\s+[VERSION])?',
     },
     'Vsftpd': {
-        'nmap-banner': 'vsftpd(\s+[VERSION])?'
-    }
+        'nmap-banner': 'vsftpd(\s+[VERSION])?',
+    },
 
 
 }

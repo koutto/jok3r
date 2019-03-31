@@ -12,6 +12,7 @@ from lib.db.CommandOutput import CommandOutput
 from lib.db.Result import Result
 from lib.output.Logger import logger
 from lib.output.Output import Output
+from lib.requester.ResultsRequester import ResultsRequester
 from lib.utils.StringUtils import StringUtils
 from lib.smartmodules.SmartPostcheck import SmartPostcheck
 
@@ -63,7 +64,6 @@ class Check:
             target, 
             arguments, 
             sqlsession,
-            results_requester, 
             fast_mode=False):
         """
         Run the security check.
@@ -74,7 +74,6 @@ class Check:
         :param ArgumentsParser arguments: Arguments from command-line
         :param Session sqlsession: SQLAlchemy session
         :param SmartModulesLoader smartmodules_loader: Loader of SmartModules
-        :param ResultsRequester results_requester: Accessor for Results Model
         :param bool fast_mode: Set to true to disable prompts
         :return: Status
         :rtype: bool
@@ -159,6 +158,7 @@ class Check:
 
         # Add outputs in database
         if command_outputs:
+            results_requester = ResultsRequester(sqlsession)
             results_requester.add_result(target.service.id, 
                                          self.name, 
                                          self.category, 

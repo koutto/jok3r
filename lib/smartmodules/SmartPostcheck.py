@@ -100,7 +100,7 @@ class SmartPostcheck:
                             and p[pattern]['meth'] in ('finditer', 'search'):
                         method = p[pattern]['meth']
                     else:
-                        method = p[pattern]['meth']
+                        method = 'finditer'
 
 
                     # Perform regexp matching
