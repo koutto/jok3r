@@ -37,13 +37,7 @@ ok: [+] [SMART] Version for product web-appserver=Jboss updated: 5.0 -> 5.0.0
 * profile redteam (fast + critical)
 * example avec profile
 
-* jexboss deploy
-* test add_service
-* test add_url
-* hydra -e nsr / -I
 * --unscanned
-* clusterd specify version if knwown (major version)
-* fork clusterd : remove .capture_input , return
 
 
 

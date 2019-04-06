@@ -98,11 +98,13 @@ class ServicesRequester(Requester):
         Add a service into the current mission scope in database.
 
         :param str ip: IP address to add
-        :param str hostname: Hostname
         :param int port: Port number
         :param str protocol: Protocol (tcp/udp)
         :param str service: Service name
+        :param lib.core.ServicesConfig services_config: Services configuration object
         :param bool grab_banner_nmap: If set to True, run Nmap to grab server banner
+        :param bool reverse_dns: If set to True, perform a reverse DNS lookup
+        :param bool availability_check: If set to True, check if port is open
         :return: Status
         :rtype: bool
         """
@@ -185,9 +187,11 @@ class ServicesRequester(Requester):
         Add a URL into the current mission scope in database.
 
         :param str url: URL to add
-        :param bool grab_banner_nmap: If set to True, run Nmap to grab server banner
-        :param bool grab_html_title:  If set to True, grab title of HTML page (text in
-            <title> tags) and put it as comment for HTTP service
+        :param lib.core.ServicesConfig services_config: Services configuration object
+        :param bool reverse_dns: If set to True, perform a reverse DNS lookup
+        :param bool availability_check: If set to True, check if port is open
+        :param bool grab_banner_nmap: If set to True, run Nmap to grab server banner  
+        :param bool web_technos_detection: If set to True, try to detect web technos
         :return: Status
         :rtype: bool
         """

@@ -64,9 +64,10 @@ Where OPTION_NAME is replaced by the specific option name.
 
 Products Tags
 -------------
-[PRODUCT_TYPE-VENDOR]    Product vendor
-[PRODUCT_TYPE-NAME]      Product name
-[PRODUCT_TYPE-VERSION]   Product version number
+[PRODUCT_TYPE-VENDOR]           Product vendor
+[PRODUCT_TYPE-NAME]             Product name
+[PRODUCT_TYPE-VERSION]          Product version number
+[PRODUCT_TYPE-VERSION_MAJOR]    Product major version number (e.g. 5 for 5.1.2)
 
 Where PRODUCT_TYPE is replaced by the product type (e.g "web_server").
 
@@ -531,5 +532,10 @@ class Command:
             self.formatted_cmdline = pattern.sub(name, self.formatted_cmdline)
 
             pattern = re.compile('\['+product_type+'-VERSION\]', re.IGNORECASE)
-            self.formatted_cmdline = pattern.sub(version, self.formatted_cmdline)          
+            self.formatted_cmdline = pattern.sub(version, self.formatted_cmdline)        
+
+            pattern = re.compile('\['+product_type+'-VERSION_MAJOR\]', re.IGNORECASE)
+            self.formatted_cmdline = pattern.sub(version.split('.')[0], 
+                self.formatted_cmdline)          
+ 
 

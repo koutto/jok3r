@@ -282,6 +282,12 @@ class ArgumentsParser:
             dest    = 'filter',
             metavar = '<filter>',
             default = None)
+        multitargets.add_argument(
+            '--unscanned',
+            help    = 'Target only services for which no check at all has already been run',
+            action  = 'store_true',
+            dest    = 'unscanned',
+            default = False)
 
 
         init = parser.add_argument_group(
