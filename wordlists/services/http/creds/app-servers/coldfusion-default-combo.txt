@@ -1,0 +1,14 @@
+admin:admin
+admin:coldfusion
+admin:
+admin:password
+admin:passw0rd
+admin:Passw0rd
+root:coldfusion
+root:
+root:password
+root:passw0rd
+root:Passw0rd
+root:root
+root:toor
+root:r00t

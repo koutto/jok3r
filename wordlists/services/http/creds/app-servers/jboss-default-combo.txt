@@ -1,0 +1,15 @@
+admin:admin
+admin:jboss
+admin:
+admin:manager
+admin:password
+admin:passw0rd
+admin:Passw0rd
+root:jboss
+root:
+root:password
+root:passw0rd
+root:Passw0rd
+root:root
+root:toor
+root:r00t

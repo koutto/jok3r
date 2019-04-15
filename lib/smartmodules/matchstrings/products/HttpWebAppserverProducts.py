@@ -40,15 +40,6 @@ products_match['http']['web-appserver'] = {
             WIG_REGEXP2.format('Tomcat'),
         ],
     },
-    'Domino': {
-        'wappalyzer': 'Lotus Domino',
-        'nmap-banner': 'Lotus Domino(\s*(International|Go))?\s*httpd(\s*[VERSION])?',
-        'wig': [
-            WIG_REGEXP.format('Lotus Domino'),
-            WIG_REGEXP2.format('Lotus Domino'),
-        ],
-        'domiowned': 'Domino version:\s*[VERSION]',
-    },
     'Eclipse/Jetty': {
         'wappalyzer': 'Jetty',
         'nmap-banner': 'Jetty(\s*[VERSION])?',

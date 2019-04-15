@@ -31,6 +31,8 @@ CMSEEK_REGEXP = '"cms_name":\s*"{}"(,[\s\S]*"cms_version":\s*"[VERSION]")?'
 # - Found version: WordPress 4.1.1
 WIG_REGEXP = '{}\s*[VERSION]\s*CMS' 
 WIG_REGEXP2 = '- Found CMS match: {}\s*(Determining CMS version \.\.\.(\s*- Found version: (\S+)\s+[VERSION])?)?'
+WIG_REGEXP3 = '{}\s*[VERSION]\s*Platform' 
+WIG_REGEXP4 = '- Found platform {}(\s*[VERSION])?'
 
 products_match['http']['web-cms'] = {
     '3dcart': {
@@ -206,6 +208,15 @@ products_match['http']['web-cms'] = {
             WIG_REGEXP2.format('DNN \(DotNetNuke\)'),
         ],
         'fingerprinter': '-a dotnetnuke[\s\S]*Intersection of potential versions returned only one version v[VERSION]',
+    },
+    'Domino': {
+        'wappalyzer': 'Lotus Domino',
+        'nmap-banner': 'Lotus Domino(\s*(International|Go))?\s*httpd(\s*[VERSION])?',
+        'wig': [
+            WIG_REGEXP3.format('Lotus Domino'),
+            WIG_REGEXP4.format('Lotus Domino'),
+        ],
+        'domiowned': 'Domino version:\s*[VERSION]',
     },
     'Drupal': {
         'wappalyzer': 'Drupal',

@@ -61,3 +61,35 @@ class VersionUtils:
             return LooseVersion(version_number) >= LooseVersion(requirement[2:].strip())
         else:
             return LooseVersion(version_number) == LooseVersion(requirement)
+
+
+    @staticmethod
+    def is_version_more_accurate(old_version, new_version):
+        """
+        Check if a new found version number is more accurate than an old known one
+        Examples:
+            - old: 7.0 -> new: 7.0.36 = True
+            - old: 5.0 -> new: 5.0.0  = True
+            - old: 4.2.3 -> new: 4.2  = False
+            - old: 4.0.1 -> new: 4.2  = False
+
+            Change of major version number is always taken into account:
+            - old: 1.0.0 -> new: 4.2 = True
+        """
+        old = LooseVersion(old_version)
+        new = LooseVersion(new_version)
+        if len(new) == 0:
+            return False
+        if len(old) == 0:
+            return False
+        
+        try:
+            old_major = int(old[0])
+            new_major = int(new[0])
+        except:
+            return False
+
+        if new_major != old_major:
+            return True
+        else:
+            return (len(new) >= len(old))

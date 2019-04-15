@@ -151,6 +151,14 @@ creds_match['http'] = {
             'type': 'jboss',
         }
     },
+    'web-brutator': {
+        'Found (?P<m1>\S+) creds: (?P<m2>\S*):(?P<m3>\S*)': {
+            'meth': 'finditer',
+            'user': '$2',
+            'pass': '$3',
+            'type': '$1',
+        },
+    },
     'wpscan': {
         # [i] User(s) Identified:
 

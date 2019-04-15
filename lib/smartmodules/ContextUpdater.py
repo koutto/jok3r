@@ -188,16 +188,25 @@ class ContextUpdater:
                                     version=product.version))
                             match_product.version = product.version
 
-                        # Version detected is inferior to the one in db, updating
-                        # i.e. Keep the oldest version (smallest number) found (to 
-                        # avoid missing issues/checks...)
+                        # Update version if new version is "more accurate" than the 
+                        # one already known
                         elif match_product.version != product.version:
-                            logger.smartsuccess('Version for product ' \
-                                '{product} updated: {oldvers} -> {newvers}'.format(
-                                    product=product_str,
-                                    oldvers=match_product.version,
-                                    newvers=product.version))
-                            match_product.version = product.version
+                            if VersionUtils.is_version_more_precise(
+                                old_version=match_product.version, 
+                                new_version=product.version):
+                                logger.smartsuccess('Version for product ' \
+                                    '{product} updated: {oldvers} -> {newvers}'.format(
+                                        product=product_str,
+                                        oldvers=match_product.version,
+                                        newvers=product.version))
+                                match_product.version = product.version
+                            else:
+                                logger.smartinfo('Version detected for product ' \
+                                    '{product}: {newvers}. Not updated in db ' \
+                                    'because less accurate than {oldvers}'.format(
+                                        product=product_str,
+                                        newvers=product.version,
+                                        oldvers=match_product.version))
 
                         # Version detected is superior (newer version) to the one in 
                         # db, no update
@@ -212,8 +221,8 @@ class ContextUpdater:
 
                         # Same version as already detected
                         else:
-                            logger.smartinfo('Product detected (already in db): ' \
-                                '{product} {version}'.format(
+                            logger.smartinfo('Product detected: {product} ' \
+                                '{version}. Not updated because already in db'.format(
                                     product=product_str,
                                     version=product.version))
 

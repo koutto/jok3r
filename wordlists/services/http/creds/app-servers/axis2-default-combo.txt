@@ -1,0 +1,14 @@
+admin:axis2
+admin:admin
+admin:
+admin:password
+admin:passw0rd
+admin:Passw0rd
+root:axis2
+root:
+root:password
+root:passw0rd
+root:Passw0rd
+root:root
+root:toor
+root:r00t

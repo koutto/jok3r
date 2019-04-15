@@ -24,12 +24,6 @@ IMPROVEMENTS / NEW FEATURES
         * https://www.netsparker.com/blog/web-security/svn-digger-better-lists-for-forced-browsing/
         * Administration: https://github.com/fnk0c/cangibrina/tree/master/wordlists
 
-
-
-* 7.0 -> 7.0.36
-nope: [+] [SMART] Version for product web-appserver=Jboss updated: 4.2.3. -> 4.2
-nope: Jboss updated: 4.2 -> 4.0.3
-ok: [+] [SMART] Version for product web-appserver=Jboss updated: 5.0 -> 5.0.0
 * print move to next target / end of target
 
 * attack profiles
@@ -63,7 +57,7 @@ CHECKS TO ADD
 * https://github.com/AlisamTechnology/PRESTA-modules-shell-exploit/blob/master/PRESTA-shell-exploit.pl
 * Sharepoint -> https://github.com/TestingPens/SPartan
 * check https://bitvijays.github.io/LFF-IPS-P2-VulnerabilityAnalysis.html
-
+* https://github.com/RhinoSecurityLabs/CVEs/tree/master/CVE-2019-0227
 
 
 

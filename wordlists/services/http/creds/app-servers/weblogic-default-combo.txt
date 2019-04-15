@@ -1,0 +1,16 @@
+system:manager
+system:password
+system:weblogic(1)
+system:Passw0rd
+weblogic:weblogic1
+weblogic:weblogic
+weblogic:welcome(1)
+weblogic:password
+WEBLOGIC:WEBLOGIC
+WEBLOGIC:password
+PUBLIC:PUBLIC
+EXAMPLES:EXAMPLES
+operator:weblogic
+operator:password
+monitor:password 
+monitor:weblogic
