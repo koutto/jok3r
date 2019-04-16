@@ -8,6 +8,7 @@ from lib.db.Product import Product
 from lib.db.Vuln import Vuln
 from lib.core.Config import *
 from lib.output.Logger import logger
+from lib.utils.VersionUtils import VersionUtils
 
 
 class ContextUpdater:
