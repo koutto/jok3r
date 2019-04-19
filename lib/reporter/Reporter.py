@@ -553,17 +553,22 @@ class Reporter:
         """
         tpl = FileUtils.read(REPORT_TPL_DIR + '/results.tpl.html')
 
-        service_string = 'host <span class="font-weight-bold">{ip}</span> | ' \
-            'port <span class="font-weight-bold">{port}/{proto}</span> | ' \
-            'service <span class="font-weight-bold">{service}</span>'.format(
-                ip=str(service.host.ip),
-                port=service.port,
-                proto={Protocol.TCP: 'tcp', Protocol.UDP: 'udp'}.get(
-                    service.protocol),
-                service=service.name)
+        # service_string = 'host <span class="font-weight-bold">{ip}</span> | ' \
+        #     'port <span class="font-weight-bold">{port}/{proto}</span> | ' \
+        #     'service <span class="font-weight-bold">{service}</span>'.format(
+        #         ip=str(service.host.ip),
+        #         port=service.port,
+        #         proto={Protocol.TCP: 'tcp', Protocol.UDP: 'udp'}.get(
+        #             service.protocol),
+        #         service=service.name) 
 
         tpl = tpl.replace('{{MISSION_NAME}}', self.mission)
-        tpl = tpl.replace('{{SERVICE}}', service_string)
+        #tpl = tpl.replace('{{SERVICE}}', service_string)
+        tpl = tpl.replace('{{SERVICE_IP}}', str(service.host.ip))
+        tpl = tpl.replace('{{SERVICE_PORT}}', str(service.port))
+        tpl = tpl.replace('{{SERVICE_PROTO}}', 
+            {Protocol.TCP: 'tcp', Protocol.UDP: 'udp'}.get(service.protocol))
+        tpl = tpl.replace('{{SERVICE_NAME}}', service.name)
         tpl = tpl.replace('{{SIDEBAR_CHECKS}}', self.__generate_sidebar_checks(service))
         tpl = tpl.replace('{{RESULTS}}', self.__generate_command_outputs(service))
 

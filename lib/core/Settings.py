@@ -881,6 +881,9 @@ class Settings:
                         # Check if [vendor/]product_name is in the list of supported 
                         # product names (ignore version requirements if present)
                         product_name = e[:e.index('|')] if '|' in e else e
+                        # Handle the case where inversion is used with prefix "!"
+                        if len(product_name) > 0 and product_name[0] == '!':
+                            product_name = product_name[1:]
                         if product_name.lower() not in list(map(lambda x: x.lower(), 
                                 self.services[service]['products'][cond])):
                             logger.warning('{prefix} Context requirement "{option}" ' \

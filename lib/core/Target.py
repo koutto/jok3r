@@ -361,6 +361,14 @@ class Target:
             technos = detector.detect()
             self.service.web_technos = str(technos)
             detector.print_technos()
+            
+            # Try to deduce OS from detected web technologies
+            if not detected_os:
+                detected_os = detector.get_os()
+                if detected_os:
+                    self.service.host.os = detected_os
+                    logger.info('Detected OS from web technologies = {os}'.format(
+                        os=detected_os))
 
 
         return self.service.up

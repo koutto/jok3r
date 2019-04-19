@@ -21,7 +21,7 @@ BANNER = colored.stylize("""
     \________|\____/|__|_ \/______  /__|      v{version}
                          \/       \/     
     
-              ~ Network & Web Pentest Framework ~
+          ~ Network & Web Pentest Automation Framework ~
    [ Manage Toolbox | Automate Attacks | Chain Hacking Tools ]
    
 """.format(version=__version__), colored.fg('light_green') + colored.attr('bold'))

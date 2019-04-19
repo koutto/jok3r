@@ -98,6 +98,24 @@ class StringUtils:
 
 
     @staticmethod
+    def interpret_ansi_escape_clear_lines(string):
+        """
+        Interpret ANSI escape sequence that clear the current line: 
+        \x1b[1K
+
+        :param str string: String to process
+        :return: Output string
+        :rtype: str 
+        """
+        out = string
+        while True:
+            out, n = re.subn(r'\n.*\x1b\[1K', '\n', out, re.IGNORECASE)
+            if n==0:
+                break
+        return out
+
+
+    @staticmethod
     def surrounding_text(text, pattern, nb_words):
         """
         Get text surrounding a given pattern.

@@ -57,3 +57,24 @@ class WebTechnoDetector:
             technos.append(f)
         del wappalyzer
         return technos
+
+    def get_os(self):
+        """
+        Try to detect OS from detected web technologies
+        """
+        matches = {
+            'Windows': [
+                'windows',
+            ],
+            'Linux': [
+                'linux',
+                'unix',
+            ]
+        }
+
+        for ostype in matches.keys():
+            for string in matches[ostype]:
+                for t in self.technos:
+                    if string.lower() in t['name'].lower():
+                        return ostype
+        return ''

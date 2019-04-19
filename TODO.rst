@@ -13,17 +13,7 @@ Docker Environment
 IMPROVEMENTS / NEW FEATURES
 ===============================================================================
 
-
-* Improve wordlist quality:
-    * wordlist per language
-    * wordlist per cms
-    * wordlist per server
-    * web files/directories:
-        * https://github.com/danielmiessler/SecLists/tree/master/Discovery/Web-Content
-        * https://github.com/xajkep/wordlists
-        * https://www.netsparker.com/blog/web-security/svn-digger-better-lists-for-forced-browsing/
-        * Administration: https://github.com/fnk0c/cangibrina/tree/master/wordlists
-
+* https://github.com/Xyntax/DirBrute/tree/master/dics
 * print move to next target / end of target
 
 * attack profiles
@@ -33,6 +23,8 @@ IMPROVEMENTS / NEW FEATURES
 
 * --unscanned
 
+* report: print command in results 
+* Update apps.json with websphere, weblogic
 
 
 SMARTMODULES / MATCHSTRINGS

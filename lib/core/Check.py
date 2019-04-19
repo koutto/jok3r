@@ -133,6 +133,7 @@ class Check:
                     Output.delimiter()
                     print()
 
+                    output = StringUtils.interpret_ansi_escape_clear_lines(output)
                     outputraw = StringUtils.remove_ansi_escape(output)
                     command_outputs.append(CommandOutput(
                         cmdline=cmdline, 

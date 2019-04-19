@@ -48,6 +48,14 @@ class VersionUtils:
         """
         if not requirement:
             return True
+
+        # When the version must be known but no requirement on its value
+        elif requirement.lower() == 'version_known':
+            return (version_number != '')
+        # When the version is unknown
+        elif requirement.lower() == 'version_unknown':
+            return (version_number == '')
+
         elif '*' in requirement:
             pattern = requirement.replace('.', '[.]').replace('*', '.*')
             return re.match(pattern, version_number) is not None
@@ -60,6 +68,8 @@ class VersionUtils:
         elif requirement.startswith('>='):
             return LooseVersion(version_number) >= LooseVersion(requirement[2:].strip())
         else:
+            print(version_number)
+            print(requirement)
             return LooseVersion(version_number) == LooseVersion(requirement)
 
 

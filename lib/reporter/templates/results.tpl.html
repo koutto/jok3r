@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Jok3r Report - Mission:: {{MISSION_NAME}} - Service:: {{SERVICE}}</title>
+    <title>Jok3r Report - Mission:: {{MISSION_NAME}} - Service:: host {{SERVICE_IP}} | port {{SERVICE_PORT}}/{{SERVICE_PROTO}} | service {{SERVICE_NAME}}</title>
 
     <!-- Bootstrap Core CSS -->
     <style type="text/css">
@@ -109,6 +109,7 @@
         margin: 0;
         padding: 0;
         list-style: none;
+        padding-bottom: 50px;
     }
 
     .sidebar-nav li {
@@ -218,7 +219,7 @@
 
     <nav class="navbar fixed-top navbar-light bg-faded">
         <div id="header">
-            <h1><span class="text-green font-weight-bold">Jok3r Report</span> > Mission:: {{MISSION_NAME}} > Service:: {{SERVICE}}</h1>
+            <h1><span class="text-green font-weight-bold">Jok3r Report</span> > Mission:: {{MISSION_NAME}} > Service:: host <span class="font-weight-bold">{{SERVICE_IP}}</span> | port <span class="font-weight-bold">{{SERVICE_PORT}}/{{SERVICE_PROTO}}</span> | service <span class="font-weight-bold">{{SERVICE_NAME}}</span></h1>
         </div>
     </nav>
 

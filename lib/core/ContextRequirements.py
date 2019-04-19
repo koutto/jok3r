@@ -34,16 +34,23 @@ class ContextRequirements:
         web_cms for HTTP).
 
         Accepted syntax examples:
-            any (means product name must be known)
-            any|version_known (means product name+version must be known)
-            vendor/product_name (vendor/ is present only if needed)
-            vendor/product_name|version_unknown
-            vendor/product_name|version_known
-            vendor/product_name|7.*
-            vendor/product_name|7.1.*
-            vendor/product_name|>7.1
-            vendor/product_name|<=7.0
-            vendor/product_name|7.1.1   
+            - For any supported product:
+                - any (means product name must be known)
+                - any|version_known (means product name+version must be known)
+
+            - For a specific product:
+                vendor/product_name (vendor/ is present only if needed)
+                vendor/product_name|version_unknown
+                vendor/product_name|version_known
+                vendor/product_name|7.*
+                vendor/product_name|7.1.*
+                vendor/product_name|>7.1
+                vendor/product_name|<=7.0
+                vendor/product_name|7.1.1   
+        
+            - Inversion by prefixing with "!":
+                !vendor/product_name
+                ...
 
     - OS Type: Linux or Windows. This requirement is not excluding check when
       target's OS is unknown/undetected.
@@ -325,6 +332,13 @@ class ContextRequirements:
                 logger.debug('Target product: type={}, name={}, version={}'.format(
                     prodtype, prodname, prodversion))
 
+                # Handle case where prefixed with "!" for inversion
+                if len(req_prodname) > 0 and req_prodname[0] == '!':
+                    inversion = True
+                    req_prodname = req_prodname[1:]
+                else:
+                    inversion = False
+
                 # When no special requirement on vendor/product_name but must be known
                 if req_prodname.lower() == 'any':
                     # When version can be unknown
@@ -344,16 +358,19 @@ class ContextRequirements:
                     status  = not req_prodvers
 
                     # When the version must be known but no requirement on its value
-                    status |= (req_prodvers.lower() == 'version_known' \
-                        and prodversion != '')
+                    # status |= (req_prodvers.lower() == 'version_known' \
+                    #     and prodversion != '')
 
-                    # When the version is unknown
-                    status |= (req_prodvers.lower() == 'version_unknown' and \
-                        prodversion == '')
+                    # # When the version is unknown
+                    # status |= (req_prodvers.lower() == 'version_unknown' and \
+                    #     prodversion == '')
 
                     # When explicit requirement on the version number 
                     status |= VersionUtils.check_version_requirement(
                         prodversion, req_prodvers)
+
+                    if inversion and not status:
+                        return True
 
                 if status:
                     return True
