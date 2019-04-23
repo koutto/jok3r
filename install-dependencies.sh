@@ -140,7 +140,7 @@ if ! [ -x "$(command -v rvm)" ]; then
         echo "[[ -s /usr/local/rvm/scripts/rvm ]] && source /usr/local/rvm/scripts/rvm" >> ~/.bashrc
     fi
     source ~/.bashrc
-
+fi
 
 if ! rvm list | grep -q "ruby-2.3"
 then
