@@ -63,6 +63,7 @@ class FilterData(Enum):
     PRODUCT_TYPE    = auto()
     PRODUCT_NAME    = auto()
     PRODUCT_VERSION = auto()
+    UNSCANNED       = auto()
 
 class FilterOperator(Enum):
     AND = auto()

@@ -38,7 +38,7 @@ Supported commands:
 """
 
 ATTACK_EXAMPLES = colored.stylize('Examples:', colored.attr('bold')) + """
-  - Run all security checks against an URL in interactive mode (stop before each check):
+  - Run all security checks against an URL in interactive mode (break before each check):
   python3 jok3r.py attack -t http://www.example.com/ 
 
   - Run all security checks against a MS-SQL service (without user interaction) and add results to the mission "mayhem" in db:

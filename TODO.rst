@@ -13,18 +13,11 @@ Docker Environment
 IMPROVEMENTS / NEW FEATURES
 ===============================================================================
 
-* https://github.com/Xyntax/DirBrute/tree/master/dics
-* print move to next target / end of target
-
-* attack profiles
-* nikto out of fastscan
-* profile redteam (fast + critical)
 * example avec profile
-
-* --unscanned
-
-* report: print command in results 
+* Report: print command in results 
 * Update apps.json with websphere, weblogic
+* Run custom command
+* Session / Restore
 
 
 SMARTMODULES / MATCHSTRINGS
@@ -50,7 +43,7 @@ CHECKS TO ADD
 * Sharepoint -> https://github.com/TestingPens/SPartan
 * check https://bitvijays.github.io/LFF-IPS-P2-VulnerabilityAnalysis.html
 * https://github.com/RhinoSecurityLabs/CVEs/tree/master/CVE-2019-0227
-
+* https://github.com/Xyntax/DirBrute/tree/master/dics
 
 
 DOCUMENTATION

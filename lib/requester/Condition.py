@@ -4,6 +4,7 @@
 ### Requester > Condition
 ###
 import ipaddress
+from sqlalchemy.sql import and_, or_, not_
 
 from lib.core.Constants import *
 from lib.core.Exceptions import FilterException
@@ -15,6 +16,7 @@ from lib.db.Option import Option
 from lib.db.Product import Product
 from lib.db.Result import Result
 from lib.db.Service import Service, Protocol
+from lib.db.Session import *
 from lib.db.Vuln import Vuln
 from lib.utils.NetUtils import NetUtils
 
@@ -73,6 +75,7 @@ class Condition:
             FilterData.PRODUCT_TYPE    : self.__translate_product_type,
             FilterData.PRODUCT_NAME    : self.__translate_product_name,
             FilterData.PRODUCT_VERSION : self.__translate_product_version,
+            FilterData.UNSCANNED       : self.__translate_unscanned,
         }
 
 
@@ -299,3 +302,16 @@ class Condition:
     def __translate_product_version(self, value):
         """Translate product version into LIKE filter"""
         return (Product.version.ilike('%'+str(value)+'%'))
+
+
+    def __translate_unscanned(self, value=None):
+        """
+        Add subquerie as filter to keep only services that have not been 
+        scanned yet (i.e. with no checks already run)
+        """
+        session = Session()
+        return not_(
+            session.query(Result) \
+                .filter(Service.id == Result.service_id) \
+                .exists()
+        )

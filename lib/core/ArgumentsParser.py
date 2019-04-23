@@ -283,7 +283,7 @@ class ArgumentsParser:
             metavar = '<filter>',
             default = None)
         multitargets.add_argument(
-            '--unscanned',
+            '--new-only',
             help    = 'Target only services for which no check at all has already been run',
             action  = 'store_true',
             dest    = 'unscanned',
@@ -673,12 +673,19 @@ class ArgumentsParser:
 
                     combo.add_condition(condition)
 
-            filter_.add_condition(combo)
+                filter_.add_condition(combo)
 
             self.args.filters_combined = filter_
 
         else:
             self.args.filters_combined = None
+
+        # Handle --only-new
+        if self.args.unscanned:
+            filter_ = Filter(FilterOperator.AND)
+            filter_.add_condition(Condition(None, FilterData.UNSCANNED))
+            filter_.add_condition(self.args.filters_combined)
+            self.args.filters_combined = filter_
 
         return True
 
