@@ -108,6 +108,7 @@ apt-get install -y --ignore-missing python python2.7 python3 python-pip python3-
 apt-get install -y --ignore-missing python-dev python3-dev python-setuptools 
 apt-get install -y --ignore-missing python3-setuptools python3-distutils
 apt-get install -y --ignore-missing python-ipy python-nmap python3-pymysql
+apt-get install -y --ignore-missing python3-psycopg2
 pip3 uninstall -y psycopg2
 pip3 install psycopg2-binary
 print_delimiter
@@ -133,7 +134,9 @@ if ! [ -x "$(command -v rvm)" ]; then
     then
         echo "source /etc/profile.d/rvm.sh" >> ~/.bashrc
     fi
-    rvm install ruby-2.3
+    apt-get purge -y libssl-dev
+    apt-get install -y libssl1.0-dev
+    rvm install 2.3.5 --autolibs=disable
     rvm install ruby-2.5
     rvm --default use 2.5
     gem install ffi
@@ -157,7 +160,7 @@ print_delimiter
 
 if ! [ -x "$(command -v perl)" ]; then
     print_title "[~] Install Perl and useful related packages"
-    apt-get install -y --ignore-missing perl libwhisker2-perl libwww-perl
+    apt-get install -y --ignore-missing perl 
 else
     print_title "[+] Perl is already installed"
 fi
@@ -229,13 +232,15 @@ apt-get install -y --ignore-missing libxml2 libxml2-dev libxslt1-dev build-essen
 apt-get install -y --ignore-missing gcc make automake patch libssl-dev locate
 apt-get install -y --ignore-missing smbclient dnsutils libgmp-dev libffi-dev 
 apt-get install -y --ignore-missing libxml2-utils unixodbc unixodbc-dev alien
-apt-get install -y --ignore-missing bc
+apt-get install -y --ignore-missing bc libwhisker2-perl libwww-perl postgresql
+apt-get install -y --ignore-missing postgresql-contrib libpq-dev
 print_delimiter
 
 # -----------------------------------------------------------------------------
 
 print_title "[~] Install Python3 libraries required by Jok3r (if missing)"
 pip3 install -r requirements.txt
+pip3 install --upgrade requests
 print_delimiter
 
 # -----------------------------------------------------------------------------
