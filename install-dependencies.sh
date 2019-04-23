@@ -134,22 +134,32 @@ if ! [ -x "$(command -v rvm)" ]; then
     then
         echo "source /etc/profile.d/rvm.sh" >> ~/.bashrc
     fi
-    apt-get purge -y libssl-dev
-    apt-get install -y libssl1.0-dev
-    rvm install 2.3.5 --autolibs=disable
-    rvm install ruby-2.5
-    rvm --default use 2.5
-    gem install ffi
-    rvm list
     # Make sure rvm will be available
     if ! grep -q "[[ -s /usr/local/rvm/scripts/rvm ]] && source /usr/local/rvm/scripts/rvm" ~/.bashrc
     then
         echo "[[ -s /usr/local/rvm/scripts/rvm ]] && source /usr/local/rvm/scripts/rvm" >> ~/.bashrc
     fi
     source ~/.bashrc
-else
-    print_title "[+] Ruby is already installed"
+
+
+if ! rvm list | grep -q "ruby-2.3"
+then
+    print_title "[~] Install Ruby old version (2.3) required for some tools"
+    apt-get install -y ruby-psych
+    apt-get purge -y libssl-dev
+    apt-get install -y libssl1.0-dev
+    rvm install 2.3.5 --autolibs=disable
 fi
+
+if ! rvm list | grep -q "ruby-2.5"
+then
+    print_title "[~] Install Ruby 2.5 (default)"
+    rvm install ruby-2.5
+    rvm --default use 2.5
+    gem install ffi
+    rvm list
+fi
+
 print_delimiter
 
 print_title "[~] Update Ruby bundler"
