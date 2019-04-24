@@ -142,13 +142,13 @@ if ! [ -x "$(command -v rvm)" ]; then
     source ~/.bashrc
 fi
 
-if ! rvm list | grep -q "ruby-2.3"
+if ! rvm list | grep -q "ruby-2.4"
 then
-    print_title "[~] Install Ruby old version (2.3) required for some tools"
+    print_title "[~] Install Ruby old version (2.4) required for some tools"
     apt-get install -y ruby-psych
     apt-get purge -y libssl-dev
     apt-get install -y libssl1.0-dev
-    rvm install 2.3.5 --autolibs=disable
+    rvm install 2.4
 fi
 
 if ! rvm list | grep -q "ruby-2.5"
