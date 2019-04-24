@@ -21,8 +21,10 @@ RUN apt-get update && \
     echo 'export LC_ALL="en_US.UTF-8"' >> /root/.bashrc && \
     echo 'export LANG="en_US.UTF-8"' >> /root/.bashrc && \
     echo 'export LANGUAGE="en_US:en"' >> /root/.bashrc && \
+    echo 'export PS1="\[$(tput bold)\]\[$(tput setaf 2)\]\u@jok3r-docker:\[$(tput setaf 4)\]\w\\$\[$(tput sgr0)\]\[$(tput sgr0)\] "' >> /root/.bashrc && \
     echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen && \
-    git clone https://github.com/koutto/jok3r.git
+    git clone https://github.com/koutto/jok3r.git 
+
 
 # Add Sublime text for convenience for editing files if necessary
 # Will require to run with the following arguments to use GUI
