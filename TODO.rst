@@ -3,13 +3,6 @@ TODO
 =====
 
 
-Docker Environment
-==================
-* IMPORTANT: RE INSTALL odat !! 
-* re-install impacket
-
-
-
 IMPROVEMENTS / NEW FEATURES
 ===============================================================================
 
@@ -18,6 +11,10 @@ IMPROVEMENTS / NEW FEATURES
 * Update apps.json with websphere, weblogic
 * Run custom command
 * Session / Restore
+* Change user-agent in nmap
+
+* Create project jok3r-pocs to handle all standalone exploits/poc scripts (rce-blind, rce-standard)
+
 
 
 SMARTMODULES / MATCHSTRINGS
@@ -44,6 +41,8 @@ CHECKS TO ADD
 * check https://bitvijays.github.io/LFF-IPS-P2-VulnerabilityAnalysis.html
 * https://github.com/RhinoSecurityLabs/CVEs/tree/master/CVE-2019-0227
 * https://github.com/Xyntax/DirBrute/tree/master/dics
+
+* http://pentestit.com/apache-jmeter-rmi-remote-code-execution-vulnerability-poc-cve-2018-1297/
 
 
 DOCUMENTATION

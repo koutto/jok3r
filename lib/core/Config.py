@@ -47,9 +47,6 @@ ATTACK_EXAMPLES = colored.stylize('Examples:', colored.attr('bold')) + """
   - Run only "recon" and "vulnscan" security checks against an FTP service and add results to the mission "mayhem" in db:
   python3 jok3r.py attack -t 192.168.1.142:21 -s ftp --cat-only recon,vulnscan --add2db mayhem
 
-  - Run the "bruteforce" attack profile against an SSH service:
-  python3 jok3r.py attack -t 192.168.1.242:22 -s ssh --profile bruteforce
-
   - Run security checks against all FTP services running on 2121/tcp and all HTTP services from the mission "mayhem" in db:
   python3 jok3r.py attack -m mayhem -f "port=2121;service=ftp" -f "service=http" 
 """
