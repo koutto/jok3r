@@ -418,7 +418,7 @@ class SmartPostcheck:
         """
         Replace tokens $1, $2 ... with the corresponding value of matching group.
         E.g. : $1 <-> (?P<m1>...)
-        This method is used when the matching method "search" is used (default)
+        This method is used when the matching method "search" is used
 
         :param str string: String that may contain some tokens ($1, $2 ...)
         :param dict captdict: Captures dict resulting from regex.search().capturesdict()

@@ -70,6 +70,8 @@ class Target:
 
         if not self.service.port:
             self.service.port = WebUtils.get_port_from_url(self.service.url)
+            if not NetUtils.is_valid_port(self.service.port):
+                raise TargetException('Invalid port number {}'.format(self.service.port))
 
 
     def __init_with_ip(self):
