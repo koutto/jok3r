@@ -243,7 +243,7 @@ apt-get install -y --ignore-missing gcc make automake patch libssl-dev locate
 apt-get install -y --ignore-missing smbclient dnsutils libgmp-dev libffi-dev 
 apt-get install -y --ignore-missing libxml2-utils unixodbc unixodbc-dev alien
 apt-get install -y --ignore-missing bc libwhisker2-perl libwww-perl postgresql
-apt-get install -y --ignore-missing postgresql-contrib libpq-dev
+apt-get install -y --ignore-missing postgresql-contrib libpq-dev net-tools
 print_delimiter
 
 # -----------------------------------------------------------------------------
