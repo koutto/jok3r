@@ -82,6 +82,7 @@ products_match['http']['web-appserver'] = {
         ],
     },
     'Oracle/Weblogic Server': {
+        'wappalyzer': 'Weblogic Server',
         'nmap-banner': 'WebLogic (applications server|admin httpd|httpd|Server)(\s+[VERSION])?',
         'clusterd': [
             'Matched [0-9]+ fingerprints for service weblogic',
@@ -97,7 +98,10 @@ products_match['http']['web-appserver'] = {
         ],
     },
     'Websphere Application Server': {
-        'wappalyzer': 'IBM WebSphere (Commerce|Portal)',
+        'wappalyzer': [
+            'Websphere Application Server',
+            'IBM WebSphere (Commerce|Portal)',
+        ],
         'nmap-banner': 'WebSphere (Application Server|httpd)(\s*[VERSION])?',
     },
     'Zope': {

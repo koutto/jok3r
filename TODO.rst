@@ -5,15 +5,8 @@ TODO
 
 IMPROVEMENTS / NEW FEATURES
 ===============================================================================
-
-* example avec profile
-* Report: print command in results 
-* Update apps.json with websphere, weblogic
 * Run custom command
 * Session / Restore
-* Change user-agent in nmap
-
-* Create project jok3r-pocs to handle all standalone exploits/poc scripts (rce-blind, rce-standard)
 
 
 

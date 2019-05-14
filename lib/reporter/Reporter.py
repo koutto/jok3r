@@ -649,8 +649,9 @@ class Reporter:
                     output = m.group('output')
 
                     html += """
+                    <pre>{cmdline}</pre>
                     <pre>{output}</pre>
-                    """.format(output=output)
+                    """.format(cmdline=o.cmdline, output=output)
 
             html += """
                         </div>

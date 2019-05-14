@@ -13,5 +13,7 @@ vulns_match['mysql'] = {
         'CVE-(?P<m1>\S+)\s+\|\s+(?P<m2>\S+)\s+\|\s+\S+\s+\|\s*(?P<m3>.*?)\s*\|\s*(?P<m4>\S+)\s*\|\s*1': 'CVE-$1 ($2): $3... ($4) - Exploit available',
         'CVE-(?P<m1>\S+)\s+\|\s+(?P<m2>\S+)\s+\|\s+\S+\s+\|\s*(?P<m3>.*?)\s*\|\s*(?P<m4>\S+)\s*\|\s*None': 'CVE-$1 ($2): $3... ($4)',
     },
-
-} 
+    'nmap': {
+        'Authentication bypass in MySQL servers\.\s*(\r\n|\r|\n)\|\s*State: (LIKELY )?VULNERABLE': 'MySQL Authentication Bypass (CVE-2012-2122)',
+ 	}
+}

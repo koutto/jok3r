@@ -42,13 +42,16 @@ ATTACK_EXAMPLES = colored.stylize('Examples:', colored.attr('bold')) + """
   python3 jok3r.py attack -t http://www.example.com/ 
 
   - Run all security checks against a MS-SQL service (without user interaction) and add results to the mission "mayhem" in db:
-  python3 jok3r.py attack -t 192.168.1.42:1433 -s mssql --add2db mayhem
+  python3 jok3r.py attack -t 192.168.1.42:1433 -s mssql --add2db mayhem --fast
 
   - Run only "recon" and "vulnscan" security checks against an FTP service and add results to the mission "mayhem" in db:
   python3 jok3r.py attack -t 192.168.1.142:21 -s ftp --cat-only recon,vulnscan --add2db mayhem
 
   - Run security checks against all FTP services running on 2121/tcp and all HTTP services from the mission "mayhem" in db:
-  python3 jok3r.py attack -m mayhem -f "port=2121;service=ftp" -f "service=http" 
+  python3 jok3r.py attack -m mayhem -f "port=2121;service=ftp" -f "service=http"
+
+  - Search for "easy wins" (critical vulns / easy to exploit) on all services registered in mission "mayhem" in db:
+  python3 jok3r.py attack -m mayhem --profile red-team --fast
 """
 
 DB_INTRO = """

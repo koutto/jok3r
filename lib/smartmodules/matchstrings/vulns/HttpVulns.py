@@ -48,17 +48,20 @@ vulns_match['http'] = {
     'exploit-weblogic-cve2017-3248': {
         '\[\+\] target \S+:\S+ is vulnerable': 'Weblogic RMI Registry UnicastRef Object Java Deserialization RCE (CVE-2017-3248)',
     },
-    'jok3r-scripts': {
-        'Weblogic T3 Deserialize CVE-2015-4852 Exploit[\s\S]*?Malicious packet sent[\s\S]*?Captured ICMP traffic:[\s\S]*?ICMP echo request.*\n.*ICMP echo reply': 'Weblogic T3: Java Deserialization RCE (CVE-2015-4852)',
-        'Weblogic WLS-WSAT RCE CVE-2017-10271 Exploit[\s\S]*?Malicious packet sent[\s\S]*?Captured ICMP traffic:[\s\S]*?ICMP echo request.*\n.*ICMP echo reply': 'Weblogic WLS-WSAT RCE (CVE-2017-10271)',
-        'Weblogic T3 Deserialize CVE-2018-2893 Exploit[\s\S]*?Malicious packet sent[\s\S]*?Captured ICMP traffic:[\s\S]*?ICMP echo request.*\n.*ICMP echo reply': 'Weblogic T3 Deserialize (CVE-2018-2893)',
-        'Weblogic T3 Deserialize CVE-2016-3510 Exploit[\s\S]*?Malicious packet sent[\s\S]*?Captured ICMP traffic:[\s\S]*?ICMP echo request.*\n.*ICMP echo reply': 'Weblogic T3 Deserialize (CVE-2016-3510)',
-        'Weblogic RCE CVE-2018-2894 Exploit[\s\S]*?vulnerable to CVE-2018-2894': 'Weblogic RCE (CVE-2018-2894)',
-        'it\'s Vulnerable to CVE-2017-12617': 'Apache Tomcat JSP Upload Bypass RCE (CVE-2017-12617)',
-        'JBoss Deserialize CVE-2015-7501 Exploit[\s\S]*?\[\+\] Command executed successfully': 'JBoss Deserialize (CVE-2015-7501)',
-        'Jenkins Groovy XML RCE CVE-2016-0792 Exploit[\s\S]*?\[\+\] Command executed successfully': 'Jenkins Groovy XML RCE (CVE-2016-0792)',
-        'Rails exploit CVE-2019-5418 \+ CVE-2019-5420[\s\S]*?Checking if vulnerable to CVE-2019-5418 =>\s*OK': 'Rails File Disclosure (CVE-2019-5418) + RCE (CVE-2019-5420)',
-   },
+    #  'jok3r-scripts': {
+    #      'Weblogic T3 Deserialize CVE-2015-4852 Exploit[\s\S]*?Malicious packet sent[\s\S]*?Captured ICMP traffic:[\s\S]*?ICMP echo request.*\n.*ICMP echo reply': 'Weblogic T3: Java Deserialization RCE (CVE-2015-4852)',
+    #      'Weblogic WLS-WSAT RCE CVE-2017-10271 Exploit[\s\S]*?Malicious packet sent[\s\S]*?Captured ICMP traffic:[\s\S]*?ICMP echo request.*\n.*ICMP echo reply': 'Weblogic WLS-WSAT RCE (CVE-2017-10271)',
+    #      'Weblogic T3 Deserialize CVE-2018-2893 Exploit[\s\S]*?Malicious packet sent[\s\S]*?Captured ICMP traffic:[\s\S]*?ICMP echo request.*\n.*ICMP echo reply': 'Weblogic T3 Deserialize (CVE-2018-2893)',
+    #      'Weblogic T3 Deserialize CVE-2016-3510 Exploit[\s\S]*?Malicious packet sent[\s\S]*?Captured ICMP traffic:[\s\S]*?ICMP echo request.*\n.*ICMP echo reply': 'Weblogic T3 Deserialize (CVE-2016-3510)',
+    #      'Weblogic RCE CVE-2018-2894 Exploit[\s\S]*?vulnerable to CVE-2018-2894': 'Weblogic RCE (CVE-2018-2894)',
+    #      'it\'s Vulnerable to CVE-2017-12617': 'Apache Tomcat JSP Upload Bypass RCE (CVE-2017-12617)',
+    #      'JBoss Deserialize CVE-2015-7501 Exploit[\s\S]*?\[\+\] Command executed successfully': 'JBoss Deserialize (CVE-2015-7501)',
+    #      'Jenkins Groovy XML RCE CVE-2016-0792 Exploit[\s\S]*?\[\+\] Command executed successfully': 'Jenkins Groovy XML RCE (CVE-2016-0792)',
+    #      'Rails exploit CVE-2019-5418 \+ CVE-2019-5420[\s\S]*?Checking if vulnerable to CVE-2019-5418 =>\s*OK': 'Rails File Disclosure (CVE-2019-5418) + RCE (CVE-2019-5420)',
+    # },
+    'jok3r-pocs': {
+        '(?P<m1>.*)\s*:\s*Target is EXPLOITABLE': '$1',
+    },
     'joomlavs': {
         '\[!\] Title: (?P<m1>.*)\n.*Reference: (?P<m2>.*)': 'Joomla: $1 ($2)',
     },

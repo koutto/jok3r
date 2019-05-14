@@ -350,7 +350,7 @@ class ArgumentsParser:
 
         running.add_argument(
             '--fast', 
-            help    = 'Fast mode, disable prompts',
+            help    = 'Fast mode, disable prompts/user interaction',
             action  = 'store_true', 
             dest    = 'fast_mode', 
             default = False)
