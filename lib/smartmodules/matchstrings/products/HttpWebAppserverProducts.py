@@ -98,10 +98,7 @@ products_match['http']['web-appserver'] = {
         ],
     },
     'Websphere Application Server': {
-        'wappalyzer': [
-            'Websphere Application Server',
-            'IBM WebSphere (Commerce|Portal)',
-        ],
+        'wappalyzer': 'Websphere Application Server',
         'nmap-banner': 'WebSphere (Application Server|httpd)(\s*[VERSION])?',
     },
     'Zope': {
