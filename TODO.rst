@@ -65,3 +65,9 @@ SERVICES TO ADD
 
 
 Ruby ruby-2.3.8 is not installed
+
+
+TESTS
+===============================================================================
+- Weblogic
+- Websphere
