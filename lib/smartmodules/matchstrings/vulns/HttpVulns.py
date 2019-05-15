@@ -60,7 +60,7 @@ vulns_match['http'] = {
     #      'Rails exploit CVE-2019-5418 \+ CVE-2019-5420[\s\S]*?Checking if vulnerable to CVE-2019-5418 =>\s*OK': 'Rails File Disclosure (CVE-2019-5418) + RCE (CVE-2019-5420)',
     # },
     'jok3r-pocs': {
-        '(?P<m1>.*)\s*:\s*Target is EXPLOITABLE': '$1',
+        '\[\+\]\s*(?P<m1>.*)\s*:\s*Target is EXPLOITABLE': '$1',
     },
     'joomlavs': {
         '\[!\] Title: (?P<m1>.*)\n.*Reference: (?P<m2>.*)': 'Joomla: $1 ($2)',
