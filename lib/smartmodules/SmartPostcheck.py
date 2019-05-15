@@ -407,9 +407,9 @@ class SmartPostcheck:
                             tool=self.tool_name))
                     return None
 
-            else:
-                # Token must be sequentials ($1, $2...)
-                break
+            # else:
+            #     # Token must be sequentials ($1, $2...)
+            #     break
 
         return output
 
@@ -441,8 +441,8 @@ class SmartPostcheck:
                             tool=self.tool_name))
                     return None
 
-            else:
-                # Token must be sequentials ($1, $2...)
-                break
+            # else:
+            #     # Token must be sequentials ($1, $2...)
+            #     break
 
         return output
