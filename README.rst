@@ -31,6 +31,18 @@
 Jok3r - Network and Web Pentest Framework
 ==========================================
 
+==========================================
+WARNING: Project is currently actively under development, testing & debugging.
+==========================================
+
+==========================================
+README & Documentation are deprecated for now. 
+==========================================
+
+==========================================
+Stay Tuned for update soon :)
+==========================================
+
 *Jok3r* is a Python3 CLI application which is aimed at **helping penetration testers 
 for network infrastructure and web black-box security tests**. 
 

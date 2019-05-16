@@ -2,12 +2,18 @@
 TODO
 =====
 
+BUGS
+===============================================================================
+* When using --cat-only: [Check 01/total] => total is taking all checks in account
+* cmd> java -jar jndiat.jar datasource -v -s 192.168.142.41 -p 7002   
+	SEVERE:You must to choose a mandatory command (--sql-shell, --listen-port)  to run this module
+
 
 IMPROVEMENTS / NEW FEATURES
 ===============================================================================
 * Run custom command
 * Session / Restore
-
+* Indicate checks that need a reverse connection (IP reachable from target)
 
 
 SMARTMODULES / MATCHSTRINGS
@@ -64,10 +70,3 @@ SERVICES TO ADD
 * IMAP
 
 
-Ruby ruby-2.3.8 is not installed
-
-
-TESTS
-===============================================================================
-- Weblogic
-- Websphere
