@@ -1,0 +1,10 @@
+root
+toor
+admin
+administrator
+guest
+supervisor
+support
+backup
+mysql
+postgres
