@@ -94,8 +94,8 @@ class VersionUtils:
             return False
         
         try:
-            old_major = int(old[0])
-            new_major = int(new[0])
+            old_major = int(str(old)[0])
+            new_major = int(str(new)[0])
         except:
             return False
 
