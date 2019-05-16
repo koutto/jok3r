@@ -88,9 +88,9 @@ class VersionUtils:
         """
         old = LooseVersion(old_version)
         new = LooseVersion(new_version)
-        if len(new) == 0:
+        if len(str(new)) == 0:
             return False
-        if len(old) == 0:
+        if len(str(old)) == 0:
             return False
         
         try:
@@ -102,4 +102,4 @@ class VersionUtils:
         if new_major != old_major:
             return True
         else:
-            return (len(new) >= len(old))
+            return (len(str(new)) >= len(str(old)))
