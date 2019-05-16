@@ -366,8 +366,11 @@ class ContextRequirements:
                     #     prodversion == '')
 
                     # When explicit requirement on the version number 
-                    status |= VersionUtils.check_version_requirement(
-                        prodversion, req_prodvers)
+                    # Perform version requirement check only if version of product
+                    # has been detected. Otherwise, we condider it is better to 
+                    # perform the check anyway in order to avoid to miss stuff
+                    status |= (prodversion != '' and VersionUtils.check_version_requirement(
+                        prodversion, req_prodvers))
 
                     if inversion and not status:
                         return True

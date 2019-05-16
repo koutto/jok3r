@@ -189,37 +189,37 @@ creds_match['http'] = {
         },
     },
     'xbruteforcer': {
-        'wp-login\.php\s+.*User:\s*(?<m1>\S+)\s*Pass:\s*(?<m2>\S*)': {
+        'wp-login\.php\s+.*User:\s*(?P<m1>\S+)\s*Pass:\s*(?P<m2>\S*)': {
             'meth': 'finditer',
             'user': '$1',
             'pass': '$2',
             'type': 'wordpress',
         },
-        'administrator/index\.php\s+.*User:\s*(?<m1>\S+)\s*Pass:\s*(?<m2>\S*)': {
+        'administrator/index\.php\s+.*User:\s*(?P<m1>\S+)\s*Pass:\s*(?P<m2>\S*)': {
             'meth': 'finditer',
             'user': '$1',
             'pass': '$2',
             'type': 'joomla',
         },
-        'user/login\s+.*User:\s*(?<m1>\S+)\s*Pass:\s*(?<m2>\S*)': {
+        'user/login\s+.*User:\s*(?P<m1>\S+)\s*Pass:\s*(?P<m2>\S*)': {
             'meth': 'finditer',
             'user': '$1',
             'pass': '$2',
             'type': 'drupal',
         },
-        'admin/index\.php\s+.*User:\s*(?<m1>\S+)\s*Pass:\s*(?<m2>\S*)': {
+        'admin/index\.php\s+.*User:\s*(?P<m1>\S+)\s*Pass:\s*(?P<m2>\S*)': {
             'meth': 'finditer',
             'user': '$1',
             'pass': '$2',
             'type': 'opencart',
         },
-        'admin/index\.php\s+.*User:\s*(?<m1>\S+)\s*Pass:\s*(?<m2>\S*)': {
+        'admin/index\.php\s+.*User:\s*(?P<m1>\S+)\s*Pass:\s*(?P<m2>\S*)': {
             'meth': 'finditer',
             'user': '$1',
             'pass': '$2',
             'type': 'opencart',
         },
-        '/admin\s+.*User:\s*(?<m1>\S+)\s*Pass:\s*(?<m2>\S*)': {
+        '/admin\s+.*User:\s*(?P<m1>\S+)\s*Pass:\s*(?P<m2>\S*)': {
             'meth': 'finditer',
             'user': '$1',
             'pass': '$2',

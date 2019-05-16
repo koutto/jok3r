@@ -12,7 +12,7 @@ TESTS
 
 
 * Drupal:
-	* Drupalgeddon CVE-2018-7600
+	* Drupalgeddon CVE-2018-7600 - https://github.com/vulhub/vulhub/tree/master/drupal/CVE-2018-7600
 
 * MySQL:
 	* OK - CVE-2012-2122 - https://github.com/vulhub/vulhub/tree/master/mysql/CVE-2012-2122

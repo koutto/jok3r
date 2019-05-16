@@ -42,6 +42,9 @@ vulns_match['http'] = {
     'domiowned': {
         '(?P<m1>.+) does not require authentication': 'Domino: No auth on $1',
     },
+    'drupwn': {
+        'exploit\s+(?P<m1>\S+)\s*\n[\s\S]*?\[\+\] Exploit completed. Webshell accessible at: (?P<m2>\S+)': 'Drupal RCE: $1 ($2)',
+    },
     'iis-shortname-scanner': {
         'Result: Vulnerable': 'IIS short filename (8.3) disclosure vulnerability',
     },
