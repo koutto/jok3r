@@ -379,12 +379,12 @@ class ContextRequirements:
 
                     if status:
                         return True
-            except Exception as e:
-                logger.error('An error occured when checking product requirements: {}'.format(e))
-                logger.error('Following requirements syntax should be reviewed: {}'.format(
-                    requirement))
-                logger.warning('Product requirements are ignored for this check')
-                return True
+        except Exception as e:
+            logger.error('An error occured when checking product requirements: {}'.format(e))
+            logger.error('Following requirements syntax should be reviewed: {}'.format(
+                requirement))
+            logger.warning('Product requirements are ignored for this check')
+            return True
         return False
 
 
