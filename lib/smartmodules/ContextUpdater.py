@@ -192,7 +192,7 @@ class ContextUpdater:
                         # Update version if new version is "more accurate" than the 
                         # one already known
                         elif match_product.version != product.version:
-                            if VersionUtils.is_version_more_precise(
+                            if VersionUtils.is_version_more_accurate(
                                 old_version=match_product.version, 
                                 new_version=product.version):
                                 logger.smartsuccess('Version for product ' \
