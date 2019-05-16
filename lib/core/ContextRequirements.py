@@ -324,59 +324,67 @@ class ContextRequirements:
         if status: 
             return True
 
-        if prodname:
-            for req_prod in requirement:
-                req_prodname, req_prodvers = VersionUtils.extract_name_version(req_prod)
-                logger.debug('Required product: type={}, name={}, version={}'.format(
-                    prodtype, req_prodname, req_prodvers))
-                logger.debug('Target product: type={}, name={}, version={}'.format(
-                    prodtype, prodname, prodversion))
+        try:
+            if prodname:
+                for req_prod in requirement:
+                    req_prodname, req_prodvers = VersionUtils.extract_name_version(req_prod)
+                    logger.debug('Required product: type={}, name={}, version={}'.format(
+                        prodtype, req_prodname, req_prodvers))
+                    logger.debug('Target product: type={}, name={}, version={}'.format(
+                        prodtype, prodname, prodversion))
 
-                # Handle case where prefixed with "!" for inversion
-                if len(req_prodname) > 0 and req_prodname[0] == '!':
-                    inversion = True
-                    req_prodname = req_prodname[1:]
-                else:
-                    inversion = False
+                    # Handle case where prefixed with "!" for inversion
+                    if len(req_prodname) > 0 and req_prodname[0] == '!':
+                        inversion = True
+                        req_prodname = req_prodname[1:]
+                    else:
+                        inversion = False
 
-                # When no special requirement on vendor/product_name but must be known
-                if req_prodname.lower() == 'any':
-                    # When version can be unknown
-                    status  = not req_prodvers
+                    # When no special requirement on vendor/product_name but must be known
+                    if req_prodname.lower() == 'any':
+                        # When version can be unknown
+                        status  = not req_prodvers
 
-                    # When the version must be known (any value)
-                    status |= (req_prodvers.lower() == 'version_known' and \
-                        prodversion != '')
+                        # When the version must be known (any value)
+                        status |= (req_prodvers.lower() == 'version_known' and \
+                            prodversion != '')
 
-                    # When the version is unknown
-                    status |= (req_prodvers.lower() == 'version_unknown' and \
-                        prodversion == '')
+                        # When the version is unknown
+                        status |= (req_prodvers.lower() == 'version_unknown' and \
+                            prodversion == '')
 
-                # When requirement on a defined vendor/product_name and it is matching
-                elif req_prodname.lower() == prodname.lower():
-                    # When no requirement on the version number
-                    status  = not req_prodvers
+                    # When requirement on a defined vendor/product_name and it is matching
+                    elif req_prodname.lower() == prodname.lower():
+                        # When no requirement on the version number
+                        status  = not req_prodvers
 
-                    # When the version must be known but no requirement on its value
-                    # status |= (req_prodvers.lower() == 'version_known' \
-                    #     and prodversion != '')
+                        # When the version must be known but no requirement on its value
+                        # status |= (req_prodvers.lower() == 'version_known' \
+                        #     and prodversion != '')
 
-                    # # When the version is unknown
-                    # status |= (req_prodvers.lower() == 'version_unknown' and \
-                    #     prodversion == '')
+                        # # When the version is unknown
+                        # status |= (req_prodvers.lower() == 'version_unknown' and \
+                        #     prodversion == '')
 
-                    # When explicit requirement on the version number 
-                    # Perform version requirement check only if version of product
-                    # has been detected. Otherwise, we condider it is better to 
-                    # perform the check anyway in order to avoid to miss stuff
-                    status |= (prodversion != '' and VersionUtils.check_version_requirement(
-                        prodversion, req_prodvers))
+                        # When explicit requirement on the version number 
+                        # Perform version requirement check only if version of product
+                        # has been detected. Otherwise, we condider it is better to 
+                        # perform the check anyway in order to avoid to miss stuff
+                        status |= (prodversion != '' and \
+                            VersionUtils.check_version_requirement(
+                                prodversion, req_prodvers))
 
-                    if inversion and not status:
+                        if inversion and not status:
+                            return True
+
+                    if status:
                         return True
-
-                if status:
-                    return True
+            except Exception as e:
+                logger.error('An error occured when checking product requirements: {}'.format(e))
+                logger.error('Following requirements syntax should be reviewed: {}'.format(
+                    requirement))
+                logger.warning('Product requirements are ignored for this check')
+                return True
         return False
 
 

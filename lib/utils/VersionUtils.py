@@ -59,14 +59,14 @@ class VersionUtils:
         elif '*' in requirement:
             pattern = requirement.replace('.', '[.]').replace('*', '.*')
             return re.match(pattern, version_number) is not None
-        elif requirement.startswith('<'):
-            return LooseVersion(version_number) < LooseVersion(requirement[1:].strip())
-        elif requirement.startswith('>'):
-            return LooseVersion(version_number) > LooseVersion(requirement[1:].strip())
         elif requirement.startswith('<='):
             return LooseVersion(version_number) <= LooseVersion(requirement[2:].strip())
         elif requirement.startswith('>='):
             return LooseVersion(version_number) >= LooseVersion(requirement[2:].strip())
+        elif requirement.startswith('<'):
+            return LooseVersion(version_number) < LooseVersion(requirement[1:].strip())
+        elif requirement.startswith('>'):
+            return LooseVersion(version_number) > LooseVersion(requirement[1:].strip())
         else:
             print(version_number)
             print(requirement)
