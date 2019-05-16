@@ -18,4 +18,5 @@ TESTS
 	* OK - CVE-2012-2122 - https://github.com/vulhub/vulhub/tree/master/mysql/CVE-2012-2122
 
 * SSH:
-	* CVE-2018-10933 libssh auth bypass - https://github.com/vulhub/vulhub/tree/master/libssh/CVE-2018-10933
+	* OK - CVE-2018-10933 libssh auth bypass - https://github.com/vulhub/vulhub/tree/master/libssh/CVE-2018-10933
+	* CVE-2018-15473
