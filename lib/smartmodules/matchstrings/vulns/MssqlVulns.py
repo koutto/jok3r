@@ -15,6 +15,7 @@ vulns_match['mssql'] = {
     },
     'msdat': {
         '\]\s*(Can you|You can|Can we|We can)?\s*(?P<m1>.*)\s*\?.*\n.*\[\+\]\s*OK': 'MSSQL: $1',
+        'RCE-Exploitable': 'MSSQL: Command execution via xp_cmdshell',
     },
 
 } 

@@ -3,6 +3,7 @@
 ###
 ### Screenshoter > Web Screenshoter
 ###
+import httplib
 import os
 import sys
 from selenium import webdriver

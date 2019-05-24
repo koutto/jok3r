@@ -92,6 +92,8 @@ vulns_match['http'] = {
         'struts2_code_exec_showcase[\s\S]*?session [1-9] open': 'Apache Struts2 RCE Showcase OGNL (CVE-2017-9791)',
         'Unauthenticated Jenkins console vulnerability OK': 'Jenkins: Unauthenticated Jenkins-CI script console (RCE)',
         'weblogic_deserialize[\s\S]*?session [1-9] open': 'Weblogic T3 Java Deserialize (CVE-2018-2628)',
+        'wildfly_traversal[\s\S]*File saved in:': 'Jboss: WildFly Directory Traversal (CVE-2014-7816)',
+        'glassfish_traversal[\s\S]*File saved in:': 'Glassfish: Path Traversal (CVE-2017-1000028)',
     },
     'shocker': {
         'looks vulnerable': 'Shellshock (CVE-2014-6271)',

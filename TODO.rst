@@ -42,7 +42,7 @@ CHECKS TO ADD
 * https://github.com/Xyntax/DirBrute/tree/master/dics
 
 * http://pentestit.com/apache-jmeter-rmi-remote-code-execution-vulnerability-poc-cve-2018-1297/
-
+* magento sqli https://github.com/vulhub/vulhub/tree/master/magento/2.2-sqli https://github.com/ambionics/magento-exploits
 
 DOCUMENTATION
 ===============================================================================

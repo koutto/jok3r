@@ -29,19 +29,23 @@ class ContextRequirements:
         - 'undefined': product must not be defined
         - 'any': product must be defined (any value)
         - 'any|version_known': product+version must be defined
+        - 'any|version_unknown': product name must be known+version unknown
 
-        Available product type(s) depend on the service (e.g. web_server and
-        web_cms for HTTP).
+        When explicit requirement on the version number: perform version requirement 
+        check only if version of product has been detected. Otherwise, we condider 
+        it is better to perform the check anyway in order to avoid to miss stuff
+
+        Available product type(s) depend on the service (e.g. web-server, web-cms...
+        for HTTP).
 
         Accepted syntax examples:
             - For any supported product:
-                - any (means product name must be known)
-                - any|version_known (means product name+version must be known)
+                - any
+                - any|version_known
+                - any|version_unknown
 
             - For a specific product:
                 vendor/product_name (vendor/ is present only if needed)
-                vendor/product_name|version_unknown
-                vendor/product_name|version_known
                 vendor/product_name|7.*
                 vendor/product_name|7.1.*
                 vendor/product_name|>7.1
@@ -355,6 +359,7 @@ class ContextRequirements:
 
                     # When requirement on a defined vendor/product_name and it is matching
                     elif req_prodname.lower() == prodname.lower():
+
                         # When no requirement on the version number
                         status  = not req_prodvers
 

@@ -13,5 +13,11 @@ vulns_match['postgresql'] = {
         'CVE-(?P<m1>\S+)\s+\|\s+(?P<m2>\S+)\s+\|\s+\S+\s+\|\s*(?P<m3>.*?)\s*\|\s*(?P<m4>\S+)\s*\|\s*1': 'CVE-$1 ($2): $3... ($4) - Exploit available',
         'CVE-(?P<m1>\S+)\s+\|\s+(?P<m2>\S+)\s+\|\s+\S+\s+\|\s*(?P<m3>.*?)\s*\|\s*(?P<m4>\S+)\s*\|\s*None': 'CVE-$1 ($2): $3... ($4)',
     },
+    'psql': {
+    	'RCE-Exploitable': 'Postresql: Command execution via CVE-2019-9193',
+    },
+    'metasploit': {
+    	'is vulnerable to CVE-2013-1899': 'Postresql: Command-line flag injection (CVE-2013-1899) - DoS, privesc, RCE',
+    },
 
 } 
