@@ -3,7 +3,7 @@
 ###
 ### Screenshoter > Web Screenshoter
 ###
-import httplib
+import http.client
 import os
 import sys
 from selenium import webdriver
@@ -135,7 +135,7 @@ class WebScreenshoter:
                     status = ScreenStatus.TIMEOUT
                     break
 
-            except httplib.BadStatusLine:
+            except http.client.BadStatusLine:
                 logger.warning('Web Screenshot: Bad status line when connecting to ' \
                     '{url}'.format(url=url))
                 status = ScreenStatus.BADSTATUS
