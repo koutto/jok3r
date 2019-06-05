@@ -97,6 +97,7 @@ Architecture
 
 
 .. image:: ./pictures/visio/flowchart/jok3r-flow-chart.svg
+    :width: 700px
     :alt: Jok3r flowchart
 
 
@@ -237,6 +238,7 @@ Security Testing
 
 
 **Single target:** 
+
 * Run all security checks against an URL in interactive mode and add results to the "mayhem" mission:
 
 .. code-block:: console
@@ -259,6 +261,7 @@ Security Testing
 
 
 **Multiple targets:** 
+
 * Search only for "easy wins" (critical vulns & easy to exploit) on all services registered in mission "mayhem":
 
 .. code-block:: console
@@ -287,7 +290,9 @@ Security Testing
 
 Database Access & Reporting
 ---------------------------
+
 **Select a mission**
+
 .. code-block:: console
 
     python3 jok3r.py db
@@ -295,14 +300,17 @@ Database Access & Reporting
     jok3rdb[default]> mission mayhem
 
     [*] Selected mission is now mayhem
-    
+
+
 **Import hosts/services from Nmap results (XML) into the mission scope**
+
 .. code-block:: console
 
     jok3rdb[mayhem]> nmap results.xml
 
 
 **Display services, hosts, detected products & credentials registered in selected mission**
+
 .. code-block:: console
 
     jok3rdb[mayhem]> services
@@ -312,6 +320,7 @@ Database Access & Reporting
 
 
 **Display services, hosts, detected products & credentials registered in selected mission**
+
 .. code-block:: console
 
     jok3rdb[mayhem]> services
@@ -321,12 +330,14 @@ Database Access & Reporting
 
 
 **Search for string in checks results in selected mission**
+
 .. code-block:: console
 
     jok3rdb[mayhem]> results --search '<search_string>'
 
 
 **Display vulnerabilities automatically detected from checks outputs in selected mission (experimental)**
+
 .. code-block:: console
 
     jok3rdb[mayhem]> vulns
@@ -342,6 +353,7 @@ Database Access & Reporting
 ======================
 Typical usage example
 ======================
+
 You begin a pentest with several servers in the scope. Here is a typical example of usage of *JoK3r*:
 
 1. You run *Nmap* scan on the servers in the scope.
