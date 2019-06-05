@@ -96,8 +96,8 @@ Architecture
     :alt: Jok3r architecture
 
 
-.. image:: ./pictures/visio/flowchart/jok3r-flow-graph.svg
-    :alt: Jok3r flow graph
+.. image:: ./pictures/visio/flowchart/jok3r-flow-chart.svg
+    :alt: Jok3r flowchart
 
 
 ============
