@@ -130,14 +130,12 @@ Linux Docker image (kalilinux/kali-linux-docker).
 
         sudo docker run -i -t --name jok3r-container -w /root/jok3r -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix --shm-size 2g --net=host koutto/jok3r
 
-    Notes:
-    * ``-e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix`` is required in order to be able to start GUI application
-    from the Docker container (e.g. open web browser to read reports). It requires running ``xhost +local:root`` on the
-    host.
-    * ``--shm-size 2g`` is used to increase the size of the shared memory, it is required to avoid crashs of web browser
-    when reading reports from the Docker container.
-    * ``--net=host`` is required to share host's interface. It is needed for reverse connections (e.g. Ping to container
-    when testing for RCE, Getting a reverse shell)
+Notes:
+* ``-e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix`` is required in order to be able to start GUI applicationfrom the Docker container (e.g. open web browser to read reports). It requires running ``xhost +local:root`` on the host.
+
+* ``--shm-size 2g`` is used to increase the size of the shared memory, it is required to avoid crashs of web browser when reading reports from the Docker container.
+
+* ``--net=host`` is required to share host's interface. It is needed for reverse connections (e.g. Ping to container when testing for RCE, Getting a reverse shell)
 
 
 3. **To re-run a stopped container:**
