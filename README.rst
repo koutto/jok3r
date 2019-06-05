@@ -131,6 +131,7 @@ Linux Docker image (kalilinux/kali-linux-docker).
         sudo docker run -i -t --name jok3r-container -w /root/jok3r -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix --shm-size 2g --net=host koutto/jok3r
 
 Notes:
+
 * ``-e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix`` is required in order to be able to start GUI applicationfrom the Docker container (e.g. open web browser to read reports). It requires running ``xhost +local:root`` on the host.
 
 * ``--shm-size 2g`` is used to increase the size of the shared memory, it is required to avoid crashs of web browser when reading reports from the Docker container.
@@ -159,28 +160,28 @@ Quick usage examples
 Pentest Toolbox management
 --------------------------
 
-**Show all the tools in the toolbox**
+* Show all the tools in the toolbox:
 
 .. code-block:: console
 
     python3 jok3r.py toolbox --show-all
 
 
-**Install all the tools in the toolbox (already done in Docker container)**
+* Install all the tools in the toolbox (already done in Docker container):
 
 .. code-block:: console
 
     python3 jok3r.py toolbox --install-all --fast
 
 
-**Update all the tools in the toolbox and prompt each time to check update**
+* Update all the tools in the toolbox and prompt each time to check update:
 
 .. code-block:: console
 
     python3 jok3r.py toolbox --update-all
 
 
-**Update all the tools in the toolbox without any prompt**
+* Update all the tools in the toolbox without any prompt:
 
 .. code-block:: console
 
@@ -190,28 +191,28 @@ Pentest Toolbox management
 Information
 -----------
 
-**List supported services**
+* List supported services:
 
 .. code-block:: console
 
     python3 jok3r.py info --services
 
 
-**Show security checks for a given service**
+* Show security checks for a given service:
 
 .. code-block:: console
 
     python3 jok3r.py info --checks <service>
 
 
-**Show supported attack profiles for a given service**
+* Show supported attack profiles for a given service:
 
 .. code-block:: console
 
     python3 jok3r.py info --attack-profiles <service>
 
 
-**Show supported products for all services**
+* Show supported products for all services:
 
 .. code-block:: console
 
@@ -221,7 +222,7 @@ Information
 Security Testing
 ----------------
 
-**Create a new mission in local database:**
+Create a new mission in local database:
 
 .. code-block:: console
 
@@ -289,7 +290,7 @@ Security Testing
 Database Access & Reporting
 ---------------------------
 
-**Select a mission**
+* Select a mission:
 
 .. code-block:: console
 
@@ -300,14 +301,14 @@ Database Access & Reporting
     [*] Selected mission is now mayhem
 
 
-**Import hosts/services from Nmap results (XML) into the mission scope**
+* Import hosts/services from Nmap results (XML) into the mission scope:
 
 .. code-block:: console
 
     jok3rdb[mayhem]> nmap results.xml
 
 
-**Display services, hosts, detected products & credentials registered in selected mission**
+* Display services, hosts, detected products & credentials registered in selected mission:
 
 .. code-block:: console
 
@@ -317,7 +318,7 @@ Database Access & Reporting
     jok3rdb[mayhem]> creds
 
 
-**Display services, hosts, detected products & credentials registered in selected mission**
+* Display services, hosts, detected products & credentials registered in selected mission:
 
 .. code-block:: console
 
@@ -327,21 +328,21 @@ Database Access & Reporting
     jok3rdb[mayhem]> creds
 
 
-**Search for string in checks results in selected mission**
+* Search for string in checks results in selected mission:
 
 .. code-block:: console
 
     jok3rdb[mayhem]> results --search '<search_string>'
 
 
-**Display vulnerabilities automatically detected from checks outputs in selected mission (experimental)**
+* Display vulnerabilities automatically detected from checks outputs in selected mission (experimental):
 
 .. code-block:: console
 
     jok3rdb[mayhem]> vulns
 
 
-**Generate HTML report for the selected mission**
+* Generate HTML report for the selected mission:
 
 .. code-block:: console
 
