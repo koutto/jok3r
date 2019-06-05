@@ -92,11 +92,11 @@ Local Database & Reporting
 ============
 Architecture
 ============
-.. image:: ./pictures/visio/architecture/jok3r-architecture.svg
+.. image:: ./pictures/visio/architecture/jok3r-architecture.png
     :alt: Jok3r architecture
 
 
-.. image:: ./pictures/visio/flow-chart/jok3r-flow-graph.svg
+.. image:: ./pictures/visio/flowchart/jok3r-flow-graph.svg
     :alt: Jok3r flow graph
 
 
