@@ -64,57 +64,29 @@ Pentest Toolbox management
 
 Network Infrastructure Security Assessment
 ------------------------------------------
-* **Many supported Services**: Target most common TCP/UDP services (HTTP, FTP, SSH, SMB, Oracle, MS-SQL, MySQL, 
-PostgreSQL, VNC, etc.).
-
-* **Combine Power of Tools**: Each security check is performed by a tool from the toolbox. Attacks are performed 
-by chaining security checks.
-
-* **Context Awareness**: Security checks to run are selected and adapted according to the context of the target 
-(i.e. detected technologies, credentials, vulnerabilities, etc.).
-
+* **Many supported Services**: Target most common TCP/UDP services (HTTP, FTP, SSH, SMB, Oracle, MS-SQL, MySQL, PostgreSQL, VNC, etc.).
+* **Combine Power of Tools**: Each security check is performed by a tool from the toolbox. Attacks are performed by chaining security checks.
+* **Context Awareness**: Security checks to run are selected and adapted according to the context of the target (i.e. detected technologies, credentials, vulnerabilities, etc.).
 * **Reconnaissance**: Automatic fingerprinting (product detection) of targeted services is performed.
-
-* **CVE Lookup**: When product names and their versions are detected, a vulnerability lookup is performed on 
-online CVE databases (using Vulners & CVE Details).
-
-* **Vulnerability Scanning**: Automatically check for common vulnerabilities and attempt to perform some 
-exploitations (auto-pwn).
-
-* **Brute-force Attack**: Automatically check for default/common credentials on the service and perform 
-dictionnary attack if necessary. Wordlists are optimized according to the targeted services.
-
-* **Post-authentication Testing**: Automatically perform some post-exploitation checks when valid credentials 
-have been found.
+* **CVE Lookup**: When product names and their versions are detected, a vulnerability lookup is performed on online CVE databases (using Vulners & CVE Details).
+* **Vulnerability Scanning**: Automatically check for common vulnerabilities and attempt to perform some exploitations (auto-pwn).
+* **Brute-force Attack**: Automatically check for default/common credentials on the service and perform dictionnary attack if necessary. Wordlists are optimized according to the targeted services.
+* **Post-authentication Testing**: Automatically perform some post-exploitation checks when valid credentials have been found.
 
 Web Security Assessment
 -----------------------
 * **Large Focus on HTTP**: More than 60 different security checks targeting HTTP supported for now.
-
-* **Web Technologies Detection**: Fingerprinting engine based on Wappalyzer is run prior to security checks, 
-allowing to detect: Programming language, Framework, JS library, CMS, Web & Application Server.
-
-* **Server Exploitation**: Automatically scan and/or exploit most critical vulnerabilities (e.g. RCE) on web 
-and application servers (e.g. JBoss, Tomcat, Weblogic, Websphere, Jenkins, etc.).
-
-* **CMS Vulnerability Scanning**: Automatically run vulnerability scanners on most common CMS 
-(Wordpress, Drupal, Joomla, etc.).
+* **Web Technologies Detection**: Fingerprinting engine based on Wappalyzer is run prior to security checks, allowing to detect: Programming language, Framework, JS library, CMS, Web & Application Server.
+* **Server Exploitation**: Automatically scan and/or exploit most critical vulnerabilities (e.g. RCE) on web and application servers (e.g. JBoss, Tomcat, Weblogic, Websphere, Jenkins, etc.).
+* **CMS Vulnerability Scanning**: Automatically run vulnerability scanners on most common CMS (Wordpress, Drupal, Joomla, etc.).
 
 Local Database & Reporting
 --------------------------
-* **Local Database**: Data related to targets is organized by missions (workspaces) into a local Sqlite database 
-that is kept updated during security testings.
-
-* **Metasploit-like Interactive Shell**: Access the database through an interactive shell with several built-in 
-commands.
-
+* **Local Database**: Data related to targets is organized by missions (workspaces) into a local Sqlite database that is kept updated during security testings.
+* **Metasploit-like Interactive Shell**: Access the database through an interactive shell with several built-in commands.
 * **Import Targets from Nmap**: Add targets to a mission either manually or by loading Nmap results.
-
-* **Access all Results**: All outputs from security checks, detected credentials and vulnerabilities are stored
-into the database and can be accessed easily.
-
-* **Reporting**: Generate full HTML reports with targets summary, web screenshots and all results from security
-testing.
+* **Access all Results**: All outputs from security checks, detected credentials and vulnerabilities are stored into the database and can be accessed easily.
+* **Reporting**: Generate full HTML reports with targets summary, web screenshots and all results from security testing.
 
 
 ============
