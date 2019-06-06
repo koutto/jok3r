@@ -39,11 +39,11 @@ CHECKS TO ADD
 * Sharepoint -> https://github.com/TestingPens/SPartan
 * check https://bitvijays.github.io/LFF-IPS-P2-VulnerabilityAnalysis.html
 * https://github.com/RhinoSecurityLabs/CVEs/tree/master/CVE-2019-0227
-* https://github.com/Xyntax/DirBrute/tree/master/dics
 
 * http://pentestit.com/apache-jmeter-rmi-remote-code-execution-vulnerability-poc-cve-2018-1297/
 * magento sqli https://github.com/vulhub/vulhub/tree/master/magento/2.2-sqli https://github.com/ambionics/magento-exploits
 * VulnX
+* Wordpress RCE https://github.com/opsxcq/exploit-CVE-2016-10033
 
 DOCUMENTATION
 ===============================================================================

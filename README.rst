@@ -58,7 +58,7 @@ Pentest Toolbox management
 --------------------------
 * **Selection of Tools**: Compilation of 50+ open-source tools & scripts, from various sources.
 * **Docker-based**: Application packaged in a Docker image running Kali OS, available on Docker Hub.
-* **Ready-to-user**: All tools and dependencies installed, just pull the Docker image and run a fresh container.
+* **Ready-to-use**: All tools and dependencies installed, just pull the Docker image and run a fresh container.
 * **Updates made easy**: Easily keep the whole toolbox up-to-date by running only one command.
 * **Easy Customization**: Easily add/remove tools from a simple configuration file.
 
