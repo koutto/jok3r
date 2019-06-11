@@ -94,6 +94,9 @@ vulns_match['http'] = {
         'weblogic_deserialize[\s\S]*?session [1-9] open': 'Weblogic T3 Java Deserialize (CVE-2018-2628)',
         'wildfly_traversal[\s\S]*File saved in:': 'Jboss: WildFly Directory Traversal (CVE-2014-7816)',
         'glassfish_traversal[\s\S]*File saved in:': 'Glassfish: Path Traversal (CVE-2017-1000028)',
+        'adobe_xml_inject[\s\S]*(root:|\[extensions\])': 'Coldfusion: XXE (CVE-2009-3960)',
+        'coldfusion_locale_traversal[\s\S]*\[\+\].*?FILE:': 'Coldfusion: Path Traversal (CVE-2010-2861)',
+        'coldfusion_pwd_props[\s\S]*password\.properties stored in': 'Coldfusion: Path Traversal (CVE-2013-3336)',
     },
     'shocker': {
         'looks vulnerable': 'Shellshock (CVE-2014-6271)',

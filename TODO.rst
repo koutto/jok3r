@@ -30,7 +30,7 @@ Not done yet:
 
 
 
-CHECKS TO ADD
+TOOLS/CHECKS TO ADD
 ===============================================================================
 
 
@@ -45,12 +45,10 @@ CHECKS TO ADD
 * VulnX
 * Wordpress RCE https://github.com/opsxcq/exploit-CVE-2016-10033
 
+
 DOCUMENTATION
 ===============================================================================
 * Important note: need to be reachable directly from target for exploit with reverse shell !
-
-sudo docker run -i -t --name jok3r-container -w /root/jok3r -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix --shm-size 2g --net=host koutto/jok3r
-
 
 
 SERVICES TO ADD
