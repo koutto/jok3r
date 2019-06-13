@@ -12,7 +12,8 @@ TESTS
         * CVE-2017-1000028 path traversal - https://github.com/vulhub/vulhub/tree/master/glassfish/4.1.0
 
     * JBoss:
-        * OK - CVE-2017-12149 - https://github.com/vulhub/vulhub/tree/master/jboss/CVE-2017-12149
+        * CVE-2017-7504 - https://github.com/vulhub/vulhub/tree/master/jboss/CVE-2017-7504
+        * CVE-2017-12149 - https://github.com/vulhub/vulhub/tree/master/jboss/CVE-2017-12149
         * JBoss JMXInvokerServlet (jexboss)
 
     * Weblogic:
