@@ -262,6 +262,7 @@ pip3 install psycopg2-binary
 print_delimiter
 
 # -----------------------------------------------------------------------------
+apt-get clean
 
 print_title "[~] Dependencies installation finished."
 print_title "[~] IMPORTANT: Make sure to check if any error has been raised"

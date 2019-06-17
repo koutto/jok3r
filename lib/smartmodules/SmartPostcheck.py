@@ -313,10 +313,10 @@ class SmartPostcheck:
                                     try:
                                         if m.group('version') is not None:
                                             version = m.group('version')
+                                            logger.debug('Version detected: {version}'.format(
+                                                version=version))
                                         else:
                                             version = ''
-                                        logger.debug('Version detected: {version}'.format(
-                                            version=version))
                                     except:
                                         version = ''
                                 else:
@@ -329,7 +329,8 @@ class SmartPostcheck:
                                 # (potentially with version) is supported per type.
                                 # If name not found yet, give a try to next pattern
                                 break_prodnames = True
-                                #break
+                                if version != '':
+                                    break
 
                         if break_prodnames:
                             break
