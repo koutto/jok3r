@@ -1390,6 +1390,13 @@ class DbController(cmd2.Cmd):
         help    = 'Delete selected vulnerability(ies) (instead of displaying)')
 
 
+    vulns_manage = vulns.add_argument_group('Display option')
+    vulns_manage.add_argument(
+        '--no-truncation', 
+        action  = 'store_true', 
+        dest    = 'no_truncation', 
+        help    = 'Do not truncate vulnerability names (require sufficient terminal width)')
+
     @cmd2.with_category(CMD_CAT_RESULTS)
     @cmd2.with_argparser(vulns)
     def do_vulns(self, args):
@@ -1459,7 +1466,7 @@ class DbController(cmd2.Cmd):
 
         # Display (default)
         else:
-            req.show()
+            req.show(truncation=not args.no_truncation)
 
         print()
 

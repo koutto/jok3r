@@ -29,6 +29,10 @@ TESTS
         * OK - Drupalgeddon 2 CVE-2018-7600 - https://github.com/vulhub/vulhub/tree/master/drupal/CVE-2018-7600
         * CVE-2018-7602 - https://github.com/vulhub/vulhub/tree/master/drupal/CVE-2018-7602
 
+    * Joomla:
+        * OK - Weak creds
+        * OK - CVE-2017-8917 - https://github.com/vulhub/vulhub/tree/master/joomla/CVE-2017-8917
+
 * MySQL:
     * OK - CVE-2012-2122 - https://github.com/vulhub/vulhub/tree/master/mysql/CVE-2012-2122
 

@@ -27,7 +27,7 @@ class VulnsRequester(Requester):
 
     #------------------------------------------------------------------------------------
 
-    def show(self):
+    def show(self, truncation=True):
         """Display selected vulnerabilities"""
         results = self.get_results()
 
@@ -48,7 +48,7 @@ class VulnsRequester(Requester):
                     r.service.name,
                     r.service.port,
                     {Protocol.TCP: 'tcp', Protocol.UDP: 'udp'}.get(r.service.protocol),
-                    StringUtils.wrap(r.name, 140),
+                    StringUtils.wrap(r.name, 140) if truncation else r.name,
                 ])
             Output.table(columns, data, hrules=False)
 
