@@ -373,7 +373,7 @@ class SmartPostcheck:
 
                             # Add vulnerability to context
                             logger.debug('Vuln pattern matches')
-                            self.cu.add_vuln(name)    
+                            self.cu.add_vuln(StringUtils.remove_non_printable_chars(name))    
 
 
     #------------------------------------------------------------------------------------
