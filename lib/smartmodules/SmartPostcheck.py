@@ -7,6 +7,7 @@ import re
 import regex
 
 from lib.output.Logger import logger
+from lib.utils.StringUtils import StringUtils
 from lib.smartmodules.ContextUpdater import ContextUpdater
 from lib.smartmodules.matchstrings.MatchStrings import *
 
