@@ -36,7 +36,7 @@ vulns_match['http'] = {
         '-a weblogic --deploy[\s\S]*?deployed at': 'Weblogic: Web shell deployment possible',
     },
     'cmsmap': {
-        '\[M\]\S*(?P<m1>.+)': '$1',
+        '\[M\]\s*(?P<m1>.+)': '$1',
     },
     'cvedetails-lookup': {
         'CVE-(?P<m1>\S+)\s+\|\s+(?P<m2>\S+)\s+\|\s+\S+\s+\|\s*(?P<m3>.*?)\s*\|\s*(?P<m4>\S+)\s*\|\s*1': 'CVE-$1 ($2): $3... ($4) - Exploit available',
@@ -101,6 +101,9 @@ vulns_match['http'] = {
         'coldfusion_locale_traversal[\s\S]*\[\+\].*?FILE:': 'Coldfusion: Path Traversal (CVE-2010-2861)',
         'coldfusion_pwd_props[\s\S]*password\.properties stored in': 'Coldfusion: Path Traversal (CVE-2013-3336)',
     },
+    'nmap': {
+        'VULNERABLE:\s*\n\s*\|\s*(?P<m1>.+?)\s*\n\s*\|\s*State: VULNERABLE\s*\n\s*\|\s*IDs:\s*CVE:(?P<m2>\S+)': '$1 ($2)',
+    },
     'shocker': {
         'looks vulnerable': 'Shellshock (CVE-2014-6271)',
     },
@@ -109,6 +112,9 @@ vulns_match['http'] = {
     },
     'struts-pwn-cve2018-11776': {
         'Status:\s+Vulnerable': 'Apache Struts2 RCE CVE-2018-11776',
+    },
+    'vulnx': {
+        '\[\?\]\s*(?P<m1>.+?)\s+VULN': 'Vulnerable component: $1',
     },
     'wpscan': {
         '\[!\] Title: (?P<m1>.*)': 'Wordpress: $1',

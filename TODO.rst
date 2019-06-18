@@ -24,29 +24,15 @@ IMPROVEMENTS / NEW FEATURES
 |     IDs:  CVE:CVE-2017-8917
   => all nmap script http-vuln-***
 
-* cmsmap 
-[I] com_mailto
-[M]  EDB-ID: 12489 "Joomla! 1.6.0 Alpha2 - Cross-Site Scripting"
-[M]  EDB-ID: 15979 "Joomla! 1.5.22 / 1.6.0 - 'com_mailto' Spam Mail Relay"
-[M]  EDB-ID: 8366 "Adobe Reader - U3D Memory Corruption (Metasploit)"
-[I] com_media
-[M]  EDB-ID: 36176 "Joomla! < 1.7.0 - Multiple Cross-Site Scripting Vulnerabilities"
-[I] com_menus
-[I] com_modules
-[I] com_newsfeeds
-[M]  EDB-ID: 12465 "Joomla! Component Newsfeeds - SQL Injection"
-[M]  EDB-ID: 35894 "Joomla! 1.6.3 - Multiple Cross-Site Scripting Vulnerabilities"
-[I] com_qcontacts" /
-/bin/sh: 1: Syntax error: Unterminated quoted string
-[I] com_sef" /
-/bin/sh: 1: Syntax error: Unterminated quoted string
-[I] com_seyret" /
-/bin/sh: 1: Syntax error: Unterminated quoted string
-[I] com_search
-[M]  EDB-ID: 30655 "Joomla! Component Search 1.0.13 - SearchWord Cross-Site Scripting"
-[M]  EDB-ID: 35167 "Joomla! 1.0.x - 'ordering' Cross-Site Scripting"
-[M]  EDB-ID: 4212 "Wireshark 2.2.6 - IPv6 Dissector Denial of Service"
-[I] com_tags
+
+-- |   Webmin File Disclosure
+-- |     State: VULNERABLE (Exploitable)
+-- |     IDs:  CVE:CVE-2006-3392
+
+|   VULNERABLE:
+|   Apache byterange filter DoS
+|     State: VULNERABLE
+|     IDs:  CVE:CVE-2011-3192  OSVDB:74721
 
 
 
@@ -59,7 +45,7 @@ Not done yet:
       Summary   : Script, HTML5, Drupal, PHP[7.2.3], HTTPServer[Debian Linux][Apache/2.4.25 (Debian)], X-Powered-By[PHP/7.2.3], PoweredBy[-block], UncommonHeaders[x-drupal-dynamic-cache,x-content-type-options,x-generator,x-drupal-cache], MetaGenerator[Drupal 8 (https://www.drupal.org)], Content-Language[en], Apache[2.4.25], X-Frame-Options[SAMEORIGIN], X-UA-Compatible[IE=edge]
 
       Summary   : PHP[5.6.40], X-Powered-By[PHP/5.6.40], JQuery, PasswordField[password], HttpOnly[89f8df32fa3e404e00d734d41437761f], MetaGenerator[Joomla! - Open Source Content Management], HTTPServer[Debian Linux][Apache/2.4.25 (Debian)], Cookies[89f8df32fa3e404e00d734d41437761f], Apache[2.4.25], HTML5, Script[application/json]
-      
+
 * nikto -> too many junk to extract important issues i think
 * davscan
 * wpseku 
@@ -80,8 +66,6 @@ TOOLS/CHECKS TO ADD
 * https://github.com/RhinoSecurityLabs/CVEs/tree/master/CVE-2019-0227
 
 * http://pentestit.com/apache-jmeter-rmi-remote-code-execution-vulnerability-poc-cve-2018-1297/
-* magento sqli https://github.com/vulhub/vulhub/tree/master/magento/2.2-sqli https://github.com/ambionics/magento-exploits
-* VulnX
 * Wordpress RCE https://github.com/opsxcq/exploit-CVE-2016-10033
 
 
