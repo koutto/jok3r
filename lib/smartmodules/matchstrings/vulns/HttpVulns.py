@@ -35,6 +35,9 @@ vulns_match['http'] = {
         # -a weblogic --deploy
         '-a weblogic --deploy[\s\S]*?deployed at': 'Weblogic: Web shell deployment possible',
     },
+    'cmsmap': {
+        '\[M\]\S*(?P<m1>.+)': '$1',
+    },
     'cvedetails-lookup': {
         'CVE-(?P<m1>\S+)\s+\|\s+(?P<m2>\S+)\s+\|\s+\S+\s+\|\s*(?P<m3>.*?)\s*\|\s*(?P<m4>\S+)\s*\|\s*1': 'CVE-$1 ($2): $3... ($4) - Exploit available',
         'CVE-(?P<m1>\S+)\s+\|\s+(?P<m2>\S+)\s+\|\s+\S+\s+\|\s*(?P<m3>.*?)\s*\|\s*(?P<m4>\S+)\s*\|\s*None': 'CVE-$1 ($2): $3... ($4)',
