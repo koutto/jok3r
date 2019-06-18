@@ -17,24 +17,6 @@ IMPROVEMENTS / NEW FEATURES
 
 * |_weblogic-t3-info: T3 protocol in use (WebLogic version: 12.2.1.3)
 
-* | http-vuln-cve2017-8917: 
-|   VULNERABLE:
-|   Joomla! 3.7.0 'com_fields' SQL Injection Vulnerability
-|     State: VULNERABLE
-|     IDs:  CVE:CVE-2017-8917
-  => all nmap script http-vuln-***
-
-
--- |   Webmin File Disclosure
--- |     State: VULNERABLE (Exploitable)
--- |     IDs:  CVE:CVE-2006-3392
-
-|   VULNERABLE:
-|   Apache byterange filter DoS
-|     State: VULNERABLE
-|     IDs:  CVE:CVE-2011-3192  OSVDB:74721
-
-
 
 SMARTMODULES / MATCHSTRINGS
 ===============================================================================
@@ -94,36 +76,3 @@ SERVICES TO ADD
 
 
 
-
-
-
-
-
-
-
-
-                                      
-
-
-                          `-:/++++/:-.    .-:/++++/:-`                                    
-                        .:ohdddmmmmdd.\  /.dddmmmmdddho:.                                
-                      `:ydmmmmmmmmmmmmm\/mmmmmmmmmmmmmmdy:`                         
-                     `+dmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmd+`                     
-                    +dyo+++oshmmmmmmmmmmmmmmmmmmmmhso+++oyd+                    
-                  -+-         .dmmmmmmmmmmmmmmmmd.         -+-                  
-                 ``           `dmmmmmmmmmmmmmmmmd`           ``                 
-                              `dmmmmmmmmmmmmmmmmd`                              
-                              `ymmmmmmmmmmmmmmmmy`                              
-                                .+dmmmmmmmmmmd+.                                
-                                   /dmmmmmmd/                                   
-                                    `odmmdo`                                    
-                                      .hh.                                      
-                                                        
-                                                                   
-                       ██╗ ██████╗ ██╗  ██╗██████╗ ██████╗ 
-                       ██║██╔═══██╗██║ ██╔╝╚════██╗██╔══██╗
-                       ██║██║   ██║█████╔╝  █████╔╝██████╔╝
-                  ██   ██║██║   ██║██╔═██╗  ╚═══██╗██╔══██╗
-                  ╚█████╔╝╚██████╔╝██║  ██╗██████╔╝██║  ██║  v3.0 BETA
-                   ╚════╝  ╚═════╝ ╚═╝  ╚═╝╚═════╝ ╚═╝  ╚═╝ 
-                  [ Network & Web Pentest Automation Framework ]

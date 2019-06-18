@@ -13,17 +13,45 @@ from lib._version import __version__
 #----------------------------------------------------------------------------------------
 # Banner/Help
 
-BANNER = colored.stylize("""
-         ____.       __    ________              `Combine the best of...
-        |    | ____ |  | __\_____  \______           ...open-source Hacking Tools`
-        |    |/  _ \|  |/ /  _(__  <_  __ \ 
-    /\__|    (  (_) )    <  /       \  | \/
-    \________|\____/|__|_ \/______  /__|      v{version}
-                         \/       \/     
+# BANNER = colored.stylize("""
+#          ____.       __    ________              `Combine the best of...
+#         |    | ____ |  | __\_____  \______           ...open-source Hacking Tools`
+#         |    |/  _ \|  |/ /  _(__  <_  __ \ 
+#     /\__|    (  (_) )    <  /       \  | \/
+#     \________|\____/|__|_ \/______  /__|      v{version}
+#                          \/       \/     
     
-          ~ Network & Web Pentest Automation Framework ~
-   [ Manage Toolbox | Automate Attacks | Chain Hacking Tools ]
+#           ~ Network & Web Pentest Automation Framework ~
+#    [ Manage Toolbox | Automate Attacks | Chain Hacking Tools ]
    
+# """.format(version=__version__), colored.fg('light_green') + colored.attr('bold'))
+
+BANNER = colored.stylize("""
+
+                          `-:/++++/:-.    .-:/++++/:-`                                    
+                        .:ohdddmmmmdd.\  /.dddmmmmdddho:.                                
+                      `:ydmmmmmmmmmmmmm\/mmmmmmmmmmmmmmdy:`                         
+                     `+dmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmd+`                     
+                    +dyo+++oshmmmmmmmmmmmmmmmmmmmmhso+++oyd+                    
+                  -+-         .dmmmmmmmmmmmmmmmmd.         -+-                  
+                 ``           `dmmmmmmmmmmmmmmmmd`           ``                 
+                              `dmmmmmmmmmmmmmmmmd`                              
+                              `ymmmmmmmmmmmmmmmmy`                              
+                                .+dmmmmmmmmmmd+.                                
+                                   /dmmmmmmd/                                   
+                                    `odmmdo`                                    
+                                      .hh.                                      
+                                                        
+                                                                   
+                       ██╗ ██████╗ ██╗  ██╗██████╗ ██████╗ 
+                       ██║██╔═══██╗██║ ██╔╝╚════██╗██╔══██╗
+                       ██║██║   ██║█████╔╝  █████╔╝██████╔╝
+                  ██   ██║██║   ██║██╔═██╗  ╚═══██╗██╔══██╗
+                  ╚█████╔╝╚██████╔╝██║  ██╗██████╔╝██║  ██║  v{version}
+                   ╚════╝  ╚═════╝ ╚═╝  ╚═╝╚═════╝ ╚═╝  ╚═╝ 
+                  }
+                  [ Network & Web Pentest Automation Framework ]
+
 """.format(version=__version__), colored.fg('light_green') + colored.attr('bold'))
 
 USAGE = """
