@@ -122,6 +122,8 @@ class Reporter:
 
         logger.success('HTML Report written with success in: {path}'.format(
             path=self.output_path))
+        logger.info('Important: If running from Docker container, make sure to run ' \
+            '"xhost +" on the host before')
         if Output.prompt_confirm('Would you like to open the report now ?', 
                 default=True):
             webbrowser.open(self.output_path + '/index.html')
@@ -293,22 +295,41 @@ class Reporter:
                     service=service.name,
                     id=service.id)
 
-                # Web technos
-                try:
-                    technos = ast.literal_eval(service.web_technos)
-                except Exception as e:
-                    logger.debug('Error when retrieving "web_technos" field ' \
-                        'from db: {exc} for {service}'.format(
-                            exc=e, service=service))
-                    technos = list()
+                # Web technos (in a specific order)
+                
+                # try:
+                #     technos = ast.literal_eval(service.web_technos)
+                # except Exception as e:
+                #     logger.debug('Error when retrieving "web_technos" field ' \
+                #         'from db: {exc} for {service}'.format(
+                #             exc=e, service=service))
+                #     technos = list()
 
-                tmp = list()
-                for t in technos:
-                    tmp.append('{}{}{}'.format(
-                        t['name'],
-                        ' ' if t['version'] else '',
-                        t['version'] if t['version'] else ''))
-                webtechnos = ' | '.join(tmp)
+                # tmp = list()
+                # for t in technos:
+                #     tmp.append('{}{}{}'.format(
+                #         t['name'],
+                #         ' ' if t['version'] else '',
+                #         t['version'] if t['version'] else ''))
+                # webtechnos = ' | '.join(tmp)
+
+                webtechnos = ''
+                product_types = (
+                    'web-server',
+                    'web-appserver',
+                    'web-cms',
+                    'web-language',
+                    'web-framework',
+                    'web-jslib'
+                )
+                for t in product_types:
+                    product = service.get_product(t)
+                    if product:
+                        webtechnos += '<span class="badge badge-{type} badge-light">' \
+                            '{name}{version}</span>'.format(
+                                type=t,
+                                name=product.name,
+                                version=' '+str(product.version) if product.version)
 
                 # Screenshot
                 img_name = 'scren-{ip}-{port}-{id}'.format(
