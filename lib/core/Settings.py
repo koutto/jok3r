@@ -762,7 +762,7 @@ class Settings:
         if not context_str: 
             return ContextRequirements(specific_options=None, 
                                        products=None, 
-                                       os=None, 
+                                       osfamily=None, 
                                        auth_status=None,
                                        raw='<empty>')
 
@@ -902,7 +902,7 @@ class Settings:
 
         return ContextRequirements(specific_options=req_specific_options,
                                    products=req_products,
-                                   os=context.get('os'),
+                                   osfamily=context.get('os'),
                                    auth_status=context.get('auth_status'),
                                    auth_type=context.get('auth_type'),
                                    raw=context_str_raw)
