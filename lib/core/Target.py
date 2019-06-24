@@ -356,7 +356,7 @@ class Target:
             if nmap_info['os']:
                 if not self.service.host.os:
                     logger.info('Detected OS = {os}'.format(
-                        os=self.service.host.os))
+                        os=nmap_info['os']))
 
                 elif self.service.host.os != nmap_info['os']:
                     logger.info('Detected OS has changed = {os}'.format(
