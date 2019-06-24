@@ -56,7 +56,7 @@ class ContextRequirements:
                 !vendor/product_name
                 ...
 
-    - OS Type: Linux or Windows. This requirement is not excluding check when
+    - OS Family: Linux or Windows. This requirement is not excluding check when
       target's OS is unknown/undetected.
 
     - Authentication status ('auth_status'): Level of authentication on the service.
@@ -73,7 +73,7 @@ class ContextRequirements:
     def __init__(self, 
                  specific_options, 
                  products, 
-                 os, 
+                 osfamily, 
                  auth_status, 
                  auth_type=None, 
                  raw='<empty>'):
@@ -86,7 +86,7 @@ class ContextRequirements:
             e.g. : { 'name': 'value' }
         :param dict products: Requirements on products names (+ potentially versions)
             e.g. : { 'type': 'vendor/product_name|>7.1'}
-        :param str os: Requirement on the OS
+        :param str osfamily: Requirement on the OS family
         :param int auth_status: Level of authentication required on the service
         :param str auth_type: Authentication type (for HTTP only)
         :param str raw: Raw context requirements string as in .conf file (only
@@ -96,7 +96,7 @@ class ContextRequirements:
             isinstance(specific_options, dict) else defaultdict(lambda: None)
         self.products = defaultdict(lambda: None, products) if \
             isinstance(products, dict) else defaultdict(lambda: None)
-        self.os = os.lower() if os else ''
+        self.osfamily = osfamily.lower() if osfamily else ''
         self.auth_status = auth_status
         self.auth_type = auth_type
         self.raw_string = raw
@@ -120,7 +120,7 @@ class ContextRequirements:
         status = self.__is_target_matching_auth_status(target) and \
                  self.__is_target_matching_specific_options(target) and \
                  self.__is_target_matching_products(target) and \
-                 self.__is_target_matching_os(target)
+                 self.__is_target_matching_osfamily(target)
 
         return status
 
@@ -190,9 +190,9 @@ class ContextRequirements:
         return status
 
 
-    def __is_target_matching_os(self, target):
+    def __is_target_matching_osfamily(self, target):
         """
-        Check if target complies with requirements on OS type.
+        Check if target complies with requirements on OS family.
 
         :param Target target: Target to check
         :return: Result
@@ -201,10 +201,10 @@ class ContextRequirements:
 
         # OS requirement is excluding a check only when target's OS is known and there
         # is a defined requirement and they do not match
-        if not target.get_os() or not self.os:
+        if not target.get_os() or not self.osfamily:
             return True
 
-        return (self.os.lower()==target.get_os().lower())
+        return (self.osfamily.lower() in target.get_os().lower())
 
 
     #------------------------------------------------------------------------------------
