@@ -90,13 +90,28 @@ class NetUtils:
 
 
     @staticmethod
-    def grab_banner_nmap(ip, port):
-        """Grab service banner using Nmap"""
+    def grab_nmap_info(ip, port):
+        """
+        Grab service info using Nmap:
+            - Banner
+            - OS
+            - MAC address
+            - Vendor name
+            - Device type
+        """
+        results = {
+            'banner': '',
+            'os': '',
+            'mac': '',
+            'vendor': '',
+            'type': '',
+        }
         report = None
-        nmproc = NmapProcess(ip, '-sT -sV -Pn -p '+str(port))
+        #nmproc = NmapProcess(ip, '-sT -sV -Pn -p '+str(port))
+        nmproc = NmapProcess(ip, '-A -Pn -p '+str(port))
         rc = nmproc.run()
         if rc != 0:
-            print("nmap scan failed: {0}".format(nmproc.stderr))
+            print("Nmap scan failed: {0}".format(nmproc.stderr))
             return None
         #print(type(nmproc.stdout))
 
@@ -106,13 +121,22 @@ class NetUtils:
             #print("Exception raised while parsing scan: {0}".format(e.msg))
             return None
 
-        banner = ''
         if len(report.hosts):
             host = report.hosts[0]
             if len(host.services):
-                banner = host.services[0].banner
+                results['banner'] = host.services[0].banner
+                results['mac'] = host.mac
+                results['vendor'] = host.vendor
+                if host.os_fingerprinted is True \
+                        and host.os_match_probabilities() is not None:
+                    os_matchs = host.os_match_probabilities()
+                    if len(os_matchs) > 0:
+                        results['os'] = os_matchs[0].name
+                        if os_matchs[0].osclasses is not None \
+                                and len(os_matchs[0].osclasses) > 0:
+                            results['type'] = os_matchs[0].osclasses[0].type
 
-        return banner
+        return results
 
 
     @staticmethod

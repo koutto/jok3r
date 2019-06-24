@@ -22,6 +22,9 @@ class Host(Base):
     ip         = Column(IPAddressType, nullable=False, default='')
     hostname   = Column(String(255), nullable=False, default='')
     os         = Column(String(255), nullable=False, default='')
+    mac        = Column(String(255), nullable=False, default='')
+    vendor     = Column(String(255), nullable=False, default='')
+    type       = Column(String(255), nullable=False, default='')
     comment    = Column(Text, nullable=False, default='')
     mission_id = Column(Integer, ForeignKey('missions.id'))
 

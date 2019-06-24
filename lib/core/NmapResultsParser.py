@@ -52,14 +52,21 @@ class NmapResultsParser:
 
             # Get the fingerprinted OS if available
             os = ''
+            device_type = ''
             if h.os_fingerprinted is True and h.os_match_probabilities() is not None:
                 os_matchs = h.os_match_probabilities()
                 os = os_matchs[0].name if len(os_matchs) > 0 else ''
+                if os_matchs[0].osclasses is not None \
+                        and len(os_matchs[0].osclasses) > 0:
+                    device_type = os_matchs[0].osclasses[0].type
 
             # Create Host object
-            host = Host(ip = h.ipv4, 
-                        hostname = h.hostnames[0] if h.hostnames else '',
-                        os = os)
+            host = Host(ip=h.ipv4, 
+                        hostname=h.hostnames[0] if h.hostnames else '',
+                        os=os,
+                        mac=h.mac,
+                        vendor=h.vendor,
+                        type=device_type)
             logger.info('Parsing host: {ip}{hostname} ...'.format(
                 ip=host.ip, hostname=' ('+host.hostname+')' if host.hostname else ''))
 

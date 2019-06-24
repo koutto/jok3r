@@ -343,10 +343,35 @@ class Target:
            and self.service.protocol == Protocol.TCP \
            and not self.service.banner:
 
-            logger.info('Grab banner for [{service}] via Nmap...'.format(service=self))
-            self.service.banner = NetUtils.clean_nmap_banner(
-                NetUtils.grab_banner_nmap(str(self.service.host.ip), self.service.port))
+            logger.info('Grab service info for [{service}] via Nmap...'.format(
+                service=self))
+            nmap_info = NetUtils.grab_nmap_info(
+                str(self.service.host.ip), self.service.port)
+            
+            # Banner 
+            self.service.banner = NetUtils.clean_nmap_banner(nmap_info['banner'])
             logger.info('Banner: {banner}'.format(banner=self.service.banner))
+            
+            # OS
+            if nmap_info['os']:
+                if not self.service.host.os:
+                    logger.info('Detected OS = {os}'.format(
+                        os=self.service.host.os))
+
+                elif self.service.host.os != nmap_info['os']:
+                    logger.info('Detected OS has changed = {os}'.format(
+                        os=nmap_info['os']))
+                self.service.host.os = nmap_info['os']
+
+            # Other info
+            if nmap_info['mac']:
+                self.service.host.mac = nmap_info['mac']
+
+            if nmap_info['vendor']:
+                self.service.host.vendor = nmap_info['vendor']
+
+            if nmap_info['type']:
+                self.service.host.type = nmap_info['type']
 
             # Try to deduce OS from banner if possible
             if not self.service.host.os:
