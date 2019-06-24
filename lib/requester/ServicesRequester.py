@@ -405,15 +405,12 @@ class ServicesRequester(Requester):
                         r.protocol)))
 
                 self.sqlsess.delete(r)
-                self.sqlsess.commit()
 
                 # Delete host if no more service in it
                 if len(r.host.services) == 0:
                     self.sqlsess.delete(r.host)
-
-
-
-            
+                    
+            self.sqlsess.commit()            
 
 
     #------------------------------------------------------------------------------------
