@@ -329,7 +329,8 @@ class Reporter:
                             '{name}{version}</span>'.format(
                                 type=t,
                                 name=product.name,
-                                version=' '+str(product.version) if product.version)
+                                version=' '+str(product.version) \
+                                    if product.version else '')
 
                 # Screenshot
                 img_name = 'scren-{ip}-{port}-{id}'.format(
