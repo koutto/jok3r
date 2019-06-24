@@ -14,6 +14,7 @@ IMPROVEMENTS / NEW FEATURES
 * Run custom command
 * Session / Restore
 * Indicate checks that need a reverse connection (IP reachable from target)
+* Nb vulns for each service
 
 * |_weblogic-t3-info: T3 protocol in use (WebLogic version: 12.2.1.3)
 

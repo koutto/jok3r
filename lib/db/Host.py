@@ -43,6 +43,9 @@ class Host(Base):
         """
         if dst.hostname: self.hostname = dst.hostname
         if dst.os: self.os = dst.os
+        if dst.mac: self.mac = dst.mac
+        if dst.vendor: self.vendor = dst.vendor
+        if dst.type: self.type = dst.type
         return
 
 
@@ -77,9 +80,12 @@ class Host(Base):
     #------------------------------------------------------------------------------------
 
     def __repr__(self):
-        return '<Host(ip="{ip}", hostname="{hostname}", os="{os}", ' \
-            'comment="{comment}")>'.format(
+        return '<Host(ip="{ip}", hostname="{hostname}", os="{os}", mac="{mac}", ' \
+            'vendor="{vendor}", type="{type}", comment="{comment}")>'.format(
                 ip       = self.ip, 
                 hostname = self.hostname, 
                 os       = self.os, 
+                mac      = self.mac,
+                vendor   = self.vendor,
+                type     = self.type,
                 comment  = self.comment)

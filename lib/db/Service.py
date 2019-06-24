@@ -72,8 +72,14 @@ class Service(Base):
         if dst.banner: 
             self.banner = dst.banner
 
+        if dst.html_title:
+            self.html_title = dst.html_title
+
         if dst.http_headers: 
             self.http_headers = dst.http_headers
+
+        if dst.web_technos:
+            self.web_technos = dst.web_technos
 
         if dst.credentials:
             # Update credentials with same username and auth-type
