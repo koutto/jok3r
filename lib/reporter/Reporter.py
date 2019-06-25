@@ -171,6 +171,9 @@ class Reporter:
             html = ''
             for service in services:
 
+                hostname = service.host.hostname \
+                    if service.host.ip != service.host.hostname else ''
+
                 # Creds numbers
                 nb_userpass  = service.get_nb_credentials(single_username=False)
                 nb_usernames = service.get_nb_credentials(single_username=True)
@@ -226,7 +229,7 @@ class Reporter:
 
                 html += """
                 <tr{clickable}>
-                    <td>{ip}</td>
+                    <td class="text-bold-green">{ip}</td>
                     <td>{hostname}</th>
                     <td>{port} /{proto}</td>
                     <td>{service}</td>
@@ -242,7 +245,7 @@ class Reporter:
                     clickable=' class="clickable-row" data-href="{results}"'.format(
                         results=results) if len(service.results) > 0 else '',
                     ip=service.host.ip,
-                    hostname=service.host.hostname,
+                    hostname=hostname,
                     port=service.port,
                     proto={Protocol.TCP: 'tcp', Protocol.UDP: 'udp'}.get(
                         service.protocol),

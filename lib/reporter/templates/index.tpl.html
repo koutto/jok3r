@@ -198,7 +198,7 @@
     }
 
 
-    /* Sidebar */    
+    /* Sidebar */  
     .nav-tabs>li{
         float: none;
     }
@@ -213,40 +213,32 @@
         border-radius: 0;
     }
     #wrapper {
-        padding-left: 0;
-        -webkit-transition: all 0.5s ease;
-        -moz-transition: all 0.5s ease;
-        -o-transition: all 0.5s ease;
-        transition: all 0.5s ease;
+        padding-left: 50px;
     }
     #wrapper.toggled {
-        padding-left: 50px;
+        padding-left: 0;
     }
     #sidebar-wrapper {
         z-index: 1000;
         position: fixed;
         left: 50px;
-        width: 0;
+        width: 50px;
         height: 100%;
         margin-left: -50px;
         overflow-y: auto;
         background: #000;
-        -webkit-transition: all 0.5s ease;
-        -moz-transition: all 0.5s ease;
-        -o-transition: all 0.5s ease;
-        transition: all 0.5s ease;
     }
     #wrapper.toggled #sidebar-wrapper {
-        width: 50px;
+        width: 0;
     }
     #page-content-wrapper {
-        width: 100%;
-        position: absolute;
+        width: 20px;
+        position: relative;
         padding: 15px;
     }
     #wrapper.toggled #page-content-wrapper {
-        position: absolute;
-        margin-right: -50px;
+        position: relative;
+        margin-right: 0;
     }
     .sidebar-nav {
         position: absolute;
@@ -320,6 +312,13 @@
     .text-green {
         color: #32d41a;
     }
+    .text-bold-green {
+        font-weight: bold;
+        color: #32d41a;
+    }
+    .column-width-20 {
+        width: 20%;
+    }
 
 
     /* Search field */
@@ -334,33 +333,28 @@
     /* Badges Styles */
     table .badge {
         margin-right: 10px;
+        margin-bottom: 5px;
+        font-size: 1em;
     }
     .badge-web-appserver {
-        font-size: 1.1em;
         background-color: #659fea;
     }
     .badge-web-cms {
-        font-size: 1.1em;
         background-color: #e2ea65;
     }
     .badge-web-framework {
-        font-size: 1.1em;
         background-color: #65ead7;
     }
     .badge-web-jslib {
-        font-size: 1.1em;
         background-color: #ea9d65;
     }
     .badge-web-language {
-        font-size: 1.1em;
         background-color: #a794e4;
     }
     .badge-web-server {
-        font-size: 1.1em;
         background-color: #e68070;
     }    
     .badge-generic {
-        font-size: 1.1em;
         background-color: #e68070;
     }
 
@@ -432,9 +426,9 @@
                                         <th>PORT</th>
                                         <th>SERVICE</th>
                                         <th>BANNER</th>
-                                        <th>TECHNOS</th>
+                                        <th class="column-width-20">TECHNOS</th>
                                         <th>URL</th>
-                                        <th>COMMENT/TITLE</th>
+                                        <th>COMMENT / TITLE</th>
                                         <th>CHECKS</th>
                                         <th>CREDS</th>
                                         <th>VULNS</th>
