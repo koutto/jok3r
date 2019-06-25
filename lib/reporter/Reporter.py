@@ -174,7 +174,7 @@ class Reporter:
                 hostname = service.host.hostname \
                     if service.host.ip != service.host.hostname else ''
 
-                # Creds numbers
+                # Number of creds
                 nb_userpass  = service.get_nb_credentials(single_username=False)
                 nb_usernames = service.get_nb_credentials(single_username=True)
                 nb_creds = '{}{}{}'.format(
@@ -183,6 +183,13 @@ class Reporter:
                     '/' if nb_userpass > 0 and nb_usernames > 0 else '',
                     '<span class="text-yellow">{}</span> user(s)'.format(
                         str(nb_usernames)) if nb_usernames > 0 else '')
+
+                # Number of vulns
+                if len(service.vulns) > 0:
+                    nb_vulns = '<span class="text-green">{}</span>'.format(
+                        len(service.vulns))
+                else:
+                    nb_vulns = '<span class="mdi mdi-window-close"></span>'
 
 
                 technos = ''
@@ -258,7 +265,8 @@ class Reporter:
                     comment=StringUtils.shorten(comment, 40),
                     checks=len(service.results),
                     creds=nb_creds,
-                    vulns=len(service.vulns))
+                    vulns=nb_vulns)
+                
         return html
 
 
