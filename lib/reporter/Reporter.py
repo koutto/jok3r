@@ -183,6 +183,8 @@ class Reporter:
                     '/' if nb_userpass > 0 and nb_usernames > 0 else '',
                     '<span class="text-yellow">{}</span> user(s)'.format(
                         str(nb_usernames)) if nb_usernames > 0 else '')
+                if nb_creds == '':
+                    nb_creds = '<span class="mdi mdi-window-close"></span>'
 
                 # Number of vulns
                 if len(service.vulns) > 0:
@@ -266,7 +268,7 @@ class Reporter:
                     checks=len(service.results),
                     creds=nb_creds,
                     vulns=nb_vulns)
-                
+
         return html
 
 
