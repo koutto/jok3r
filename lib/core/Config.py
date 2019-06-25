@@ -167,6 +167,13 @@ CHECK_OPTIONS = {
     ]
 }
 
+OPTIONS_ENCRYTPED_PROTO = (
+    'ftps',
+    'https',
+    'rmissl',
+    'telnets',
+)
+
 
 #----------------------------------------------------------------------------------------
 # Services

@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Jok3r Report - Mission:: {{MISSION_NAME}}</title>
+    <title>Jok3r Report - Mission: {{MISSION_NAME}}</title>
 
     <!-- Bootstrap Core CSS -->
     <style type="text/css">
@@ -291,7 +291,7 @@
     /* Title */
     .title-page {
         margin-top: 15px;
-        margin-bottom: 15px;
+        margin-bottom: 35px;
         margin-left: 25px;
         font-size: 1.4em;
         font-weight: bold;
@@ -308,13 +308,6 @@
     }
     .clickable-row {
         cursor: pointer;
-    }
-    .text-green {
-        color: #32d41a;
-    }
-    .text-bold-green {
-        font-weight: bold;
-        color: #32d41a;
     }
     .column-width-20 {
         width: 20%;
@@ -334,13 +327,14 @@
     table .badge {
         margin-right: 10px;
         margin-bottom: 5px;
+        margin-top: 5px;
         font-size: 1em;
     }
     .badge-web-appserver {
-        background-color: #659fea;
+        background-color: #74abf2;
     }
     .badge-web-cms {
-        background-color: #e2ea65;
+        background-color: #e4e997;
     }
     .badge-web-framework {
         background-color: #65ead7;
@@ -355,9 +349,20 @@
         background-color: #e68070;
     }    
     .badge-generic {
-        background-color: #e68070;
+        background-color: #74abf2;
     }
 
+
+    /* Text */
+    .text-green {
+        color: #32d41a;
+    }
+    .text-yellow {
+        color: yellow;
+    }
+    .text-bold {
+        font-weight: bold;
+    }
 
     </style>
 
@@ -425,11 +430,12 @@
                                         <th>HOSTNAME</th>
                                         <th>PORT</th>
                                         <th><span title="Service">SVC</span></th>
+                                        <th><span title="Encrypted Protocol (SSL/TLS)">SSL</span></th>
                                         <th>BANNER</th>
-                                        <th class="column-width-20">TECHNOS</th>
+                                        <th class="column-width-20">TECHNOLOGIES</th>
                                         <th>URL</th>
                                         <th>COMMENT / TITLE</th>
-                                        <th><span title="Security Checks">CK</span></th>
+                                        <th><span title="Security Checks">SC</span></th>
                                         <th><span title="Credentials">C</span></th>
                                         <th><span title="Vulnerabilities">V</span></th>
                                     </tr>
@@ -459,8 +465,13 @@
                                         <th>IP</th>
                                         <th>HOSTNAME</th>
                                         <th>OS</th>
+                                        <th>TYPE</th>
+                                        <th>VENDOR</th>
                                         <th>COMMENT</th>
-                                        <th>SERVICES</th>
+                                        <th>TCP</th>
+                                        <th>UDP</th>
+                                        <th><span title="Credentials">C</span></th>
+                                        <th><span title="Vulnerabilities">V</span></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -489,7 +500,7 @@
                                         <th>TITLE</th>
                                         <th>TECHNOS</th>
                                         <th>SCREENSHOT</th>
-                                        <th>CHECKS</th>
+                                        <th><span title="Security Checks">SC</span></th>
                                     </tr>
                                 </thead>
                                 <tbody>

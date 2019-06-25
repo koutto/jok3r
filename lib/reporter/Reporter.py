@@ -164,7 +164,7 @@ class Reporter:
         if len(services) == 0:
             html = """
             <tr class="notfound">
-                <td colspan="11">No record found</td>
+                <td colspan="12">No record found</td>
             </tr>
             """
         else:
@@ -174,6 +174,12 @@ class Reporter:
                 hostname = service.host.hostname \
                     if service.host.ip != service.host.hostname else ''
 
+                # Number of checks
+                if len(service.results) > 0:
+                    nb_checks = len(service.results)
+                else:
+                    nb_checks = '<span class="mdi mdi-window-close"></span>'
+
                 # Number of creds
                 nb_userpass  = service.get_nb_credentials(single_username=False)
                 nb_usernames = service.get_nb_credentials(single_username=True)
@@ -181,17 +187,18 @@ class Reporter:
                     '<span class="text-green">{}</span>'.format(str(nb_userpass)) \
                         if nb_userpass > 0 else '',
                     '/' if nb_userpass > 0 and nb_usernames > 0 else '',
-                    '<span class="text-yellow">{}</span> user(s)'.format(
+                    '<span class="text-yellow">{}</span>'.format(
                         str(nb_usernames)) if nb_usernames > 0 else '')
-                if nb_creds == '':
-                    nb_creds = '<span class="mdi mdi-window-close"></span>'
+                #if nb_creds == '':
+                #    nb_creds = '<span class="mdi mdi-window-close"></span>'
 
                 # Number of vulns
                 if len(service.vulns) > 0:
                     nb_vulns = '<span class="text-green">{}</span>'.format(
                         len(service.vulns))
                 else:
-                    nb_vulns = '<span class="mdi mdi-window-close"></span>'
+                    #nb_vulns = '<span class="mdi mdi-window-close"></span>'
+                    nb_vulns = ''
 
 
                 technos = ''
@@ -238,17 +245,17 @@ class Reporter:
 
                 html += """
                 <tr{clickable}>
-                    <td class="text-bold-green">{ip}</td>
+                    <td class="text-bold text-green">{ip}</td>
                     <td>{hostname}</th>
-                    <td>{port} /{proto}</td>
+                    <td class="text-bold text-green">{port} /{proto}</td>
                     <td>{service}</td>
                     <td>{banner}</td>
                     <td>{technos}</td>
                     <td>{url}</td>
                     <td>{comment}</td>
-                    <td>{checks}</td>
-                    <td>{creds}</td>
-                    <td>{vulns}</td>
+                    <td>{nb_checks}</td>
+                    <td>{nb_creds}</td>
+                    <td>{nb_vulns}</td>
                 </tr>
                 """.format(
                     clickable=' class="clickable-row" data-href="{results}"'.format(
@@ -262,12 +269,12 @@ class Reporter:
                     banner=service.banner,
                     technos=technos,
                     url='<a href="{}" title="{}">{}</a>'.format(
-                        service.url, service.url, StringUtils.shorten(service.url, 50)) \
+                        service.url, service.url, StringUtils.shorten(service.url, 40)) \
                         if service.url else '',
                     comment=StringUtils.shorten(comment, 40),
-                    checks=len(service.results),
-                    creds=nb_creds,
-                    vulns=nb_vulns)
+                    nb_checks=nb_checks,
+                    nb_creds=nb_creds,
+                    nb_vulns=nb_vulns)
 
         return html
 
@@ -284,27 +291,54 @@ class Reporter:
         if len(hosts) == 0:
             html = """
             <tr class="notfound">
-                <td colspan="5">No record found</td>
+                <td colspan="10">No record found</td>
             </tr>
             """
         else:
             html = ''
             for host in hosts:
 
+                # Number of creds
+                nb_userpass  = host.get_nb_credentials(single_username=False)
+                nb_usernames = host.get_nb_credentials(single_username=True)
+                nb_creds = '{}{}{}'.format(
+                    '<span class="text-green">{}</span>'.format(str(nb_userpass)) \
+                        if nb_userpass > 0 else '',
+                    '/' if nb_userpass > 0 and nb_usernames > 0 else '',
+                    '<span class="text-yellow">{}</span>'.format(
+                        str(nb_usernames)) if nb_usernames > 0 else '')
+
+                # Number of vulns
+                nb_vulns = host.get_nb_vulns()
+                if nb_vulns > 0:
+                    nb_vulns = '<span class="text-green">{}</span>'.format(nb_vulns)
+                else:
+                    nb_vulns = ''
+
                 html += """
                 <tr>
                     <td>{ip}</td>
                     <td>{hostname}</td>
                     <td>{os}</td>
+                    <td>{type}</td>
+                    <td>{vendor}</td>
                     <td>{comment}</td>
-                    <td>{nb_services}</td>
+                    <td>{nb_tcp}</td>
+                    <td>{nb_udp}</td>
+                    <td>{nb_creds}</td>
+                    <td>{nb_vulns}</td>
                 </tr>
                 """.format(
                     ip=host.ip,
                     hostname=host.hostname if host.hostname != str(host.ip) else '',
                     os=host.os,
+                    type='', # TODO
+                    vendor=host.vendor,
                     comment=host.comment,
-                    nb_services=len(host.services))
+                    nb_tcp=host.get_nb_services(Protocol.TCP) or '',
+                    nb_udp=host.get_nb_services(Protocol.UDP) or '',
+                    nb_creds=nb_creds,
+                    nb_vulns=nb_vulns)
 
         return html
 
@@ -393,10 +427,11 @@ class Reporter:
                         and FileUtils.exists(path + '/' + img_name + '.thumb.png'):
 
                     screenshot = """
-                    <a href="{screenlarge}" title="{title}" class="image-link">
+                    <a href="{screenlarge}" title="{url} - {title}" class="image-link">
                         <img src="{screenthumb}" class="border rounded">
                     </a>
                     """.format(
+                        url=service.url,
                         screenlarge='screenshots/' + img_name + '.png',
                         title=service.html_title,
                         screenthumb='screenshots/' + img_name + '.thumb.png')

@@ -12,7 +12,7 @@ from sqlalchemy.ext.hybrid import hybrid_method
 from lib.db.IPAddressType import IPAddressType
 
 from lib.db.Session import Base
-from lib.db.Service import Service
+from lib.db.Service import Service, Protocol
 
 
 class Host(Base):
@@ -75,6 +75,60 @@ class Host(Base):
         """
         net = ipaddress.ip_network(ip_range, strict=False)
         return cls.ip.between(net[0], net[-1])
+
+
+    #------------------------------------------------------------------------------------
+    # Getters
+
+    @hybrid_method
+    def get_nb_services(self, proto=Protocol.TCP):
+        """
+        Get number of services on the specified protocol referenced for this host.
+        :param lib.db.Service.Protocol proto: Protocol (TCP/UDP)
+        :return: Number of services for the specified protocol
+        :rtype: int
+        """
+        nb = 0
+        for s in self.services:
+            if s.protocol == proto:
+                nb += 1
+
+        return nb
+
+
+    @hybrid_method
+    def get_nb_credentials(self, single_username=False):
+        """
+        Get total number of credentials for all services referenced for this host.
+        :param bool single_username: If True, get the number of single usernames 
+            (password unknown). If False, get the number of username/password couples
+        :return: Number of selected credentials
+        :rtype: int
+        """
+        nb = 0
+        for s in self.services:
+            for cred in s.credentials:
+                if single_username:
+                    if cred.username is not None and cred.password is None:
+                        nb += 1
+                else:
+                    if cred.username is not None and cred.password is not None:
+                        nb += 1
+        return nb
+
+
+    @hybrid_method
+    def get_nb_vulns(self):
+        """
+        Get total number of vulnerabilities for all services referenced for this host.
+        :return: Number of selected vulnerabilities
+        :rtype: int
+        """
+        nb = 0
+        for s in self.services:
+            nb += len(s.vulns)
+            
+        return nb
 
 
     #------------------------------------------------------------------------------------
