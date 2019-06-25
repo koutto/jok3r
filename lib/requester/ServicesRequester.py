@@ -49,6 +49,7 @@ class ServicesRequester(Requester):
                 'Comment/Title',
                 'Checks',
                 'Creds',
+                'Vulns',
             ]
             for r in results:
                 # Creds numbers
@@ -58,8 +59,10 @@ class ServicesRequester(Requester):
                     '{}'.format(Output.colored(str(nb_userpass),  color='green' \
                             if nb_userpass > 0 else None)) if nb_userpass > 0 else '',
                     '/' if nb_userpass > 0 and nb_usernames > 0 else '',
-                    '{} user(s)'.format(Output.colored(str(nb_usernames), color='yellow' \
+                    '{} usr'.format(Output.colored(str(nb_usernames), color='yellow' \
                             if nb_usernames > 0 else None)) if nb_usernames > 0 else '')
+                nb_vulns = Output.colored(str(len(r.vulns)), color='green' \
+                    if len(r.vulns) > 0 else None)
 
                 # Col "Comment/Title" (title is for HTML title for HTTP)
                 if r.html_title:
@@ -79,6 +82,7 @@ class ServicesRequester(Requester):
                     StringUtils.shorten(comment, 40),
                     len(r.results),
                     nb_creds,
+                    nb_vulns,
                 ])
             Output.table(columns, data, hrules=False)
 
@@ -196,8 +200,10 @@ class ServicesRequester(Requester):
         :rtype: bool
         """
         matching_service = self.sqlsess.query(Service).join(Host).join(Mission)\
-                                       .filter(Mission.name == self.current_mission)\
-                                       .filter(Service.url == url).first()
+            .filter(Mission.name == self.current_mission)\
+            .filter((Service.url == url) | \
+                (Service.url == WebUtils.remove_ending_slash(url))).first()
+
         if matching_service:
             logger.warning('URL already present into database')
             return False

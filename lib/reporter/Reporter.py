@@ -164,7 +164,7 @@ class Reporter:
         if len(services) == 0:
             html = """
             <tr class="notfound">
-                <td colspan="9">No record found</td>
+                <td colspan="11">No record found</td>
             </tr>
             """
         else:
@@ -180,6 +180,36 @@ class Reporter:
                     '/' if nb_userpass > 0 and nb_usernames > 0 else '',
                     '<span class="text-yellow">{}</span> user(s)'.format(
                         str(nb_usernames)) if nb_usernames > 0 else '')
+
+
+                technos = ''
+
+                # For HTTP, respect a given order for technos for better readability
+                if service.name == 'http':
+                    product_types = (
+                        'web-server',
+                        'web-appserver',
+                        'web-cms',
+                        'web-language',
+                        'web-framework',
+                        'web-jslib'
+                    )
+                    for t in product_types:
+                        product = service.get_product(t)
+                        if product:
+                            technos += '<span class="badge badge-{type} badge-light">' \
+                                '{name}{version}</span>'.format(
+                                    type=t,
+                                    name=product.name,
+                                    version=' '+str(product.version) \
+                                        if product.version else '')
+                else:
+                    for p in service.products:
+                        technos += '<span class="badge badge-generic badge-light">' \
+                            '{name}{version}</span>'.format(
+                                type=p.type,
+                                name=p.name,
+                                version=' '+str(p.version) if p.version else '')
 
                 # Col "Comment/Title" (title is for HTML title for HTTP)
                 if service.html_title:
@@ -197,14 +227,16 @@ class Reporter:
                 html += """
                 <tr{clickable}>
                     <td>{ip}</td>
-                    <td>{port}</td>
-                    <td>{proto}</td>
+                    <td>{hostname}</th>
+                    <td>{port} /{proto}</td>
                     <td>{service}</td>
                     <td>{banner}</td>
+                    <td>{technos}</td>
                     <td>{url}</td>
                     <td>{comment}</td>
                     <td>{checks}</td>
                     <td>{creds}</td>
+                    <td>{vulns}</td>
                 </tr>
                 """.format(
                     clickable=' class="clickable-row" data-href="{results}"'.format(
@@ -215,12 +247,14 @@ class Reporter:
                         service.protocol),
                     service=service.name,
                     banner=service.banner,
+                    technos=technos,
                     url='<a href="{}" title="{}">{}</a>'.format(
                         service.url, service.url, StringUtils.shorten(service.url, 50)) \
                         if service.url else '',
                     comment=StringUtils.shorten(comment, 40),
                     checks=len(service.results),
-                    creds=nb_creds)
+                    creds=nb_creds,
+                    vulns=len(service.vulns))
         return html
 
 

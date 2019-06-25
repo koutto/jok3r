@@ -27,7 +27,7 @@
 
     </style>
 
-    <!-- Custom CSS -->
+    <!-- Viewbow CSS -->
     <style type="text/css">
     .viewbox-container{
         position: fixed;
@@ -162,6 +162,8 @@
 
     </style>
 
+
+
     <!-- Custom CSS -->
     <style type="text/css">
     body {
@@ -169,6 +171,14 @@
         color: #dddddd;
         padding-top: 50px;
     }
+    a, a:hover, a:focus {
+        color: #32d41a;
+    }
+    .border {
+        border-color: #686868 !important;
+    }
+
+    /* Header */
     #header {
         background: black;
         height: 50px;
@@ -187,6 +197,8 @@
         padding: 0;
     }
 
+
+    /* Sidebar */    
     .nav-tabs>li{
         float: none;
     }
@@ -207,11 +219,9 @@
         -o-transition: all 0.5s ease;
         transition: all 0.5s ease;
     }
-
     #wrapper.toggled {
         padding-left: 50px;
     }
-
     #sidebar-wrapper {
         z-index: 1000;
         position: fixed;
@@ -226,24 +236,18 @@
         -o-transition: all 0.5s ease;
         transition: all 0.5s ease;
     }
-
     #wrapper.toggled #sidebar-wrapper {
         width: 50px;
     }
-
     #page-content-wrapper {
         width: 100%;
         position: absolute;
         padding: 15px;
     }
-
     #wrapper.toggled #page-content-wrapper {
         position: absolute;
         margin-right: -50px;
     }
-
-    /* Sidebar Styles */
-
     .sidebar-nav {
         position: absolute;
         top: 0;
@@ -252,7 +256,6 @@
         padding: 0;
         list-style: none;
     }
-
     .sidebar-nav li {
         text-align: center;
         line-height: 40px;
@@ -263,34 +266,28 @@
         text-decoration: none;
         color: #999999;
     }
-
     .sidebar-nav li a:hover {
         text-decoration: none;
         color: #fff;
         background: rgba(255,255,255,0.2);
     }
-
     .sidebar-nav li a:active,
     .sidebar-nav li a:focus {
         text-decoration: none;
     }
-
     .nav-tabs > li.active > a, .nav-tabs > li.active > a:focus, .nav-tabs > li.active > a:hover {
         color: #012f0b;
         background-color: #32d41a;     
         font-weight: bold;   
     }
-
     .sidebar-nav > .sidebar-brand {
         height: 65px;
         font-size: 18px;
         line-height: 60px;
     }
-
     .sidebar-nav > .sidebar-brand a {
         color: #999999;
     }
-
     .sidebar-nav > .sidebar-brand a:hover {
         color: #fff;
         background: none;
@@ -299,6 +296,7 @@
         font-size: 1.7em;
     }
 
+    /* Title */
     .title-page {
         margin-top: 15px;
         margin-bottom: 15px;
@@ -307,6 +305,8 @@
         font-weight: bold;
         font-family: Courier New,Courier,Lucida Sans Typewriter,Lucida Typewriter,monospace; 
     }
+
+    /* Table */
     .table {
         background: #262626;
         font-size: 0.8em
@@ -320,14 +320,9 @@
     .text-green {
         color: #32d41a;
     }
-    a, a:hover, a:focus {
-        color: #32d41a;
-    }
 
-    .border {
-        border-color: #686868 !important;
-    }
 
+    /* Search field */
     .search-field, .search-field:hover, .search-field:focus {
         background: #1e1e1e;
         color: white;
@@ -335,62 +330,40 @@
         width: 50%;
     }
 
-    @media(min-width:768px) {
-        #wrapper {
-            padding-left: 50px;
-        }
-
-        #wrapper.toggled {
-            padding-left: 0;
-        }
-
-        #sidebar-wrapper {
-            width: 50px;
-        }
-
-        #wrapper.toggled #sidebar-wrapper {
-            width: 0;
-        }
-
-        #page-content-wrapper {
-            padding: 20px;
-            position: relative;
-        }
-
-        #wrapper.toggled #page-content-wrapper {
-            position: relative;
-            margin-right: 0;
-        }
-    }
 
     /* Badges Styles */
     table .badge {
         margin-right: 10px;
     }
-    .badge-appserver {
+    .badge-web-appserver {
         font-size: 1.1em;
         background-color: #659fea;
     }
-    .badge-cms {
+    .badge-web-cms {
         font-size: 1.1em;
         background-color: #e2ea65;
     }
-    .badge-framework {
+    .badge-web-framework {
         font-size: 1.1em;
         background-color: #65ead7;
     }
-    .badge-jslib {
+    .badge-web-jslib {
         font-size: 1.1em;
         background-color: #ea9d65;
     }
-    .badge-language {
+    .badge-web-language {
         font-size: 1.1em;
         background-color: #a794e4;
     }
-    .badge-server {
+    .badge-web-server {
+        font-size: 1.1em;
+        background-color: #e68070;
+    }    
+    .badge-generic {
         font-size: 1.1em;
         background-color: #e68070;
     }
+
 
     </style>
 
@@ -455,14 +428,16 @@
                                 <thead>
                                     <tr class="table-head">
                                         <th>IP</th>
+                                        <th>HOSTNAME</th>
                                         <th>PORT</th>
-                                        <th>PROTO</th>
                                         <th>SERVICE</th>
                                         <th>BANNER</th>
+                                        <th>TECHNOS</th>
                                         <th>URL</th>
-                                        <th>COMMENT / TITLE</th>
+                                        <th>COMMENT/TITLE</th>
                                         <th>CHECKS</th>
                                         <th>CREDS</th>
+                                        <th>VULNS</th>
                                     </tr>
                                 </thead>
                                 <tbody>

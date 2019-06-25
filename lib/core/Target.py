@@ -350,7 +350,7 @@ class Target:
             
             # Banner 
             self.service.banner = NetUtils.clean_nmap_banner(nmap_info['banner'])
-            logger.info('Banner: {banner}'.format(banner=self.service.banner))
+            logger.info('Banner = {banner}'.format(banner=self.service.banner))
             
             # OS
             if nmap_info['os']:
