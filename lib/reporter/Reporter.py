@@ -242,6 +242,7 @@ class Reporter:
                     clickable=' class="clickable-row" data-href="{results}"'.format(
                         results=results) if len(service.results) > 0 else '',
                     ip=service.host.ip,
+                    hostname=service.host.hostname,
                     port=service.port,
                     proto={Protocol.TCP: 'tcp', Protocol.UDP: 'udp'}.get(
                         service.protocol),
