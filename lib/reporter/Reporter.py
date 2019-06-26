@@ -200,9 +200,11 @@ class Reporter:
                     #nb_vulns = '<span class="mdi mdi-window-close"></span>'
                     nb_vulns = ''
 
+                # Encrypted ? (SSL/TLS)
+                enc = '<span class="mdi mdi-{}"></span>'.format(
+                    'check' if service.is_encrypted() else 'windows-close')
 
                 technos = ''
-
                 # For HTTP, respect a given order for technos for better readability
                 if service.name == 'http':
                     product_types = (
@@ -245,9 +247,10 @@ class Reporter:
 
                 html += """
                 <tr{clickable}>
-                    <td class="text-bold text-green">{ip}</td>
+                    <td class="text-bold">{ip}</td>
                     <td>{hostname}</th>
-                    <td class="text-bold text-green">{port} /{proto}</td>
+                    <td class="text-bold">{port} /{proto}</td>
+                    <td>{enc}</td>
                     <td>{service}</td>
                     <td>{banner}</td>
                     <td>{technos}</td>
@@ -265,6 +268,7 @@ class Reporter:
                     port=service.port,
                     proto={Protocol.TCP: 'tcp', Protocol.UDP: 'udp'}.get(
                         service.protocol),
+                    enc=enc,
                     service=service.name,
                     banner=service.banner,
                     technos=technos,

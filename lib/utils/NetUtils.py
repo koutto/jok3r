@@ -108,7 +108,7 @@ class NetUtils:
         }
         report = None
         #nmproc = NmapProcess(ip, '-sT -sV -Pn -p '+str(port))
-        nmproc = NmapProcess(ip, '-A -Pn -p '+str(port))
+        nmproc = NmapProcess(ip, '-A --version-all -Pn -p '+str(port))
         rc = nmproc.run()
         if rc != 0:
             print("Nmap scan failed: {0}".format(nmproc.stderr))
@@ -170,6 +170,62 @@ class NetUtils:
                     return ostype
 
         return ''
+
+
+    @staticmethod
+    def get_device_type(os, nmap_device_type):
+
+        # Device types matching between Nmap and Jok3r
+        # List of device types supported by Nmap: 
+        # https://nmap.org/book/osdetect-device-types.html
+        DEVICE_TYPE_NMAP_TO_JOKER = {
+            'general purpose':      'Server',
+            'bridge':               'Device',
+            'broadband router':     'Device',
+            'firewall':             'Firewall',
+            'game console':         'Game console',
+            'hub':                  'Device',
+            'load balancer':        'Device',
+            'media device':         'Media',
+            'PBX':                  'VoIP',
+            'PDA':                  'PDA',
+            'phone':                'Mobile',
+            'power-device':         'Power device',
+            'printer':              'Printer',
+            'print server':         'Print server',
+            'proxy server':         'Proxy server',
+            'remote management':    'Management',
+            'router':               'Device',
+            'security-misc':        'Firewall',
+            'specialized':          'Misc',
+            'storage-misc':         'NAS',
+            'switch':               'Device',
+            'telecom-misc':         'VoIP',
+            'terminal':             'Client',
+            'terminal server':      'Server',
+            'VoIP adapter':         'VoIP',
+            'WAP':                  'Device',
+            'webcam':               'Webcam',
+        }
+
+        # Nmap device type does not differentiate servers and desktops
+        # in the category "general purpose". We try to distinguish desktop
+        # based on the OS name. Far from being perfect, only handle Windows
+        # and MacOS for now...
+        os_patterns_desktops = [
+            'windows',
+            'macos',
+            'mac os',
+        ]
+        if nmap_device_type == 'general purpose' \
+            and if any(pattern in os.lower() for pattern in os_patterns_desktops):
+                if 'server' in os.lower():
+                    return 'Server'
+                else:
+                    return 'Desktop'
+
+        else:
+            return DEVICE_TYPE_NMAP_TO_JOKER.get(nmap_device_type, 'Misc')
 
 
     @staticmethod

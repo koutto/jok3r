@@ -9,6 +9,7 @@ from sqlalchemy.types import Enum
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.hybrid import hybrid_method
 
+from lib.core.Config import *
 from lib.db.Credential import Credential
 from lib.db.Option import Option
 from lib.db.Product import Product
@@ -118,6 +119,20 @@ class Service(Base):
                     p.service_id = self.id
 
         return
+
+
+    #------------------------------------------------------------------------------------
+    @hybrid_method
+    def is_encrypted(self):
+        """
+        Indicates if the service is encrypted (i.e. is using SSL/TLS)
+        :return: True if SSL/TLS is used
+        :rtype: bool
+        """
+        for opt in self.options:
+            if opt.name in OPTIONS_ENCRYTPED_PROTO:
+                return True
+        return False
 
 
     #------------------------------------------------------------------------------------
