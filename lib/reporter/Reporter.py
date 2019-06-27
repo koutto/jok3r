@@ -16,7 +16,7 @@ from lib.core.Config import *
 from lib.core.Constants import *
 from lib.output.Logger import logger
 from lib.output.Output import Output
-from lib.reporter.IconsMapping import *
+from lib.reporter.IconsMapping import IconsMapping
 from lib.requester.Condition import Condition
 from lib.requester.CredentialsRequester import CredentialsRequester
 from lib.requester.Filter import Filter

@@ -62,7 +62,7 @@ class ServicesRequester(Requester):
                     '{} usr'.format(Output.colored(str(nb_usernames), color='yellow' \
                             if nb_usernames > 0 else None)) if nb_usernames > 0 else '')
                 nb_vulns = Output.colored(str(len(r.vulns)), color='green' \
-                    if len(r.vulns) > 0 else None)
+                    if len(r.vulns) > 0 else None) if len(r.vulns) > 0 else ''
 
                 # Col "Comment/Title" (title is for HTML title for HTTP)
                 if r.html_title:
