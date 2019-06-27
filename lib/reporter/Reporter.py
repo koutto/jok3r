@@ -251,8 +251,8 @@ class Reporter:
                     <td class="font-weight-bold">{ip}</td>
                     <td>{hostname}</th>
                     <td class="font-weight-bold">{port} /{proto}</td>
-                    <td>{enc}</td>
                     <td>{service}</td>
+                    <td>{enc}</td>
                     <td>{banner}</td>
                     <td>{technos}</td>
                     <td>{url}</td>
@@ -269,8 +269,8 @@ class Reporter:
                     port=service.port,
                     proto={Protocol.TCP: 'tcp', Protocol.UDP: 'udp'}.get(
                         service.protocol),
-                    enc=enc,
                     service=service.name,
+                    enc=enc,
                     banner=service.banner,
                     technos=technos,
                     url='<a href="{}" title="{}">{}</a>'.format(
@@ -552,8 +552,8 @@ class Reporter:
                     <td>{service}</td>
                     <td>{port} /{proto}</td>
                     <td class="font-weight-bold">{producttype}</td>
-                    <td class="font-weight-bold">{productname}</td>
-                    <td class="font-weight-bold">{productversion}</td>
+                    <td class="font-weight-bold text-green">{productname}</td>
+                    <td class="font-weight-bold text-green">{productversion}</td>
                 </tr>
                 """.format(
                     ip=product.service.host.ip,
@@ -597,8 +597,8 @@ class Reporter:
                     <td>{service}</td>
                     <td>{port} /{proto}</td>
                     <td>{type}</td>
-                    <td class="font-weight-bold">{username}</td>
-                    <td class="font-weight-bold">{password}</td>
+                    <td class="font-weight-bold text-green">{username}</td>
+                    <td class="font-weight-bold text-green">{password}</td>
                     <td>{url}</td>
                     <td>{comment}</td>
                 </tr>
@@ -729,7 +729,7 @@ class Reporter:
                 class_=' class="active"' if i==0 else '',
                 id=r.check,
                 icon=icon,
-                check=StringUtils.shorten(r.check, 22))    
+                check=StringUtils.shorten(r.check, 28))    
             i += 1
 
         return html
