@@ -62,7 +62,9 @@ class NmapResultsParser:
                         and len(os_matchs[0].osclasses) > 0:
                     os_vendor = os_matchs[0].osclasses[0].vendor
                     os_family = os_matchs[0].osclasses[0].osfamily
-                    device_type = os_matchs[0].osclasses[0].type
+                    device_type = NetUtils.get_device_type(
+                        os_family,
+                        os_matchs[0].osclasses[0].type)
 
             # Create Host object
             host = Host(ip=h.ipv4, 

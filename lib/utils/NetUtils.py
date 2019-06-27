@@ -138,7 +138,9 @@ class NetUtils:
                                 and len(os_matchs[0].osclasses) > 0:
                             results['os_vendor'] = os_matchs[0].osclasses[0].vendor
                             results['os_family'] = os_matchs[0].osclasses[0].osfamily
-                            results['type'] = os_matchs[0].osclasses[0].type
+                            results['type'] = NetUtils.get_device_type(
+                                results['os_family'],
+                                os_matchs[0].osclasses[0].type)
 
         return results
 
@@ -177,7 +179,7 @@ class NetUtils:
 
 
     @staticmethod
-    def get_device_type(os, nmap_device_type):
+    def get_device_type(os_family, nmap_device_type):
 
         # Device types matching between Nmap and Jok3r
         # List of device types supported by Nmap: 
@@ -217,12 +219,12 @@ class NetUtils:
         # based on the OS name. Far from being perfect, only handle Windows
         # and MacOS for now...
         os_patterns_desktops = [
-            'windows',
-            'macos',
-            'mac os',
+            'Mac OS',
+            'macOS',
+            'Windows',
         ]
         if nmap_device_type == 'general purpose' \
-            and any(pattern in os.lower() for pattern in os_patterns_desktops):
+            and os_family in os_patterns_desktops:
                 if 'server' in os.lower():
                     return 'Server'
                 else:
