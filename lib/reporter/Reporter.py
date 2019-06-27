@@ -16,6 +16,7 @@ from lib.core.Config import *
 from lib.core.Constants import *
 from lib.output.Logger import logger
 from lib.output.Output import Output
+from lib.reporter.IconsMapping import *
 from lib.requester.Condition import Condition
 from lib.requester.CredentialsRequester import CredentialsRequester
 from lib.requester.Filter import Filter
@@ -247,9 +248,9 @@ class Reporter:
 
                 html += """
                 <tr{clickable}>
-                    <td class="text-bold">{ip}</td>
+                    <td class="font-weight-bold">{ip}</td>
                     <td>{hostname}</th>
-                    <td class="text-bold">{port} /{proto}</td>
+                    <td class="font-weight-bold">{port} /{proto}</td>
                     <td>{enc}</td>
                     <td>{service}</td>
                     <td>{banner}</td>
@@ -302,6 +303,20 @@ class Reporter:
             html = ''
             for host in hosts:
 
+                # OS
+                os = ''
+                if host.os_family in IconsMapping.OS_FAMILY:
+                    os += '<span class="mdi mdi-{}"></span> '.format(
+                        IconsMapping.OS_FAMILY[host.os_family])
+                os += str(host.os)
+
+                # Device type
+                device_type = ''
+                if host.type in IconsMapping.DEVICE_TYPE:
+                    device_type += '<span class="mdi mdi-{}"></span> '.format(
+                        IconsMapping.DEVICE_TYPE[host.type])
+                device_type += str(host.type)
+
                 # Number of creds
                 nb_userpass  = host.get_nb_credentials(single_username=False)
                 nb_usernames = host.get_nb_credentials(single_username=True)
@@ -321,7 +336,7 @@ class Reporter:
 
                 html += """
                 <tr>
-                    <td>{ip}</td>
+                    <td class="font-weight-bold">{ip}</td>
                     <td>{hostname}</td>
                     <td>{os}</td>
                     <td>{type}</td>
@@ -335,8 +350,8 @@ class Reporter:
                 """.format(
                     ip=host.ip,
                     hostname=host.hostname if host.hostname != str(host.ip) else '',
-                    os=host.os,
-                    type='', # TODO
+                    os=os,
+                    type=device_type,
                     vendor=host.vendor,
                     comment=host.comment,
                     nb_tcp=host.get_nb_services(Protocol.TCP) or '',
@@ -480,7 +495,7 @@ class Reporter:
         if len(options) == 0:
             html = """
             <tr class="notfound">
-                <td colspan="7">No record found</td>
+                <td colspan="6">No record found</td>
             </tr>
             """
         else:
@@ -492,8 +507,7 @@ class Reporter:
                     <td>{ip}</td>
                     <td>{hostname}</td>
                     <td>{service}</td>
-                    <td>{port}</td>
-                    <td>{proto}</td>
+                    <td>{port} /{proto}</td>
                     <td class="font-weight-bold">{optionname}</td>
                     <td class="font-weight-bold">{optionvalue}</td>
                 </tr>
@@ -524,7 +538,7 @@ class Reporter:
         if len(products) == 0:
             html = """
             <tr class="notfound">
-                <td colspan="8">No record found</td>
+                <td colspan="7">No record found</td>
             </tr>
             """
         else:
@@ -536,8 +550,7 @@ class Reporter:
                     <td>{ip}</td>
                     <td>{hostname}</td>
                     <td>{service}</td>
-                    <td>{port}</td>
-                    <td>{proto}</td>
+                    <td>{port} /{proto}</td>
                     <td class="font-weight-bold">{producttype}</td>
                     <td class="font-weight-bold">{productname}</td>
                     <td class="font-weight-bold">{productversion}</td>
@@ -570,7 +583,7 @@ class Reporter:
         if len(credentials) == 0:
             html = """
             <tr class="notfound">
-                <td colspan="10">No record found</td>
+                <td colspan="9">No record found</td>
             </tr>
             """
         else:
@@ -582,8 +595,7 @@ class Reporter:
                     <td>{ip}</td>
                     <td>{hostname}</td>
                     <td>{service}</td>
-                    <td>{port}</td>
-                    <td>{proto}</td>
+                    <td>{port} /{proto}</td>
                     <td>{type}</td>
                     <td class="font-weight-bold">{username}</td>
                     <td class="font-weight-bold">{password}</td>
@@ -624,7 +636,7 @@ class Reporter:
         if len(vulnerabilities) == 0:
             html = """
             <tr class="notfound">
-                <td colspan="5">No record found</td>
+                <td colspan="4">No record found</td>
             </tr>
             """
         else:
@@ -635,8 +647,7 @@ class Reporter:
                 <tr>
                     <td>{ip}</td>
                     <td>{service}</td>
-                    <td>{port}</td>
-                    <td>{proto}</td>
+                    <td>{port} /{proto}</td>
                     <td>{vulnerability}</td>
                 </tr>
                 """.format(
@@ -703,14 +714,22 @@ class Reporter:
         html = ''
         i = 0
         for r in results:
+
+            # Icon category
+            icon = ''
+            if r.category.lower() in IconsMapping.CATEGORY:
+                icon = '<span class="mdi mdi-{}"></span> '.format(
+                    IconsMapping.CATEGORY[r.category.lower()])
+
             html += """
             <li{class_}>
-                <a href="#{id}">{check}</a>
+                <a href="#{id}">{icon}{check}</a>
             </li>  
             """.format(
                 class_=' class="active"' if i==0 else '',
                 id=r.check,
-                check=r.check)    
+                icon=icon,
+                check=StringUtils.shorten(r.check, 22))    
             i += 1
 
         return html
@@ -734,15 +753,23 @@ class Reporter:
         html = ''
         i = 0
         for r in results:
+            
+            # Icon category
+            icon = ''
+            if r.category.lower() in IconsMapping.CATEGORY:
+                icon = '<span class="mdi mdi-{}"></span> '.format(
+                    IconsMapping.CATEGORY[r.category.lower()])
+
             html += """
             <div class="tab-pane{active}" id="{id}">
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-lg-12">
-                            <h1 class="title-page">{category} > {check}</h1>
+                            <h1 class="title-page">{icon}{category} > {check}</h1>
             """.format(
                 active=' active' if i==0 else '',
                 id=r.check,
+                icon=icon,
                 category=r.category,
                 check=r.check)
 
@@ -758,7 +785,7 @@ class Reporter:
                     output = m.group('output')
 
                     html += """
-                    <pre class="cmdline">{cmdline}</pre>
+                    <pre class="cmdline"># {cmdline}</pre>
                     <pre>{output}</pre>
                     """.format(cmdline=o.cmdline, output=output)
 

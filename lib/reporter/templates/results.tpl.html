@@ -230,7 +230,7 @@
 
     <nav class="navbar fixed-top navbar-light bg-faded">
         <div id="header">
-            <h1><span class="text-green font-weight-bold">Jok3r Report</span> > Mission: {{MISSION_NAME}} > Service: host <span class="font-weight-bold">{{SERVICE_IP}}</span> | port <span class="font-weight-bold">{{SERVICE_PORT}}/{{SERVICE_PROTO}}</span> | service <span class="font-weight-bold">{{SERVICE_NAME}}</span></h1>
+            <h1><span class="text-green font-weight-bold">Jok3r Report</span> > Mission: {{MISSION_NAME}} > Service: <span class="mdi mdi-ip"></span> <span class="font-weight-bold">{{SERVICE_IP}}</span> | <span class="mdi mdi-network-outline"></span> <span class="font-weight-bold">{{SERVICE_PORT}}/{{SERVICE_PROTO}}</span> | <span class="mdi mdi-remote-desktop"></span> <span class="font-weight-bold">{{SERVICE_NAME}}</span></h1>
         </div>
     </nav>
 
@@ -240,7 +240,7 @@
         <div id="sidebar-wrapper">
             <ul class="sidebar-nav nav nav-tabs" id="sidebar-nav">
                 <li class="sidebar-brand" onclick="window.location.replace('index.html');">
-                    <a href="index.html">Back to index</a>
+                    <a href="index.html"><span class="mdi mdi-arrow-left"></span> Back to index</a>
                 </li>
                 {{SIDEBAR_CHECKS}}
             </ul>

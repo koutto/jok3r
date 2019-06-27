@@ -3,9 +3,19 @@
 ###
 ### Reporter > IconsMapping
 ###
-# Mapping with Material Design icons
+# Mapping with Material Design icons names
 # https://cdn.materialdesignicons.com/3.7.95/
 
+
+OS_FAMILY = {
+    'Android': 'android',
+    'FreeBSD': 'freebsd',
+    'iOS': 'ios',
+    'Linux': 'linux',
+    'Mac OS': 'apple',
+    'macOS': 'apple',
+    'Windows': 'windows',
+}
 
 DEVICE_TYPE = {
     'Client':       'desktop-classic',
@@ -26,4 +36,15 @@ DEVICE_TYPE = {
     'Server':       'desktop-tower', #'server',
     'VoIP':         'phone-voip',
     'Webcam':       'webcam',
+}
+
+CATEGORY = {
+    'recon': 'magnify',
+    'vulnlookup': 'search-web',
+    'defaultcreds': 'key-variant',
+    'vulnscan': 'radar',
+    'exploit': 'rocket',
+    'bruteforce': 'hammer',
+    'discovery': 'sitemap',
+    'postexploit': 'account-key',
 }

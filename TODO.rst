@@ -45,7 +45,6 @@ TOOLS/CHECKS TO ADD
 * Sharepoint -> https://github.com/TestingPens/SPartan
 * check https://bitvijays.github.io/LFF-IPS-P2-VulnerabilityAnalysis.html
 * https://github.com/RhinoSecurityLabs/CVEs/tree/master/CVE-2019-0227
-
 * http://pentestit.com/apache-jmeter-rmi-remote-code-execution-vulnerability-poc-cve-2018-1297/
 * Wordpress RCE https://github.com/opsxcq/exploit-CVE-2016-10033
 
