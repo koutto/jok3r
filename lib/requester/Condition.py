@@ -178,6 +178,9 @@ class Condition:
         """Translate host OS into LIKE filter"""
         return (Host.os.ilike('%'+str(value)+'%'))
 
+    def __translate_os_family(self, value):
+        """Translate OS family into LIKE filter"""
+        return (Host.os_family.ilike('%'+str(value)+'%'))
 
     def __translate_banner(self, value):
         """Translate service banner into LIKE filter"""

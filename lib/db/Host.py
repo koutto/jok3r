@@ -11,9 +11,8 @@ from sqlalchemy.ext.hybrid import hybrid_method
 #from sqlalchemy_utils import IPAddressType
 from lib.db.IPAddressType import IPAddressType
 
-from lib.db.Session import Base
 from lib.db.Service import Service, Protocol
-
+from lib.db.Session import Base
 
 class Host(Base):
     __tablename__ = 'hosts'

@@ -5,7 +5,8 @@
 ###
 import enum
 from sqlalchemy import ForeignKey, Column, Integer, String, Text, Boolean
-from sqlalchemy.types import Enum
+#from sqlalchemy.types import Enum
+import sqlalchemy.types
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.hybrid import hybrid_method
 
@@ -29,7 +30,7 @@ class Service(Base):
     id           = Column(Integer, primary_key=True)
     name         = Column(String(100), nullable=False, default='')
     port         = Column(Integer, nullable=False)
-    protocol     = Column(Enum(Protocol), nullable=False)
+    protocol     = Column(sqlalchemy.types.Enum(Protocol), nullable=False)
     url          = Column(String(3000), nullable=False, default='')
     up           = Column(Boolean, default=True)
     banner       = Column(String(255), nullable=False, default='')

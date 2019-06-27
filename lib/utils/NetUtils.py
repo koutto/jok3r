@@ -222,7 +222,7 @@ class NetUtils:
             'mac os',
         ]
         if nmap_device_type == 'general purpose' \
-            and if any(pattern in os.lower() for pattern in os_patterns_desktops):
+            and any(pattern in os.lower() for pattern in os_patterns_desktops):
                 if 'server' in os.lower():
                     return 'Server'
                 else:

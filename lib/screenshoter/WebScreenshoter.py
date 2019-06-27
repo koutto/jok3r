@@ -6,16 +6,23 @@
 import http.client
 import os
 import sys
-from selenium import webdriver
-from selenium.webdriver.firefox.options import Options
-from selenium.common.exceptions import NoAlertPresentException
-from selenium.common.exceptions import TimeoutException
-from selenium.common.exceptions import UnexpectedAlertPresentException
-from selenium.common.exceptions import WebDriverException
-from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 from lib.db.Screenshot import ScreenStatus
 from lib.output.Logger import logger
+
+
+try:
+    from selenium import webdriver
+    from selenium.webdriver.firefox.options import Options
+    from selenium.common.exceptions import NoAlertPresentException
+    from selenium.common.exceptions import TimeoutException
+    from selenium.common.exceptions import UnexpectedAlertPresentException
+    from selenium.common.exceptions import WebDriverException
+    from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+except:
+    logger.error('Module "selenium" not found. Make sure to install all required ' \
+        'dependencies')
+    sys.exit(1)
 
 
 class WebScreenshoter:
