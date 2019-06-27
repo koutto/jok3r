@@ -94,13 +94,13 @@ scopes can be defined by importing new targets.
 
 ARGPARSE_MAX_HELP_POS    = 45
 TARGET_FILTERS           = {
-    'ip'      : FilterData.IP, 
-    'host'    : FilterData.HOST,
-    'port'    : FilterData.PORT, 
-    'service' : FilterData.SERVICE, 
-    'url'     : FilterData.URL,
-    'os'      : FilterData.OS,
-    'banner'  : FilterData.BANNER,
+    'ip'       : FilterData.IP, 
+    'host'     : FilterData.HOST,
+    'port'     : FilterData.PORT, 
+    'service'  : FilterData.SERVICE, 
+    'url'      : FilterData.URL,
+    'osfamily' : FilterData.OS_FAMILY,
+    'banner'   : FilterData.BANNER,
 }
 
 

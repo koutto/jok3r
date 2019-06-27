@@ -22,6 +22,8 @@ class Host(Base):
     ip         = Column(IPAddressType, nullable=False, default='')
     hostname   = Column(String(255), nullable=False, default='')
     os         = Column(String(255), nullable=False, default='')
+    os_vendor  = Column(String(255), nullable=False, default='')
+    os_family  = Column(String(255), nullable=False, default='')
     mac        = Column(String(255), nullable=False, default='')
     vendor     = Column(String(255), nullable=False, default='')
     type       = Column(String(255), nullable=False, default='')
@@ -43,6 +45,8 @@ class Host(Base):
         """
         if dst.hostname: self.hostname = dst.hostname
         if dst.os: self.os = dst.os
+        if dst.os_vendor: self.os_vendor = dst.os_vendor
+        if dst.os_family: self.os_family = dst.os_family
         if dst.mac: self.mac = dst.mac
         if dst.vendor: self.vendor = dst.vendor
         if dst.type: self.type = dst.type
@@ -134,12 +138,15 @@ class Host(Base):
     #------------------------------------------------------------------------------------
 
     def __repr__(self):
-        return '<Host(ip="{ip}", hostname="{hostname}", os="{os}", mac="{mac}", ' \
+        return '<Host(ip="{ip}", hostname="{hostname}", os="{os}", ' \
+            'os_vendor="{os_vendor}", os_family="{os_family}", mac="{mac}", ' \
             'vendor="{vendor}", type="{type}", comment="{comment}")>'.format(
-                ip       = self.ip, 
-                hostname = self.hostname, 
-                os       = self.os, 
-                mac      = self.mac,
-                vendor   = self.vendor,
-                type     = self.type,
-                comment  = self.comment)
+                ip        = self.ip, 
+                hostname  = self.hostname, 
+                os        = self.os, 
+                os_vendor = self.os_vendor, 
+                os_family = self.os_family,
+                mac       = self.mac,
+                vendor    = self.vendor,
+                type      = self.type,
+                comment   = self.comment)

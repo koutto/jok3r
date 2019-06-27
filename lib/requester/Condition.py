@@ -51,6 +51,7 @@ class Condition:
             FilterData.SERVICE_EXACT   : self.__translate_service_exact,
             FilterData.SERVICE_ID      : self.__translate_service_id,
             FilterData.OS              : self.__translate_os,
+            FilterData.OS_FAMILY       : self.__translate_os_family,
             FilterData.BANNER          : self.__translate_banner,
             FilterData.URL             : self.__translate_url,
             FilterData.URL_EXACT       : self.__translate_url_exact,

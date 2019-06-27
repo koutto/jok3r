@@ -362,6 +362,8 @@ class Target:
                     logger.info('Detected OS has changed = {os}'.format(
                         os=nmap_info['os']))
                 self.service.host.os = nmap_info['os']
+                self.service.host.os_vendor = nmap_info['os_vendor']
+                self.service.host.os_family = nmap_info['os_family']
 
             # Other info
             if nmap_info['mac']:

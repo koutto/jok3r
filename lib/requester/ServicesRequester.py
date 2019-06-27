@@ -126,10 +126,10 @@ class ServicesRequester(Requester):
             return False
 
         matching_service = self.sqlsess.query(Service).join(Host).join(Mission)\
-                                       .filter(Mission.name == self.current_mission)\
-                                       .filter(Host.ip == service.host.ip)\
-                                       .filter(Service.port == int(port))\
-                                       .filter(Service.protocol == proto).first()
+                                .filter(Mission.name == self.current_mission)\
+                                .filter(Host.ip == service.host.ip)\
+                                .filter(Service.port == int(port))\
+                                .filter(Service.protocol == proto).first()
 
         if matching_service:
             logger.warning('Service already present into database')
@@ -145,12 +145,18 @@ class ServicesRequester(Requester):
             if up:
                 # Add service in db (and host if not existing)
                 matching_host = self.sqlsess.query(Host).join(Mission)\
-                                        .filter(Mission.name == self.current_mission)\
-                                        .filter(Host.ip == service.host.ip).first()
+                                    .filter(Mission.name == self.current_mission)\
+                                    .filter(Host.ip == service.host.ip).first()
                 new_host = Host(
                     ip=service.host.ip, 
                     hostname=service.host.hostname,
-                    os=service.host.os)
+                    os=service.host.os,
+                    os_vendor=service.host.os_vendor,
+                    os_family=service.host.os_family,
+                    mac=service.host.mac,
+                    vendor=service.host.vendor,
+                    type=service.host.type)
+
                 if matching_host:
                     matching_host.merge(new_host)
                     self.sqlsess.commit()
@@ -233,7 +239,13 @@ class ServicesRequester(Requester):
                 new_host = Host(
                     ip=service.host.ip, 
                     hostname=service.host.hostname,
-                    os=service.host.os)
+                    os=service.host.os,
+                    os_vendor=service.host.os_vendor,
+                    os_family=service.host.os_family,
+                    mac=service.host.mac,
+                    vendor=service.host.vendor,
+                    type=service.host.type)
+
                 if matching_host:
                     matching_host.merge(new_host)
                     self.sqlsess.commit()
@@ -360,6 +372,7 @@ class ServicesRequester(Requester):
                             hostname  = hostname,
                             port      = r.port,
                             proto     = protocol))
+                    
             self.sqlsess.commit() 
 
 

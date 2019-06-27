@@ -102,6 +102,8 @@ class NetUtils:
         results = {
             'banner': '',
             'os': '',
+            'os_vendor': '',
+            'os_family': '',
             'mac': '',
             'vendor': '',
             'type': '',
@@ -134,6 +136,8 @@ class NetUtils:
                         results['os'] = os_matchs[0].name
                         if os_matchs[0].osclasses is not None \
                                 and len(os_matchs[0].osclasses) > 0:
+                            results['os_vendor'] = os_matchs[0].osclasses[0].vendor
+                            results['os_family'] = os_matchs[0].osclasses[0].osfamily
                             results['type'] = os_matchs[0].osclasses[0].type
 
         return results

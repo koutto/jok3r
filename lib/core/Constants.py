@@ -39,6 +39,7 @@ class FilterData(Enum):
     SERVICE_EXACT   = auto()
     SERVICE_ID      = auto()
     OS              = auto()
+    OS_FAMILY       = auto()
     BANNER          = auto()
     URL             = auto()
     URL_EXACT       = auto()

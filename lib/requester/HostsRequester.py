@@ -4,6 +4,7 @@
 ### Requester > Hosts
 ###
 from lib.requester.Requester import Requester
+from lib.utils.StringUtils import StringUtils
 from lib.db.Host import Host
 from lib.db.Mission import Mission
 from lib.db.Service import Service, Protocol
@@ -32,16 +33,22 @@ class HostsRequester(Requester):
                 'IP',
                 'Hostname',
                 'OS',
+                'Type',
+                'Vendor',
                 'Comment',
-                '# Services',
+                '# TCP',
+                '# UDP',
             ]
             for r in results:
                 data.append([
                     r.ip,
                     r.hostname if r.hostname != str(r.ip) else '',
                     r.os,
-                    r.comment,
-                    len(r.services)          
+                    r.type,
+                    r.vendor,
+                    StringUtils.shorten(r.comment, 40),
+                    r.get_nb_services(Protocol.TCP),
+                    r.get_nb_services(Protocol.UDP),       
                 ])
             Output.table(columns, data, hrules=False)
 
@@ -159,6 +166,8 @@ class HostsRequester(Requester):
             'ip'       : Host.ip,
             'hostname' : Host.hostname,
             'os'       : Host.os,
+            'type'     : Host.type,
+            'vendor'   : Host.vendor,
             'comment'  : Host.comment,
         }
         
