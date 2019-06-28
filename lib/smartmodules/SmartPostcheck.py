@@ -107,9 +107,13 @@ class SmartPostcheck:
                     # Perform regexp matching
                     try:
                         if method == 'finditer':
-                            m = re.finditer(pattern, self.cmd_output, re.IGNORECASE)
+                            m = re.finditer(pattern, 
+                                            self.cmd_output, 
+                                            re.IGNORECASE|re.MULTILINE)
                         else:
-                            m = regex.search(pattern, self.cmd_output, regex.IGNORECASE)
+                            m = regex.search(pattern, 
+                                             self.cmd_output, 
+                                             regex.IGNORECASE)
                     except Exception as e:
                         logger.warning('Error with matchstring [{pattern}], you should ' \
                             'review it. Exception: {exception}'.format(
@@ -222,7 +226,9 @@ class SmartPostcheck:
                         pattern=pattern))
 
                     try:
-                        m = re.search(pattern, self.cmd_output, re.IGNORECASE)
+                        m = re.search(pattern, 
+                                      self.cmd_output, 
+                                      re.IGNORECASE|re.MULTILINE)
                     except Exception as e:
                         logger.warning('Error with matchstring [{pattern}], you should '\
                             'review it. Exception: {exception}'.format(
@@ -296,7 +302,9 @@ class SmartPostcheck:
                                 pattern=pattern))
 
                             try:
-                                m = re.search(pattern, self.cmd_output, re.IGNORECASE)
+                                m = re.search(pattern, 
+                                              self.cmd_output, 
+                                              re.IGNORECASE|re.MULTILINE)
                             except Exception as e:
                                 logger.warning('Error with matchstring [{pattern}], ' \
                                     'you should review it. Exception: ' \
@@ -358,7 +366,9 @@ class SmartPostcheck:
                     # Important: Multiple search/match
                     #m = re.search(pattern, self.cmd_output, re.IGNORECASE)
                     try:
-                        mall = re.finditer(pattern, self.cmd_output, re.IGNORECASE)
+                        mall = re.finditer(pattern, 
+                                           self.cmd_output, 
+                                           re.IGNORECASE|re.MULTILINE)
                     except Exception as e:
                         logger.warning('Error with matchstring [{pattern}], you ' \
                             'should review it. Exception: {exception}'.format(

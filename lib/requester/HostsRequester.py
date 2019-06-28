@@ -36,8 +36,8 @@ class HostsRequester(Requester):
                 'Type',
                 'Vendor',
                 'Comment',
-                '# TCP',
-                '# UDP',
+                'TCP',
+                'UDP',
             ]
             for r in results:
                 data.append([
