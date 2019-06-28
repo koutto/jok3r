@@ -34,10 +34,11 @@ from lib.utils.StringUtils import StringUtils
 
 class Reporter:
 
-    def __init__(self, mission, sqlsession, output_path, do_screens=True):
+    def __init__(self, mission, sqlsession, settings, output_path, do_screens=True):
         """
         :param str mission: Mission for which the HTML report will be generated
         :param Session sqlsession: SQLAlchemy session
+        :param Settings settings: Settings from config files
         :param str output_path: Output path where directory storing HTML files must
             be written
         :param bool do_screens: Boolean indicating if web page screenshots must be
@@ -45,6 +46,7 @@ class Reporter:
         """
         self.mission = mission
         self.sqlsession = sqlsession
+        self.settings = settings
         self.output_path = output_path
         self.do_screens = do_screens
 
@@ -157,7 +159,6 @@ class Reporter:
         """
         Generate the table with all services registered in the mission
         """
-
         req = ServicesRequester(self.sqlsession)
         req.select_mission(self.mission)
         services = req.get_results()
@@ -288,7 +289,6 @@ class Reporter:
         """
         Generate the table with all hosts registered in the mission
         """
-        
         req = HostsRequester(self.sqlsession)
         req.select_mission(self.mission)
         hosts = req.get_results()
@@ -366,7 +366,6 @@ class Reporter:
         """
         Generate the table with HTTP services registered in the mission
         """
-
         req = ServicesRequester(self.sqlsession)
         req.select_mission(self.mission)
         filter_ = Filter(FilterOperator.AND)
@@ -487,7 +486,6 @@ class Reporter:
         """
         Generate the table with all context-specific options registered in the mission 
         """
-        
         req = OptionsRequester(self.sqlsession)
         req.select_mission(self.mission)
         options = req.get_results()
@@ -530,7 +528,6 @@ class Reporter:
         """
         Generate the table with all products registered in the mission 
         """
-        
         req = ProductsRequester(self.sqlsession)
         req.select_mission(self.mission)
         products = req.get_results()
@@ -760,23 +757,42 @@ class Reporter:
                 icon = '<span class="mdi mdi-{}"></span> '.format(
                     IconsMapping.CATEGORY[r.category.lower()])
 
+            # Description/Tool of check
+            if service.name in self.settings.services:
+                check = self.settings.services.get_check(r.check)
+                if check is not None:
+                    description = check.description
+                    tool = check.tool.name
+                else:
+                    description = tool = ''
+
+
             html += """
             <div class="tab-pane{active}" id="{id}">
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-lg-12">
                             <h1 class="title-page">{icon}{category} > {check}</h1>
+                            <p class="check-description rounded">
+                                <span class="mdi mdi-information-outline"></span> 
+                                {description} 
+                                (tool used: {tool}).
+                            </p>
             """.format(
                 active=' active' if i==0 else '',
                 id=r.check,
                 icon=icon,
                 category=r.category,
-                check=r.check)
+                check=r.check,
+                description=,
+                tool=)
 
             for o in r.command_outputs:
                 # Convert command output (with ANSI codes) to HTML
-                conv = ansi2html.Ansi2HTMLConverter(inline=True, scheme='solarized', linkify=True)
+                conv = ansi2html.Ansi2HTMLConverter(
+                    inline=True, scheme='solarized', linkify=True)
                 output = conv.convert(o.output)
+
                 # Warning: ansi2html generates HTML document with <html>, <style>...
                 # tags. We only keep the content inside <pre> ... </pre>
                 m = re.search('<pre class="ansi2html-content">(?P<output>.*)' \
@@ -785,7 +801,7 @@ class Reporter:
                     output = m.group('output')
 
                     html += """
-                    <pre class="cmdline"># {cmdline}</pre>
+                    <pre class="cmdline rounded"># {cmdline}</pre>
                     <pre>{output}</pre>
                     """.format(cmdline=o.cmdline, output=output)
 

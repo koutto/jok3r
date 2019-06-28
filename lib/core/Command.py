@@ -486,7 +486,7 @@ class Command:
         """        
         try:
             pattern = re.compile(
-                r'\['+option.upper()+'\s+set\s*=\s*[\'"](?P<set>.*?)[\'"]\s*' \
+                r'\['+name.upper()+'\s+set\s*=\s*[\'"](?P<set>.*?)[\'"]\s*' \
                 r'(default\s*=\s*[\'"](?P<default>.*?)[\'"])?\s*\]', 
                 re.IGNORECASE)
             m = pattern.search(self.formatted_cmdline)

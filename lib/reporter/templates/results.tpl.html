@@ -32,11 +32,13 @@
     body {
         background: #212121;
         color: #e0e0e0;
-        padding-top: 50px;
+        padding-top: 60px;
     }
+
+    /* Header */
     #header {
         background: black;
-        height: 50px;
+        height: 60px;
         width: 100%;
         border-bottom: solid 2px #32d41a;
     }
@@ -56,6 +58,7 @@
         padding: 0;
     }
 
+    /* Sidebar */
     .nav-tabs>li{
         float: none;
     }
@@ -70,49 +73,33 @@
         border-radius: 0;
     }
     #wrapper {
-        padding-left: 0;
-        -webkit-transition: all 0.5s ease;
-        -moz-transition: all 0.5s ease;
-        -o-transition: all 0.5s ease;
-        transition: all 0.5s ease;
-    }
-
-    #wrapper.toggled {
         padding-left: 300px;
     }
-
+    #wrapper.toggled {
+        padding-left: 0;
+    }
     #sidebar-wrapper {
         z-index: 1000;
         position: fixed;
         left: 300px;
-        width: 0;
         height: 100%;
         margin-left: -300px;
         overflow-y: auto;
         background: #000;
-        -webkit-transition: all 0.5s ease;
-        -moz-transition: all 0.5s ease;
-        -o-transition: all 0.5s ease;
-        transition: all 0.5s ease;
-    }
-
-    #wrapper.toggled #sidebar-wrapper {
         width: 300px;
     }
-
+    #wrapper.toggled #sidebar-wrapper {
+        width: 0;
+    }
     #page-content-wrapper {
         width: 100%;
-        position: absolute;
-        padding: 15px;
+        padding: 20px;
+        position: relative;
     }
-
     #wrapper.toggled #page-content-wrapper {
-        position: absolute;
-        margin-right: -300px;
+        position: relative;
+        margin-right: 0;
     }
-
-    /* Sidebar Styles */
-
     .sidebar-nav {
         position: absolute;
         top: 0;
@@ -122,56 +109,48 @@
         list-style: none;
         padding-bottom: 50px;
     }
-
     .sidebar-nav li {
         text-indent: 5px;
         line-height: 25px;
         font-size: 0.9em;
     }
-
     .sidebar-nav li a {
         display: block;
         text-decoration: none;
         color: #999999;
     }
-
     .sidebar-nav li a:hover {
         text-decoration: none;
         color: #fff;
         background: rgba(255,255,255,0.2);
     }
-
     .sidebar-nav li a:active,
     .sidebar-nav li a:focus {
         text-decoration: none;
     }
-
     .sidebar-nav li .mdi {
         font-size: 1.3em;
         vertical-align: middle;
     }
-
     .nav-tabs > li.active > a, .nav-tabs > li.active > a:focus, .nav-tabs > li.active > a:hover {
         color: #012f0b;
         background-color: #32d41a;     
         font-weight: bold;   
     }
-
     .sidebar-nav > .sidebar-brand {
         height: 65px;
         font-size: 18px;
         line-height: 60px;
     }
-
     .sidebar-nav > .sidebar-brand a {
         color: #999999;
     }
-
     .sidebar-nav > .sidebar-brand a:hover {
         color: #fff;
         background: none;
     }
 
+    /* Title */
     .title-page {
         margin-top: 15px;
         margin-bottom: 15px;
@@ -180,57 +159,26 @@
         font-weight: bold;
         font-family: Courier New,Courier,Lucida Sans Typewriter,Lucida Typewriter,monospace; 
     }
-    .table {
-        background: #262626;
-        font-size: 0.8em
-    }
-    .text-green {
-        color: #32d41a;
-    }
 
-    .search-field, .search-field:hover, .search-field:focus {
-        background: #1e1e1e;
-        color: white;
-        margin-bottom: 25px;
-        width: 50%;
+    /* Check results */
+    .check-description {
+        border: solid 1px #32d41a;
+        padding: 20px;
     }
-
+    .cmdline {
+        white-space: pre-wrap;
+        background-color: black;
+        padding: 20px;
+    }
     pre {
         color: #f6f6f6;
         font-size: 0.8em;
     }
 
-    .cmdline {
-        white-space: pre-wrap;
+    .text-green {
+        color: #32d41a;
     }
 
-    @media(min-width:768px) {
-        #wrapper {
-            padding-left: 300px;
-        }
-
-        #wrapper.toggled {
-            padding-left: 0;
-        }
-
-        #sidebar-wrapper {
-            width: 300px;
-        }
-
-        #wrapper.toggled #sidebar-wrapper {
-            width: 0;
-        }
-
-        #page-content-wrapper {
-            padding: 20px;
-            position: relative;
-        }
-
-        #wrapper.toggled #page-content-wrapper {
-            position: relative;
-            margin-right: 0;
-        }
-    }
     </style>
 
 </head>
@@ -239,7 +187,7 @@
 
     <nav class="navbar fixed-top navbar-light bg-faded">
         <div id="header">
-            <h1><span class="text-green font-weight-bold">Jok3r Report</span> > Mission: {{MISSION_NAME}} > Service: <span class="mdi mdi-ip"></span> <span class="font-weight-bold">{{SERVICE_IP}}</span> | <span class="mdi mdi-network-outline"></span> <span class="font-weight-bold">{{SERVICE_PORT}}/{{SERVICE_PROTO}}</span> | <span class="mdi mdi-remote-desktop"></span> <span class="font-weight-bold">{{SERVICE_NAME}}</span></h1>
+            <h1><span class="text-green font-weight-bold">Jok3r Report</span> > <span class="mdi mdi-buffer"></span> Mission: {{MISSION_NAME}} > <span class="mdi mdi-ip"></span> <span class="font-weight-bold">{{SERVICE_IP}}</span> | <span class="mdi mdi-network-outline"></span> <span class="font-weight-bold">{{SERVICE_PORT}}/{{SERVICE_PROTO}}</span> | <span class="mdi mdi-remote-desktop"></span> <span class="font-weight-bold">{{SERVICE_NAME}}</span></h1>
         </div>
     </nav>
 
