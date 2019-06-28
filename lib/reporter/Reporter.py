@@ -499,6 +499,10 @@ class Reporter:
             html = ''
             for option in options:
 
+                # Service name
+                # service_name = IconsMapping.get_icon_html('service', option.service.name)
+                # service_name += str(option.service.name)
+
                 html += """
                 <tr>
                     <td>{ip}</td>
@@ -679,7 +683,8 @@ class Reporter:
         #         service=service.name) 
 
         tpl = tpl.replace('{{MISSION_NAME}}', self.mission)
-        #tpl = tpl.replace('{{SERVICE}}', service_string)
+        tpl = tpl.replace('{{SERVICE_ICON}}', 
+                          IconsMapping.get_icon_html('service', service.name))
         tpl = tpl.replace('{{SERVICE_IP}}', str(service.host.ip))
         tpl = tpl.replace('{{SERVICE_PORT}}', str(service.port))
         tpl = tpl.replace('{{SERVICE_PROTO}}', 
