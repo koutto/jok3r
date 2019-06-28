@@ -784,8 +784,8 @@ class Reporter:
                 icon=icon,
                 category=r.category,
                 check=r.check,
-                description=,
-                tool=)
+                description=description,
+                tool=tool)
 
             for o in r.command_outputs:
                 # Convert command output (with ANSI codes) to HTML
