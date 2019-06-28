@@ -759,7 +759,7 @@ class Reporter:
 
             # Description/Tool of check
             if service.name in self.settings.services:
-                check = self.settings.services.get_check(r.check)
+                check = self.settings.services[service.name]['checks'].get_check(r.check)
                 if check is not None:
                     description = check.description
                     tool = check.tool.name
