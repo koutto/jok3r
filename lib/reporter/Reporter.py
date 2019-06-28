@@ -776,7 +776,7 @@ class Reporter:
                             <p class="check-description rounded">
                                 <span class="mdi mdi-information-outline"></span> 
                                 {description} 
-                                (tool used: {tool}).
+                                (using tool: {tool}).
                             </p>
             """.format(
                 active=' active' if i==0 else '',

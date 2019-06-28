@@ -36,6 +36,29 @@ TESTS
 * MySQL:
     * OK - CVE-2012-2122 - https://github.com/vulhub/vulhub/tree/master/mysql/CVE-2012-2122
 
+* Oracle:
+    Install:
+    git clone https://github.com/wnameless/docker-oracle-xe-11g.git
+    sudo docker build -t docker-oracle-xe-11g .
+
+    Run:
+    sudo docker run -d -p 49161:1521 -e ORACLE_ALLOW_REMOTE=true docker-oracle-xe-11g
+
+    Test:
+    sqlplus system/oracle@localhost:49161
+
+    Creds:
+    hostname: localhost
+    port: 49161
+    sid: xe
+    username: system
+    password: oracle
+
+    * OK - Weak creds
+    * OK - TNS Poisoning
+    * OK - SID guessing
+    * OK - Post-auth checks
+
 * Postgresql:
     * OK - Default creds + CVE-2019-9193 - https://github.com/vulhub/vulhub/tree/master/postgres/CVE-2019-9193
 
