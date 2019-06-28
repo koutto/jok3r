@@ -509,8 +509,8 @@ class Reporter:
                     <td>{hostname}</td>
                     <td>{service}</td>
                     <td>{port} /{proto}</td>
-                    <td class="font-weight-bold">{optionname}</td>
-                    <td class="font-weight-bold">{optionvalue}</td>
+                    <td class="font-weight-bold text-green">{optionname}</td>
+                    <td class="font-weight-bold text-green">{optionvalue}</td>
                 </tr>
                 """.format(
                     ip=option.service.host.ip,
