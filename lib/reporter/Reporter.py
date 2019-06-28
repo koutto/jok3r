@@ -206,6 +206,11 @@ class Reporter:
                 enc = '<span class="mdi mdi-{}"></span>'.format(
                     'check' if service.is_encrypted() else 'windows-close')
 
+                # Service name
+                service_name = IconsMapping.get_icon_html('service', service.name)
+                service_name += str(service.name)
+
+                # Technologies
                 technos = ''
                 # For HTTP, respect a given order for technos for better readability
                 if service.name == 'http':
@@ -270,7 +275,7 @@ class Reporter:
                     port=service.port,
                     proto={Protocol.TCP: 'tcp', Protocol.UDP: 'udp'}.get(
                         service.protocol),
-                    service=service.name,
+                    service=service_name,
                     enc=enc,
                     banner=service.banner,
                     technos=technos,
@@ -304,17 +309,11 @@ class Reporter:
             for host in hosts:
 
                 # OS
-                os = ''
-                if host.os_family in IconsMapping.OS_FAMILY:
-                    os += '<span class="mdi mdi-{}"></span> '.format(
-                        IconsMapping.OS_FAMILY[host.os_family])
+                os = IconsMapping.get_icon_html('os_family', host.os_family)
                 os += str(host.os)
 
                 # Device type
-                device_type = ''
-                if host.type in IconsMapping.DEVICE_TYPE:
-                    device_type += '<span class="mdi mdi-{}"></span> '.format(
-                        IconsMapping.DEVICE_TYPE[host.type])
+                device_type = IconsMapping.get_icon_html('device_type', host.type)
                 device_type += str(host.type)
 
                 # Number of creds
@@ -713,10 +712,7 @@ class Reporter:
         for r in results:
 
             # Icon category
-            icon = ''
-            if r.category.lower() in IconsMapping.CATEGORY:
-                icon = '<span class="mdi mdi-{}"></span> '.format(
-                    IconsMapping.CATEGORY[r.category.lower()])
+            icon = IconsMapping.get_icon_html('category', r.category)
 
             html += """
             <li{class_}>
@@ -752,10 +748,7 @@ class Reporter:
         for r in results:
             
             # Icon category
-            icon = ''
-            if r.category.lower() in IconsMapping.CATEGORY:
-                icon = '<span class="mdi mdi-{}"></span> '.format(
-                    IconsMapping.CATEGORY[r.category.lower()])
+            icon = IconsMapping.get_icon_html('category', r.category)
 
             # Description/Tool of check
             if service.name in self.settings.services:
