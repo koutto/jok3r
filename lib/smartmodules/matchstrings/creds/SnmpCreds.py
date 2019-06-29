@@ -7,7 +7,8 @@ creds_match['snmp'] = {
 
     'metasploit': {
         'Login Successful: (?P<m1>\S+)': {
-            'user': '$1',
+            'user': '',
+            'pass': '$1',
         },
     },
 
