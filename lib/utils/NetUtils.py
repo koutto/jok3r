@@ -85,8 +85,25 @@ class NetUtils:
     @staticmethod
     def is_udp_port_open(ip, port):
         """Check if given UDP port is open"""
-        # TODO
-        return True
+        nmproc = NmapProcess(ip, '-sU -T4 -p '+str(port))
+        rc = nmproc.run()
+        if rc != 0:
+            print("Nmap scan failed (check if running as root): {0}".format(
+                nmproc.stderr))
+            return True
+
+        try:
+            report = NmapParser.parse(nmproc.stdout)
+        except NmapParserException as e:
+            print("Exception raised while parsing scan: {0}".format(e.msg))
+            return False
+
+        if len(report.hosts):
+            host = report.hosts[0]
+            if len(host.services):
+                return 'open' in host.services[0].state
+        
+        return False
 
 
     @staticmethod
@@ -95,9 +112,17 @@ class NetUtils:
         Grab service info using Nmap:
             - Banner
             - OS
+            - OS Vendor (Microsoft, Linux, Apple...)
+            - OS Family (Windows, Linux, Mac OS...)
             - MAC address
             - Vendor name
             - Device type
+
+        :param str ip: Target IP address
+        :param int port: Port number
+        :return: Dict with retrieved information or None if error or 
+            port unreachable
+        :rtype: dict|None
         """
         results = {
             'banner': '',
