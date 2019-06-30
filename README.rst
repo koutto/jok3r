@@ -105,8 +105,9 @@ Architecture
 ============
 Installation
 ============
-**The recommended way to use Jok3r is inside a Docker container so you will not have 
-to worry about dependencies issues and installing the various hacking tools of the toolbox.**
+**IMPORTANT: The recommended way to use Jok3r is by pulling the Docker Image so you will not have 
+to worry about dependencies issues and installing the various hacking tools of the toolbox.
+Everything is tested from the Docker container available on Docker Hub !**
 
 .. image:: https://raw.githubusercontent.com/koutto/jok3r/master/pictures/docker-logo.png
 
