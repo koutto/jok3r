@@ -21,10 +21,10 @@ options_match['http'] = {
         },
     },
     'nmap': {
-    	'weblogic-t3-info: T3 protocol in use' {
+    	'weblogic-t3-info: T3 protocol in use': {
     		'name': 'weblogic-t3',
     		'value': 'true',
-    	}
-    }
+    	},
+    },
 
 }
