@@ -77,7 +77,7 @@ vulns_match['http'] = {
         'Location.*\n(Title : (?P<m1>.*)\n)?Reference : (?P<m2>.*)': 'Joomla: $1 - $2',
     },
     'jexboss': {
-        '\[\*\]\s*Checking\s+(?P<m1>.*):\s*\[\s*(EXPOSED|VULNERABLE)\s*\]': '$1 vulnerable',
+        '\[\*\]\s*Checking\s+(?P<m1>.*):\s*\[\s*(EXPOSED|VULNERABLE|MAYBE VULNERABLE)\s*\]': '$1 vulnerable',
     },
     'jqshell': {
         'Potential Shell Uploaded': 'Arbitrary file upload in jQuery File Upload widget (CVE-2018-9206)',

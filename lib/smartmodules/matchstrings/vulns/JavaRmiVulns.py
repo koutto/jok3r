@@ -22,6 +22,8 @@ vulns_match['java-rmi'] = {
     },
     'sjet': {
         'Successfully loaded MBeanSiberas': 'Java JMX Server Insecure Configuration Java Code Execution',
+        'Loaded de\.siberas\.lab\.SiberasPayload': 'Java JMX Server Insecure Configuration Java Code Execution',
+        'Object instance already existed, no need to install it a second time': 'Java JMX Server Insecure Configuration Java Code Execution',
     },
     'ysoserial': {
         'Captured ICMP traffic:[\s\S]*ICMP echo request.*\n.*ICMP echo reply': 'Java RMI Registry Deserialization RCE',
