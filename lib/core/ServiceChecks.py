@@ -105,7 +105,6 @@ class ServiceChecks:
             filter_categories=None, 
             filter_checks=None, 
             attack_profile=None,
-            fast_mode=False,
             attack_progress=None):
         """
         Run checks for the service.
@@ -121,7 +120,6 @@ class ServiceChecks:
         :param list filter_categories: Selection of categories to run (default: all)
         :param list filter_checks: Selection of checks to run (default: all)
         :param AttackProfile attack_profile: Attack profile (default: no profile)
-        :param bool fast_mode: Set to true to disable prompts
         :param enlighten.Counter attack_progress: Attack progress
         """
 
@@ -137,7 +135,6 @@ class ServiceChecks:
                                      arguments,
                                      sqlsession,
                                      filter_categories,
-                                     fast_mode,
                                      attack_progress)
 
         # Special mode
@@ -150,7 +147,6 @@ class ServiceChecks:
                                      sqlsession,
                                      filter_checks,
                                      attack_profile,
-                                     fast_mode,
                                      attack_progress)
 
         return
@@ -161,7 +157,6 @@ class ServiceChecks:
                             arguments,
                             sqlsession,
                             filter_categories, 
-                            fast_mode=False,
                             attack_progress=None):
         """
         Run checks for the service in standard mode, i.e. when all or a subset of
@@ -251,8 +246,7 @@ class ServiceChecks:
                             try:
                                 check.run(target, 
                                           arguments,
-                                          sqlsession,
-                                          fast_mode=fast_mode)
+                                          sqlsession)
 
                             except KeyboardInterrupt:
                                 print()
@@ -295,7 +289,6 @@ class ServiceChecks:
                            sqlsession,
                            filter_checks=None, 
                            attack_profile=None,
-                           fast_mode=False,
                            attack_progress=None):
         """
         Run checks for the service in special mode, i.e. when user has provided
@@ -307,7 +300,6 @@ class ServiceChecks:
         :param Session sqlsession: SQLAlchemy session
         :param list filter_checks: Selection of checks to run (default: all)
         :param AttackProfile attack_profile: Attack profile (default: no profile)
-        :param bool fast_mode: Set to true to disable prompts
         :param enlighten.Counter attack_progress: Attack progress        
         """
 
@@ -406,8 +398,7 @@ class ServiceChecks:
                         try:
                             check.run(target, 
                                       arguments,
-                                      sqlsession,
-                                      fast_mode=fast_mode)
+                                      sqlsession)
                         except KeyboardInterrupt:
                             print()
                             logger.warning('Check {check} skipped !'.format(

@@ -196,7 +196,6 @@ class AttackScope:
                            filter_categories=self.filter_categories, 
                            filter_checks=self.filter_checks,
                            attack_profile=self.attack_profile,
-                           fast_mode=self.fast_mode, 
                            attack_progress=attack_progress)
 
 

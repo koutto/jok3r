@@ -63,8 +63,7 @@ class Check:
     def run(self, 
             target, 
             arguments, 
-            sqlsession,
-            fast_mode=False):
+            sqlsession):
         """
         Run the security check.
         It consists in running commands with context requirements matching with the
@@ -74,7 +73,6 @@ class Check:
         :param ArgumentsParser arguments: Arguments from command-line
         :param Session sqlsession: SQLAlchemy session
         :param SmartModulesLoader smartmodules_loader: Loader of SmartModules
-        :param bool fast_mode: Set to true to disable prompts
         :return: Status
         :rtype: bool
         """
@@ -91,7 +89,8 @@ class Check:
 
                 cmdline = command.get_cmdline(self.tool.tool_dir, target, arguments)
 
-                if fast_mode:
+                if arguments.args.fast_mode:
+                    # If fast mode enabled, no prompt is displayed
                     logger.info('Run command #{num:02}'.format(num=i))
                     mode = 'y'
                 else:
@@ -118,7 +117,7 @@ class Check:
                 else:
                     if mode == 'f':
                         logger.info('Switch to fast mode')
-                        fast_mode = True
+                        arguments.args.fast_mode = True
 
                     Output.begin_cmd(cmdline)
                     process = ProcessLauncher(cmdline)
