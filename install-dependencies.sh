@@ -26,7 +26,7 @@ print_title "=============================="
 print_title "Install dependencies for Jok3r"
 print_title "=============================="
 echo
-print_yellow ""
+echo
 
 # Make sure we are root !
 if [ "$EUID" -ne 0 ]; then 

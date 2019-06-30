@@ -135,7 +135,7 @@ class NetUtils:
         }
         report = None
         #nmproc = NmapProcess(ip, '-sT -sV -Pn -p '+str(port))
-        nmproc = NmapProcess(ip, '-A --version-all -Pn -T4 -p '+str(port))
+        nmproc = NmapProcess(ip, '-A -Pn -T4 -p '+str(port))
         rc = nmproc.run()
         if rc != 0:
             print("Nmap scan failed: {0}".format(nmproc.stderr))

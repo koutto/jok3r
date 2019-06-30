@@ -162,6 +162,7 @@ class AttackScope:
             # Launch the attack on the selected target
             self.__attack_target(target, attack_progress)
             self.current_targetid += 1
+            self.current_targetid = self.current_targetid % len(self.targets)
 
         attack_progress.update()
         time.sleep(.5)
