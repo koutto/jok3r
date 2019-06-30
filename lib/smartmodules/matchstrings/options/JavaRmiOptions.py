@@ -5,6 +5,12 @@ from lib.smartmodules.matchstrings.MatchStrings import options_match
 
 options_match['java-rmi'] = {
     
+    'jmxbf': {
+        '###SUCCESS### - We got a valid connection for: :': {
+            'name': 'jmx-auth-disabled',
+            'value': 'true',
+        },
+    },
     'nmap': {
         'jmxrmi': {
             'name': 'jmx',
