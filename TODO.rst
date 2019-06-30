@@ -14,7 +14,9 @@ IMPROVEMENTS / NEW FEATURES
 * Run custom command
 * Session / Restore
 * Indicate checks that need a reverse connection (IP reachable from target)
-* |_weblogic-t3-info: T3 protocol in use (WebLogic version: 12.2.1.3)
+* Products SMTP (eg Exim) https://en.wikipedia.org/wiki/List_of_mail_server_software
+
+* Web UI to view results in live (Flask ?)
 
 
 SMARTMODULES / MATCHSTRINGS
@@ -27,7 +29,6 @@ Not done yet:
 
       Summary   : PHP[5.6.40], X-Powered-By[PHP/5.6.40], JQuery, PasswordField[password], HttpOnly[89f8df32fa3e404e00d734d41437761f], MetaGenerator[Joomla! - Open Source Content Management], HTTPServer[Debian Linux][Apache/2.4.25 (Debian)], Cookies[89f8df32fa3e404e00d734d41437761f], Apache[2.4.25], HTML5, Script[application/json]
 
-* nikto -> too many junk to extract important issues i think
 * davscan
 * wpseku 
 * vbscan
@@ -38,8 +39,6 @@ Not done yet:
 
 TOOLS/CHECKS TO ADD
 ===============================================================================
-
-
 * https://github.com/Coalfire-Research/java-deserialization-exploits/blob/master/OpenNMS/opennms_rce.py
 * https://github.com/AlisamTechnology/PRESTA-modules-shell-exploit/blob/master/PRESTA-shell-exploit.pl
 * Sharepoint -> https://github.com/TestingPens/SPartan
@@ -47,6 +46,7 @@ TOOLS/CHECKS TO ADD
 * https://github.com/RhinoSecurityLabs/CVEs/tree/master/CVE-2019-0227
 * http://pentestit.com/apache-jmeter-rmi-remote-code-execution-vulnerability-poc-cve-2018-1297/
 * Wordpress RCE https://github.com/opsxcq/exploit-CVE-2016-10033
+* BlueKeep CVE-2019-0708
 
 
 DOCUMENTATION

@@ -97,7 +97,7 @@ class AttackScope:
 
             if not self.fast_mode and len(self.targets) > 1:
                 self.current_targetid = Output.prompt_choice_range(
-                    'Attack target # ? [{default}] '.format(
+                    'Attack target # (Ctrl+C to quit) ? [{default}] '.format(
                         default=self.current_targetid), 
                     1, len(self.targets), self.current_targetid)
 

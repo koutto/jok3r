@@ -62,7 +62,15 @@ TESTS
 * Postgresql:
     * OK - Default creds + CVE-2019-9193 - https://github.com/vulhub/vulhub/tree/master/postgres/CVE-2019-9193
 
+
+* SNMP:
+    sudo docker run -d --name snmpd -p 161:161/udp polinux/snmpd
+    * OK - Default community string
+
 * SSH:
     * OK - CVE-2018-10933 libssh auth bypass - https://github.com/vulhub/vulhub/tree/master/libssh/CVE-2018-10933
     * CVE-2018-15473
+
+* Telnet:
+    * 
 

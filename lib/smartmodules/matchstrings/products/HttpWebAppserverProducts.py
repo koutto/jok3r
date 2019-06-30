@@ -84,6 +84,7 @@ products_match['http']['web-appserver'] = {
     'Oracle/Weblogic Server': {
         'wappalyzer': 'Weblogic Server',
         'nmap-banner': 'WebLogic (applications server|admin httpd|httpd|Server)(\s+[VERSION])?',
+        'nmap': 'weblogic-t3-info: T3 protocol in use \(WebLogic version: [VERSION]\)',
         'clusterd': [
             'Matched [0-9]+ fingerprints for service weblogic',
             'WebLogic Admin Console (\(https\))?\s*\(version [VERSION]\)',

@@ -8,5 +8,6 @@ from .JdwpVulns import *
 from .MssqlVulns import *
 from .OracleVulns import *
 from .SmbVulns import *
+from .SmtpVulns import *
 from .SshVulns import *
 pass
