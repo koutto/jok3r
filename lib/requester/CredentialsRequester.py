@@ -43,6 +43,13 @@ class CredentialsRequester(Requester):
                 'Comment',
             ]
             for r in results:
+                username = '<empty>' if r.username == '' else r.username
+                username = Output.colored(username, color='green' if \
+                    r.password is not None else 'yellow')
+                password = {'': '<empty>', None: '<???>'}.get(r.password, r.password)
+                password = Output.colored(password, color='green' if \
+                    r.password is not None else 'yellow')
+
                 data.append([
                     r.service.host.ip,
                     r.service.host.hostname \
@@ -51,8 +58,8 @@ class CredentialsRequester(Requester):
                     r.service.port,
                     {Protocol.TCP: 'tcp', Protocol.UDP: 'udp'}.get(r.service.protocol),
                     r.type or '',
-                    '<empty>' if r.username == '' else r.username,
-                    {'': '<empty>', None: '<???>'}.get(r.password, r.password),
+                    username,
+                    password,
                     StringUtils.wrap(r.service.url, 50),
                     StringUtils.wrap(r.comment, 50),
                 ])
