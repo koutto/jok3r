@@ -610,9 +610,6 @@ class Reporter:
                     color='green' if cred.password is not None else 'yellow',
                     password=password)
 
-                Output.colored(password, color='green' if \
-                    r.password is not None else 'yellow')
-
                 html += """
                 <tr>
                     <td>{ip}</td>
