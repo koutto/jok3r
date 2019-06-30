@@ -118,7 +118,7 @@ class Check:
                 else:
                     if mode == 'f':
                         logger.info('Switch to fast mode')
-                        arguments.args.fast_mode = True
+                        fast_mode = True
 
                     Output.begin_cmd(cmdline)
                     process = ProcessLauncher(cmdline)
