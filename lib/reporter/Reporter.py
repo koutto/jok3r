@@ -500,8 +500,8 @@ class Reporter:
             for option in options:
 
                 # Service name
-                # service_name = IconsMapping.get_icon_html('service', option.service.name)
-                # service_name += str(option.service.name)
+                service_name = IconsMapping.get_icon_html('service', option.service.name)
+                service_name += str(option.service.name)
 
                 html += """
                 <tr>
@@ -517,7 +517,7 @@ class Reporter:
                     hostname=option.service.host.hostname \
                         if option.service.host.hostname != str(option.service.host.ip) \
                         else '',
-                    service=option.service.name,
+                    service=service_name,
                     port=option.service.port,
                     proto={Protocol.TCP: 'tcp', Protocol.UDP: 'udp'}.get(
                         option.service.protocol),
@@ -545,6 +545,10 @@ class Reporter:
             html = ''
             for product in products:
 
+                # Service name
+                service_name = IconsMapping.get_icon_html('service', product.service.name)
+                service_name += str(product.service.name)
+
                 html += """
                 <tr>
                     <td>{ip}</td>
@@ -560,7 +564,7 @@ class Reporter:
                     hostname=product.service.host.hostname \
                         if product.service.host.hostname != str(product.service.host.ip)\
                         else '',
-                    service=product.service.name,
+                    service=service_name,
                     port=product.service.port,
                     proto={Protocol.TCP: 'tcp', Protocol.UDP: 'udp'}.get(
                         product.service.protocol),
@@ -590,6 +594,25 @@ class Reporter:
             html = ''
             for cred in credentials:
 
+                # Service name
+                service_name = IconsMapping.get_icon_html('service', cred.service.name)
+                service_name += str(cred.service.name)
+
+                # Add color to username/password
+                username = '&lt;empty&gt;' if cred.username == '' else cred.username
+                username = '<span class="text-{color}">{username}</span>'.format(
+                    color='green' if cred.password is not None else 'yellow',
+                    username=username)
+
+                password = {'': '&lt;empty&gt;', None: '&lt;???&gt;'}.get(
+                    cred.password, cred.password)
+                password = '<span class="text-{color}">{password}</span>'.format(
+                    color='green' if cred.password is not None else 'yellow',
+                    password=password)
+
+                Output.colored(password, color='green' if \
+                    r.password is not None else 'yellow')
+
                 html += """
                 <tr>
                     <td>{ip}</td>
@@ -597,8 +620,8 @@ class Reporter:
                     <td>{service}</td>
                     <td>{port} /{proto}</td>
                     <td>{type}</td>
-                    <td class="font-weight-bold text-green">{username}</td>
-                    <td class="font-weight-bold text-green">{password}</td>
+                    <td class="font-weight-bold">{username}</td>
+                    <td class="font-weight-bold">{password}</td>
                     <td>{url}</td>
                     <td>{comment}</td>
                 </tr>
@@ -607,14 +630,13 @@ class Reporter:
                     hostname=cred.service.host.hostname \
                         if cred.service.host.hostname != str(cred.service.host.ip)\
                         else '',
-                    service=cred.service.name,
+                    service=service_name,
                     port=cred.service.port,
                     proto={Protocol.TCP: 'tcp', Protocol.UDP: 'udp'}.get(
                         cred.service.protocol),
                     type=cred.type or '',
-                    username='<empty>' if cred.username == '' else cred.username,
-                    password={'': '<empty>', None: '<???>'}.get(
-                        cred.password, cred.password),
+                    username=username,
+                    password=password,
                     url='<a href="{}" title="{}">{}</a>'.format(
                         cred.service.url, cred.service.url, 
                         StringUtils.shorten(cred.service.url, 50)) \
@@ -643,6 +665,10 @@ class Reporter:
             html = ''
             for vuln in vulnerabilities:
 
+                # Service name
+                service_name = IconsMapping.get_icon_html('service', vuln.service.name)
+                service_name += str(vuln.service.name)
+
                 html += """
                 <tr>
                     <td>{ip}</td>
@@ -652,7 +678,7 @@ class Reporter:
                 </tr>
                 """.format(
                     ip=vuln.service.host.ip,
-                    service=vuln.service.name,
+                    service=service_name,
                     port=vuln.service.port,
                     proto={Protocol.TCP: 'tcp', Protocol.UDP: 'udp'}.get(
                         vuln.service.protocol),
