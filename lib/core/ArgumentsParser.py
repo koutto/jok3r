@@ -538,8 +538,8 @@ class ArgumentsParser:
             logger.setLevel('DEBUG')
             logger.debug('Debug mode enabled')
 
-        status &= self.__check_args_attack_single_target()
-        status &= self.__check_args_attack_multi_targets()
+        # status &= self.__check_args_attack_single_target()
+        # status &= self.__check_args_attack_multi_targets()
         status &= self.__check_args_attack_bruteforce()
         status &= self.__check_args_attack_selection()
 
@@ -579,7 +579,7 @@ class ArgumentsParser:
             if len(s) == 2:
                 self.args.target_port = int(s[1])
                 if not (0 <= self.args.target_port <= 65535):
-                    logger.error('Target port is not valid. Must be in the' \
+                    logger.error('Target port is not valid. Must be in the ' \
                         'range [0-65535]')
                     return False
 
