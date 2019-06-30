@@ -3,7 +3,7 @@
 from lib.smartmodules.matchstrings.MatchStrings import vulns_match
 
 
-vulns_match['ssh'] = {
+vulns_match['smtp'] = {
 
     # 'tool-name': {
     #     'match string (?P<m1>\S+) lorem ispum': 'MS17-010: $1',
