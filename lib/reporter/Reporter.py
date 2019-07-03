@@ -203,8 +203,8 @@ class Reporter:
                     nb_vulns = ''
 
                 # Encrypted ? (SSL/TLS)
-                enc = '<span class="mdi mdi-{}"></span>'.format(
-                    'check' if service.is_encrypted() else 'windows-close')
+                enc = '<span class="mdi mdi-lock" title="SSL/TLS encrypted"></span>' \
+                    if service.is_encrypted() else ''
 
                 # Service name
                 service_name = IconsMapping.get_icon_html('service', service.name)
