@@ -8,9 +8,22 @@ TESTS
 AJP
 ======
 
+.. code-block:: console
+
+    https://github.com/Paritosh-Anand/Docker-Httpd-Tomcat
+
 
 FTP
 ======
+
+.. code-block:: console
+
+    sudo docker run -d -v /tmp/:/home/vsftpd -p 20:20 -p 21:21 -p 21100-21110:21100-21110 \
+    -e FTP_USER=ftp -e FTP_PASS=s3curity \
+    -e PASV_ADDRESS=127.0.0.1 -e PASV_MIN_PORT=21100 -e PASV_MAX_PORT=21110 \
+    --name vsftpd --restart=always fauria/vsftpd
+
+- [x] Weak creds
 
 
 HTTP
@@ -68,7 +81,12 @@ JDWP
 MSSQL
 ======
 
+.. code-block:: console
 
+    sudo docker run -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=Password123' -e 'MSSQL_PID=Express' -p 1433:1433 -d mcr.microsoft.com/mssql/server:2017-latest-ubuntu
+
+- [x] Weak creds
+- [x] Post-authentification checks
 
 MYSQL
 ======
