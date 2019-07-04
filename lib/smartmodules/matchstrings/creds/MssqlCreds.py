@@ -6,7 +6,7 @@ from lib.smartmodules.matchstrings.MatchStrings import creds_match
 creds_match['mssql'] = {
 
     'msdat': {
-        'Valid credential: \'(?P<m1>\S+)\'/\'(?P<m2>\S*)\'': {
+        'INFO -: Valid credential: \'(?P<m1>\S+)\'/\'(?P<m2>\S*)\'': {
             'meth': 'finditer',
             'user': '$1',
             'pass': '$2',
