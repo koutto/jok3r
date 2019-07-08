@@ -69,6 +69,13 @@ JAVA-RMI
 
 - JMX:
 
+    https://github.com/cstroe/java-jmx-in-docker-sample-app
+
+    .. code-block:: console
+
+        ./mvnw package
+        docker-compose up --build
+
     - [x] JMX auth disabled
     - [ ] Deserialize
 
