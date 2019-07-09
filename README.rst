@@ -820,3 +820,11 @@ VNC (default 5900/tcp)
     | vuln-lookup     | vulnscan   | Vulnerability lookup in Vulners.com (NSE scripts) and exploit-db.com (lots of false positive !) | vuln-databases |
     | bruteforce-pass | bruteforce | Bruteforce VNC password                                                                         | patator        |
     +-----------------+------------+-------------------------------------------------------------------------------------------------+----------------+
+
+
+
+=============
+Known Issues
+=============
+
+* Docker image is huge ! (it actually contains lots of tools and dependencies... Will try to reduce size later)
