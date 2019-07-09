@@ -2,7 +2,14 @@
 Changelog
 =========
 
-**v3.0** 2019-04-23
+**v3.0 BETA 2** 2019-07-09
+	* Fix several bugs after testings
+	* Add/fix/improve matchstrings
+	* Add/fix/improve checks
+	* Changes in database structure to store more info related to hosts (OS, device type, vendor)
+	* Update on HTML reporting templates (more user-friendly)
+
+**v3.0 BETA** 2019-04-23
 	* Support for products detection based on checks outputs (e.g web-server, web-appserver, ftp-server...)
 	* Support for vulnerabilities detection based on checks outputs (still experimental !)
 	* Database structure updated to be able to work with products and vulnerabilities
