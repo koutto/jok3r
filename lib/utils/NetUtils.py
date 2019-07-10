@@ -145,7 +145,7 @@ class NetUtils:
         try:
             report = NmapParser.parse(nmproc.stdout)
         except NmapParserException as e:
-            #print("Exception raised while parsing scan: {0}".format(e.msg))
+            print("Exception raised while parsing scan: {0}".format(e.msg))
             return None
 
         if len(report.hosts):
@@ -155,7 +155,8 @@ class NetUtils:
                 results['mac'] = host.mac
                 results['vendor'] = host.vendor
                 if host.os_fingerprinted is True \
-                        and host.os_match_probabilities() is not None:
+                        and host.os_match_probabilities() is not None \
+                        and len(host.os_match_probabilities()) > 0:
                     os_matchs = host.os_match_probabilities()
                     if len(os_matchs) > 0:
                         results['os'] = os_matchs[0].name

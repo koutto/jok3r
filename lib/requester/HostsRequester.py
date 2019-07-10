@@ -42,10 +42,10 @@ class HostsRequester(Requester):
             for r in results:
                 data.append([
                     r.ip,
-                    r.hostname if r.hostname != str(r.ip) else '',
-                    r.os,
+                    StringUtils.wrap(r.hostname, 35) if r.hostname != str(r.ip) else '',
+                    StringUtils.wrap(r.os, 50),
                     r.type,
-                    r.vendor,
+                    StringUtils.wrap(r.vendor, 30),
                     StringUtils.shorten(r.comment, 40),
                     r.get_nb_services(Protocol.TCP),
                     r.get_nb_services(Protocol.UDP),       
