@@ -799,8 +799,8 @@ class DbController(cmd2.Cmd):
             # --addcred <service-id> <user> <pass>
             if args.addcred:
                 req.add_cred(service_id=service_id, 
-                             username=args.add[1], 
-                             password=args.add[2], 
+                             username=args.addcred[1], 
+                             password=args.addcred[2], 
                              auth_type=None)
 
             # --addcred-http <service-id> <user> <pass> <auth-type>
@@ -820,7 +820,7 @@ class DbController(cmd2.Cmd):
 
             # --adduser <service-id> <user>
             elif args.adduser:
-                req.add_cred(service_id, args.add[1], None, None)
+                req.add_cred(service_id, args.adduser[1], None, None)
 
             # --adduser-http <service-id> <user> <auth-type>
             elif args.adduser_http:
