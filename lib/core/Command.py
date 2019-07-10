@@ -353,6 +353,8 @@ class Command:
         if self.context_requirements.auth_status == USER_ONLY:
             usernames = target.get_usernames_only(auth_type)
             for user in usernames:
+                cmd += 'echo $(tput bold)Run command for username={username} :' \
+                    '$(tput sgr0); '.format(username=user)
                 cmd += self.__replace_tag_username(self.formatted_cmdline, user) + '; '
 
         # Auth status set to POST_AUTH
@@ -361,6 +363,10 @@ class Command:
             for user,password in userpass:
                 tmp = self.__replace_tag_username(self.formatted_cmdline, user)
                 tmp = self.__replace_tag_password(tmp, password)
+                cmd += 'echo $(tput bold)Run command for creds={username}:' \
+                    '{password} :$(tput sgr0); '.format(
+                        username=user, 
+                        password=password)
                 cmd += tmp + '; '
 
         if cmd != '':
