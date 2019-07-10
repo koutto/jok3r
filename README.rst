@@ -31,11 +31,11 @@
    <h3 align="center">Network & Web Pentest Automation Framework</h3>
    <p align="center"><a href="https://www.jok3r-framework.com/">www.jok3r-framework.com</a></p>
 
-**WARNING: Project is still in version 3 BETA. It is still under active development and bugs might be present.**
+**WARNING: Project is still in version 3 BETA. It is still under active development 
+and bugs might be present.**
 
-**Many tests are going on: see https://github.com/koutto/jok3r/blob/master/tests/TESTS.rst**
-
-**Ideas, bug reports, contributions are welcome !**
+**Many tests are going on: see https://github.com/koutto/jok3r/blob/master/tests/TESTS.rst. 
+Ideas, bug reports, contributions are welcome !**
 
 
 .. contents:: 
@@ -102,12 +102,12 @@ Local Database & Reporting
 Demos
 ============
 
-**Example #1: Scan a JAVA-RMI (JMX) service: **
+* **Example 1: Scan a JAVA-RMI (JMX) service: **
 
 .. image:: pictures/video-01.png
    :target: https://www.youtube.com/watch?v=FlbeBj5FPtI
 
-**Example #2: Scan a Joomla website: **
+* **Example 2: Scan a Joomla website: **
 
 .. image:: pictures/video-02.png
    :target: https://www.youtube.com/watch?v=z4cf_8EQ59Q
