@@ -102,12 +102,12 @@ Local Database & Reporting
 Demos
 ============
 
-* **Example 1: Scan a JAVA-RMI (JMX) service: **
+* **Example 1: Scan a JAVA-RMI (JMX) service:** 
 
 .. image:: pictures/video-01.png
    :target: https://www.youtube.com/watch?v=FlbeBj5FPtI
 
-* **Example 2: Scan a Joomla website: **
+* **Example 2: Scan a Joomla website:** 
 
 .. image:: pictures/video-02.png
    :target: https://www.youtube.com/watch?v=z4cf_8EQ59Q
