@@ -10,6 +10,10 @@ vulns_match['smb'] = {
     # }
 
 
+    'impacket': {
+        'Found writable share (ADMIN|C)\$': 'SMB Code Execution possible via psexec',
+        'Process cmd\.exe /c ".*?" finished with ErrorCode: 0': 'SMB Code Execution possible via psexec',
+    },
     'nmap': {
         'Microsoft Windows system vulnerable to remote code execution \(MS08-067\)\s*(\r\n|\r|\n)\|\s*State: (LIKELY )?VULNERABLE': 'MS08-067 RCE',
         'Remote Code Execution vulnerability in Microsoft SMBv1 servers \(ms17-010\)\s*(\r\n|\r|\n)\|\s*State: (LIKELY )?VULNERABLE': 'MS17-010 RCE',
