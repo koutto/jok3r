@@ -137,10 +137,14 @@ POSTGRESQL
 
 RDP
 ======
+- [x] Standard RDP
 
 
 SMB
 ======
+- [x] SMB anonymous
+- [x] SMB authenticated limited account
+- [x] SMB authenticated privileged account
 
 
 SMTP
