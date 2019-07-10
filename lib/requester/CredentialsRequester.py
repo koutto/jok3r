@@ -84,18 +84,38 @@ class CredentialsRequester(Requester):
         if cred:
             logger.warning('Credential already exists in database')
         else:
+
             service = self.sqlsess.query(Service).filter(Service.id == service_id)\
                                   .first()
             if not service:
                 logger.error('Service id {id} is invalid'.format(id=service_id))
             else:
-                cred = Credential(
-                    username = username,
-                    password = password,
-                    type     = auth_type if service.name == 'http' else None) 
-                
-                self.sqlsess.add(cred)
-                service.credentials.append(cred)
+
+                # Check if username already in database
+                cred = self.sqlsess.query(Credential).join(Service)\
+                                   .filter(Service.id == service_id)\
+                                   .filter(Credential.username == username)\
+                                   .filter(Credential.type == auth_type).first()
+
+                if cred:
+                    if password is None and cred.password is not None:
+                        logger.warning('Credential (username + password) already ' \
+                            'exists for this user. Not updated.')
+                        return
+
+                    elif password is not None and cred.password is None:
+                        logger.info('Username already exists in database, the entry ' \
+                            'is updated.')
+                        cred.password = password
+
+                else:
+                    cred = Credential(
+                        username = username,
+                        password = password,
+                        type     = auth_type if service.name == 'http' else None) 
+                    
+                    self.sqlsess.add(cred)
+                    service.credentials.append(cred)
 
                 username = '<empty>' if username == '' else username
                 password = {'': '<empty>', None: '<???>'}.get(password, password)
