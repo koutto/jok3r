@@ -32,8 +32,13 @@
    <p align="center"><a href="https://www.jok3r-framework.com/">www.jok3r-framework.com</a></p>
 
 **WARNING: Project is still in version 3 BETA. It is still under active development and bugs might be present.**
-**Many tests are going on: see https://github.com/koutto/jok3r/blob/master/tests/TESTS.rst**
 
+**Many tests are going on: see `Tests Status <https://github.com/koutto/jok3r/blob/master/tests/TESTS.rst>`_ **
+
+**Ideas, bug reports, contributions are welcome !**
+
+
+.. contents:: :local:
 
 =============
 Overview
@@ -88,6 +93,22 @@ Local Database & Reporting
 * **Import Targets from Nmap**: Add targets to a mission either manually or by loading Nmap results.
 * **Access all Results**: All outputs from security checks, detected credentials and vulnerabilities are stored into the database and can be accessed easily.
 * **Reporting**: Generate full HTML reports with targets summary, web screenshots and all results from security testing.
+
+
+
+============
+Demos
+============
+
+**Example #1: Scan a JAVA-RMI (JMX) service: **
+
+.. image:: pictures/video-01.png
+   :target: https://www.youtube.com/watch?v=FlbeBj5FPtI
+
+**Example #2: Scan a Joomla website: **
+
+.. image:: pictures/video-02.png
+   :target: https://www.youtube.com/watch?v=z4cf_8EQ59Q
 
 
 ============
@@ -153,6 +174,20 @@ Notes:
     .. code-block:: console
 
         sudo docker exec -it jok3r-container bash
+
+
+============
+Update
+============
+
+**In order to update, just pull the latest Docker Image from Docker Hub and run a fresh container from this new image:**
+
+.. code-block:: console
+
+    sudo docker pull koutto/jok3r
+    sudo docker run -i -t --name jok3r-container-updated -w /root/jok3r -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix --shm-size 2g --net=host koutto/jok3r
+
+Note: Of course, you can retrieve your local database ``local.db`` (with your saved missions, targets...) from an old container by using the command ``sudo docker cp``.
 
 
 ====================
@@ -436,9 +471,11 @@ Full Documentation
 Documentation writing in progress...
 
 
-============================================================
-Supported Services & Security Checks (Updated on 11/06/2019)
-============================================================
+=====================================
+Supported Services & Security Checks 
+=====================================
+
+**Updated on: 11/06/2019**
 
 **Lots of checks remain to be implemented and services must be added !! Work in progress ...**
 
@@ -828,3 +865,9 @@ Known Issues
 =============
 
 * Docker image is huge ! (it actually contains lots of tools and dependencies... Will try to reduce size later)
+
+
+=============
+Changelog
+=============
+See `Changelog <https://github.com/koutto/jok3r/blob/master/CHANGELOG.rst>`_
