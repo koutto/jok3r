@@ -63,6 +63,7 @@ class NmapResultsParser:
                     os_vendor = os_matchs[0].osclasses[0].vendor
                     os_family = os_matchs[0].osclasses[0].osfamily
                     device_type = NetUtils.get_device_type(
+                        os,
                         os_family,
                         os_matchs[0].osclasses[0].type)
 
