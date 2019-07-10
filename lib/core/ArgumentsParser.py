@@ -542,6 +542,7 @@ class ArgumentsParser:
         # status &= self.__check_args_attack_multi_targets()
         status &= self.__check_args_attack_bruteforce()
         status &= self.__check_args_attack_selection()
+        status &= self.__check_args_attack_context()
 
         return status
 
@@ -833,7 +834,7 @@ class ArgumentsParser:
                     current_cred['service'] = self.args.service
                 else:
                     logger.error('Service must be specified in --cred in multi targets' \
-                        'mode. Syntax: --cred <service> <user> <pass>')
+                        ' mode. Syntax: --cred <service> <user> <pass>')
                     return False
                 current_cred['username'] = cred[0]
                 current_cred['password'] = cred[1]
@@ -905,7 +906,7 @@ class ArgumentsParser:
                     current_user['service'] = self.args.service
                 else:
                     logger.error('Service must be specified in --user in multi targets' \
-                        'mode. Syntax: --user <service> <user>')
+                        ' mode. Syntax: --user <service> <user>')
                     return False
 
                 current_user['username'] = user[0]
