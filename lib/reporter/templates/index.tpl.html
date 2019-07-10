@@ -319,6 +319,12 @@
     .column-width-20 {
         width: 20%;
     }
+    .column-port {
+        width: 100px;
+    }
+    .column-service {
+        width: 110px;
+    }
     .table .mdi {
         font-size: 1.7em;
         vertical-align: middle;
@@ -439,8 +445,8 @@
                                     <tr class="table-head">
                                         <th>IP</th>
                                         <th>HOSTNAME</th>
-                                        <th>PORT</th>
-                                        <th><span title="Service">SVC</span></th>
+                                        <th class="column-port">PORT</th>
+                                        <th class="column-service"><span title="Service">SVC</span></th>
                                         <th><span title="Encrypted Protocol (SSL/TLS)">SSL</span></th>
                                         <th>BANNER</th>
                                         <th class="column-width-20">TECHNOLOGIES</th>
@@ -627,8 +633,8 @@
                                 <thead>
                                     <tr class="table-head">
                                         <th>IP</th>
-                                        <th>SERVICE</th>
-                                        <th>PORT</th>
+                                        <th class="column-service">SERVICE</th>
+                                        <th class="column-port">PORT</th>
                                         <th>VULNERABILITY</th>
                                     </tr>
                                 </thead>
