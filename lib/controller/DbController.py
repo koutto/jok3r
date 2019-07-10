@@ -160,8 +160,11 @@ class DbController(cmd2.Cmd):
 
         # --del <name>
         elif args.delete:
+            current_mission = self.current_mission
             req.add_filter(Condition(args.delete, FilterData.MISSION_EXACT))
-            req.delete()   
+            req.delete()
+            if args.delete == current_mission:
+                self.change_current_mission('default')   
 
         # --reset     
         elif args.reset:
