@@ -8,6 +8,7 @@ import ast
 import base64
 import datetime
 import re
+import warnings
 import webbrowser
 
 from lib.db.Screenshot import ScreenStatus
@@ -31,6 +32,8 @@ from lib.utils.FileUtils import FileUtils
 from lib.utils.ImageUtils import ImageUtils
 from lib.utils.StringUtils import StringUtils
 
+
+warnings.filterwarnings("ignore",category=FutureWarning)
 
 class Reporter:
 
