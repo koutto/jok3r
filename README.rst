@@ -33,12 +33,14 @@
 
 **WARNING: Project is still in version 3 BETA. It is still under active development and bugs might be present.**
 
-**Many tests are going on: see `Tests Status <https://github.com/koutto/jok3r/blob/master/tests/TESTS.rst>`_ **
+**Many tests are going on: see https://github.com/koutto/jok3r/blob/master/tests/TESTS.rst**
 
 **Ideas, bug reports, contributions are welcome !**
 
 
-.. contents:: :local:
+.. contents:: 
+    :local:
+    :depth: 1
 
 =============
 Overview
