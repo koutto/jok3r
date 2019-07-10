@@ -115,6 +115,7 @@ from lib.smartmodules.matchstrings.vulns.MssqlVulns import *
 from lib.smartmodules.matchstrings.vulns.MysqlVulns import *
 from lib.smartmodules.matchstrings.vulns.OracleVulns import *
 from lib.smartmodules.matchstrings.vulns.PostgresqlVulns import *
+from lib.smartmodules.matchstrings.vulns.RdpVulns import *
 from lib.smartmodules.matchstrings.vulns.SmbVulns import *
 from lib.smartmodules.matchstrings.vulns.SmtpVulns import *
 from lib.smartmodules.matchstrings.vulns.SshVulns import *
