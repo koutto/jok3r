@@ -160,10 +160,9 @@ class DbController(cmd2.Cmd):
 
         # --del <name>
         elif args.delete:
-            current_mission = self.current_mission
             req.add_filter(Condition(args.delete, FilterData.MISSION_EXACT))
             req.delete()
-            if args.delete == current_mission:
+            if args.delete == self.current_mission:
                 self.change_current_mission('default')   
 
         # --reset     
@@ -175,7 +174,7 @@ class DbController(cmd2.Cmd):
         # --rename <old> <new>
         elif args.rename:
             status = req.rename(args.rename[0], args.rename[1])
-            if status is True and args.rename[0] == current_mission:
+            if status is True and args.rename[0] == self.current_mission:
                 self.change_current_mission(args.rename[1])
 
         # --search <string>
