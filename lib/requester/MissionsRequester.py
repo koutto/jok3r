@@ -124,11 +124,22 @@ class MissionsRequester(Requester):
         """
         if old == 'default':
             logger.warning('Default mission cannot be renamed')
+            return False
+
+        mission = self.sqlsess.query(Mission).filter(Mission.name == old).first()
+        if mission:
+            new_mission = self.sqlsess.query(Mission).filter(Mission.name == new).first()
+            if new_mission:
+                logger.warning('A mission named "{name}" already exists'.format(name=new))
+                return False
+            else:
+                mission.name = new
+                self.sqlsess.commit()
+                logger.success('Mission renamed: {old} -> {new}'.format(old=old, new=new))
+                return True
         else:
-            mission = self.sqlsess.query(Mission).filter(Mission.name == old).first()
-            mission.name = new
-            self.sqlsess.commit()
-            logger.success('Mission renamed: {old} -> {new}'.format())
+            logger.warning('Mission "{name}" doesn\'t exists'.format(name=old))
+            return False
 
 
     def edit_comment(self, comment):
