@@ -948,6 +948,7 @@ class Settings:
         # Loop over options
         for opt in optparsed:
 
+            # Description of attack profile
             if opt == 'description':
                 description = self.config_parsers[ATTACK_PROFILES_CONF_FILE].safe_get(
                     section, opt, '', None)

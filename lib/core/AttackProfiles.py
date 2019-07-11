@@ -42,7 +42,7 @@ class AttackProfile:
         :return: List of check names
         :rtype: list(str)
         """
-        self.checks.get(service)
+        return self.checks.get(service)
 
 
     def __repr__(self):
