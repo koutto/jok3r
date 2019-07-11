@@ -220,6 +220,7 @@ class Reporter:
                     product_types = (
                         'web-server',
                         'web-appserver',
+                        'web-application-firewall',
                         'web-cms',
                         'web-language',
                         'web-framework',
@@ -419,6 +420,7 @@ class Reporter:
                 product_types = (
                     'web-server',
                     'web-appserver',
+                    'web-application-firewall',
                     'web-cms',
                     'web-language',
                     'web-framework',
