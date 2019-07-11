@@ -174,7 +174,9 @@ class DbController(cmd2.Cmd):
 
         # --rename <old> <new>
         elif args.rename:
-            req.rename(args.rename[0], args.rename[1])
+            status = req.rename(args.rename[0], args.rename[1])
+            if status is True and args.rename[0] == current_mission:
+                self.change_current_mission(args.rename[1])
 
         # --search <string>
         elif args.search:
