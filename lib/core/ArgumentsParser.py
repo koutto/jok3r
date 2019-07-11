@@ -741,6 +741,9 @@ class ArgumentsParser:
                         profile=self.args.profile, service=self.args.service))
                 return False
 
+            # Store AttackProfile object in the variable
+            self.args.profile = profile
+
         return True
 
 
