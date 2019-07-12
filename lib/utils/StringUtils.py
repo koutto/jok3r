@@ -64,7 +64,7 @@ class StringUtils:
         :rtype: str
         """
         printable = set(
-            """0123456789abcdefghijklmnopqrstuvwxyz""" \
+            """0123456789abcdefghijklmnopqrstuvwxyzäâàçéèêëïîìöôòüûù""" \
             """ABCDEFGHIJKLMNOPQRSTUVWXYZ!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~ """)
         return ''.join(filter(lambda x: x in printable, string))
 
