@@ -380,7 +380,7 @@ class Reporter:
         if len(services) == 0:
             html = """
             <tr class="notfound">
-                <td colspan="5">No record found</td>
+                <td colspan="7">No record found</td>
             </tr>
             """
         else:
@@ -398,6 +398,10 @@ class Reporter:
                     port=service.port,
                     service=service.name,
                     id=service.id)
+
+                # Encrypted ? (SSL/TLS)
+                enc = '<span class="mdi mdi-lock" title="SSL/TLS encrypted"></span>' \
+                    if service.is_encrypted() else ''
 
                 # Web technos (in a specific order)
                 
@@ -477,6 +481,7 @@ class Reporter:
                 html += """
                 <tr{clickable}>
                     <td>{url}</td>
+                    <td>{enc}</td>
                     <td>{title}</td>
                     <td>{webtechnos}</td>
                     <td>{waf}</td>
@@ -489,6 +494,7 @@ class Reporter:
                     url='<a href="{}" title="{}">{}</a>'.format(
                         service.url, service.url, StringUtils.shorten(service.url, 50)) \
                         if service.url else '',
+                    enc=enc,
                     title=StringUtils.shorten(service.html_title, 40),
                     webtechnos=webtechnos,
                     waf=waf,
