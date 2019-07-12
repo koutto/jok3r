@@ -357,16 +357,6 @@ Database Access & Reporting
     jok3rdb[mayhem]> creds
 
 
-* Display services, hosts, detected products & credentials registered in selected mission:
-
-.. code-block:: console
-
-    jok3rdb[mayhem]> services
-    jok3rdb[mayhem]> hosts
-    jok3rdb[mayhem]> products
-    jok3rdb[mayhem]> creds
-
-
 * Search for string in checks results in selected mission:
 
 .. code-block:: console
