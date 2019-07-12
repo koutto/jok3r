@@ -13,6 +13,7 @@ from lib.controller.Controller import Controller
 from lib.core.Config import *
 from lib.core.Constants import *
 from lib.core.Exceptions import FilterException
+from lib.core.ShodanResultsParser import ShodanResultsParser
 from lib.core.Target import Target
 from lib.importer.NmapResultsParser import NmapResultsParser
 from lib.utils.ArgParseUtils import *
@@ -1238,6 +1239,71 @@ class DbController(cmd2.Cmd):
                     logger.success('Nmap results imported with success into current mission')
 
             print()
+
+
+    def complete_nmap(self, text, line, begidx, endidx):
+        """Complete with filename"""
+        flag_dict = {
+            'nmap': self.path_complete,
+            '-n'  : self.path_complete, 
+        }
+
+        return self.flag_based_complete(text, line, begidx, endidx, flag_dict=flag_dict)
+
+    #------------------------------------------------------------------------------------
+    # Import Shodan host
+
+    shodan = argparse.ArgumentParser(
+        description='Import Shodan host (ip)', 
+        formatter_class=formatter_class)
+    shodan.add_argument(
+        '-n', '--no-http-recheck', 
+        action  = 'store_true', 
+        help    = 'Do not recheck for HTTP services')
+    shodan.add_argument(
+        '--no-html-title', 
+        action  = 'store_true', 
+        help    = 'Do not grab HTML title for HTTP services')
+    shodan.add_argument(
+        'ip', 
+        nargs   = 1, 
+        metavar = '<ip>', 
+        help    = 'Ip address')
+
+    @cmd2.with_category(CMD_CAT_IMPORT)
+    @cmd2.with_argparser(shodan)
+    def do_shodan(self, args):
+        """Import Shodan results"""
+        print()
+
+        # Check ip
+        ip = args.ip[0]
+        if not ip:
+            logger.error('Please type an ip address')
+            print()
+            return
+
+        logger.info('Importing Shodan results from {ip}'.format(ip=ip))
+        if not args.no_http_recheck:
+            logger.info('Each service will be re-checked to detect HTTP services. ' \
+                'Use --no-http-recheck if you want to disable it (faster import)')
+
+        # Parse shodan result
+        parser = ShodanResultsParser(ip, self.settings.services)
+        results = parser.parse(http_recheck=not args.no_http_recheck,
+                               grab_html_title=not args.no_html_title)
+
+        if results is not None:
+            if len(results) == 0:
+                logger.warning('No new service has been added into current mission')
+            else:
+                req = HostsRequester(self.sqlsess)
+                req.select_mission(self.current_mission)
+                for host in results:
+                    req.add_or_merge_host(host)
+                logger.success('Shodan results imported with success into current mission')
+
+        print()
 
 
     def complete_nmap(self, text, line, begidx, endidx):
