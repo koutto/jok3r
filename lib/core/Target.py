@@ -68,10 +68,15 @@ class Target:
                 raise TargetException('Unable to resolve {}'.format(url.hostname))
             self.service.host.hostname = url.hostname
 
+        # Determine port number
         if not self.service.port:
             self.service.port = WebUtils.get_port_from_url(self.service.url)
             if not NetUtils.is_valid_port(self.service.port):
                 raise TargetException('Invalid port number {}'.format(self.service.port))
+
+        # Already add specific option https=True if URL begins with https:// 
+        if self.service.url.startswith('https://'):
+            self.service.options.append(Option(name='https', value='true'))
 
 
     def __init_with_ip(self):
