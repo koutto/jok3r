@@ -55,17 +55,20 @@ class NmapResultsParser:
             os_vendor = ''
             os_family = ''
             device_type = ''
-            if h.os_fingerprinted is True and h.os_match_probabilities() is not None:
+            if h.os_fingerprinted is True \
+                    and h.os_match_probabilities() is not None \
+                    and len(h.os_match_probabilities()) > 0:
                 os_matchs = h.os_match_probabilities()
-                os = os_matchs[0].name if len(os_matchs) > 0 else ''
-                if os_matchs[0].osclasses is not None \
-                        and len(os_matchs[0].osclasses) > 0:
-                    os_vendor = os_matchs[0].osclasses[0].vendor
-                    os_family = os_matchs[0].osclasses[0].osfamily
-                    device_type = NetUtils.get_device_type(
-                        os,
-                        os_family,
-                        os_matchs[0].osclasses[0].type)
+                if len(os_matchs) > 0:
+                    os = os_matchs[0].name
+                    if os_matchs[0].osclasses is not None \
+                            and len(os_matchs[0].osclasses) > 0:
+                        os_vendor = os_matchs[0].osclasses[0].vendor
+                        os_family = os_matchs[0].osclasses[0].osfamily
+                        device_type = NetUtils.get_device_type(
+                            os,
+                            os_family,
+                            os_matchs[0].osclasses[0].type)
 
             # Create Host object
             host = Host(ip=h.ipv4, 
