@@ -477,7 +477,7 @@ Documentation writing in progress...
 Supported Services & Security Checks 
 =====================================
 
-**Updated on: 11/06/2019**
+**Updated on: 12/07/2019**
 
 **Lots of checks remain to be implemented and services must be added !! Work in progress ...**
 
@@ -548,6 +548,7 @@ HTTP (default 80/tcp)
     | load-balancing-detection                 | recon        | HTTP load balancer detection                                                                   | halberd                       |
     | waf-detection                            | recon        | Identify and fingerprint WAF products protecting website                                       | wafw00f                       |
     | waf-detection2                           | recon        | Identify and fingerprint WAF products protecting website                                       | identifywaf                   |
+    | cloudmare-recon                          | recon        | CloudFlare real IP catcher                                                                     | cloudmare                     |
     | fingerprinting-multi-whatweb             | recon        | Identify CMS, blogging platforms, JS libraries, Web servers                                    | whatweb                       |
     | fingerprinting-appserver                 | recon        | Fingerprint application server (JBoss, ColdFusion, Weblogic, Tomcat, Railo, Axis2, Glassfish)  | clusterd                      |
     | webdav-detection-msf                     | recon        | Detect WebDAV on webserver                                                                     | metasploit                    |

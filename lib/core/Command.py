@@ -25,6 +25,7 @@ General Tags
 [WEBSHELLSDIR]    Webshells directory
 [WORDLISTSDIR]    Wordlists directory
 [LOCALIP]         Local IP address
+[DOMAIN]          Root domain name (e.g. site.com)
 
 Bruteforce Options Tags
 -----------------------
@@ -79,7 +80,7 @@ import urllib.parse
 from lib.core.Config import *
 from lib.core.Constants import *
 from lib.utils.NetUtils import NetUtils
-
+from tld import get_tld
 
 class Command:
 
@@ -136,6 +137,7 @@ class Command:
                 self.__replace_tag_ip(target.get_ip())
                 self.__replace_tag_url(target.get_url())
                 self.__replace_tag_uripath(target.get_url())
+                self.__replace_tag_domain(target.get_url())
                 self.__replace_tag_host(target.get_host(), target.get_ip())
                 self.__replace_tag_port(target.get_port())
                 self.__replace_tag_protocol(target.get_protocol())
@@ -189,6 +191,20 @@ class Command:
         pattern = re.compile('\[URL\]', re.IGNORECASE)
         self.formatted_cmdline = pattern.sub(url, self.formatted_cmdline)
 
+    def __replace_tag_domain(self, url):
+        """
+        Replace tag [DOMAIN] by the target URL root domain in self.formatted_cmdline.
+
+        :param str url: Target URL
+        """
+        if not url: return
+        pattern = re.compile('\[DOMAIN\]', re.IGNORECASE)
+        try:
+            res = get_tld(url, as_object=True)
+            domain = res.fld
+        except Exception as e:
+            domain = ''
+        self.formatted_cmdline = pattern.sub(domain, self.formatted_cmdline)
 
     def __replace_tag_uripath(self, url):
         """
@@ -201,7 +217,7 @@ class Command:
         try:
             o = urllib.parse.urlparse(url)
             uripath = o.path or '/'
-        except:
+        except Exception as e:
             uripath = '/'
 
         self.formatted_cmdline = pattern.sub(uripath, self.formatted_cmdline)

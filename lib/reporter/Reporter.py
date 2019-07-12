@@ -220,6 +220,8 @@ class Reporter:
                     product_types = (
                         'web-server',
                         'web-appserver',
+                        # 'web-application-firewall', Displayed only in "web" tab
+                        # for better readability
                         'web-cms',
                         'web-language',
                         'web-framework',
@@ -434,6 +436,16 @@ class Reporter:
                                 version=' '+str(product.version) \
                                     if product.version else '')
 
+                # Web Application Firewall
+                product = service.get_product('web-application-firewall')
+                waf = ''
+                if product:
+                    waf = '<span class="badge badge-web-application-firewall ' \
+                        'badge-light">{name}{version}</span>'.format(
+                            name=product.name,
+                            version=' '+str(product.version) \
+                                if product.version else '')
+
                 # Screenshot
                 img_name = 'scren-{ip}-{port}-{id}'.format(
                         ip=str(service.host.ip),
@@ -467,6 +479,7 @@ class Reporter:
                     <td>{url}</td>
                     <td>{title}</td>
                     <td>{webtechnos}</td>
+                    <td>{waf}</td>
                     <td>{screenshot}</td>
                     <td>{checks}</td>
                 </tr>
@@ -478,6 +491,7 @@ class Reporter:
                         if service.url else '',
                     title=StringUtils.shorten(service.html_title, 40),
                     webtechnos=webtechnos,
+                    waf=waf,
                     screenshot=screenshot,
                     checks=len(service.results))
 
