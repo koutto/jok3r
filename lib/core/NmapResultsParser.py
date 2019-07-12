@@ -72,7 +72,7 @@ class NmapResultsParser:
 
             # Create Host object
             host = Host(ip=h.ipv4, 
-                        hostname=h.hostnames[0] if h.hostnames else '',
+                        hostname=h.hostnames[0] if h.hostnames else h.ipv4,
                         os=os,
                         os_vendor=os_vendor,
                         os_family=os_family,
@@ -80,7 +80,8 @@ class NmapResultsParser:
                         vendor=h.vendor,
                         type=device_type)
             logger.info('Parsing host: {ip}{hostname} ...'.format(
-                ip=host.ip, hostname=' ('+host.hostname+')' if host.hostname else ''))
+                ip=host.ip, 
+                hostname=' ('+host.hostname+')' if host.hostname != host.ip else ''))
 
             # Loop over open ports
             for p in h.get_open_ports():
@@ -99,7 +100,7 @@ class NmapResultsParser:
                     else:
                         proto = 'http'
                     url = '{proto}://{host}:{port}'.format(
-                        proto=proto, host=host.ip, port=s.port)
+                        proto=proto, host=host.hostname, port=s.port)
 
                 # Recheck for HTTP/HTTPS for services undetermined by Nmap
                 if http_recheck \
