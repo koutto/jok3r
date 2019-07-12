@@ -7,6 +7,7 @@ import os
 import sys
 import cmd2
 import argparse
+from glob import glob
 
 from lib.controller.Controller import Controller
 from lib.core.Config import *
@@ -1186,33 +1187,34 @@ class DbController(cmd2.Cmd):
         """Import Nmap results"""
         print()
 
-        # Check file
-        file = os.path.expanduser(args.file[0])
-        if not FileUtils.can_read(file):
-            logger.error('Cannot read specified file')
+        # Check files
+        files = glob(os.path.expanduser(args.file[0]))
+        for file in files:
+            if not FileUtils.can_read(file):
+                logger.error('Cannot read specified file')
+                print()
+                return
+            
+            logger.info('Importing Nmap results from {file}'.format(file=file))
+            if not args.no_http_recheck:
+                logger.info('Each service will be re-checked to detect HTTP services. ' \
+                    'Use --no-http-recheck if you want to disable it (faster import)')
+
+            # Parse Nmap file
+            parser = NmapResultsParser(file, self.settings.services)
+            results = parser.parse(http_recheck=not args.no_http_recheck,
+                                grab_html_title=not args.no_html_title)
+            if results is not None:
+                if len(results) == 0:
+                    logger.warning('No new service has been added into current mission')
+                else:
+                    req = HostsRequester(self.sqlsess)
+                    req.select_mission(self.current_mission)
+                    for host in results:
+                        req.add_or_merge_host(host)
+                    logger.success('Nmap results imported with success into current mission')
+
             print()
-            return
-
-        logger.info('Importing Nmap results from {file}'.format(file=file))
-        if not args.no_http_recheck:
-            logger.info('Each service will be re-checked to detect HTTP services. ' \
-                'Use --no-http-recheck if you want to disable it (faster import)')
-
-        # Parse Nmap file
-        parser = NmapResultsParser(file, self.settings.services)
-        results = parser.parse(http_recheck=not args.no_http_recheck,
-                               grab_html_title=not args.no_html_title)
-        if results is not None:
-            if len(results) == 0:
-                logger.warning('No new service has been added into current mission')
-            else:
-                req = HostsRequester(self.sqlsess)
-                req.select_mission(self.current_mission)
-                for host in results:
-                    req.add_or_merge_host(host)
-                logger.success('Nmap results imported with success into current mission')
-
-        print()
 
 
     def complete_nmap(self, text, line, begidx, endidx):
