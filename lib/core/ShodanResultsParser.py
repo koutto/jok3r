@@ -89,7 +89,7 @@ class ShodanResultsParser:
         )
 
         logger.info(
-            "Parsing host: {ip}{hostname} ...".format(
+            "Parsing host: {ip}{hostname} (https://www.shodan.io/host/{ip}) ...".format(
                 ip=host.ip,
                 hostname=" (" + host.hostname + ")" if host.hostname != host.ip else "",
             )
