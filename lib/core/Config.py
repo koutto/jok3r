@@ -205,31 +205,30 @@ SERVICES_NMAP_TO_JOKER = {
 # differentiated in Shodan (e.g. smtp/smtps, http/https, etc.), but in Jok3r this 
 # distinction is done by context-specific options
 SERVICES_SHODAN_TO_JOKER = {
-    'ajp13'         : 'ajp',
-    'dns-udp'       : 'dns',
-    'ftp-agent'     : 'ftp',
-    'ftp-proxy'     : 'ftp',
-    'ftps'          : 'ftp',
-    'microsoft-ds'  : 'smb',
-    'ms-sql2000'    : 'mssql',
-    'ms-sql-m'      : 'mssql',
-    'ms-sql-s'      : 'mssql',
-    'ms-wbt-server' : 'rdp',
-    'rmiregistry'   : 'java-rmi',
-    'http-alt'      : 'http',
-    'http-mgmt'     : 'http',
-    'http-proxy'    : 'http',
-    'http-wmap'     : 'http',
-    'https'         : 'http',
-    'https-alt'     : 'http',
-    'https-wmap'    : 'http',
-    'ssl/http'      : 'http',
-    'oracle-tns'    : 'oracle', 
-    'smtps'         : 'smtp',
-}
-
-#----------------------------------------------------------------------------------------
-# Shodan Settings
-SHODAN_SETTINGS = {
-    'api_key' : '',
-}
+    'http-simple-new' : 'http',
+    'https-simple-new': 'http',
+    'udpxy'           : 'http',
+    'ajp13'           : 'ajp',
+    'dns-udp'         : 'dns',
+    'ftp-agent'       : 'ftp',
+    'ftp-proxy'       : 'ftp',
+    'ftps'            : 'ftp',
+    'microsoft-ds'    : 'smb',
+    'ms-sql2000'      : 'mssql',
+    'ms-sql-m'        : 'mssql',
+    'ms-sql-s'        : 'mssql',
+    'ms-wbt-server'   : 'rdp',
+    'rmiregistry'     : 'java-rmi',
+    'http-alt'        : 'http',
+    'http-mgmt'       : 'http',
+    'http-proxy'      : 'http',
+    'http-wmap'       : 'http',
+    'https'           : 'http',
+    'https-alt'       : 'http',
+    'https-wmap'      : 'http',
+    'http-simple-new' : 'http',
+    'ssl/http'        : 'http',
+    'oracle-tns'      : 'oracle', 
+    'smtps'           : 'smtp',
+}  
+  
