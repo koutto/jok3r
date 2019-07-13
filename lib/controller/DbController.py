@@ -21,6 +21,7 @@ from lib.utils.FileUtils import FileUtils
 from lib.utils.NetUtils import NetUtils
 from lib.utils.WebUtils import WebUtils
 from lib.db.Mission import Mission
+from lib.db.Api import Api
 from lib.reporter.Reporter import Reporter
 from lib.requester.Condition import Condition
 from lib.requester.Filter import Filter
@@ -1260,7 +1261,7 @@ class DbController(cmd2.Cmd):
             print()
             return
 
-        logger.info('Importing Shodan results from {ip}'.format(ip=ip))
+        logger.info('Importing Shodan results from https://www.shodan.io/host/{ip}'.format(ip=ip))
         if not args.no_http_recheck:
             logger.info('Each service will be re-checked to detect HTTP services. ' \
                 'Use --no-http-recheck if you want to disable it (faster import)')
@@ -1282,15 +1283,44 @@ class DbController(cmd2.Cmd):
 
         print()
 
+    #------------------------------------------------------------------------------------
+    # Api
 
-    def complete_nmap(self, text, line, begidx, endidx):
-        """Complete with filename"""
-        flag_dict = {
-            'nmap': self.path_complete,
-            '-n'  : self.path_complete, 
-        }
+    api = argparse.ArgumentParser(
+        description='Manage api key (service)', 
+        formatter_class=formatter_class)
+    api.add_argument(
+        'service', 
+        nargs   = 1, 
+        metavar = '<name>', 
+        help    = 'Service name')
+    api.add_argument(
+        'api_key', 
+        nargs   = 1, 
+        metavar = '<api_key>', 
+        help    = 'Service api key')
 
-        return self.flag_based_complete(text, line, begidx, endidx, flag_dict=flag_dict)
+    @cmd2.with_category(CMD_CAT_IMPORT)
+    @cmd2.with_argparser(api)
+    def do_api(self, args):
+        """Manage api key"""
+        print()
+
+        # Check service
+        service = args.service[0]
+        if not service:
+            logger.error('Please type a service name')
+            print()
+            return
+
+        # Check service api key
+        api_key = args.api_key[0]
+        if not api_key:
+            logger.error('Please type a service api key')
+            print()
+            return
+
+        print()
 
 
     #------------------------------------------------------------------------------------
