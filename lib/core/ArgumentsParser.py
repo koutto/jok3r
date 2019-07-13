@@ -81,7 +81,7 @@ class ArgumentsParser:
         toolbox = parser.add_argument_group(
             Output.colored('Toolbox management', attrs='bold'), 
             'The Toolbox contains all the tools used by Jok3r for running the security' \
-            'checks.\nThey are classified by the services they target.')
+            ' checks.\nThey are classified by the services they target.')
 
         toolbox_mxg = toolbox.add_mutually_exclusive_group()
         toolbox_mxg.add_argument(
@@ -105,6 +105,13 @@ class ArgumentsParser:
             metavar = '<service>', 
             default = None)
         toolbox_mxg.add_argument(
+            '--install-tool', 
+            help    = 'Install a given tool', 
+            action  = 'store', 
+            dest    = 'install_tool', 
+            metavar = '<tool-name>', 
+            default = None)
+        toolbox_mxg.add_argument(
             '--install-all', 
             help    = 'Install all the tools in the toolbox',
             action  = 'store_true', 
@@ -116,6 +123,13 @@ class ArgumentsParser:
             action  = 'store', 
             dest    = 'update_for_svc', 
             metavar = '<service>', 
+            default = None)
+        toolbox_mxg.add_argument(
+            '--update-tool', 
+            help    = 'Update a given tool', 
+            action  = 'store', 
+            dest    = 'update_tool', 
+            metavar = '<tool-name>', 
             default = None)
         toolbox_mxg.add_argument(
             '--update-all',
@@ -449,30 +463,33 @@ class ArgumentsParser:
     def check_args_toolbox(self):
         """Check arguments for subcommand Toolbox"""
 
-        service = self.args.show_toolbox_for_svc or \
-                  self.args.install_for_svc      or \
-                  self.args.update_for_svc       or \
-                  self.args.uninstall_for_svc
+        service = self.args.show_toolbox_for_svc \
+            or self.args.install_for_svc \
+            or self.args.update_for_svc \
+            or self.args.uninstall_for_svc
+
+        tool = self.args.install_tool \
+            or self.args.update_tool \
+            or self.args.uninstall_tool
 
         if len(sys.argv) == 2:
             self.subparser.print_help()
             return False
 
         # Check options with service name as parameter
-        if service \
-           and not self.settings.services.is_service_supported(service, multi=True):
-
-            logger.error('Service "{service}" is not supported. ' \
-                'Check "info --services".'.format(service=service.upper()))
-            return False
+        if service:
+            if not self.settings.services.is_service_supported(service, multi=True):
+                logger.error('Service "{service}" is not supported. ' \
+                    'Check "info --services".'.format(service=service.upper()))
+                return False
 
         # Check option with tool name as parameter
-        if self.args.uninstall_tool \
-           and self.settings.toolbox.get_tool(self.args.uninstall_tool) is None:
+        if tool:
+            if self.settings.toolbox.get_tool(tool) is None:
 
-            logger.error('Tool "{tool}" is not referenced inside the toolbox. ' \
-                'Check "toolbox --show-all".'.format(tool=self.args.uninstall_tool))
-            return False
+                logger.error('Tool "{tool}" is not referenced inside the toolbox. ' \
+                    'Check "toolbox --show-all".'.format(tool=tool))
+                return False
 
         return True
 

@@ -11,11 +11,13 @@ class ToolboxController(Controller):
     def run(self):
 
         service = self.arguments.args.show_toolbox_for_svc \
-                  or self.arguments.args.install_for_svc   \
-                  or self.arguments.args.update_for_svc    \
-                  or self.arguments.args.uninstall_for_svc
+            or self.arguments.args.install_for_svc \
+            or self.arguments.args.update_for_svc \
+            or self.arguments.args.uninstall_for_svc
 
-        toolname = self.arguments.args.uninstall_tool
+        toolname = self.arguments.args.install_tool \
+            or self.arguments.args.update_tool \
+            or self.arguments.args.uninstall_tool
 
         # --fast
         fastmode = self.arguments.args.fast_mode
@@ -32,6 +34,10 @@ class ToolboxController(Controller):
         elif self.arguments.args.install_for_svc:
             self.settings.toolbox.install_for_service(service, fastmode)
 
+        # --install-tool <tool-name>
+        elif self.arguments.args.install_tool:
+            self.settings.toolbox.install_tool(toolname, fastmode)
+
         # --install-all
         elif self.arguments.args.install_all:
             self.settings.toolbox.install_all(fastmode)
@@ -39,6 +45,10 @@ class ToolboxController(Controller):
         # --update <service>
         elif self.arguments.args.update_for_svc:
             self.settings.toolbox.update_for_service(service, fastmode)
+
+        # --update-tool <tool-name>
+        elif self.arguments.args.update_tool:
+            self.settings.toolbox.update_tool(toolname, fastmode)
 
         # --update-all
         elif self.arguments.args.update_all:

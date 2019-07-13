@@ -167,6 +167,23 @@ class Toolbox:
                 i += 1 
 
 
+    def install_tool(self, tool_name, fast_mode=False):
+        """
+        Install one tool from the toolbox.
+
+        :param str tool_name: Name of the tool to install
+        :param bool fast_mode: Set to true to disable prompts and install checks
+        :return: Status of install
+        :rtype: bool
+        """
+        tool = self.get_tool(tool_name)
+        if not tool:
+            logger.warning('No tool with this name in the toolbox')
+            return False
+        else:
+            return tool.install(self.settings, fast_mode)
+
+
     #------------------------------------------------------------------------------------
     # Update
 
@@ -203,6 +220,23 @@ class Toolbox:
 
                 tool.update(self.settings, fast_mode=fast_mode)
                 i += 1
+
+
+    def update_tool(self, tool_name, fast_mode=False):
+        """
+        Update one tool from the toolbox.
+
+        :param str tool_name: Name of the tool to update
+        :param bool fast_mode: Set to true to disable prompts and install checks
+        :return: Status of update
+        :rtype: bool
+        """
+        tool = self.get_tool(tool_name)
+        if not tool:
+            logger.warning('No tool with this name in the toolbox')
+            return False
+        else:
+            return tool.update(self.settings, fast_mode)
 
 
     #------------------------------------------------------------------------------------
