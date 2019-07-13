@@ -42,6 +42,8 @@ class ShodanResultsParser:
             self.api_key = lines[0].rstrip()
         except:
             logger.error("Error missing shodan api key in {0}".format(config))
+            print()
+            return
 
         self.api = Shodan(self.api_key)
 
