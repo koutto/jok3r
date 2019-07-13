@@ -2,8 +2,10 @@
 # -*- coding: utf-8 -*-
 ###
 ### Core > ShodanResultsParser
+### Api key need to be store in ~/.shodan_api_key
 ###
 from lib.core.Config import *
+from lib.utils.FileUtils import *
 from lib.utils.NetUtils import NetUtils
 from lib.utils.WebUtils import WebUtils
 from lib.db.Host import Host
@@ -13,8 +15,8 @@ from lib.output.Logger import logger
 from lib.output.Output import Output
 from shodan import Shodan
 
-class ShodanResultsParser:
 
+class ShodanResultsParser:
     def __init__(self, ip, services_config):
         """
         Initialize Shodan Parser from results file.
@@ -26,10 +28,25 @@ class ShodanResultsParser:
         self.shodan_ip = ip
         self.services_config = services_config
         self.results = None
-        self.api = Shodan(SHODAN_SETTINGS['api_key'])
+        self.api_key = ''
+
+        config = os.path.expanduser("~/.shodan_api_key")
+        if not FileUtils.can_read(config):
+                logger.error("Shodan key file doesn't exists in {0}".format(config))
+                print()
+                return
+
+        try: 
+            key_file = open(config, 'r')
+            lines = key_file.readlines()
+            self.api_key = lines[0].rstrip()
+        except:
+            logger.error("Error missing shodan api key in {0}".format(config))
+
+        self.api = Shodan(self.api_key)
 
 
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
 
     def parse(self, http_recheck=True, grab_html_title=True):
         """
@@ -42,88 +59,108 @@ class ShodanResultsParser:
         :rtype: list(Host)|None
         """
 
-
         # Lookup the host
         try:
-            host_report = self.api.host(self.shodan_ip)
+            q = self.api.host(self.shodan_ip)
         except Exception as e:
-            logger.error('Error when quering shodan: {0}'.format(e))
+            logger.error("Error when quering shodan: {0}".format(e))
             return None
 
         results = list()
 
-        ip=self.shodan_ip
-        os = host_report.get('os', '')
-        os_vendor = host_report.get('org', '')
-        os_family = ''
-        device_type = ''
-        hostname = host_report.get('hostnames', '')[0]
-        ports = host_report['data']
-
+        ip = self.shodan_ip
+        os = q.get("os", "")
+        os_vendor = q.get("org", "")
+        os_family = ""
+        device_type = ""
+        hostname = q["hostnames"][0] if q["hostnames"] else ip
+        ports = q["data"]
 
         # Create Host object
-        host = Host(ip=ip, 
-                    hostname=hostname,
-                    os=os,
-                    os_vendor=os_vendor,
-                    os_family=os_family,
-                    mac='',
-                    vendor=os_vendor,
-                    type=device_type)
+        host = Host(
+            ip=ip,
+            hostname=hostname,
+            os=os,
+            os_vendor=os_vendor,
+            os_family=os_family,
+            mac="",
+            vendor=os_vendor,
+            type=device_type,
+        )
 
-        logger.info('Parsing host: {ip}{hostname} ...'.format(
-            ip=host.ip, hostname=' ('+host.hostname+')' if host.hostname else ''))
-        
-        # Loop over services
+        logger.info(
+            "Parsing host: {ip}{hostname} ...".format(
+                ip=host.ip,
+                hostname=" (" + host.hostname + ")" if host.hostname != host.ip else "",
+            )
+        )
+
+
+        # Loop over ports/services
         for p in ports:
-            name = p['_shodan']['module']
-            port = p.get('port', None)
-            protocol = p.get('transport', None)
-            url = ''
-            comment = ''
-            html_title = ''
-            banner = p.get('data', '')
+            s = p["_shodan"]["module"]
+            name = ShodanResultsParser.shodan_to_joker_service_name(s)
+            port = p.get("port", None)
+            protocol = p.get("transport", None)
+            url = ""
+            comment = ""
+            html_title = ""
+            banner = p.get("data", "")
 
             # Get URL for http services
-            if name in ('http', 'https'):
-                url = '{proto}://{host}:{port}'.format(
-                    proto=name, host=ip, port=port)
+            if name in ("http", "https"):
+                url = "{proto}://{host}:{port}".format(
+                    proto=name, host=hostname, port=port
+                )
 
             # Recheck for HTTP/HTTPS for services undetermined by Shodan
-            if http_recheck \
-                and protocol == 'tcp' \
-                and not self.services_config.is_service_supported(name, multi=False):
+            if (
+                http_recheck
+                and protocol == "tcp"
+                and not self.services_config.is_service_supported(name, multi=False)
+            ):
 
                 url = WebUtils.is_returning_http_data(hostname or ip, port)
                 if url:
-                    logger.success('{url} seems to return HTTP data, marking it ' \
-                        'as http service'.format(url=url))
-                    name = 'http'
+                    logger.success(
+                        "{url} seems to return HTTP data, marking it "
+                        "as http service".format(url=url)
+                    )
+                    name = "http"
 
-            # Grab page title for HTTP services 
-            if grab_html_title and 'http' in name:
+            # Grab page title for HTTP services
+            if grab_html_title and "http" in name:
                 html_title = WebUtils.grab_html_title(url)
-   
+
             # Only keep services supported by Jok3r
             if not self.services_config.is_service_supported(name, multi=False):
-                logger.info('Service not supported: host {ip} | port ' \
-                    '{port}/{proto} | service {service}'.format(ip = ip, port=port, proto=protocol, service=name))
+                logger.info(
+                    "Service not supported: host {ip} | port "
+                    "{port}/{proto} | service {service}".format(
+                        ip=ip, port=port, proto=protocol, service=name
+                    )
+                )
                 continue
             else:
-                logger.info('Parsing service: host {ip} | port {port}/{proto} ' \
-                    '| service {service}'.format(ip = ip, port=port, proto=protocol, service=name))
+                logger.info(
+                    "Parsing service: host {ip} | port {port}/{proto} "
+                    "| service {service}".format(
+                        ip=ip, port=port, proto=protocol, service=name
+                    )
+                )
 
             # Create Service object
             if protocol and port:
                 service = Service(
-                    name       = name,
-                    port       = port,
-                    protocol   = {'tcp': Protocol.TCP,'udp': Protocol.UDP}.get(protocol),
-                    url        = url,
-                    up         = True,
-                    banner     = banner,
-                    comment    = comment,
-                    html_title = html_title)
+                    name=name,
+                    port=port,
+                    protocol={"tcp": Protocol.TCP, "udp": Protocol.UDP}.get(protocol),
+                    url=url,
+                    up=True,
+                    banner=banner,
+                    comment=comment,
+                    html_title=html_title,
+                )
 
                 host.services.append(service)
 
@@ -132,8 +169,7 @@ class ShodanResultsParser:
 
         return results
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
 
     @staticmethod
     def shodan_to_joker_service_name(shodan_service):
