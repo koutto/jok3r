@@ -21,7 +21,6 @@ from lib.utils.FileUtils import FileUtils
 from lib.utils.NetUtils import NetUtils
 from lib.utils.WebUtils import WebUtils
 from lib.db.Mission import Mission
-from lib.db.Api import Api
 from lib.reporter.Reporter import Reporter
 from lib.requester.Condition import Condition
 from lib.requester.Filter import Filter
@@ -1255,7 +1254,7 @@ class DbController(cmd2.Cmd):
     # Import Shodan host
 
     shodan = argparse.ArgumentParser(
-        description='Import Shodan host (ip)', 
+        description='Import Shodan host (ips)', 
         formatter_class=formatter_class)
     shodan.add_argument(
         '-n', '--no-http-recheck', 
@@ -1266,10 +1265,10 @@ class DbController(cmd2.Cmd):
         action  = 'store_true', 
         help    = 'Do not grab HTML title for HTTP services')
     shodan.add_argument(
-        'ip', 
+        'ips', 
         nargs   = 1, 
-        metavar = '<ip>', 
-        help    = 'Ip address')
+        metavar = '<ip1,ip2...>', 
+        help    = 'Import a list of IPs (single IP comma-separated)')
 
     @cmd2.with_category(CMD_CAT_IMPORT)
     @cmd2.with_argparser(shodan)
@@ -1278,72 +1277,34 @@ class DbController(cmd2.Cmd):
         print()
 
         # Check ip
-        ip = args.ip[0]
-        if not ip:
-            logger.error('Please type an ip address')
+        ips = args.ips[0]
+        if not ips:
+            logger.error('Please type an ip address or several seperated with comma')
             print()
             return
 
-        logger.info('Importing Shodan results from https://www.shodan.io/host/{ip}'.format(ip=ip))
-        if not args.no_http_recheck:
-            logger.info('Each service will be re-checked to detect HTTP services. ' \
-                'Use --no-http-recheck if you want to disable it (faster import)')
+        for ip in ips.split(','):
+            logger.info('Importing Shodan results from https://www.shodan.io/host/{ip}'.format(ip=ip))
+            if not args.no_http_recheck:
+                logger.info('Each service will be re-checked to detect HTTP services. ' \
+                    'Use --no-http-recheck if you want to disable it (faster import)')
 
-        # Parse shodan result
-        parser = ShodanResultsParser(ip, self.settings.services)
-        results = parser.parse(http_recheck=not args.no_http_recheck,
-                               grab_html_title=not args.no_html_title)
+            # Parse shodan result
+            parser = ShodanResultsParser(ip, self.settings.services)
+            results = parser.parse(http_recheck=not args.no_http_recheck,
+                                grab_html_title=not args.no_html_title)
 
-        if results is not None:
-            if len(results) == 0:
-                logger.warning('No new service has been added into current mission')
-            else:
-                req = HostsRequester(self.sqlsess)
-                req.select_mission(self.current_mission)
-                for host in results:
-                    req.add_or_merge_host(host)
-                logger.success('Shodan results imported with success into current mission')
+            if results is not None:
+                if len(results) == 0:
+                    logger.warning('No new service has been added into current mission')
+                else:
+                    req = HostsRequester(self.sqlsess)
+                    req.select_mission(self.current_mission)
+                    for host in results:
+                        req.add_or_merge_host(host)
+                    logger.success('Shodan results imported with success into current mission')
 
-        print()
-
-    #------------------------------------------------------------------------------------
-    # Api
-
-    api = argparse.ArgumentParser(
-        description='Manage api key (service)', 
-        formatter_class=formatter_class)
-    api.add_argument(
-        'service', 
-        nargs   = 1, 
-        metavar = '<name>', 
-        help    = 'Service name')
-    api.add_argument(
-        'api_key', 
-        nargs   = 1, 
-        metavar = '<api_key>', 
-        help    = 'Service api key')
-
-    @cmd2.with_category(CMD_CAT_IMPORT)
-    @cmd2.with_argparser(api)
-    def do_api(self, args):
-        """Manage api key"""
-        print()
-
-        # Check service
-        service = args.service[0]
-        if not service:
-            logger.error('Please type a service name')
             print()
-            return
-
-        # Check service api key
-        api_key = args.api_key[0]
-        if not api_key:
-            logger.error('Please type a service api key')
-            print()
-            return
-
-        print()
 
 
     #------------------------------------------------------------------------------------

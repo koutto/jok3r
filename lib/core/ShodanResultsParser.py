@@ -27,15 +27,14 @@ class ShodanResultsParser:
 
         self.shodan_ip = ip
         self.services_config = services_config
-        self.results = None
         self.api_key = ''
+        self.results = None
 
         config = os.path.expanduser("~/.shodan_api_key")
         if not FileUtils.can_read(config):
                 logger.error("Shodan key file doesn't exists in {0}".format(config))
                 print()
                 return
-
         try: 
             self.api_key = FileUtils.read(config).rstrip()
         except:
