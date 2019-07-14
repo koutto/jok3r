@@ -37,9 +37,7 @@ class ShodanResultsParser:
                 return
 
         try: 
-            key_file = open(config, 'r')
-            lines = key_file.readlines()
-            self.api_key = lines[0].rstrip()
+            self.api_key = FileUtils.read(config).rstrip()
         except:
             logger.error("Error missing shodan api key in {0}".format(config))
             print()
