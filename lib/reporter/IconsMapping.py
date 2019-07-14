@@ -16,6 +16,7 @@ class IconsMapping:
             'iOS':          'ios',
             'Linux':        'linux',
             'Mac OS':       'apple',
+            'Mac OS X':     'apple',
             'macOS':        'apple',
             'Windows':      'windows',
         },
