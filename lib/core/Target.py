@@ -9,8 +9,9 @@ from six.moves.urllib.parse import urlparse
 from lib.core.Config import *
 from lib.core.Constants import *
 from lib.core.Exceptions import TargetException
-from lib.utils.WebUtils import WebUtils
 from lib.utils.NetUtils import NetUtils
+from lib.utils.OSUtils import OSUtils
+from lib.utils.WebUtils import WebUtils
 from lib.db.Host import Host
 from lib.db.Mission import Mission
 from lib.db.Service import Service, Protocol
@@ -262,12 +263,12 @@ class Target:
 
 
     #------------------------------------------------------------------------------------
-    # Target availability checker
+    # Target checker and information updater
 
     def smart_check(self, 
                     reverse_dns_lookup=True, 
                     availability_check=True, 
-                    run_nmap=False,
+                    nmap_banner_grabbing=False,
                     web_technos_detection=True):
         """
         Check if the target is reachable and update target information
@@ -276,9 +277,8 @@ class Target:
             DNS lookup when no hostname is specified (i.e. only IP is known)
         :param bool availability_check: Set to True to check for availability of 
             the target. For HTTP, also grab HTML title and HTTP headers
-        :param bool run_nmap: Set to True to run Nmap on (TCP) service and update
-            service information (banner) and host information (OS, device)
-
+        :param bool nmap_banner_grabbing: Set to True to run Nmap on (TCP) service 
+            and update service information (banner) and host information (OS, device)
         :param bool web_technos_detection: Set to True to run WebTechnoDetector if 
             target service is HTTP
         :return: Result of check
@@ -315,7 +315,7 @@ class Target:
 
         # Run Nmap against service for banner grabbing, OS info, Device info
         # Only for TCP services, and if no banner already stored in database
-        if grab_banner_nmap \
+        if nmap_banner_grabbing \
            and self.service.up  \
            and self.service.protocol == Protocol.TCP \
            and not self.service.banner:
@@ -338,10 +338,12 @@ class Target:
                 detected_os = detector.get_os()
                 if detected_os:
                     self.service.host.os = detected_os
+                    self.service.host.os_vendor = OSUtils.get_os_vendor(detected_os)
+                    self.service.host.os_family = OSUtils.get_os_family(detected_os)
                     logger.info('Detected OS from web technologies = {os}'.format(
                         os=detected_os))
 
-
+        # SmartStart
         return self.service.up
 
 

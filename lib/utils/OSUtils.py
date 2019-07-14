@@ -15,15 +15,19 @@ class OSUtils:
         """
         matches = {
             # keyword in OS name (case sensitive) -> corresponding OS vendor
-            'Android':  'Google',
-            'FreeBSD':  'FreeBSD',
-            'iOS':      'Apple',
-            'IOS':      'Cisco',
-            'Linux':    'Linux',
-            'Mac OS':   'Apple',
-            'macOS':    'Apple',
-            'OpenBSD':  'OpenBSD',
-            'Windows':  'Microsoft',
+            'Android':      'Google',
+            'FreeBSD':      'FreeBSD',
+            'iOS':          'Apple',
+            'IOS':          'Cisco',
+            'linux':        'Linux',
+            'Linux':        'Linux',
+            'Mac OS':       'Apple',
+            'macOS':        'Apple',
+            'OpenBSD':      'OpenBSD',
+            'OS X':         'Apple',
+            'Sun Solaris':  'Sun',
+            'SunOS':        'Sun',
+            'Windows':      'Microsoft',
         }
 
         for m in matches:
@@ -42,15 +46,19 @@ class OSUtils:
         """
         matches = {
             # keyword in OS name (case sensitive) -> corresponding OS family
-            'Android':  'Android',
-            'FreeBSD':  'FreeBSD',
-            'iOS':      'iOS',
-            'IOS':      'IOS',
-            'Linux':    'Linux',
-            'Mac OS':   'Mac OS',
-            'macOS':    'Mac OS',
-            'OpenBSD':  'OpenBSD',
-            'Windows':  'Windows',
+            'Android':      'Android',
+            'FreeBSD':      'FreeBSD',
+            'iOS':          'iOS',
+            'IOS':          'IOS',
+            'linux':        'Linux',
+            'Linux':        'Linux',
+            'Mac OS':       'Mac OS',
+            'macOS':        'Mac OS',
+            'OpenBSD':      'OpenBSD',
+            'OS X':         'OS X',
+            'Sun Solaris':  'Solaris',
+            'SunOS':        'SunOS',
+            'Windows':      'Windows',
         }
         for m in matches:
             if m in os:

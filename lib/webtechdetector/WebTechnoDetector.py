@@ -61,20 +61,31 @@ class WebTechnoDetector:
     def get_os(self):
         """
         Try to detect OS from detected web technologies
+
+        Wappalyzer handles a some OS 
+        Ref: https://www.wappalyzer.com/categories/operating-systems
         """
         matches = {
-            'Windows': [
-                'windows',
-            ],
-            'Linux': [
-                'linux',
-                'unix',
-            ]
+            # keyword in technology (case sensitive) -> corresponding OS name
+            'CentOS':   'CentOS Linux',
+            'Darwin':   'Apple OS X Darwin',
+            'Debian':   'Debian Linux',
+            'Fedora':   'Fedora Linux',
+            'FreeBSD':  'FreeBSD',
+            'Gentoo':   'Gentoo Linux',
+            'Linux':    'Linux',
+            'Raspbian': 'Raspbian Linux',
+            'SunOS':    'SunOS',
+            'SUSE':     'SUSE Linux',
+            'Ubuntu':   'Ubuntu Linux',
+            'Unix':     'Linux',
+            'UNIX':     'Linux',
+            'Windows':  'Windows',
         }
 
-        for ostype in matches.keys():
-            for string in matches[ostype]:
-                for t in self.technos:
-                    if string.lower() in t['name'].lower():
-                        return ostype
+        for t in self.technos:
+            for m in matches:
+                if m in t['name']:
+                    return matches[m]
+
         return ''
