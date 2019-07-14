@@ -265,18 +265,20 @@ class Target:
     # Target availability checker
 
     def smart_check(self, 
-                    reverse_dns=True, 
+                    reverse_dns_lookup=True, 
                     availability_check=True, 
-                    grab_banner_nmap=False,
+                    run_nmap=False,
                     web_technos_detection=True):
         """
         Check if the target is reachable and update target information
 
-        :param bool reverse_dns: Set to True to attempt performing reverse DNS lookup 
-            when no hostname is specified (only IP)
-        :param bool availability_check: Set to True to check for availability of the
-            target, and also grab headers and HTML title for HTTP services
-        :param bool grab_banner_nmap: Set to True to grab the Nmap banner (for TCP)
+        :param bool reverse_dns_lookup: Set to True to attempt performing reverse 
+            DNS lookup when no hostname is specified (i.e. only IP is known)
+        :param bool availability_check: Set to True to check for availability of 
+            the target. For HTTP, also grab HTML title and HTTP headers
+        :param bool run_nmap: Set to True to run Nmap on (TCP) service and update
+            service information (banner) and host information (OS, device)
+
         :param bool web_technos_detection: Set to True to run WebTechnoDetector if 
             target service is HTTP
         :return: Result of check
@@ -289,60 +291,30 @@ class Target:
 
         # Perform reverse DNS lookup if hostname not defined
         # Note: If lookup fails, it fallbacks to IP
-        if reverse_dns:
-            if self.service.host.hostname == self.service.host.ip:
+        if reverse_dns_lookup:
+            if self.service.host.hostname == self.service.host.ip \
+                    or self.service.host.hostname == '' \
+                    or self.service.host.hostname is None:
+
                 logger.info('Reverse DNS lookup for {ip}...'.format(
                     ip=str(self.service.host.ip)))
-                hostname = NetUtils.reverse_dns_lookup(
-                    self.service.host.ip)
-
-                if hostname != self.service.host.ip:
-                    logger.info('{ip} -> {hostname}'.format(ip=self.service.host.ip,
-                                                            hostname=hostname))
-                else:
-                    logger.info('No DNS name found for IP')
-
-                self.service.host.hostname = hostname
+                self.__reverse_dns_lookup()
 
 
-        # Perform availability check
+        # Perform service availability check
         if availability_check:
             logger.info('Check if service is reachable...')
+            self.__availability_check()
 
-            # For HTTP: Check URL availability, grab headers, grab HTML title
-            if self.service.url: 
-                is_reachable, status, resp_headers = WebUtils.is_url_reachable(
-                    self.service.url)
-                self.service.up = is_reachable
-
-                if is_reachable:
-                    if resp_headers:
-                        self.service.http_headers = '\n'.join('{}: {}'.format(key,val) \
-                            for (key,val) in resp_headers.items())
-                    else:
-                        self.service.http_headers = ''
-
-                    if not self.service.html_title:
-                        self.service.html_title = WebUtils.grab_html_title(
-                            self.service.url)
-                
-            # For any other service: Simple port check
-            elif self.service.protocol == Protocol.TCP:
-                self.service.up = NetUtils.is_tcp_port_open(
-                    str(self.service.host.ip), self.service.port)
-            else:
-                self.service.up = NetUtils.is_udp_port_open(
-                    str(self.service.host.ip), self.service.port)
-
+            # If service not reachable, we can stop here
             if not self.service.up:
                 return False
-
         else:
             self.service.up = True # consider it as up anyway
 
 
-        # Banner grabbing via Nmap (for TCP only) only if there is no banner 
-        # already stored in db
+        # Run Nmap against service for banner grabbing, OS info, Device info
+        # Only for TCP services, and if no banner already stored in database
         if grab_banner_nmap \
            and self.service.up  \
            and self.service.protocol == Protocol.TCP \
@@ -350,45 +322,10 @@ class Target:
 
             logger.info('Grab service info for [{service}] via Nmap...'.format(
                 service=self))
-            nmap_info = NetUtils.grab_nmap_info(
-                str(self.service.host.ip), self.service.port)
-            
-            # Banner 
-            self.service.banner = NetUtils.clean_nmap_banner(nmap_info['banner'])
-            logger.info('Banner = {banner}'.format(banner=self.service.banner))
-            
-            # OS
-            if nmap_info['os']:
-                if not self.service.host.os:
-                    logger.info('Detected OS = {os}'.format(
-                        os=nmap_info['os']))
-
-                elif self.service.host.os != nmap_info['os']:
-                    logger.info('Detected OS has changed = {os}'.format(
-                        os=nmap_info['os']))
-                self.service.host.os = nmap_info['os']
-                self.service.host.os_vendor = nmap_info['os_vendor']
-                self.service.host.os_family = nmap_info['os_family']
-
-            # Other info
-            if nmap_info['mac']:
-                self.service.host.mac = nmap_info['mac']
-
-            if nmap_info['vendor']:
-                self.service.host.vendor = nmap_info['vendor']
-
-            if nmap_info['type']:
-                self.service.host.type = nmap_info['type']
-
-            # Try to deduce OS from banner if possible
-            if not self.service.host.os:
-                detected_os = NetUtils.os_from_nmap_banner(self.service.banner)
-                if detected_os:
-                    self.service.host.os = detected_os
-                    logger.info('Detected OS from banner = {os}'.format(os=detected_os))
+            self.__run_nmap()
 
 
-        # Web technologies detection for HTTP
+        # Perform Web technologies detection for HTTP
         if self.service.name == 'http' and web_technos_detection:
             logger.info('Web technologies detection using Wappalyzer...')
             detector = WebTechnoDetector(self.service.url)
@@ -406,6 +343,123 @@ class Target:
 
 
         return self.service.up
+
+
+    def __reverse_dns_lookup(self):
+        """
+        Attempt to perform reverse DNS lookup (i.e. IP -> Hostname)
+
+        Updated in this method:
+            - self.service.host.hostname
+        """
+        hostname = NetUtils.reverse_dns_lookup(self.service.host.ip)
+
+        if hostname != self.service.host.ip:
+            logger.info('{ip} -> {hostname}'.format(ip=self.service.host.ip,
+                                                    hostname=hostname))
+        else:
+            logger.info('No DNS name found for IP')
+
+        self.service.host.hostname = hostname
+
+
+    def __availability_check(self):
+        """
+        Perform service availability check:
+            - For HTTP service: Check if URL is reachable, grab HTML title 
+              and HTTP headers
+            - For other TCP/UDP services: Simply check if port is open
+
+        Updated in this method:
+            - self.service.up
+            - self.service.http_headers
+            - self.service.html_title
+        """
+        if self.service.url: 
+            # For HTTP: Check URL availability
+            is_reachable, status, resp_headers = WebUtils.is_url_reachable(
+                self.service.url)
+            self.service.up = is_reachable
+
+            # Grab HTML title and HTTP Headers
+            if is_reachable:
+                if resp_headers:
+                    self.service.http_headers = '\n'.join('{}: {}'.format(key,val) \
+                        for (key,val) in resp_headers.items())
+                else:
+                    self.service.http_headers = ''
+
+                if not self.service.html_title:
+                    self.service.html_title = WebUtils.grab_html_title(
+                        self.service.url)
+
+        elif self.service.protocol == Protocol.TCP:
+            # For TCP: simple port check
+            self.service.up = NetUtils.is_tcp_port_open(
+                str(self.service.host.ip), self.service.port)
+
+        else:
+            # For UDP: simple port check
+            self.service.up = NetUtils.is_udp_port_open(
+                str(self.service.host.ip), self.service.port) 
+
+
+    def __run_nmap(self):
+        """
+        Run Nmap against service to retrieve:
+            - Service banner
+            - OS info (os name, os vendor, os family) if possible
+            - Device info (MAC, vendor, device type) if possible
+
+        Updated in this method:
+            - self.service.banner
+            - self.service.host.os
+            - self.service.host.os_vendor
+            - self.service.host.os_family
+            - self.service.host.mac
+            - self.service.host.vendor
+            - self.service.host.type
+        """
+        # Run Nmap scan
+        nmap_info = NetUtils.grab_nmap_info(
+            str(self.service.host.ip), self.service.port)
+        
+        # Get banner 
+        self.service.banner = NetUtils.clean_nmap_banner(nmap_info['banner'])
+        logger.info('Banner = {banner}'.format(banner=self.service.banner))
+        
+        # Get OS information
+        if nmap_info['os']:
+            if not self.service.host.os:
+                logger.info('Detected OS = {os}'.format(
+                    os=nmap_info['os']))
+
+            elif self.service.host.os != nmap_info['os']:
+                logger.info('Detected OS has changed = {os}'.format(
+                    os=nmap_info['os']))
+
+            self.service.host.os = nmap_info['os']
+            self.service.host.os_vendor = nmap_info['os_vendor']
+            self.service.host.os_family = nmap_info['os_family']
+
+        # Get device information
+        if nmap_info['mac']:
+            self.service.host.mac = nmap_info['mac']
+
+        if nmap_info['vendor']:
+            self.service.host.vendor = nmap_info['vendor']
+
+        if nmap_info['type']:
+            self.service.host.type = nmap_info['type']
+
+        # Try to deduce OS from banner if possible and not already done by Nmap
+        if not self.service.host.os:
+            detected_os = NetUtils.os_from_nmap_banner(self.service.banner)
+            if detected_os:
+                self.service.host.os = detected_os
+                logger.info('Detected OS from banner = {os}'.format(os=detected_os))
+
+                # TODO: os vendor os family
 
 
     #------------------------------------------------------------------------------------
