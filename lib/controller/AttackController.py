@@ -27,7 +27,7 @@ class AttackController(Controller):
 
         args = self.arguments.args
 
-        # Context parameters are organized in dict 
+        # Re-organize context parameters in dict: 
         # { service : list of db objects }
         self.creds    = defaultdict(list)
         self.users    = defaultdict(list)
@@ -63,7 +63,8 @@ class AttackController(Controller):
                         Option(name=name, 
                                value=value))
 
-        # Attack configuration
+
+        # Attack configuration: Categories of checks to run
         categories = self.settings.services.list_all_categories() # default: all
 
         if args.cat_only:
@@ -71,7 +72,8 @@ class AttackController(Controller):
         elif args.cat_exclude:
             categories = [ cat for cat in categories if cat not in args.cat_exclude ]
 
-        # Run the attack
+
+        # Create the attack scope
         self.attack_scope = AttackScope(self.settings, 
                                         self.arguments,
                                         self.sqlsess,
@@ -81,6 +83,8 @@ class AttackController(Controller):
                                         attack_profile=args.profile,
                                         fast_mode=args.fast_mode)
 
+
+        # Run the attack
         begin = datetime.datetime.now()
         if args.target_ip_or_url:
             self.__run_for_single_target(args)
