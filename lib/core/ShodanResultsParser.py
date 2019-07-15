@@ -5,7 +5,6 @@
 ### Api key need to be store in ~/.shodan_api_key
 ###
 
-import sys
 from lib.core.Config import *
 from lib.utils.FileUtils import *
 from lib.utils.NetUtils import NetUtils
@@ -43,7 +42,7 @@ class ShodanResultsParser:
                     self.api = Shodan(self.api_key)
             else:
                 logger.error("Error missing shodan api key in {0}".format(config))
-                self.api = False
+                return
 
     # ------------------------------------------------------------------------------------
 
@@ -57,9 +56,7 @@ class ShodanResultsParser:
         :return: Hosts 
         :rtype: list(Host)|None
         """
-        if not self.api:
-            sys.exit(1)
-        
+
         # Lookup the host
         query = None
         ip = self.ip
