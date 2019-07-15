@@ -4,6 +4,8 @@
 ### Core > ShodanResultsParser
 ### Api key need to be store in ~/.shodan_api_key
 ###
+
+import sys
 from lib.core.Config import *
 from lib.utils.FileUtils import *
 from lib.utils.NetUtils import NetUtils
@@ -27,23 +29,21 @@ class ShodanResultsParser:
 
         self.shodan_ip = ip
         self.services_config = services_config
+        self.api = None
         self.api_key = ''
         self.results = None
 
         config = os.path.expanduser("~/.shodan_api_key")
         if not FileUtils.can_read(config):
-                logger.error("Shodan key file doesn't exists in {0}".format(config))
-                print()
-                return
-        try: 
+            logger.error("Shodan key file doesn't exists in {0}".format(config))
+        else:    
             self.api_key = FileUtils.read(config).rstrip()
-        except:
-            logger.error("Error missing shodan api key in {0}".format(config))
-            print()
-            return
-
-        self.api = Shodan(self.api_key)
-
+            if self.api_key is not None \
+                or self.api_key is not '':
+                    self.api = Shodan(self.api_key)
+            else:
+                logger.error("Error missing shodan api key in {0}".format(config))
+                return None
 
     # ------------------------------------------------------------------------------------
 
@@ -68,10 +68,10 @@ class ShodanResultsParser:
         results = list()
 
         ip = self.shodan_ip
-        os = q.get("os", "")
-        os_vendor = q.get("org", "")
-        os_family = ""
-        device_type = ""
+        os = q.get("os", None)
+        os_vendor = q.get("org", None)
+        os_family = None
+        device_type = None
         hostname = q["hostnames"][0] if q["hostnames"] else ip
         ports = q["data"]
 
@@ -101,10 +101,10 @@ class ShodanResultsParser:
             name = ShodanResultsParser.shodan_to_joker_service_name(s)
             port = p.get("port", None)
             protocol = p.get("transport", None)
-            url = ""
-            comment = ""
-            html_title = ""
-            banner = p.get("data", "")
+            url = None
+            comment = None
+            html_title = None
+            banner = p.get("data", None)
 
             # Get URL for http services
             if name in ("http", "https"):
