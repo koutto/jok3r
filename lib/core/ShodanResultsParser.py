@@ -27,10 +27,10 @@ class ShodanResultsParser:
         :param ServicesConfig services_config: Services configuration
         """
 
-        self.shodan_ip = ip
         self.services_config = services_config
         self.api = None
-        self.api_key = ''
+        self.api_key = None
+        self.ip = ip
         self.results = None
 
         config = os.path.expanduser("~/.shodan_api_key")
@@ -43,7 +43,7 @@ class ShodanResultsParser:
                     self.api = Shodan(self.api_key)
             else:
                 logger.error("Error missing shodan api key in {0}".format(config))
-                return None
+                self.api = False
 
     # ------------------------------------------------------------------------------------
 
@@ -57,23 +57,26 @@ class ShodanResultsParser:
         :return: Hosts 
         :rtype: list(Host)|None
         """
-
+        if not self.api:
+            sys.exit(1)
+        
         # Lookup the host
+        query = None
+        ip = self.ip
         try:
-            q = self.api.host(self.shodan_ip)
+            query = self.api.host(ip)
         except Exception as e:
             logger.error("Error when quering shodan: {0}".format(e))
             return None
 
         results = list()
 
-        ip = self.shodan_ip
-        os = q.get("os", None)
-        os_vendor = q.get("org", None)
+        os = query.get("os", None)
+        os_vendor = query.get("org", None)
         os_family = None
         device_type = None
-        hostname = q["hostnames"][0] if q["hostnames"] else ip
-        ports = q["data"]
+        hostname = query["hostnames"][0] if query["hostnames"] else ip
+        services = query["data"]
 
         # Create Host object
         host = Host(
@@ -96,15 +99,15 @@ class ShodanResultsParser:
 
 
         # Loop over ports/services
-        for p in ports:
-            s = p["_shodan"]["module"]
-            name = ShodanResultsParser.shodan_to_joker_service_name(s)
-            port = p.get("port", None)
-            protocol = p.get("transport", None)
+        for service in services:
+            module = service["_shodan"]["module"]
+            name = ShodanResultsParser.shodan_to_joker_service_name(module)
+            port = service.get("port", None)
+            protocol = service.get("transport", None)
             url = None
             comment = None
             html_title = None
-            banner = p.get("data", None)
+            banner = service.get("data", None)
 
             # Get URL for http services
             if name in ("http", "https"):
