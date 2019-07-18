@@ -46,16 +46,20 @@ class WebTechnoDetector:
     def __run_wappalyzer(self):
         """Detect web technologies using Wappalyzer"""
         technos = list()
-        wappalyzer = Wappalyzer(self.url)
-        apps = wappalyzer.analyze()
+        try:
+            wappalyzer = Wappalyzer(self.url)
+            apps = wappalyzer.analyze()
 
-        for appName, app in apps.items():
-            f = {
-                'name': app.name,
-                'version': app.version,
-            }
-            technos.append(f)
-        del wappalyzer
+            for appName, app in apps.items():
+                f = {
+                    'name': app.name,
+                    'version': app.version,
+                }
+                technos.append(f)
+            del wappalyzer
+        except Exception as e:
+            logger.error('Error with Wappalyzer: {}'.format(e))
+            return ''
         return technos
 
     def get_os(self):
