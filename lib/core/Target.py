@@ -317,7 +317,7 @@ class Target:
             logger.info('Check if URL is reachable...')
             self.__grab_html_title_and_headers()
 
-        else:
+        if not availability_check:
             # If availability check disabled, consider target as up anyway
             self.service.up = True
 
@@ -415,9 +415,13 @@ class Target:
         """
         if self.service.url: 
             # For HTTP: Check URL availability
-            is_reachable, status, resp_headers = WebUtils.is_url_reachable(
-                self.service.url)
-            self.service.up = is_reachable
+            try:
+                is_reachable, status, resp_headers = WebUtils.is_url_reachable(
+                    self.service.url)
+                self.service.up = is_reachable
+            except:
+                self.service.up = False
+                return
 
             # Grab HTML title and HTTP Headers
             if is_reachable:
