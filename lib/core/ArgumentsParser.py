@@ -5,6 +5,7 @@
 ###
 # PYTHON_ARGCOMPLETE_OK
 import sys
+from collections import defaultdict
 
 from lib.core.Config import *
 from lib.core.Constants import *
