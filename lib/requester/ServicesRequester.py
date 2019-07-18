@@ -98,6 +98,7 @@ class ServicesRequester(Requester):
                     nmap_banner_grabbing=True,
                     reverse_dns_lookup=True, 
                     availability_check=True,
+                    html_title_grabbing=True,
                     web_technos_detection=True):
         """
         Add a service into the current mission scope in database.
@@ -110,6 +111,7 @@ class ServicesRequester(Requester):
         :param bool nmap_banner_grabbing: If set to True, run Nmap to grab server banner
         :param bool reverse_dns_lookup: If set to True, perform a reverse DNS lookup
         :param bool availability_check: If set to True, check if port is open
+        :param bool html_title_grabbing: If set to True, grab HTML title and HTTP headers
         :param bool web_technos_detection: If set to True, try to detect web technos
 
         :return: Status
@@ -144,6 +146,7 @@ class ServicesRequester(Requester):
                 reverse_dns_lookup, 
                 availability_check, 
                 nmap_banner_grabbing,
+                html_title_grabbing,
                 web_technos_detection,
                 smart_context_initialize=True)
 
@@ -197,6 +200,7 @@ class ServicesRequester(Requester):
                 reverse_dns_lookup=True, 
                 availability_check=True, 
                 nmap_banner_grabbing=True,
+                html_title_grabbing=True,
                 web_technos_detection=True):
         """
         Add a URL into the current mission scope in database.
@@ -206,6 +210,7 @@ class ServicesRequester(Requester):
         :param bool reverse_dns_lookup: If set to True, perform a reverse DNS lookup
         :param bool availability_check: If set to True, check if port is open
         :param bool nmap_banner_grabbing: If set to True, run Nmap to grab server banner  
+        :param bool html_title_grabbing: If set to True, grab HTML title and HTTP headers
         :param bool web_technos_detection: If set to True, try to detect web technos
 
         :return: Status
@@ -236,6 +241,7 @@ class ServicesRequester(Requester):
                 reverse_dns_lookup, 
                 availability_check, 
                 nmap_banner_grabbing,
+                html_title_grabbing,
                 web_technos_detection,
                 smart_context_initialize=True)
 

@@ -508,6 +508,7 @@ class DbController(cmd2.Cmd):
                     nmap_banner_grabbing=True,
                     reverse_dns_lookup=True, 
                     availability_check=True,
+                    html_title_grabbing=True,
                     web_technos_detection=True)
 
         # --url <url>
@@ -522,6 +523,7 @@ class DbController(cmd2.Cmd):
                     reverse_dns_lookup=True,
                     availability_check=True,
                     nmap_banner_grabbing=True,
+                    html_title_grabbing=True,
                     web_technos_detection=True)
         # --del
         elif args.delete:
@@ -1177,6 +1179,14 @@ class DbController(cmd2.Cmd):
         action  = 'store_true', 
         help    = 'Do not grab HTML title for HTTP services')
     nmap.add_argument(
+        '--no-web-technos-detection',
+        action  = 'store_true',
+        help    = 'Disable web technologies detection for HTTP services')
+    nmap.add_argument(
+        '--grab-banner',
+        action  = 'store_true',
+        help    = 'Re-run Nmap for each service with no banner')
+    nmap.add_argument(
         'file', 
         nargs   = 1, 
         metavar = '<xml-results>', 
@@ -1203,8 +1213,12 @@ class DbController(cmd2.Cmd):
 
             # Parse Nmap file
             parser = NmapResultsParser(file, self.settings.services)
-            results = parser.parse(http_recheck=not args.no_http_recheck,
-                                grab_html_title=not args.no_html_title)
+            results = parser.parse(
+                http_recheck=not args.no_http_recheck,
+                html_title_grabbing=not args.no_html_title,
+                nmap_banner_grabbing=args.grab_banner,
+                web_technos_detection=not args.no_web_technos_detection)
+
             if results is not None:
                 if len(results) == 0:
                     logger.warning('No new service has been added into current mission')
@@ -1311,6 +1325,7 @@ class DbController(cmd2.Cmd):
                     nmap_banner_grabbing=not args.no_nmap_banner,
                     reverse_dns_lookup=not args.no_dns_reverse, 
                     availability_check=True,
+                    html_title_grabbing=True,
                     web_technos_detection=True)
 
             # For line with syntax: <URL>
@@ -1325,6 +1340,7 @@ class DbController(cmd2.Cmd):
                                 reverse_dns_lookup=not args.no_dns_reverse,
                                 availability_check=True,
                                 nmap_banner_grabbing=not args.no_nmap_banner,
+                                html_title_grabbing=True,
                                 web_technos_detection=True)
 
             else:
