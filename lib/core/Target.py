@@ -275,7 +275,7 @@ class Target:
         :param bool reverse_dns_lookup: Set to True to attempt performing reverse 
             DNS lookup when no hostname is specified (i.e. only IP is known)
         :param bool availability_check: Set to True to check for availability of 
-            the target. For HTTP, also grab HTML title and HTTP headers
+            the target (TCP/UDP port check).
         :param bool nmap_banner_grabbing: Set to True to run Nmap on (TCP) service 
             and update service information (banner) and host information (OS, device)
         :param bool html_title_grabbing: Set to True to retrieve HTML title and HTTP
@@ -316,9 +316,9 @@ class Target:
             
             logger.info('Check if URL is reachable...')
             self.__grab_html_title_and_headers()
-
-        if not availability_check:
-            # If availability check disabled, consider target as up anyway
+            if not self.service.up:
+                return False
+        else:
             self.service.up = True
 
         # If service not reachable, we can stop here
