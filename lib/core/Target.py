@@ -266,6 +266,7 @@ class Target:
                     reverse_dns_lookup=True, 
                     availability_check=True, 
                     nmap_banner_grabbing=True,
+                    html_title_grabbing=True,
                     web_technos_detection=True,
                     smart_context_initialize=True):
         """
@@ -277,6 +278,8 @@ class Target:
             the target. For HTTP, also grab HTML title and HTTP headers
         :param bool nmap_banner_grabbing: Set to True to run Nmap on (TCP) service 
             and update service information (banner) and host information (OS, device)
+        :param bool html_title_grabbing: Set to True to retrieve HTML title and HTTP
+            response headers if target service is HTTP
         :param bool web_technos_detection: Set to True to run WebTechnoDetector if 
             target service is HTTP
         :param bool smart_context_initialize: Set to True to initialize the context of
@@ -303,16 +306,24 @@ class Target:
 
 
         # Perform service availability check
-        if availability_check:
+        if availability_check and self.service.name != 'http':
             logger.info('Check if service is reachable...')
             self.__availability_check()
 
-            # If service not reachable, we can stop here
-            if not self.service.up:
-                return False
-        else:
-            self.service.up = True # consider it as up anyway
+        # For HTTP, also grab HTML title and HTTP response headers 
+        elif (html_title_grabbing or availability_check) \
+            and self.service.name == 'http':
+            
+            logger.info('Check if URL is reachable...')
+            self.__grab_html_title_and_headers()
 
+        else:
+            # If availability check disabled, consider target as up anyway
+            self.service.up = True
+
+        # If service not reachable, we can stop here
+        if not self.service.up:
+            return False
 
         # Run Nmap against service for banner grabbing, OS info, Device info
         # Only for TCP services, and if no banner already stored in database
@@ -377,10 +388,25 @@ class Target:
 
     def __availability_check(self):
         """
-        Perform service availability check:
-            - For HTTP service: Check if URL is reachable, grab HTML title 
-              and HTTP headers
-            - For other TCP/UDP services: Simply check if port is open
+        Check if TCP/UDP port is open
+
+        Updated in this method:
+            - self.service.up
+        """
+        if self.service.protocol == Protocol.TCP:
+            # For TCP: simple port check
+            self.service.up = NetUtils.is_tcp_port_open(
+                str(self.service.host.ip), self.service.port)
+
+        else:
+            # For UDP: simple port check
+            self.service.up = NetUtils.is_udp_port_open(
+                str(self.service.host.ip), self.service.port)
+
+
+    def __grab_html_title_and_headers(self):
+        """
+        Grab HTML title and HTTP headers for service HTTP
 
         Updated in this method:
             - self.service.up
@@ -404,16 +430,6 @@ class Target:
                 if not self.service.html_title:
                     self.service.html_title = WebUtils.grab_html_title(
                         self.service.url)
-
-        elif self.service.protocol == Protocol.TCP:
-            # For TCP: simple port check
-            self.service.up = NetUtils.is_tcp_port_open(
-                str(self.service.host.ip), self.service.port)
-
-        else:
-            # For UDP: simple port check
-            self.service.up = NetUtils.is_udp_port_open(
-                str(self.service.host.ip), self.service.port) 
 
 
     def __run_nmap(self):
