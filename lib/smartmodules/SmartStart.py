@@ -62,7 +62,9 @@ class SmartStart:
             self.cu.add_option('https', 'true')
 
         # Check if HTTP service is protected by .htaccess authentication
-        if '401 Unauthorized'.lower() in self.service.http_headers.lower():
+        if self.service.http_headers \
+            and '401 Unauthorized'.lower() in self.service.http_headers.lower():
+            
             logger.smartinfo('HTTP authentication (htaccess) detected ' \
                 '(401 Unauthorized)')
             self.cu.add_option('htaccess', 'true')
