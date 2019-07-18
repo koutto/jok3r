@@ -314,7 +314,7 @@ class Target:
         elif (html_title_grabbing or availability_check) \
             and self.service.name == 'http':
             
-            logger.info('Check if URL is reachable...')
+            logger.info('Check if URL is reachable (grab HTML response)...')
             self.__grab_html_title_and_headers()
             if not self.service.up:
                 return False
@@ -356,6 +356,10 @@ class Target:
                     self.service.host.os = detected_os
                     self.service.host.os_vendor = OSUtils.get_os_vendor(detected_os)
                     self.service.host.os_family = OSUtils.get_os_family(detected_os)
+                    self.service.host.device_type = OSUtils.get_device_type(
+                        self.service.host.os,
+                        self.service.host.os_family,
+                        '')
                     logger.info('Detected OS from web technologies = {os}'.format(
                         os=detected_os))
 
@@ -486,7 +490,7 @@ class Target:
 
         # Try to deduce OS from banner if possible and not already done by Nmap
         if not self.service.host.os:
-            detected_os = NetUtils.os_from_nmap_banner(self.service.banner)
+            detected_os = OSUtils.os_from_nmap_banner(self.service.banner)
             if detected_os:
                 self.service.host.os = detected_os
                 self.service.host.os_vendor = OSUtils.get_os_vendor(detected_os)

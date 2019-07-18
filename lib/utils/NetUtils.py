@@ -9,6 +9,8 @@ import time
 from libnmap.process import NmapProcess
 from libnmap.parser import NmapParser, NmapParserException
 
+from lib.utils.OSUtils import OSUtils
+
 
 class NetUtils:
 

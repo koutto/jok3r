@@ -98,7 +98,7 @@ class OSUtils:
         ]
         if nmap_device_type == 'general purpose' \
             and os_family in os_patterns_desktops:
-                if 'server' in os. lower():
+                if 'server' in os.lower():
                     return 'Server'
                 else:
                     return 'Desktop'

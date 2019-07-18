@@ -8,6 +8,7 @@ from libnmap.parser import NmapParser
 from lib.core.Config import *
 from lib.core.Target import Target
 from lib.utils.NetUtils import NetUtils
+from lib.utils.OSUtils import OSUtils
 from lib.utils.WebUtils import WebUtils
 from lib.db.Host import Host
 from lib.db.Option import Option
@@ -79,7 +80,7 @@ class NmapResultsParser:
                             and len(os_matchs[0].osclasses) > 0:
                         os_vendor = os_matchs[0].osclasses[0].vendor
                         os_family = os_matchs[0].osclasses[0].osfamily
-                        device_type = NetUtils.get_device_type(
+                        device_type = OSUtils.get_device_type(
                             os,
                             os_family,
                             os_matchs[0].osclasses[0].type)
@@ -156,7 +157,7 @@ class NmapResultsParser:
 
                 # Deduce OS from banner if possible
                 if not os:
-                    host.os = NetUtils.os_from_nmap_banner(s.banner)
+                    host.os = OSUtils.os_from_nmap_banner(s.banner)
 
                 # Clean Nmap banner
                 banner = NetUtils.clean_nmap_banner(s.banner)
