@@ -27,43 +27,6 @@ class AttackController(Controller):
 
         args = self.arguments.args
 
-        # Re-organize context parameters in dict: 
-        # { service : list of db objects }
-        self.creds    = defaultdict(list)
-        self.users    = defaultdict(list)
-        self.products = defaultdict(list)
-        self.options  = defaultdict(list)
-
-        if args.creds:
-            for c in args.creds:
-                self.creds[c['service']].append(
-                    Credential(type=c['auth_type'], 
-                               username=c['username'], 
-                               password=c['password']))
-        if args.users:
-            for u in args.users:
-                self.users[c['service']].append(
-                    Credential(type=u['auth_type'], 
-                               username=u['username'], 
-                               password=None))
-
-        if args.products:
-            for type_,name in args.products.items():
-                service = self.settings.services.get_service_for_product_type(type_)
-                if service:
-                    self.products[service].append(
-                        Product(type=type_,
-                                name=name))
-
-        if args.options:
-            for name, value in args.options.items():
-                service = self.settings.services.get_service_for_specific_option(name)
-                if service:
-                    self.options[service].append(
-                        Option(name=name, 
-                               value=value))
-
-
         # Attack configuration: Categories of checks to run
         categories = self.settings.services.list_all_categories() # default: all
 
@@ -124,10 +87,10 @@ class AttackController(Controller):
         host.services.append(service)
 
         # Update credentials, options, products if specified in command-line
-        for c in self.creds[args.service]    : service.credentials.append(c)
-        for u in self.users[args.service]    : service.credentials.append(u)
-        for p in self.products[args.service] : service.products.append(p)
-        for o in self.options[args.service]  : service.options.append(o)
+        for c in args.creds[args.service]    : service.credentials.append(c)
+        for u in args.users[args.service]    : service.credentials.append(u)
+        for p in args.products[args.service] : service.products.append(p)
+        for o in args.options[args.service]  : service.options.append(o)
 
         # Initialize Target
         try:
@@ -210,10 +173,10 @@ class AttackController(Controller):
         for service in services:
 
             # Update credentials, options, products if specified in command-line
-            for c in self.creds[service.name]    : service.credentials.append(c)
-            for u in self.users[service.name]    : service.credentials.append(u)
-            for p in self.products[service.name] : service.products.append(p)
-            for o in self.options[service.name]  : service.options.append(o)
+            for c in args.creds[service.name]    : service.credentials.append(c)
+            for u in args.users[service.name]    : service.credentials.append(u)
+            for p in args.products[service.name] : service.products.append(p)
+            for o in args.options[service.name]  : service.options.append(o)
 
             # Initialize Target 
             try:
