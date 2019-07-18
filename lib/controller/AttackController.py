@@ -4,7 +4,7 @@
 ### Core > Attack Controller
 ###
 import datetime
-from collections import defaultdict
+from humanfriendly import format_timespan
 
 from lib.core.AttackScope import AttackScope
 from lib.core.Constants import *
@@ -37,14 +37,15 @@ class AttackController(Controller):
 
 
         # Create the attack scope
-        self.attack_scope = AttackScope(self.settings, 
-                                        self.arguments,
-                                        self.sqlsess,
-                                        args.mission or args.add,
-                                        filter_categories=categories, 
-                                        filter_checks=args.checks, 
-                                        attack_profile=args.profile,
-                                        fast_mode=args.fast_mode)
+        self.attack_scope = AttackScope(
+            self.settings, 
+            self.arguments,
+            self.sqlsess,
+            args.mission or args.add,
+            filter_categories=categories, 
+            filter_checks=args.checks, 
+            attack_profile=args.profile,
+            fast_mode=args.fast_mode)
 
 
         # Run the attack
@@ -56,7 +57,7 @@ class AttackController(Controller):
             
         print()
         duration = datetime.datetime.now() - begin
-        logger.info('Done. Time spent: {} seconds'.format(duration.seconds))
+        logger.info('Finished. Duration: {}'.format(format_timespan(duration.seconds)))
 
 
     #------------------------------------------------------------------------------------
@@ -79,14 +80,15 @@ class AttackController(Controller):
         # will be merged by ServicesRequester.add_target)
         url = args.target_ip_or_url if args.target_mode == TargetMode.URL else ''
         ip  = args.target_ip_or_url if args.target_mode == TargetMode.IP else ''
-        service = Service(name=args.service,
-                          port=int(args.target_port),
-                          protocol=self.settings.services.get_protocol2(args.service),
-                          url=url)
+        service = Service(
+            name=args.service,
+            port=int(args.target_port),
+            protocol=self.settings.services.get_protocol2(args.service),
+            url=url)
         host = Host(ip=ip) # Will be updated when initializing Target()
         host.services.append(service)
 
-        # Update credentials, options, products if specified in command-line
+        # Update context (credentials, options, products) if specified in command-line
         for c in args.creds[args.service]    : service.credentials.append(c)
         for u in args.users[args.service]    : service.credentials.append(u)
         for p in args.products[args.service] : service.products.append(p)
@@ -99,16 +101,25 @@ class AttackController(Controller):
             logger.error(e)
             sys.exit(1)
 
-        # Check if target is reachable 
-        # (by default, perform reverve DNS lookup & Nmap banner grabbing)
+        # Check Target and update its information:
+        # - Reverse DNS lookup: by default
+        # - Port check: always
+        # - Nmap service detection: by default
+        # - HTML title grabbing: always
+        # - Web technologies detection: always
+        # - Context initialization via SmartStart: always
         reachable = target.smart_check(
-            reverse_dns=(args.reverse_dns is None or args.reverse_dns == 'on'),
-            availability_check=True,
-            grab_banner_nmap=(args.nmap_banner_grab is None \
-                or args.nmap_banner_grab == 'on'))
+            reverse_dns_lookup=(args.reverse_dns is None or args.reverse_dns == 'on'),
+            availability_check=True, 
+            nmap_banner_grabbing=(args.nmap_banner_grab is None \
+                or args.nmap_banner_grab == 'on'),
+            html_title_grabbing=True,
+            web_technos_detection=True,
+            smart_context_initialize=True)
 
+        # Display availability status, exit if not reachable
         if args.target_mode == TargetMode.IP:
-            msg = 'Target {neg}reachable: {target}'.format(
+            msg = 'Target service {neg}reachable: {target}'.format(
                 neg='not ' if not reachable else '',
                 target=target)
         else:
@@ -119,11 +130,11 @@ class AttackController(Controller):
         if reachable:
             logger.success(msg)
         else: 
-            # Skip target if not reachable
             logger.error(msg)
             return
 
-        # Commit new data into database if target must be added to a mission
+        # Commit the target with updated information inside the appropriate 
+        # mission in the database
         if mission:
             logger.info('Results from this attack will be saved under mission ' \
                 '"{mission}" in database'.format(mission=mission.name))
@@ -133,6 +144,7 @@ class AttackController(Controller):
         # Run the attack
         self.attack_scope.add_target(target)
         self.attack_scope.attack()
+        return
 
 
     #------------------------------------------------------------------------------------
