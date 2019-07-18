@@ -95,9 +95,10 @@ class ServicesRequester(Requester):
                     protocol, 
                     service, 
                     services_config,
-                    grab_banner_nmap=True,
-                    reverse_dns=True, 
-                    availability_check=True):
+                    nmap_banner_grabbing=True,
+                    reverse_dns_lookup=True, 
+                    availability_check=True,
+                    web_technos_detection=True):
         """
         Add a service into the current mission scope in database.
 
@@ -106,9 +107,11 @@ class ServicesRequester(Requester):
         :param str protocol: Protocol (tcp/udp)
         :param str service: Service name
         :param lib.core.ServicesConfig services_config: Services configuration object
-        :param bool grab_banner_nmap: If set to True, run Nmap to grab server banner
-        :param bool reverse_dns: If set to True, perform a reverse DNS lookup
+        :param bool nmap_banner_grabbing: If set to True, run Nmap to grab server banner
+        :param bool reverse_dns_lookup: If set to True, perform a reverse DNS lookup
         :param bool availability_check: If set to True, check if port is open
+        :param bool web_technos_detection: If set to True, try to detect web technos
+
         :return: Status
         :rtype: bool
         """
@@ -138,9 +141,11 @@ class ServicesRequester(Requester):
         else:
 
             up = target.smart_check(
-                reverse_dns, 
+                reverse_dns_lookup, 
                 availability_check, 
-                grab_banner_nmap)
+                nmap_banner_grabbing,
+                web_technos_detection,
+                smart_context_initialize=True)
 
             if up:
                 # Add service in db (and host if not existing)
@@ -189,19 +194,20 @@ class ServicesRequester(Requester):
     def add_url(self, 
                 url,
                 services_config,
-                reverse_dns=True, 
+                reverse_dns_lookup=True, 
                 availability_check=True, 
-                grab_banner_nmap=True,
+                nmap_banner_grabbing=True,
                 web_technos_detection=True):
         """
         Add a URL into the current mission scope in database.
 
         :param str url: URL to add
         :param lib.core.ServicesConfig services_config: Services configuration object
-        :param bool reverse_dns: If set to True, perform a reverse DNS lookup
+        :param bool reverse_dns_lookup: If set to True, perform a reverse DNS lookup
         :param bool availability_check: If set to True, check if port is open
-        :param bool grab_banner_nmap: If set to True, run Nmap to grab server banner  
+        :param bool nmap_banner_grabbing: If set to True, run Nmap to grab server banner  
         :param bool web_technos_detection: If set to True, try to detect web technos
+
         :return: Status
         :rtype: bool
         """
@@ -227,10 +233,11 @@ class ServicesRequester(Requester):
                 return False
 
             up = target.smart_check(
-                reverse_dns, 
+                reverse_dns_lookup, 
                 availability_check, 
-                grab_banner_nmap,
-                web_technos_detection)
+                nmap_banner_grabbing,
+                web_technos_detection,
+                smart_context_initialize=True)
 
             if up:
                 matching_host = self.sqlsess.query(Host).join(Mission)\

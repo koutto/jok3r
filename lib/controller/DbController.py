@@ -505,9 +505,10 @@ class DbController(cmd2.Cmd):
                     self.settings.services.get_protocol(service), 
                     service, 
                     self.settings.services,
-                    grab_banner_nmap=True,
-                    reverse_dns=True, 
-                    availability_check=True)
+                    nmap_banner_grabbing=True,
+                    reverse_dns_lookup=True, 
+                    availability_check=True,
+                    web_technos_detection=True)
 
         # --url <url>
         elif args.url:
@@ -518,9 +519,9 @@ class DbController(cmd2.Cmd):
                 req.add_url(
                     args.url, 
                     self.settings.services,
-                    reverse_dns=True,
+                    reverse_dns_lookup=True,
                     availability_check=True,
-                    grab_banner_nmap=True,
+                    nmap_banner_grabbing=True,
                     web_technos_detection=True)
         # --del
         elif args.delete:
@@ -1307,9 +1308,10 @@ class DbController(cmd2.Cmd):
                     self.settings.services.get_protocol(service),
                     service, 
                     self.settings.services,
-                    grab_banner_nmap=not args.no_nmap_banner,
-                    reverse_dns=not args.no_dns_reverse, 
-                    availability_check=True)
+                    nmap_banner_grabbing=not args.no_nmap_banner,
+                    reverse_dns_lookup=not args.no_dns_reverse, 
+                    availability_check=True,
+                    web_technos_detection=True)
 
             # For line with syntax: <URL>
             elif l.lower().startswith('http://') or l.lower().startswith('https://'):
@@ -1320,9 +1322,9 @@ class DbController(cmd2.Cmd):
                     # Add the URL in current mission scope
                     req.add_url(l,
                                 self.settings.services,
-                                reverse_dns=not args.no_dns_reverse,
+                                reverse_dns_lookup=not args.no_dns_reverse,
                                 availability_check=True,
-                                grab_banner_nmap=not args.no_nmap_banner,
+                                nmap_banner_grabbing=not args.no_nmap_banner,
                                 web_technos_detection=True)
 
             else:
