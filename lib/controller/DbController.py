@@ -1169,7 +1169,12 @@ class DbController(cmd2.Cmd):
 
     nmap = argparse.ArgumentParser(
         description='Import Nmap results (XML)', 
-        formatter_class=formatter_class)
+        formatter_class=formatter_class, 
+        epilog='Note: is is recommended to run Nmap scans with -A or -sV options ' \
+            'in order to get service banners in imported results. If you import ' \
+            'results from a scan run without version detection, you can add ' \
+            '--version-detection to tell Jok3r to run Nmap version detection for ' \
+            'each service it has not been already run.')
     nmap.add_argument(
         '-n', '--no-http-recheck', 
         action  = 'store_true', 
@@ -1183,9 +1188,9 @@ class DbController(cmd2.Cmd):
         action  = 'store_true',
         help    = 'Disable web technologies detection for HTTP services')
     nmap.add_argument(
-        '--grab-banner',
+        '--version-detection',
         action  = 'store_true',
-        help    = 'Re-run Nmap for each service with no banner')
+        help    = 'Run Nmap version detection for each service with no banner')
     nmap.add_argument(
         'file', 
         nargs   = 1, 
