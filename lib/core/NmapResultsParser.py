@@ -31,13 +31,23 @@ class NmapResultsParser:
 
     #------------------------------------------------------------------------------------
 
-    def parse(self, http_recheck=True, grab_html_title=True):
+    def parse(self, 
+              http_recheck=True, 
+              html_title_grabbing=True,
+              nmap_banner_grabbing=False,
+              web_technos_detection=True):
         """
         Parse the Nmap results
 
         :param bool http_recheck: If set to True, TCP ports are re-checked for HTTP(s)
-        :param bool grab_html_title: If set to True, grab title of HTML page (text in
-            <title> tags) and put it as comment for HTTP service.
+        :param bool html_title_grabbing: If set to True, grab title of HTML page (text in
+            <title> tags) and put it as comment for HTTP service
+        :param bool nmap_banner_grabbing: If set to True, run Nmap to grab 
+            service banner for each service where it is missing (might be useful if 
+            imported Nmap results come from a scan run without -sV/-A)
+        :param bool web_technos_detection: If set to True, try to detect web technos
+            for HTTP service
+
         :return: Hosts 
         :rtype: list(Host)|None
         """
@@ -114,10 +124,6 @@ class NmapResultsParser:
                             'as http service'.format(url=url))
                         name = 'http'
 
-                # Grab page title for HTTP services 
-                if grab_html_title and name == 'http':
-                    html_title = WebUtils.grab_html_title(url)
-
                 # Only keep services supported by Jok3r
                 if not self.services_config.is_service_supported(name, multi=False):
                     logger.info('Service not supported: host {ip} | port ' \
@@ -147,9 +153,22 @@ class NmapResultsParser:
                     comment    = comment,
                     html_title = html_title)
 
-                # Already add specific option https=True if possible
-                if name == 'http' and url.startswith('https://'):
-                    service.options.append(Option(name='https', value='true'))
+                # Target smart check:
+                # - Nmap banner grabbing if specified by user and banner is missing in 
+                #   imported results;
+                # - HTML title and HTTP response headers grabbing for HTTP service;
+                # - Web technologies detection for HTTP service, except if disabled by
+                #   user;
+                # - Initialize the context of the target via SmartModules, based on the
+                #   information already known (i.e. banner, web technologies...)
+                target = Target(service, self.services_config)
+                target.smart_check(
+                    reverse_dns_lookup=False, # Done by Nmap 
+                    availability_check=False, # Done by Nmap
+                    nmap_banner_grabbing, # Default: False, but can be enabled by user
+                    html_title_grabbing,
+                    web_technos_detection, # Default: True, but can be disabled by user
+                    smart_context_initialize=True)
 
                 host.services.append(service)
 
