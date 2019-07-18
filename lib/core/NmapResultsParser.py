@@ -59,7 +59,10 @@ class NmapResultsParser:
             return None
 
         results = list()
+        host_id = 0
         for h in nmap_report.hosts:
+
+            host_id += 1
 
             # Get the fingerprinted OS if available
             os = ''
@@ -90,12 +93,17 @@ class NmapResultsParser:
                         mac=h.mac,
                         vendor=h.vendor,
                         type=device_type)
-            logger.info('Parsing host: {ip}{hostname} ...'.format(
-                ip=host.ip, 
-                hostname=' ('+host.hostname+')' if host.hostname != host.ip else ''))
+            logger.info('[Host {current_host}/{total_host}] Parsing host: ' \
+                '{ip}{hostname} ...'.format(
+                    current_host=host_id,
+                    total_host=len(nmap_report.hosts),
+                    ip=host.ip, 
+                    hostname=' ('+host.hostname+')' if host.hostname != host.ip else ''))
 
             # Loop over open ports
+            port_id = 0
             for p in h.get_open_ports():
+                port_id += 1
                 s = h.get_service(p[0], protocol=p[1])
                 name = NmapResultsParser.nmap_to_joker_service_name(s.service)
                 url = ''
@@ -125,17 +133,26 @@ class NmapResultsParser:
                             'as http service'.format(url=url))
                         name = 'http'
 
+                # Print current processed service
+                print()
+                logger.info('[Host {current_host}/{total_host} | Service {current_svc}' \
+                    '/{total_svc}] Parsing service: host {ip} | port {port}/{proto} ' \
+                    '| service {service} ...'.format(
+                        current_host=host_id,
+                        total_host=len(nmap_report.hosts),
+                        current_svc=port_id,
+                        total_svc=len(h.get_open_ports()),
+                        ip=h.ipv4, 
+                        port=s.port, 
+                        proto=s.protocol, 
+                        service=name))
+
                 # Only keep services supported by Jok3r
                 if not self.services_config.is_service_supported(name, multi=False):
-                    logger.info('Service not supported: host {ip} | port ' \
+                    logger.warning('Service not supported: host {ip} | port ' \
                         '{port}/{proto} | service {service}'.format(
                             ip = h.ipv4, port=s.port, proto=s.protocol, service=name))
                     continue
-                else:
-                    print()
-                    logger.info('Parsing service: host {ip} | port {port}/{proto} ' \
-                        '| service {service}'.format(
-                            ip = h.ipv4, port=s.port, proto=s.protocol, service=name))
 
                 # Deduce OS from banner if possible
                 if not os:
@@ -165,13 +182,15 @@ class NmapResultsParser:
                 # - Initialize the context of the target via SmartModules, based on the
                 #   information already known (i.e. banner, web technologies...)
                 target = Target(service, self.services_config)
-                target.smart_check(
+                up = target.smart_check(
                     reverse_dns_lookup=False, # Done by Nmap 
                     availability_check=False, # Done by Nmap
                     nmap_banner_grabbing=nmap_banner_grabbing, # Default: False
                     html_title_grabbing=html_title_grabbing,
                     web_technos_detection=web_technos_detection, # Default: True
                     smart_context_initialize=True)
+                if not up:
+                    logger.warning('Service not reachable')
 
             if host.services:
                 results.append(host)
