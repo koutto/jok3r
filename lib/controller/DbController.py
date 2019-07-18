@@ -1221,8 +1221,9 @@ class DbController(cmd2.Cmd):
             results = parser.parse(
                 http_recheck=not args.no_http_recheck,
                 html_title_grabbing=not args.no_html_title,
-                nmap_banner_grabbing=args.grab_banner,
+                nmap_banner_grabbing=args.version_detection,
                 web_technos_detection=not args.no_web_technos_detection)
+            print()
 
             if results is not None:
                 if len(results) == 0:

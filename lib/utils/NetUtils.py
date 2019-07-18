@@ -85,7 +85,7 @@ class NetUtils:
     @staticmethod
     def is_udp_port_open(ip, port):
         """Check if given UDP port is open"""
-        nmproc = NmapProcess(ip, '-sU -T4 -p '+str(port))
+        nmproc = NmapProcess(ip, '-sU -T5 -p '+str(port))
         rc = nmproc.run()
         if rc != 0:
             print("Nmap scan failed (check if running as root): {0}".format(
@@ -135,7 +135,7 @@ class NetUtils:
         }
         report = None
         #nmproc = NmapProcess(ip, '-sT -sV -Pn -p '+str(port))
-        nmproc = NmapProcess(ip, '-A -Pn -T4 -p '+str(port))
+        nmproc = NmapProcess(ip, '-A -Pn -T5 -p '+str(port))
         rc = nmproc.run()
         if rc != 0:
             print("Nmap scan failed: {0}".format(nmproc.stderr))

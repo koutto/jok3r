@@ -6,6 +6,7 @@
 from libnmap.parser import NmapParser
 
 from lib.core.Config import *
+from lib.core.Target import Target
 from lib.utils.NetUtils import NetUtils
 from lib.utils.WebUtils import WebUtils
 from lib.db.Host import Host
@@ -131,6 +132,7 @@ class NmapResultsParser:
                             ip = h.ipv4, port=s.port, proto=s.protocol, service=name))
                     continue
                 else:
+                    print()
                     logger.info('Parsing service: host {ip} | port {port}/{proto} ' \
                         '| service {service}'.format(
                             ip = h.ipv4, port=s.port, proto=s.protocol, service=name))
@@ -152,6 +154,7 @@ class NmapResultsParser:
                     banner     = banner,
                     comment    = comment,
                     html_title = html_title)
+                host.services.append(service)
 
                 # Target smart check:
                 # - Nmap banner grabbing if specified by user and banner is missing in 
@@ -165,12 +168,10 @@ class NmapResultsParser:
                 target.smart_check(
                     reverse_dns_lookup=False, # Done by Nmap 
                     availability_check=False, # Done by Nmap
-                    nmap_banner_grabbing, # Default: False, but can be enabled by user
-                    html_title_grabbing,
-                    web_technos_detection, # Default: True, but can be disabled by user
+                    nmap_banner_grabbing=nmap_banner_grabbing, # Default: False
+                    html_title_grabbing=html_title_grabbing,
+                    web_technos_detection=web_technos_detection, # Default: True
                     smart_context_initialize=True)
-
-                host.services.append(service)
 
             if host.services:
                 results.append(host)

@@ -8,7 +8,6 @@ import time
 
 from lib.requester.ResultsRequester import ResultsRequester
 from lib.requester.ServicesRequester import ServicesRequester
-from lib.smartmodules.SmartStart import SmartStart
 from lib.utils.StringUtils import StringUtils
 from lib.output.Logger import logger
 from lib.output.Output import Output
