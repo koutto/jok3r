@@ -16,6 +16,9 @@ from lib.utils.FileUtils import FileUtils
 from lib.utils.WebUtils import WebUtils
 from lib.output.Logger import logger
 from lib.output.Output import Output
+from lib.db.Credential import Credential
+from lib.db.Option import Option
+from lib.db.Product import Product
 
 
 class ArgumentsParser:
