@@ -164,101 +164,12 @@ class NetUtils:
                                 and len(os_matchs[0].osclasses) > 0:
                             results['os_vendor'] = os_matchs[0].osclasses[0].vendor
                             results['os_family'] = os_matchs[0].osclasses[0].osfamily
-                            results['type'] = NetUtils.get_device_type(
+                            results['type'] = OSUtils.get_device_type(
                                 results['os'],
                                 results['os_family'],
                                 os_matchs[0].osclasses[0].type)
 
         return results
-
-
-    @staticmethod
-    def os_from_nmap_banner(banner):
-        """
-        Return OS name that might be contained inside Nmap banner.
-
-        Some examples:
-        - ostype: Windows
-        - product: Microsoft HTTPAPI... : Microsoft -> Windows
-        - product: IBM HTTP Server version: 6.1.0.47 extrainfo: Derived from 
-            Apache 2.0.47; Unix -> Linux
-        - product: Apache httpd version: 2.4.34 extrainfo: (Red Hat) -> Red Hat Linux
-        """
-        matches = {
-            'Windows': [
-                'ostype: windows',
-                'microsoft',
-            ],
-            'Linux': [
-                'ostype: linux',
-                'ostype: unix',
-                'Red Hat',
-                'Unix',
-            ]
-        }
-
-        for ostype in matches.keys():
-            for string in matches[ostype]:
-                if string.lower() in banner.lower():
-                    return ostype
-
-        return ''
-
-
-    @staticmethod
-    def get_device_type(os, os_family, nmap_device_type):
-
-        # Device types matching between Nmap and Jok3r
-        # List of device types supported by Nmap: 
-        # https://nmap.org/book/osdetect-device-types.html
-        DEVICE_TYPE_NMAP_TO_JOKER = {
-            'general purpose':      'Server',
-            'bridge':               'Device',
-            'broadband router':     'Device',
-            'firewall':             'Firewall',
-            'game console':         'Game console',
-            'hub':                  'Device',
-            'load balancer':        'Device',
-            'media device':         'Media',
-            'PBX':                  'VoIP',
-            'PDA':                  'PDA',
-            'phone':                'Mobile',
-            'power-device':         'Power device',
-            'printer':              'Printer',
-            'print server':         'Print server',
-            'proxy server':         'Proxy server',
-            'remote management':    'Management',
-            'router':               'Device',
-            'security-misc':        'Firewall',
-            'specialized':          'Misc',
-            'storage-misc':         'NAS',
-            'switch':               'Device',
-            'telecom-misc':         'VoIP',
-            'terminal':             'Client',
-            'terminal server':      'Server',
-            'VoIP adapter':         'VoIP',
-            'WAP':                  'Device',
-            'webcam':               'Webcam',
-        }
-
-        # Nmap device type does not differentiate servers and desktops
-        # in the category "general purpose". We try to distinguish desktop
-        # based on the OS name. Far from being perfect, only handle Windows
-        # and MacOS for now...
-        os_patterns_desktops = [
-            'Mac OS',
-            'macOS',
-            'Windows',
-        ]
-        if nmap_device_type == 'general purpose' \
-            and os_family in os_patterns_desktops:
-                if 'server' in os. lower():
-                    return 'Server'
-                else:
-                    return 'Desktop'
-
-        else:
-            return DEVICE_TYPE_NMAP_TO_JOKER.get(nmap_device_type, 'Misc')
 
 
     @staticmethod
