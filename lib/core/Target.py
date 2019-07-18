@@ -19,6 +19,7 @@ from lib.db.Credential import Credential
 from lib.db.Option import Option
 from lib.output.Logger import logger
 from lib.output.Output import Output
+from lib.smartmodules.SmartStart import SmartStart
 from lib.webtechdetector.WebTechnoDetector import WebTechnoDetector
 
 
@@ -74,10 +75,6 @@ class Target:
             self.service.port = WebUtils.get_port_from_url(self.service.url)
             if not NetUtils.is_valid_port(self.service.port):
                 raise TargetException('Invalid port number {}'.format(self.service.port))
-
-        # Already add specific option https=True if URL begins with https:// 
-        if self.service.url.startswith('https://'):
-            self.service.options.append(Option(name='https', value='true'))
 
 
     def __init_with_ip(self):
@@ -268,8 +265,9 @@ class Target:
     def smart_check(self, 
                     reverse_dns_lookup=True, 
                     availability_check=True, 
-                    nmap_banner_grabbing=False,
-                    web_technos_detection=True):
+                    nmap_banner_grabbing=True,
+                    web_technos_detection=True,
+                    smart_context_initialize=True):
         """
         Check if the target is reachable and update target information
 
@@ -281,7 +279,10 @@ class Target:
             and update service information (banner) and host information (OS, device)
         :param bool web_technos_detection: Set to True to run WebTechnoDetector if 
             target service is HTTP
-        :return: Result of check
+        :param bool smart_context_initialize: Set to True to initialize the context of
+            the target using SmartModules, based on information already known
+
+        :return: Availability status (True if up, False otherwise)
         :rtype: bool
         """
 
@@ -343,7 +344,12 @@ class Target:
                     logger.info('Detected OS from web technologies = {os}'.format(
                         os=detected_os))
 
-        # SmartStart
+        # Run SmartModules Start to initialize the context of the target based on the
+        # information already known (i.e. banner, web technologies...)
+        if smart_context_initialize:
+            start = SmartStart(self.service)
+            start.run()
+
         return self.service.up
 
 
@@ -459,9 +465,9 @@ class Target:
             detected_os = NetUtils.os_from_nmap_banner(self.service.banner)
             if detected_os:
                 self.service.host.os = detected_os
+                self.service.host.os_vendor = OSUtils.get_os_vendor(detected_os)
+                self.service.host.os_family = OSUtils.get_os_family(detected_os)
                 logger.info('Detected OS from banner = {os}'.format(os=detected_os))
-
-                # TODO: os vendor os family
 
 
     #------------------------------------------------------------------------------------
