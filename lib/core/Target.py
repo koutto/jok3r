@@ -326,8 +326,12 @@ class Target:
             self.__run_nmap()
 
 
-        # Perform Web technologies detection for HTTP
-        if self.service.name == 'http' and web_technos_detection:
+        # Perform Web technologies detection for HTTP, if no technologies
+        # are already stored in database
+        if web_technos_detection \
+            and self.service.name == 'http' \
+            and not self.service.web_technos:
+
             logger.info('Web technologies detection using Wappalyzer...')
             detector = WebTechnoDetector(self.service.url)
             technos = detector.detect()
