@@ -142,10 +142,10 @@ class Check:
                     # Run smartmodule method on output
                     postcheck = SmartPostcheck(
                         target.service,
-                        sqlsession,
                         self.tool.name,
                         '{0}\n{1}'.format(cmdline, outputraw))
                     postcheck.run()
+                    sqlsession.commit()
 
 
             else:

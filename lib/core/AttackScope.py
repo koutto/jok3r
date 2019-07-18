@@ -183,10 +183,6 @@ class AttackScope:
         target.print_http_headers()
         target.print_context()
 
-        # Run start method from SmartModule
-        start = SmartStart(target.service, self.sqlsess)
-        start.run()
-
         # Run security checks
         service_checks = self.settings.services.get_service_checks(
             target.get_service_name())
