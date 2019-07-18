@@ -356,7 +356,7 @@ class Target:
                     self.service.host.os = detected_os
                     self.service.host.os_vendor = OSUtils.get_os_vendor(detected_os)
                     self.service.host.os_family = OSUtils.get_os_family(detected_os)
-                    self.service.host.device_type = OSUtils.get_device_type(
+                    self.service.host.type = OSUtils.get_device_type(
                         self.service.host.os,
                         self.service.host.os_family,
                         '')

@@ -1229,6 +1229,7 @@ class DbController(cmd2.Cmd):
                 if len(results) == 0:
                     logger.warning('No new service has been added into current mission')
                 else:
+                    logger.info('Update the database...')
                     req = HostsRequester(self.sqlsess)
                     req.select_mission(self.current_mission)
                     for host in results:
