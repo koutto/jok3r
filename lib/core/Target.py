@@ -314,7 +314,7 @@ class Target:
         elif (html_title_grabbing or availability_check) \
             and self.service.name == 'http':
             
-            logger.info('Check if URL is reachable (grab HTML response)...')
+            logger.info('Check if URL is reachable (grab HTTP response)...')
             self.__grab_html_title_and_headers()
             if not self.service.up:
                 return False
