@@ -89,10 +89,14 @@ class AttackController(Controller):
         host.services.append(service)
 
         # Update context (credentials, options, products) if specified in command-line
-        for c in args.creds[args.service]    : service.credentials.append(c)
-        for u in args.users[args.service]    : service.credentials.append(u)
-        for p in args.products[args.service] : service.products.append(p)
-        for o in args.options[args.service]  : service.options.append(o)
+        if args.creds:
+            for c in args.creds[args.service]: service.credentials.append(c)
+        if args.users:
+            for u in args.users[args.service]: service.credentials.append(u)
+        if args.products:
+            for p in args.products[args.service]: service.products.append(p)
+        if args.options:
+            for o in args.options[args.service]: service.options.append(o)
 
         # Initialize Target
         try:
@@ -185,10 +189,14 @@ class AttackController(Controller):
         for service in services:
 
             # Update credentials, options, products if specified in command-line
-            for c in args.creds[service.name]    : service.credentials.append(c)
-            for u in args.users[service.name]    : service.credentials.append(u)
-            for p in args.products[service.name] : service.products.append(p)
-            for o in args.options[service.name]  : service.options.append(o)
+            if args.creds:
+                for c in args.creds[service.name]: service.credentials.append(c)
+            if args.users:
+                for u in args.users[service.name]: service.credentials.append(u)
+            if args.products:
+                for p in args.products[service.name]: service.products.append(p)
+            if args.options:
+                for o in args.options[service.name]: service.options.append(o)
 
             # Initialize Target 
             try:
