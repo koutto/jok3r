@@ -4,6 +4,7 @@
 ### Core > ShodanResultsParser
 ### Api key need to be store in ~/.shodan_api_key
 ###
+from shodan import Shodan
 
 from lib.core.Config import *
 from lib.utils.FileUtils import *
@@ -14,7 +15,7 @@ from lib.db.Option import Option
 from lib.db.Service import Service, Protocol
 from lib.output.Logger import logger
 from lib.output.Output import Output
-from shodan import Shodan
+
 
 
 class ShodanResultsParser:
