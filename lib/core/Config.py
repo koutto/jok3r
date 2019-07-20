@@ -180,6 +180,7 @@ SERVICES_NMAP_TO_JOKER = {
     'ftp-proxy'     : 'ftp',
     'ftps'          : 'ftp',
     'microsoft-ds'  : 'smb',
+    'netbios-ns'    : 'smb',
     'ms-sql2000'    : 'mssql',
     'ms-sql-m'      : 'mssql',
     'ms-sql-s'      : 'mssql',
@@ -193,6 +194,8 @@ SERVICES_NMAP_TO_JOKER = {
     'https-alt'     : 'http',
     'https-wmap'    : 'http',
     'ssl/http'      : 'http',
+    'ssl/https'     : 'http',
+    'ssl/ssl'       : 'http',
     'oracle-tns'    : 'oracle', 
     'smtps'         : 'smtp',
 }
