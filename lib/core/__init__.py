@@ -10,7 +10,6 @@ from .Config import *
 from .Constants import *
 from .ContextRequirements import *
 from .Exceptions import *
-from .NmapResultsParser import *
 from .ProcessLauncher import *
 from .ServiceChecks import *
 from .ServicesConfig import *

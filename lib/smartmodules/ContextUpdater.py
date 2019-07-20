@@ -13,17 +13,15 @@ from lib.utils.VersionUtils import VersionUtils
 
 class ContextUpdater:
 
-    def __init__(self, service, sqlsess):
+    def __init__(self, service):
         """
         ContextUpdater is used to update information related to a given service.
         It is used by smart modules during attack initialization and when processing 
         command outputs.
 
-        :param Service service: Service db model
-        :param Session sqlsess: Sqlalchemy Session
+        :param Service service: Service model
         """
         self.service = service
-        self.sqlsess = sqlsess
         self.specific_options = list()
         self.usernames = list()
         self.credentials = list()
@@ -83,8 +81,6 @@ class ContextUpdater:
         self.__update_credentials()
         self.__update_products()
         self.__update_vulns()
-
-        self.sqlsess.commit()
 
 
     #------------------------------------------------------------------------------------

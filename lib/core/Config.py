@@ -13,19 +13,6 @@ from lib._version import __version__
 #----------------------------------------------------------------------------------------
 # Banner/Help
 
-# BANNER = colored.stylize("""
-#          ____.       __    ________              `Combine the best of...
-#         |    | ____ |  | __\_____  \______           ...open-source Hacking Tools`
-#         |    |/  _ \|  |/ /  _(__  <_  __ \ 
-#     /\__|    (  (_) )    <  /       \  | \/
-#     \________|\____/|__|_ \/______  /__|      v{version}
-#                          \/       \/     
-    
-#           ~ Network & Web Pentest Automation Framework ~
-#    [ Manage Toolbox | Automate Attacks | Chain Hacking Tools ]
-   
-# """.format(version=__version__), colored.fg('light_green') + colored.attr('bold'))
-
 BANNER = colored.stylize("""
 
                           `-:/++++/:-.    .-:/++++/:-`                                    
@@ -117,6 +104,11 @@ DB_HIST_FILE       = TOOL_BASEPATH + '/.dbhistory'
 REPORT_TPL_DIR     = TOOL_BASEPATH + '/lib/reporter/templates'
 REPORT_PATH        = TOOL_BASEPATH + '/reports'
 
+
+#----------------------------------------------------------------------------------------
+# Display Settings
+
+ATTACK_SUMMARY_TABLE_MAX_SIZE = 18
 
 #----------------------------------------------------------------------------------------
 # Settings Files

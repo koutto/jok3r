@@ -72,7 +72,7 @@ class WebUtils:
             r = http.request('GET', url, headers={'User-Agent': USER_AGENT})
             return (True, r.status, r.getheaders())
         except Exception as e:
-            print(e)
+            #print(e)
             return (False, None, None)
 
 

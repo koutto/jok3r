@@ -55,6 +55,7 @@ class Condition:
             FilterData.BANNER          : self.__translate_banner,
             FilterData.URL             : self.__translate_url,
             FilterData.URL_EXACT       : self.__translate_url_exact,
+            FilterData.HTML_TITLE      : self.__translate_html_title,
             FilterData.HTTP_HEADERS    : self.__translate_http_headers,
             FilterData.USERNAME        : self.__translate_username,
             FilterData.PASSWORD        : self.__translate_password,
@@ -178,9 +179,11 @@ class Condition:
         """Translate host OS into LIKE filter"""
         return (Host.os.ilike('%'+str(value)+'%'))
 
+
     def __translate_os_family(self, value):
         """Translate OS family into LIKE filter"""
         return (Host.os_family.ilike('%'+str(value)+'%'))
+
 
     def __translate_banner(self, value):
         """Translate service banner into LIKE filter"""
@@ -195,6 +198,11 @@ class Condition:
     def __translate_url_exact(self, value):
         """Translate URL into exact filter"""
         return (Service.url == str(value))
+
+
+    def __translate_html_title(self, value):
+        """Translate HTML title into LIKE filter"""
+        return (Service.html_title.ilike('%'+str(value)+'%'))
 
 
     def __translate_http_headers(self, value):

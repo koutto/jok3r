@@ -340,7 +340,7 @@ class ServicesConfig:
         :return: Result
         :rtype: bool
         """
-        service = get_service_for_product_type(product_type)
+        service = self.get_service_for_product_type(product_type)
         if service:
             return product_name.lower() in list(map(lambda x: x.lower(), 
                 self.services[service]['products'][product_type]))
@@ -357,7 +357,7 @@ class ServicesConfig:
         :rtype: str|None
         """
         for service in self.list_services():
-            if name in self.services[service]['specific_options'].keys():
+            if product_type in self.services[service]['products'].keys():
                 return service
         return None
 

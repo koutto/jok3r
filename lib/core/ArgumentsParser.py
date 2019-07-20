@@ -5,6 +5,7 @@
 ###
 # PYTHON_ARGCOMPLETE_OK
 import sys
+from collections import defaultdict
 
 from lib.core.Config import *
 from lib.core.Constants import *
@@ -16,6 +17,9 @@ from lib.utils.FileUtils import FileUtils
 from lib.utils.WebUtils import WebUtils
 from lib.output.Logger import logger
 from lib.output.Output import Output
+from lib.db.Credential import Credential
+from lib.db.Option import Option
+from lib.db.Product import Product
 
 
 class ArgumentsParser:
@@ -796,21 +800,19 @@ class ArgumentsParser:
         Check arguments for subcommand Attack > Context parameters > --cred
         Syntax: --cred [<svc>[.<type>]] <user> <pass>
 
-        If some credentials submitted, self.args.creds is turned into a list of
-        dicts, one dict per cred.
+        If some credentials submitted, self.args.creds is turned into a dict 
+        { service name: list(Credential) }
         """
 
         if not self.args.creds:
             return True
 
-        creds = list()
+        creds = defaultdict(list)
         for cred in self.args.creds:
-            current_cred = {
-                'service'  : None,
-                'auth_type': None, # relevant for HTTP
-                'username' : None, 
-                'password' : None
-            }
+            current_cred = Credential(
+                type='', # relevant for HTTP
+                username='',
+                password=None)
 
             # When format is: <svc>[.<type>] <user> <pass>
             if len(cred) == 3:
@@ -828,7 +830,7 @@ class ArgumentsParser:
                             'Check "info --list-http-auth".')
                         return False        
 
-                    current_cred['auth_type'] = auth_type
+                    current_cred.type = auth_type
 
                 else:
                     svc = cred[0].lower()
@@ -843,25 +845,24 @@ class ArgumentsParser:
                         '({cred_svc})'.format(tgt_svc=self.args.service, cred_svc=svc))
                     return False
 
-                current_cred['service']  = svc
-                current_cred['username'] = cred[1]
-                current_cred['password'] = cred[2] 
+                current_cred.username = cred[1]
+                current_cred.password = cred[2]
+                creds[svc].append(current_cred)
+
 
             # When format is simply: <user> <pass>
             # Accepted only in single target mode
             else:
                 if self.args.service:
-                    current_cred['service'] = self.args.service
+                    current_cred.username = cred[0]
+                    current_cred.password = cred[1]
+                    creds[self.args.service].append(current_cred)
                 else:
                     logger.error('Service must be specified in --cred in multi targets' \
                         ' mode. Syntax: --cred <service> <user> <pass>')
                     return False
-                current_cred['username'] = cred[0]
-                current_cred['password'] = cred[1]
 
-            creds.append(current_cred)
-
-        # Turn self.args.creds into a list of dict, one dict per cred
+        # Turn self.args.creds into a dict { service name: list(Credential)}
         self.args.creds = creds
         return True
 
@@ -871,20 +872,19 @@ class ArgumentsParser:
         Check arguments for subcommand Attack > Context parameters > --user
         Syntax: --user [<svc>[.<type>]] <user>
 
-        If some usernames submitted, self.args.users is turned into a list of
-        dicts, one dict per user.
+        If some usernames submitted, self.args.users is turned into a dict
+        { service name: list(Credential) }
         """
 
         if not self.args.users:
             return True
 
-        users = list()
+        users = defaultdict(list)
         for user in self.args.users:
-            current_user = {
-                'service'   : None,
-                'auth_type' : None, 
-                'username'  : None
-            }
+            current_user = Credential(
+                type='', # relevant for HTTP
+                username='',
+                password=None)
 
             # When format is: <svc>[.<type>] <user>
             if len(user) == 2:
@@ -901,7 +901,7 @@ class ArgumentsParser:
                             'Check "info --list-http-auth".')
                         return False
 
-                    current_user['auth_type'] = auth_type
+                    current_user.type = auth_type
 
                 else:
                     svc = user[0].lower()
@@ -916,24 +916,21 @@ class ArgumentsParser:
                         '({user_svc})'.format(tgt_svc=self.args.service, user_svc=svc))
                     return False
 
-                current_user['service']  = svc
-                current_user['username'] = user[1]
+                current_user.username = user[1]
+                users[svc].append(current_user)
 
             # When format is simply: <user>
             # Accepted only in single target mode
             else:
                 if self.args.service:
-                    current_user['service'] = self.args.service
+                    current_user.username = user[0]
+                    users[self.args.service].append(current_user)
                 else:
                     logger.error('Service must be specified in --user in multi targets' \
                         ' mode. Syntax: --user <service> <user>')
                     return False
 
-                current_user['username'] = user[0]
-
-            users.append(current_user)
-
-        # Turn self.args.users into a list of dict, one dict per username
+        # Turn self.args.users into a dict { service name: list(Credential)}
         self.args.users = users
         return True
 
@@ -944,13 +941,13 @@ class ArgumentsParser:
         Syntax: --product <type=name>
 
         If some products submitted, self.args.products is turned into a dict
-        {type: name}
+        { service name: list(Product) }
         """
 
         if not self.args.products:
             return True
 
-        products = dict()
+        products = defaultdict(list)
         for product in self.args.products:
             if '=' in product:
                 type_, name = product.split('=', maxsplit=1)
@@ -973,12 +970,17 @@ class ArgumentsParser:
                     return False
 
                 else:
-                    products[type_] = name
+                    service = self.settings.services.get_service_for_product_type(type_)
+                    products[service].append(
+                        Product(
+                            type=type_,
+                            name=name))
 
             else:
                 logger.error('Invalid syntax for --product. Must be: <type=name>')
                 return False
 
+        # Turn self.args.products into a dict { service name: list(Product)}
         self.args.products = products
         return True
 
@@ -989,13 +991,13 @@ class ArgumentsParser:
         Syntax: --option <name=value>
 
         If some options submitted, self.args.options is turned into a dict
-        {name: value}
+        { service name: list(Option)}
         """
 
         if not self.args.options:
             return True
 
-        options = dict()
+        options = defaultdict(list)
         for option in self.args.options:
             if '=' in option:
                 name, value = map(lambda x: x.lower(), option.split('=', maxsplit=1))
@@ -1013,8 +1015,17 @@ class ArgumentsParser:
                     return False
 
                 else:
-                    options[name] = value
+                    service = self.settings.services.get_service_for_specific_option(name)
+                    options[service].append(
+                        Option(
+                            name=name,
+                            value=value))
+            else:
+                logger.error('Invalid syntax for --option. Must be: <name=value>')
+                return False
 
+        # Turn self.args.options into a dict { service name: list(Option)}
         self.args.options = options
+        return True
 
 

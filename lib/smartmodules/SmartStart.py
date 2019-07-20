@@ -16,7 +16,7 @@ from lib.smartmodules.matchstrings.MatchStrings import *
 
 class SmartStart:
 
-    def __init__(self, service, sqlsess):
+    def __init__(self, service):
         """
         SmartStart class allows to run code at the beginning of an attack
         against one service (before running any check). It is useful to initialize
@@ -24,11 +24,9 @@ class SmartStart:
         banner, url...) or that can be quickly retrieved from target (e.g. web 
         technologies).
 
-        :param Service service: Target Service db model
-        :param Session sqlsess: Sqlalchemy Session
+        :param Service service: Target Service model
         """
         self.service = service
-        self.sqlsess = sqlsess
         self.cu = None # ContextUpdater
 
 
@@ -41,7 +39,7 @@ class SmartStart:
         if start_method_name in list_methods:
             logger.smartinfo('SmartStart processing to initialize context...')
             start_method = getattr(self, start_method_name)
-            self.cu = ContextUpdater(self.service, self.sqlsess)
+            self.cu = ContextUpdater(self.service)
             start_method()
             self.cu.update()
 
@@ -64,7 +62,9 @@ class SmartStart:
             self.cu.add_option('https', 'true')
 
         # Check if HTTP service is protected by .htaccess authentication
-        if '401 Unauthorized'.lower() in self.service.http_headers.lower():
+        if self.service.http_headers \
+            and '401 Unauthorized'.lower() in self.service.http_headers.lower():
+            
             logger.smartinfo('HTTP authentication (htaccess) detected ' \
                 '(401 Unauthorized)')
             self.cu.add_option('htaccess', 'true')
