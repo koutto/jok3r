@@ -170,7 +170,7 @@ class Output(object):
 
 
     @staticmethod
-    def table(columns, data, hrules=True):
+    def table(columns, data, hrules=True, borders=True):
         """
         Print a table. Supports multi-row cells.
         :param columns: An iterable of column names (strings)
@@ -184,6 +184,8 @@ class Output(object):
         for row in data:
             table.add_row(row)
         table.align = 'l'
+        if not borders:
+            table.border = False
         print(table)
             
 
