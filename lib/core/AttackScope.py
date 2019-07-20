@@ -67,7 +67,6 @@ class AttackScope:
         """ 
         self.targets.append(target)
 
-
     #------------------------------------------------------------------------------------
     # Run Methods
 
@@ -85,7 +84,6 @@ class AttackScope:
             counter_format=STATUSBAR_FORMAT_SINGLE) # For single target
 
         time.sleep(.5) # hack for progress bar display
-
 
         # Loop over the targets
         for i in range(1,len(self.targets)+1):
@@ -219,13 +217,13 @@ class AttackScope:
         The table has a max size defined in lib.core.Config, to avoid displaying an
         unreadable summary when large amount of targets have been loaded.
         """
-
         if len(self.targets) > ATTACK_SUMMARY_TABLE_MAX_SIZE:
             id_min = self.current_targetid-2
             if id_min < 1:  
                 id_min = 1
 
-            id_max = self.current_targetid+ATTACK_SUMMARY_TABLE_MAX_SIZ-3
+            id_max = self.current_targetid+ATTACK_SUMMARY_TABLE_MAX_SIZE-1 \
+                -(self.current_targetid-id_min)
             if id_max > len(self.targets):
                 id_min = id_min-(len(self.targets)-id_max)
                 id_max = len(self.targets)
@@ -247,6 +245,7 @@ class AttackScope:
         id_ = 1
         for target in self.targets:
             if id_ < id_min:
+                id_ += 1
                 continue
             if id_ > id_max:
                 break
