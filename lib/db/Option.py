@@ -6,6 +6,7 @@
 import enum
 from sqlalchemy import ForeignKey, Column, Integer, String
 from sqlalchemy.orm import relationship
+from sqlalchemy.ext.hybrid import hybrid_method
 
 from lib.db.Session import Base
 
@@ -26,6 +27,19 @@ class Option(Base):
     service_id = Column(Integer, ForeignKey('services.id'))
 
     service    = relationship('Service', back_populates='options')
+
+
+    #------------------------------------------------------------------------------------
+
+    @hybrid_method
+    def clone(self):
+        """
+        Duplicate the object
+        """
+        return Option(
+            name=self.name,
+            value=self.value,
+            service_id=None)
 
 
     #------------------------------------------------------------------------------------
