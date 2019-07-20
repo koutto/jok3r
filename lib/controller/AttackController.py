@@ -26,6 +26,8 @@ class AttackController(Controller):
         """Run the Attack Controller"""
 
         args = self.arguments.args
+        logger.debug('CLI arguments:')
+        logger.debug(args)
 
         # Attack configuration: Categories of checks to run
         categories = self.settings.services.list_all_categories() # default: all
@@ -90,13 +92,21 @@ class AttackController(Controller):
 
         # Update context (credentials, options, products) if specified in command-line
         if args.creds:
-            for c in args.creds[args.service]: service.credentials.append(c)
+            for c in args.creds[args.service]:
+                self.sqlsess.add(c)
+                service.credentials.append(c)
         if args.users:
-            for u in args.users[args.service]: service.credentials.append(u)
+            for u in args.users[args.service]: 
+                self.sqlsess.add(u)
+                service.credentials.append(u)
         if args.products:
-            for p in args.products[args.service]: service.products.append(p)
+            for p in args.products[args.service]: 
+                self.sqlsess.add(p)
+                service.products.append(p)
         if args.options:
-            for o in args.options[args.service]: service.options.append(o)
+            for o in args.options[args.service]: 
+                self.sqlsess.add(o)
+                service.options.append(o)
 
         # Initialize Target
         try:
@@ -190,13 +200,17 @@ class AttackController(Controller):
 
             # Update credentials, options, products if specified in command-line
             if args.creds:
-                for c in args.creds[service.name]: service.credentials.append(c)
+                for c in args.creds[service.name]: 
+                    service.add_credential(c.clone())
             if args.users:
-                for u in args.users[service.name]: service.credentials.append(u)
+                for u in args.users[service.name]: 
+                    service.add_credential(u.clone())
             if args.products:
-                for p in args.products[service.name]: service.products.append(p)
+                for p in args.products[service.name]: 
+                    service.add_product(p.clone())
             if args.options:
-                for o in args.options[service.name]: service.options.append(o)
+                for o in args.options[service.name]: 
+                    service.add_option(o.clone())
 
             # Initialize Target 
             try:
