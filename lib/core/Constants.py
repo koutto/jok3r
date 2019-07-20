@@ -43,6 +43,7 @@ class FilterData(Enum):
     BANNER          = auto()
     URL             = auto()
     URL_EXACT       = auto()
+    HTML_TITLE      = auto()
     HTTP_HEADERS    = auto()
     USERNAME        = auto()
     PASSWORD        = auto()

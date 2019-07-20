@@ -476,6 +476,7 @@ class DbController(cmd2.Cmd):
             filter_search.add_condition(Condition(args.search, FilterData.HOST))
             filter_search.add_condition(Condition(args.search, FilterData.BANNER))
             filter_search.add_condition(Condition(args.search, FilterData.URL))
+            filter_search.add_condition(Condition(args.search, FilterData.HTML_TITLE))
             filter_search.add_condition(Condition(args.search, 
                 FilterData.COMMENT_SERVICE))
             filter_.add_condition(filter_search)
