@@ -14,7 +14,7 @@ from lib.core.Config import *
 from lib.core.Constants import *
 from lib.core.Exceptions import FilterException
 from lib.core.NmapResultsParser import NmapResultsParser
-from lib.core.ShodanResultsParser import ShodanResultsParser
+from lib.importer.ShodanResultsParser import ShodanResultsParser
 from lib.core.Target import Target
 from lib.utils.ArgParseUtils import *
 from lib.utils.FileUtils import FileUtils
