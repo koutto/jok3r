@@ -7,6 +7,7 @@ from libnmap.parser import NmapParser
 
 from lib.core.Config import *
 from lib.core.Target import Target
+from lib.utils.FileUtils import FileUtils
 from lib.utils.NetUtils import NetUtils
 from lib.utils.OSUtils import OSUtils
 from lib.utils.WebUtils import WebUtils
@@ -94,8 +95,9 @@ class NmapResultsParser:
                         mac=h.mac,
                         vendor=h.vendor,
                         type=device_type)
-            logger.info('[Host {current_host}/{total_host}] Parsing host: ' \
-                '{ip}{hostname} ...'.format(
+            logger.info('[File {file} | Host {current_host}/{total_host}] ' \
+                'Parsing host: {ip}{hostname} ...'.format(
+                    file=FileUtils.extract_filename(self.nmap_file),
                     current_host=host_id,
                     total_host=len(nmap_report.hosts),
                     ip=host.ip, 
@@ -136,9 +138,10 @@ class NmapResultsParser:
 
                 # Print current processed service
                 print()
-                logger.info('[Host {current_host}/{total_host} | Service {current_svc}' \
-                    '/{total_svc}] Parsing service: host {ip} | port {port}/{proto} ' \
-                    '| service {service} ...'.format(
+                logger.info('[File {file} | Host {current_host}/{total_host} | ' \
+                    'Service {current_svc}/{total_svc}] Parsing service: ' \
+                    'host {ip} | port {port}/{proto} | service {service} ...'.format(
+                        file=FileUtils.extract_filename(self.nmap_file),
                         current_host=host_id,
                         total_host=len(nmap_report.hosts),
                         current_svc=port_id,
