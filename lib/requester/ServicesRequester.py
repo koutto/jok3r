@@ -312,13 +312,13 @@ class ServicesRequester(Requester):
 
         # Add host in db if it does not exist or update its info (merging)
         else:
-            host = self.sqlsess.query(Host).join(Mission)\
+            matching_host = self.sqlsess.query(Host).join(Mission)\
                                .filter(Mission.name == self.current_mission)\
                                .filter(Host.ip == target.get_ip()).first()
-            if host:
-                host.merge(target.service.host)
+            if matching_host:
+                matching_host.merge(target.service.host)
                 self.sqlsess.commit()
-                target.service.host = host
+                target.service.host = matching_host
             else:
                 self.sqlsess.add(target.service.host)
                 mission.hosts.append(target.service.host)                              

@@ -62,6 +62,7 @@ class WebTechnoDetector:
             return ''
         return technos
 
+
     def get_os(self):
         """
         Try to detect OS from detected web technologies

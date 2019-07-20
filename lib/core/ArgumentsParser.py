@@ -1020,8 +1020,12 @@ class ArgumentsParser:
                         Option(
                             name=name,
                             value=value))
+            else:
+                logger.error('Invalid syntax for --option. Must be: <name=value>')
+                return False
 
         # Turn self.args.options into a dict { service name: list(Option)}
         self.args.options = options
+        return True
 
 
