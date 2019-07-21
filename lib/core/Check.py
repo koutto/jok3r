@@ -15,12 +15,19 @@ from lib.output.Output import Output
 from lib.requester.ResultsRequester import ResultsRequester
 from lib.utils.StringUtils import StringUtils
 from lib.smartmodules.SmartPostcheck import SmartPostcheck
+from apikeys import API_KEYS
 
 
 class Check:
     """Security check"""
 
-    def __init__(self, name, category, description, tool, commands):
+    def __init__(self, 
+                 name, 
+                 category, 
+                 description, 
+                 tool,
+                 commands,
+                 required_apikey=None):
         """
         Construct Check object.
 
@@ -29,13 +36,14 @@ class Check:
         :param str description: Description of the check
         :param Tool tool: Tool which is used by the check
         :param list(Command) commands: Commands for the check
+        :param str required_apikey: Name of required API key to run the check (optional)
         """
-        self.name        = name
-        self.category    = category
-        self.description = description
-        self.tool        = tool
-        self.commands    = commands
-
+        self.name            = name
+        self.category        = category
+        self.description     = description
+        self.tool            = tool
+        self.commands        = commands
+        self.required_apikey = required_apikey
 
     #------------------------------------------------------------------------------------
 
@@ -82,6 +90,13 @@ class Check:
         i = 1
         command_outputs = list()
         for command in self.commands:
+
+            if self.required_apikey:
+                if not API_KEYS[self.required_apikey]:
+                    logger.warning('This check requires {apikey} API key, but it is ' \
+                        'not provided in "apikeys.py"'.format(
+                            apikey=self.required_apikey))
+
             if command.context_requirements.check_target_compliance(target):
                 if not command.context_requirements.is_empty:
                     logger.info('Command #{num:02} matches requirements: ' \

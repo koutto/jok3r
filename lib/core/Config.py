@@ -155,7 +155,7 @@ CHECK_OPTIONS = {
         # command
     ],
     OPTIONAL: [
-        'postrun',
+        'apikey',
     ]
 }
 
