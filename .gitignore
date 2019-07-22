@@ -24,3 +24,6 @@ local.db
 # Firefox/geckodriver files
 core
 geckodriver.log
+
+# API keys file
+apikeys.py
