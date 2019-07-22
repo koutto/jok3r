@@ -35,6 +35,7 @@ from lib.requester.ServicesRequester import ServicesRequester
 from lib.requester.VulnsRequester import VulnsRequester
 from lib.output.Logger import logger
 from lib.output.Output import Output
+from apikeys import API_KEYS
 
 
 class DbController(cmd2.Cmd):
@@ -1256,14 +1257,10 @@ class DbController(cmd2.Cmd):
     shodan = argparse.ArgumentParser(
         description='Import Shodan host (ips)', 
         formatter_class=formatter_class)
-    shodan.add_argument(
-        '-n', '--no-http-recheck', 
-        action  = 'store_true', 
-        help    = 'Do not recheck for HTTP services')
-    shodan.add_argument(
-        '--no-html-title', 
-        action  = 'store_true', 
-        help    = 'Do not grab HTML title for HTTP services')
+    # shodan.add_argument(
+    #     '-n', '--no-http-recheck', 
+    #     action  = 'store_true', 
+    #     help    = 'Do not recheck for HTTP services')
     shodan.add_argument(
         'ips', 
         nargs   = 1, 
@@ -1276,35 +1273,53 @@ class DbController(cmd2.Cmd):
         """Import Shodan results"""
         print()
 
-        # Check ip
+        # Before all, check if we have a defined Shodan API key
+        if 'shodan' not in API_KEYS.keys() or not API_KEYS['shodan']:
+            logger.error('You must add a valid Shodan API key in "apikeys.py" to use '\
+                'this feature')
+            print()
+            return
+
+        # Check IPs
         ips = args.ips[0]
         if not ips:
             logger.error('Please type an ip address or several seperated with comma')
             print()
             return
+        ips = ips.split(',')
 
-        for ip in ips.split(','):
-            logger.info('Importing Shodan results from https://www.shodan.io/host/{ip}'.format(ip=ip))
-            if not args.no_http_recheck:
-                logger.info('Each service will be re-checked to detect HTTP services. ' \
-                    'Use --no-http-recheck if you want to disable it (faster import)')
+        valid_ips = list()
+        for ip in ips:
+            if not NetUtils.is_valid_ip(ip):
+                logger.warning(
+                    '{ip} is an invalid IP address, it will be skipped'.format(ip=ip))
+            else:
+                valid_ips.append(ip)
 
-            # Parse shodan result
-            parser = ShodanResultsParser(ip, self.settings.services)
-            results = parser.parse(http_recheck=not args.no_http_recheck,
-                                grab_html_title=not args.no_html_title)
-
-            if results is not None:
-                if len(results) == 0:
-                    logger.warning('No new service has been added into current mission')
-                else:
-                    req = HostsRequester(self.sqlsess)
-                    req.select_mission(self.current_mission)
-                    for host in results:
-                        req.add_or_merge_host(host)
-                    logger.success('Shodan results imported with success into current mission')
-
+        if len(valid_ips) == 0:
+            logger.error('No valid IP address has been provided')
             print()
+            return
+
+        # Request Shodan API and parse results
+        parser = ShodanResultsParser(valid_ips, self.settings.services)
+        if parser is None:
+            print()
+            return
+        results = parser.parse()
+        print()
+
+        if results is not None:
+            if len(results) == 0:
+                logger.warning('No new service has been added into current mission')
+            else:
+                req = HostsRequester(self.sqlsess)
+                req.select_mission(self.current_mission)
+                for host in results:
+                    req.add_or_merge_host(host)
+                logger.success('Shodan results imported with success into current mission')
+
+        print()
 
 
     #------------------------------------------------------------------------------------
