@@ -39,11 +39,13 @@ class Target:
         """
         self.service = service
         self.services_config = services_config
+        self.initialized_with_url = False
 
         if not self.service.host.ip or not self.service.host.hostname \
                 or not self.service.port:
 
-            if self.service.url: 
+            if self.service.url:
+                self.initialized_with_url = True
                 self.__init_with_url()
             else: 
                 self.__init_with_ip()   
@@ -106,8 +108,9 @@ class Target:
             else:
                 proto = 'http'
 
+            # By default, forge URL with hostname
             self.service.url = '{proto}://{ip}:{port}'.format(
-                proto=proto, ip=self.service.host.ip, port=self.service.port)
+                proto=proto, ip=self.service.host.hostname, port=self.service.port)
 
 
     #------------------------------------------------------------------------------------
@@ -316,8 +319,6 @@ class Target:
             
             logger.info('Check if URL is reachable (grab HTTP response)...')
             self.__grab_html_title_and_headers()
-            if not self.service.up:
-                return False
         else:
             self.service.up = True
 
@@ -335,7 +336,6 @@ class Target:
             logger.info('Grab service info for [{service}] via Nmap...'.format(
                 service=self))
             self.__run_nmap()
-
 
         # Perform Web technologies detection for HTTP, if no technologies
         # are already stored in database
@@ -410,7 +410,8 @@ class Target:
 
     def __grab_html_title_and_headers(self):
         """
-        Grab HTML title and HTTP headers for service HTTP
+        Grab HTML title and HTTP headers for service HTTP.
+        This function is also used to check availability of HTTP services.
 
         Updated in this method:
             - self.service.up
@@ -422,6 +423,25 @@ class Target:
             try:
                 is_reachable, status, resp_headers = WebUtils.is_url_reachable(
                     self.service.url)
+                # In case URL is not reachable, we rebuild it using IP and
+                # give a new try, i.e. :
+                # http(s)://hostname:port/ -> http(s)://ip:port/
+                if not is_reachable \
+                    and not self.initialized_with_url \
+                    and self.service.host.hostname != self.service.host.ip:
+
+                    new_url = WebUtils.replace_hostname_by_ip(
+                        self.service.url,
+                        self.service.host.ip,
+                        self.service.port)
+                    #print(new_url)
+
+                    is_reachable, status, resp_headers = WebUtils.is_url_reachable(
+                        new_url)
+                    if is_reachable:
+                        self.service.url = new_url
+
+                #print(is_reachable)
                 self.service.up = is_reachable
             except:
                 self.service.up = False
