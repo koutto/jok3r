@@ -93,6 +93,7 @@ Local Database & Reporting
 * **Local Database**: Data related to targets is organized by missions (workspaces) into a local Sqlite database that is kept updated during security testings.
 * **Metasploit-like Interactive Shell**: Access the database through an interactive shell with several built-in commands.
 * **Import Targets from Nmap**: Add targets to a mission either manually or by loading Nmap results.
+* **Import Targets from Shodan**: Add targets to a mission manually from shodan (need shodan API key).
 * **Access all Results**: All outputs from security checks, detected credentials and vulnerabilities are stored into the database and can be accessed easily.
 * **Reporting**: Generate full HTML reports with targets summary, web screenshots and all results from security testing.
 
@@ -346,6 +347,11 @@ Database Access & Reporting
 
     jok3rdb[mayhem]> nmap results.xml
 
+* Import hosts/services from Shodan results (ip) into the mission scope:
+
+.. code-block:: console
+
+    jok3rdb[mayhem]> shodan ip
 
 * Display services, hosts, detected products & credentials registered in selected mission:
 

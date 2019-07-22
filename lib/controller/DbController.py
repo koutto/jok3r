@@ -15,6 +15,7 @@ from lib.core.Constants import *
 from lib.core.Exceptions import FilterException
 from lib.core.Target import Target
 from lib.importer.NmapResultsParser import NmapResultsParser
+from lib.importer.ShodanResultsParser import ShodanResultsParser
 from lib.utils.ArgParseUtils import *
 from lib.utils.FileUtils import FileUtils
 from lib.utils.NetUtils import NetUtils
@@ -1248,6 +1249,62 @@ class DbController(cmd2.Cmd):
         }
 
         return self.flag_based_complete(text, line, begidx, endidx, flag_dict=flag_dict)
+
+    #------------------------------------------------------------------------------------
+    # Import Shodan host
+
+    shodan = argparse.ArgumentParser(
+        description='Import Shodan host (ips)', 
+        formatter_class=formatter_class)
+    shodan.add_argument(
+        '-n', '--no-http-recheck', 
+        action  = 'store_true', 
+        help    = 'Do not recheck for HTTP services')
+    shodan.add_argument(
+        '--no-html-title', 
+        action  = 'store_true', 
+        help    = 'Do not grab HTML title for HTTP services')
+    shodan.add_argument(
+        'ips', 
+        nargs   = 1, 
+        metavar = '<ip1,ip2...>', 
+        help    = 'Import a list of IPs (single IP comma-separated)')
+
+    @cmd2.with_category(CMD_CAT_IMPORT)
+    @cmd2.with_argparser(shodan)
+    def do_shodan(self, args):
+        """Import Shodan results"""
+        print()
+
+        # Check ip
+        ips = args.ips[0]
+        if not ips:
+            logger.error('Please type an ip address or several seperated with comma')
+            print()
+            return
+
+        for ip in ips.split(','):
+            logger.info('Importing Shodan results from https://www.shodan.io/host/{ip}'.format(ip=ip))
+            if not args.no_http_recheck:
+                logger.info('Each service will be re-checked to detect HTTP services. ' \
+                    'Use --no-http-recheck if you want to disable it (faster import)')
+
+            # Parse shodan result
+            parser = ShodanResultsParser(ip, self.settings.services)
+            results = parser.parse(http_recheck=not args.no_http_recheck,
+                                grab_html_title=not args.no_html_title)
+
+            if results is not None:
+                if len(results) == 0:
+                    logger.warning('No new service has been added into current mission')
+                else:
+                    req = HostsRequester(self.sqlsess)
+                    req.select_mission(self.current_mission)
+                    for host in results:
+                        req.add_or_merge_host(host)
+                    logger.success('Shodan results imported with success into current mission')
+
+            print()
 
 
     #------------------------------------------------------------------------------------
