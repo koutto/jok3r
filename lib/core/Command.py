@@ -72,15 +72,20 @@ Products Tags
 
 Where PRODUCT_TYPE is replaced by the product type (e.g "web_server").
 
+API keys Tags
+-------------
+[APIKEY name="apikey-name"]     API key value for apikey-name (e.g. vulners)
 """
 import re
 import regex
 import urllib.parse
+from tld import get_tld
 
 from lib.core.Config import *
 from lib.core.Constants import *
 from lib.utils.NetUtils import NetUtils
-from tld import get_tld
+from apikeys import API_KEYS
+
 
 class Command:
 
@@ -159,6 +164,9 @@ class Command:
 
                 # Products tags replacement
                 self.__replace_tags_product(target)
+
+                # API keys replacement
+                self.__replace_tag_apikey()
 
         self.__replace_tag_toolboxdir(TOOLBOX_DIR)
 
@@ -561,3 +569,34 @@ class Command:
                 self.formatted_cmdline)          
  
 
+    #------------------------------------------------------------------------------------
+    # API key Replacement
+
+    def __replace_tag_apikey(self):
+        """
+        Replace tags of API key - e.g. [APIKEY name="vulners"] - by the corresponding
+        value set by user in "apikeys.py".
+
+        Note: Value should never been empty because a check is performed in Check.run()
+        before running any check, and checks requiring an API key are skipped when
+        the API key is not provided in "apikeys.py"
+
+        :param str name: API key name (e.g. "vulners")
+        """        
+        try:
+            pattern = re.compile(
+                r'\[APIKEY\s+name\s*=\s*[\'"](?P<name>.*?)[\'"]\s*\]',
+                re.IGNORECASE)
+            m = pattern.search(self.formatted_cmdline)
+
+            if m:
+                name = m.group('name')
+
+                if name in API_KEYS.keys():
+                    self.formatted_cmdline = pattern.sub(
+                        API_KEYS[name], self.formatted_cmdline)
+                else:
+                    self.formatted_cmdline = pattern.sub('', self.formatted_cmdline)
+
+        except Exception as e:
+            pass  

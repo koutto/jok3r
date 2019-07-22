@@ -91,12 +91,15 @@ class Check:
         command_outputs = list()
         for command in self.commands:
 
+            # Check API key requirement (e.g. Vulners)
             if self.required_apikey:
                 if not API_KEYS[self.required_apikey]:
                     logger.warning('This check requires {apikey} API key, but it is ' \
                         'not provided in "apikeys.py"'.format(
                             apikey=self.required_apikey))
+                    return False
 
+            # Check context requirements compliance
             if command.context_requirements.check_target_compliance(target):
                 if not command.context_requirements.is_empty:
                     logger.info('Command #{num:02} matches requirements: ' \
@@ -161,7 +164,6 @@ class Check:
                         '{0}\n{1}'.format(cmdline, outputraw))
                     postcheck.run()
                     sqlsession.commit()
-
 
             else:
                 logger.info('Command #{num:02} does not match requirements: ' \

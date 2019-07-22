@@ -617,6 +617,7 @@ class Settings:
                     check_config['description'],
                     check_config['tool'],
                     check_config['commands'],
+                    required_apikey=check_config['apikey']
                 )
                 self.services[service]['checks'].add_check(newcheck)
 
