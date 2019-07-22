@@ -50,6 +50,23 @@ class WebUtils:
 
 
     @staticmethod
+    def replace_hostname_by_ip(url, ip, port):
+        """
+        Replace hostname by IP in the url
+        http(s)://hostname:port/ -> http(s)://ip:port/
+        """
+        url = WebUtils.add_prefix_http(url)
+        p = urlparse(url)
+        new_url = '{proto}://{ip}:{port}{path}{query}'.format(
+            proto=p.scheme,
+            ip=str(ip),
+            port=port,
+            path=p.path,
+            query='?{}'.format(p.query) if p.query else '')
+        return new_url
+
+
+    @staticmethod
     def is_valid_url(url):
         """Check if given URL is valid"""
         regex = re.compile(
