@@ -5,6 +5,7 @@
 ###
 from sqlalchemy import ForeignKey, Column, Integer, String, Text
 from sqlalchemy.orm import relationship
+from sqlalchemy.ext.hybrid import hybrid_method
 
 from lib.db.Session import Base
 
@@ -21,6 +22,21 @@ class Credential(Base):
     service_id = Column(Integer, ForeignKey('services.id'))
 
     service    = relationship('Service', back_populates='credentials')
+
+
+    #------------------------------------------------------------------------------------
+
+    @hybrid_method
+    def clone(self):
+        """
+        Duplicate the object
+        """
+        return Credential(
+            type=self.type,
+            username=self.username,
+            password=self.password,
+            comment=self.comment,
+            service_id=None)
 
 
     #------------------------------------------------------------------------------------

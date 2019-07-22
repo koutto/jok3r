@@ -83,43 +83,76 @@ class Service(Base):
         if dst.web_technos:
             self.web_technos = dst.web_technos
 
+        # Update credentials with same username and auth-type
         if dst.credentials:
-            # Update credentials with same username and auth-type
-            if self.credentials:    
-                for c1 in self.credentials:
-                    #print(c1)
-                    for c2 in dst.credentials:
-                        #print(c2)
-                        if c1.username == c2.username and c1.type == c2.type:
-                            c1.password = c2.password
-                            dst.credentials.remove(c2)
-            # Add new credentials
             for c in dst.credentials:
-                c.service_id = self.id
-                self.credentials.append(c)
+                self.add_credential(c)
 
+        # Update options with same name
         if dst.options:
-            # Update options with same name
             for o in dst.options:
-                matching_option = self.get_option(o.name)
-                if matching_option:
-                    matching_option.value = o.value
-                else:
-                    self.options.append(o)
-                    o.service_id^= self.id
+                self.add_option(o)
 
+        # Update products
         if dst.products:
-            # Update products
             for p in dst.products:
-                matching_product = self.get_product(p.type)
-                if matching_product:
-                    matching_product.name = p.name
-                    matching_product.version = p.version
-                else:
-                    self.products.append(p)
-                    p.service_id = self.id
+                self.add_product(p)
 
         return
+
+
+    #------------------------------------------------------------------------------------
+
+    @hybrid_method
+    def add_credential(self, cred):
+        """
+        Add credential to the service.
+        Make sure to not add twice the same credential.
+        Update password if necessary
+
+        :param Credential cred: Credential object to add
+        """
+        matching_cred = self.get_credential(cred.username, cred.type)
+        if matching_cred:
+            matching_cred.password = cred.password
+        else:
+            self.credentials.append(cred)
+            cred.service_id = self.id
+
+
+    @hybrid_method
+    def add_option(self, option):
+        """
+        Add option to the service.
+        Make sure to not add twice the same option.
+        Update value if necessary
+
+        :param Option option: Option object to add
+        """
+        matching_option = self.get_option(option.name)
+        if matching_option:
+            matching_option.value = option.value
+        else:
+            self.options.append(option)
+            option.service_id = self.id
+
+
+    @hybrid_method
+    def add_product(self, product):
+        """
+        Add product to the service.
+        Make sure to not add twice the same product.
+        Update value if necessary
+
+        :param Product product: Product object to add
+        """
+        matching_product = self.get_product(product.type)
+        if matching_product:
+            matching_product.name = product.name
+            matching_product.version = product.version
+        else:
+            self.products.append(product)
+            product.service_id = self.id
 
 
     #------------------------------------------------------------------------------------

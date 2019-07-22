@@ -13,8 +13,8 @@ from lib.controller.Controller import Controller
 from lib.core.Config import *
 from lib.core.Constants import *
 from lib.core.Exceptions import FilterException
-from lib.core.NmapResultsParser import NmapResultsParser
 from lib.core.Target import Target
+from lib.importer.NmapResultsParser import NmapResultsParser
 from lib.utils.ArgParseUtils import *
 from lib.utils.FileUtils import FileUtils
 from lib.utils.NetUtils import NetUtils
@@ -476,6 +476,7 @@ class DbController(cmd2.Cmd):
             filter_search.add_condition(Condition(args.search, FilterData.HOST))
             filter_search.add_condition(Condition(args.search, FilterData.BANNER))
             filter_search.add_condition(Condition(args.search, FilterData.URL))
+            filter_search.add_condition(Condition(args.search, FilterData.HTML_TITLE))
             filter_search.add_condition(Condition(args.search, 
                 FilterData.COMMENT_SERVICE))
             filter_.add_condition(filter_search)
@@ -505,9 +506,11 @@ class DbController(cmd2.Cmd):
                     self.settings.services.get_protocol(service), 
                     service, 
                     self.settings.services,
-                    grab_banner_nmap=True,
-                    reverse_dns=True, 
-                    availability_check=True)
+                    nmap_banner_grabbing=True,
+                    reverse_dns_lookup=True, 
+                    availability_check=True,
+                    html_title_grabbing=True,
+                    web_technos_detection=True)
 
         # --url <url>
         elif args.url:
@@ -518,9 +521,10 @@ class DbController(cmd2.Cmd):
                 req.add_url(
                     args.url, 
                     self.settings.services,
-                    reverse_dns=True,
+                    reverse_dns_lookup=True,
                     availability_check=True,
-                    grab_banner_nmap=True,
+                    nmap_banner_grabbing=True,
+                    html_title_grabbing=True,
                     web_technos_detection=True)
         # --del
         elif args.delete:
@@ -1166,7 +1170,12 @@ class DbController(cmd2.Cmd):
 
     nmap = argparse.ArgumentParser(
         description='Import Nmap results (XML)', 
-        formatter_class=formatter_class)
+        formatter_class=formatter_class, 
+        epilog='Note: it is recommended to run Nmap scans with -A or -sV options ' \
+            'in order to get service\nbanners in imported results. If you import ' \
+            'results from a scan run without version detection,\nyou can add ' \
+            '--version-detection to tell Jok3r to run Nmap version detection for ' \
+            'each service\nit has not been already run.')
     nmap.add_argument(
         '-n', '--no-http-recheck', 
         action  = 'store_true', 
@@ -1175,6 +1184,14 @@ class DbController(cmd2.Cmd):
         '--no-html-title', 
         action  = 'store_true', 
         help    = 'Do not grab HTML title for HTTP services')
+    nmap.add_argument(
+        '--no-web-technos-detection',
+        action  = 'store_true',
+        help    = 'Disable web technologies detection for HTTP services')
+    nmap.add_argument(
+        '--version-detection',
+        action  = 'store_true',
+        help    = 'Run Nmap version detection for each service with no banner')
     nmap.add_argument(
         'file', 
         nargs   = 1, 
@@ -1202,12 +1219,18 @@ class DbController(cmd2.Cmd):
 
             # Parse Nmap file
             parser = NmapResultsParser(file, self.settings.services)
-            results = parser.parse(http_recheck=not args.no_http_recheck,
-                                grab_html_title=not args.no_html_title)
+            results = parser.parse(
+                http_recheck=not args.no_http_recheck,
+                html_title_grabbing=not args.no_html_title,
+                nmap_banner_grabbing=args.version_detection,
+                web_technos_detection=not args.no_web_technos_detection)
+            print()
+
             if results is not None:
                 if len(results) == 0:
                     logger.warning('No new service has been added into current mission')
                 else:
+                    logger.info('Update the database...')
                     req = HostsRequester(self.sqlsess)
                     req.select_mission(self.current_mission)
                     for host in results:
@@ -1307,9 +1330,11 @@ class DbController(cmd2.Cmd):
                     self.settings.services.get_protocol(service),
                     service, 
                     self.settings.services,
-                    grab_banner_nmap=not args.no_nmap_banner,
-                    reverse_dns=not args.no_dns_reverse, 
-                    availability_check=True)
+                    nmap_banner_grabbing=not args.no_nmap_banner,
+                    reverse_dns_lookup=not args.no_dns_reverse, 
+                    availability_check=True,
+                    html_title_grabbing=True,
+                    web_technos_detection=True)
 
             # For line with syntax: <URL>
             elif l.lower().startswith('http://') or l.lower().startswith('https://'):
@@ -1320,9 +1345,10 @@ class DbController(cmd2.Cmd):
                     # Add the URL in current mission scope
                     req.add_url(l,
                                 self.settings.services,
-                                reverse_dns=not args.no_dns_reverse,
+                                reverse_dns_lookup=not args.no_dns_reverse,
                                 availability_check=True,
-                                grab_banner_nmap=not args.no_nmap_banner,
+                                nmap_banner_grabbing=not args.no_nmap_banner,
+                                html_title_grabbing=True,
                                 web_technos_detection=True)
 
             else:

@@ -14,20 +14,18 @@ from lib.smartmodules.matchstrings.MatchStrings import *
 
 class SmartPostcheck:
 
-    def __init__(self, service, sqlsess, tool_name, cmd_output):
+    def __init__(self, service, tool_name, cmd_output):
         """
         SmartPostcheck class allows to run code after a check during an attack 
         against one service. It is useful to analyze/process command outputs
         and to update context accordingly.
 
         :param Service service: Target service db model
-        :param Session sqlsess: Sqlalchemy Session
         :param str tool_name: Name of the check that has been run before
         :param str cmd_output: Command output (sanitized / special chars removed)
             Important: output is prepended by command line
         """
         self.service = service
-        self.sqlsess = sqlsess
         self.tool_name = tool_name
         self.cmd_output = cmd_output
         self.cu = None # ContextUpdater
@@ -38,7 +36,7 @@ class SmartPostcheck:
 
         logger.smartinfo('SmartPostcheck processing to update context...')
 
-        self.cu = ContextUpdater(self.service, self.sqlsess)
+        self.cu = ContextUpdater(self.service)
         self.__detect_credentials()
         self.__detect_specific_options()
         self.__detect_products()

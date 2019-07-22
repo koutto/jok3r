@@ -49,7 +49,8 @@ For each check:
   name           = display name (mandatory) 
   category       = category inside which this check is classified (mandatory)
   description    = short text describing the check (mandatory)
-  tool           = tool_name of the tool to use
+  tool           = tool_name of the tool to use (mandatory)
+  apikey         = name of required API key to run the check (e.g. "vulners") (mandatory)
   For each command (there must be at least one command):
       command_<command_number> = command-line for the check, multiple tags supported
       context_<command_number> = context that must be met to run the command (optional)
@@ -83,6 +84,7 @@ from lib.output.Logger import logger
 from lib.utils.DefaultConfigParser import DefaultConfigParser
 from lib.utils.FileUtils import FileUtils
 from lib.utils.StringUtils import StringUtils
+from apikeys import API_KEYS
 
 
 class Settings:
@@ -615,6 +617,7 @@ class Settings:
                     check_config['description'],
                     check_config['tool'],
                     check_config['commands'],
+                    required_apikey=check_config['apikey']
                 )
                 self.services[service]['checks'].add_check(newcheck)
 
@@ -673,6 +676,14 @@ class Settings:
                         'check is ignored'.format(prefix=log_prefix, tool=val))
                     return False
                 check_config[opt] = tool
+
+            elif opt == 'apikey':
+                if val not in API_KEYS.keys():
+                    logger.warning('{prefix} API key "{apikey}" is not supported in ' \
+                        'apikeys.py. Check is ignored'.format(
+                            prefix=log_prefix, apikey=val))
+                    return False
+                check_config[opt] = val
 
             else:
                 check_config[opt] = val   

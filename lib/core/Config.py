@@ -13,19 +13,6 @@ from lib._version import __version__
 #----------------------------------------------------------------------------------------
 # Banner/Help
 
-# BANNER = colored.stylize("""
-#          ____.       __    ________              `Combine the best of...
-#         |    | ____ |  | __\_____  \______           ...open-source Hacking Tools`
-#         |    |/  _ \|  |/ /  _(__  <_  __ \ 
-#     /\__|    (  (_) )    <  /       \  | \/
-#     \________|\____/|__|_ \/______  /__|      v{version}
-#                          \/       \/     
-    
-#           ~ Network & Web Pentest Automation Framework ~
-#    [ Manage Toolbox | Automate Attacks | Chain Hacking Tools ]
-   
-# """.format(version=__version__), colored.fg('light_green') + colored.attr('bold'))
-
 BANNER = colored.stylize("""
 
                           `-:/++++/:-.    .-:/++++/:-`                                    
@@ -119,6 +106,11 @@ REPORT_PATH        = TOOL_BASEPATH + '/reports'
 
 
 #----------------------------------------------------------------------------------------
+# Display Settings
+
+ATTACK_SUMMARY_TABLE_MAX_SIZE = 18
+
+#----------------------------------------------------------------------------------------
 # Settings Files
 
 SETTINGS_DIR              = TOOL_BASEPATH + '/settings'
@@ -163,7 +155,7 @@ CHECK_OPTIONS = {
         # command
     ],
     OPTIONAL: [
-        'postrun',
+        'apikey',
     ]
 }
 
@@ -188,6 +180,7 @@ SERVICES_NMAP_TO_JOKER = {
     'ftp-proxy'     : 'ftp',
     'ftps'          : 'ftp',
     'microsoft-ds'  : 'smb',
+    'netbios-ns'    : 'smb',
     'ms-sql2000'    : 'mssql',
     'ms-sql-m'      : 'mssql',
     'ms-sql-s'      : 'mssql',
@@ -201,6 +194,8 @@ SERVICES_NMAP_TO_JOKER = {
     'https-alt'     : 'http',
     'https-wmap'    : 'http',
     'ssl/http'      : 'http',
+    'ssl/https'     : 'http',
+    'ssl/ssl'       : 'http',
     'oracle-tns'    : 'oracle', 
     'smtps'         : 'smtp',
 }

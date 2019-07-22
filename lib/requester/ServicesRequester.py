@@ -43,7 +43,7 @@ class ServicesRequester(Requester):
                 #'Hostname',
                 'Port',
                 'Proto',
-                'Service',
+                'Svc',
                 'Banner',
                 'URL',
                 'Comment/Title',
@@ -77,9 +77,9 @@ class ServicesRequester(Requester):
                     r.port,
                     {Protocol.TCP: 'tcp', Protocol.UDP: 'udp'}.get(r.protocol),
                     r.name,
-                    StringUtils.wrap(r.banner, 55),
-                    StringUtils.wrap(r.url, 50),
-                    StringUtils.shorten(comment, 40),
+                    StringUtils.wrap(r.banner, 45),
+                    StringUtils.wrap(r.url, 45),
+                    StringUtils.shorten(comment, 35),
                     len(r.results),
                     nb_creds,
                     nb_vulns,
@@ -95,9 +95,11 @@ class ServicesRequester(Requester):
                     protocol, 
                     service, 
                     services_config,
-                    grab_banner_nmap=True,
-                    reverse_dns=True, 
-                    availability_check=True):
+                    nmap_banner_grabbing=True,
+                    reverse_dns_lookup=True, 
+                    availability_check=True,
+                    html_title_grabbing=True,
+                    web_technos_detection=True):
         """
         Add a service into the current mission scope in database.
 
@@ -106,9 +108,12 @@ class ServicesRequester(Requester):
         :param str protocol: Protocol (tcp/udp)
         :param str service: Service name
         :param lib.core.ServicesConfig services_config: Services configuration object
-        :param bool grab_banner_nmap: If set to True, run Nmap to grab server banner
-        :param bool reverse_dns: If set to True, perform a reverse DNS lookup
+        :param bool nmap_banner_grabbing: If set to True, run Nmap to grab server banner
+        :param bool reverse_dns_lookup: If set to True, perform a reverse DNS lookup
         :param bool availability_check: If set to True, check if port is open
+        :param bool html_title_grabbing: If set to True, grab HTML title and HTTP headers
+        :param bool web_technos_detection: If set to True, try to detect web technos
+
         :return: Status
         :rtype: bool
         """
@@ -138,9 +143,12 @@ class ServicesRequester(Requester):
         else:
 
             up = target.smart_check(
-                reverse_dns, 
+                reverse_dns_lookup, 
                 availability_check, 
-                grab_banner_nmap)
+                nmap_banner_grabbing,
+                html_title_grabbing,
+                web_technos_detection,
+                smart_context_initialize=True)
 
             if up:
                 # Add service in db (and host if not existing)
@@ -189,19 +197,22 @@ class ServicesRequester(Requester):
     def add_url(self, 
                 url,
                 services_config,
-                reverse_dns=True, 
+                reverse_dns_lookup=True, 
                 availability_check=True, 
-                grab_banner_nmap=True,
+                nmap_banner_grabbing=True,
+                html_title_grabbing=True,
                 web_technos_detection=True):
         """
         Add a URL into the current mission scope in database.
 
         :param str url: URL to add
         :param lib.core.ServicesConfig services_config: Services configuration object
-        :param bool reverse_dns: If set to True, perform a reverse DNS lookup
+        :param bool reverse_dns_lookup: If set to True, perform a reverse DNS lookup
         :param bool availability_check: If set to True, check if port is open
-        :param bool grab_banner_nmap: If set to True, run Nmap to grab server banner  
+        :param bool nmap_banner_grabbing: If set to True, run Nmap to grab server banner  
+        :param bool html_title_grabbing: If set to True, grab HTML title and HTTP headers
         :param bool web_technos_detection: If set to True, try to detect web technos
+
         :return: Status
         :rtype: bool
         """
@@ -227,10 +238,12 @@ class ServicesRequester(Requester):
                 return False
 
             up = target.smart_check(
-                reverse_dns, 
+                reverse_dns_lookup, 
                 availability_check, 
-                grab_banner_nmap,
-                web_technos_detection)
+                nmap_banner_grabbing,
+                html_title_grabbing,
+                web_technos_detection,
+                smart_context_initialize=True)
 
             if up:
                 matching_host = self.sqlsess.query(Host).join(Mission)\
@@ -299,13 +312,13 @@ class ServicesRequester(Requester):
 
         # Add host in db if it does not exist or update its info (merging)
         else:
-            host = self.sqlsess.query(Host).join(Mission)\
+            matching_host = self.sqlsess.query(Host).join(Mission)\
                                .filter(Mission.name == self.current_mission)\
                                .filter(Host.ip == target.get_ip()).first()
-            if host:
-                host.merge(target.service.host)
+            if matching_host:
+                matching_host.merge(target.service.host)
                 self.sqlsess.commit()
-                target.service.host = host
+                target.service.host = matching_host
             else:
                 self.sqlsess.add(target.service.host)
                 mission.hosts.append(target.service.host)                              
@@ -424,12 +437,17 @@ class ServicesRequester(Requester):
                         r.protocol)))
 
                 self.sqlsess.delete(r)
+                self.sqlsess.commit()
 
                 # Delete host if no more service in it
                 if len(r.host.services) == 0:
+                    logger.info('Host {ip} {hostname} deleted because it does not ' \
+                        'have service anymore'.format(
+                        ip=r.host.ip, 
+                        hostname='('+r.host.hostname+')' if r.host.hostname else ''))
+
                     self.sqlsess.delete(r.host)
-                    
-            self.sqlsess.commit()            
+                    self.sqlsess.commit()          
 
 
     #------------------------------------------------------------------------------------

@@ -82,27 +82,33 @@ class Output(object):
     def begin_cmd(cmd):
         """Print command-line and beginning delimiter for output"""
         # If command-line starts with "cd" command, remove it for better readability
-        if cmd.startswith('cd'):
-            cmd = cmd[cmd.index(';')+1:].strip()
-        _, col = (lambda x: (int(x[0]), int(x[1])))(os.popen('stty size', 'r')\
-                                                      .read().split())
-        msg  = '\n'
-        msg += ' ' * col + '\n'
-        msg += 'cmd> {cmd}'.format(cmd=cmd) + ' ' * (col - (len(cmd)+5) % col) + '\n'
-        #msg += ' ' * col + '\n'
-        Output.print(msg, color='white', highlight='grey_19', attrs='bold')
-
+        if cmd.startswith("cd"):
+            cmd = cmd[cmd.index(";") + 1 :].strip()
+        col = None
+        try:
+            _, col = (lambda x: (int(x[0]), int(x[1])))(
+                os.popen("stty size 2>/dev/null", "r").read().split()
+            )
+        except Exception as e:
+            col = col if col is not None else 80
+        msg = "\n"
+        msg += " " * col + "\n"
+        msg += "cmd> {cmd}".format(cmd=cmd) + " " * (col - (len(cmd) + 5) % col) + "\n"
+        Output.print(msg, color="white", highlight="grey_19", attrs="bold")
 
     @staticmethod
     def delimiter():
         """Print ending delimiter for command output"""
-        _, col = (lambda x: (int(x[0]), int(x[1])))(os.popen('stty size', 'r')\
-                                                      .read().split())
-        msg  = '\n'
-        msg += ' ' * col + '\n'
-        #msg += ' ' * col + '\n'     
-        Output.print(msg, color='white', highlight='grey_19', attrs='bold')
-
+        col = None
+        try:
+            _, col = (lambda x: (int(x[0]), int(x[1])))(
+                os.popen("stty size 2>/dev/null", "r").read().split()
+            )
+        except Exception as e:
+            col = col if col is not None else 80
+        msg = "\n"
+        msg += " " * col + "\n"
+        Output.print(msg, color="white", highlight="grey_19", attrs="bold")
 
     @staticmethod
     def prompt_confirm(question, default=None):
@@ -170,7 +176,7 @@ class Output(object):
 
 
     @staticmethod
-    def table(columns, data, hrules=True):
+    def table(columns, data, hrules=True, borders=True):
         """
         Print a table. Supports multi-row cells.
         :param columns: An iterable of column names (strings)
@@ -184,6 +190,8 @@ class Output(object):
         for row in data:
             table.add_row(row)
         table.align = 'l'
+        if not borders:
+            table.border = False
         print(table)
             
 

@@ -4,7 +4,7 @@
 ### Core > Attack Controller
 ###
 import datetime
-from collections import defaultdict
+from humanfriendly import format_timespan
 
 from lib.core.AttackScope import AttackScope
 from lib.core.Constants import *
@@ -26,44 +26,10 @@ class AttackController(Controller):
         """Run the Attack Controller"""
 
         args = self.arguments.args
+        logger.debug('CLI arguments:')
+        logger.debug(args)
 
-        # Context parameters are organized in dict 
-        # { service : list of db objects }
-        self.creds    = defaultdict(list)
-        self.users    = defaultdict(list)
-        self.products = defaultdict(list)
-        self.options  = defaultdict(list)
-
-        if args.creds:
-            for c in args.creds:
-                self.creds[c['service']].append(
-                    Credential(type=c['auth_type'], 
-                               username=c['username'], 
-                               password=c['password']))
-        if args.users:
-            for u in args.users:
-                self.users[c['service']].append(
-                    Credential(type=u['auth_type'], 
-                               username=u['username'], 
-                               password=None))
-
-        if args.products:
-            for type_,name in args.products.items():
-                service = self.settings.services.get_service_for_product_type(type_)
-                if service:
-                    self.products[service].append(
-                        Product(type=type_,
-                                name=name))
-
-        if args.options:
-            for name, value in args.options.items():
-                service = self.settings.services.get_service_for_specific_option(name)
-                if service:
-                    self.options[service].append(
-                        Option(name=name, 
-                               value=value))
-
-        # Attack configuration
+        # Attack configuration: Categories of checks to run
         categories = self.settings.services.list_all_categories() # default: all
 
         if args.cat_only:
@@ -71,16 +37,20 @@ class AttackController(Controller):
         elif args.cat_exclude:
             categories = [ cat for cat in categories if cat not in args.cat_exclude ]
 
-        # Run the attack
-        self.attack_scope = AttackScope(self.settings, 
-                                        self.arguments,
-                                        self.sqlsess,
-                                        args.mission or args.add,
-                                        filter_categories=categories, 
-                                        filter_checks=args.checks, 
-                                        attack_profile=args.profile,
-                                        fast_mode=args.fast_mode)
 
+        # Create the attack scope
+        self.attack_scope = AttackScope(
+            self.settings, 
+            self.arguments,
+            self.sqlsess,
+            args.mission or args.add,
+            filter_categories=categories, 
+            filter_checks=args.checks, 
+            attack_profile=args.profile,
+            fast_mode=args.fast_mode)
+
+
+        # Run the attack
         begin = datetime.datetime.now()
         if args.target_ip_or_url:
             self.__run_for_single_target(args)
@@ -89,7 +59,7 @@ class AttackController(Controller):
             
         print()
         duration = datetime.datetime.now() - begin
-        logger.info('Done. Time spent: {} seconds'.format(duration.seconds))
+        logger.info('Finished. Duration: {}'.format(format_timespan(duration.seconds)))
 
 
     #------------------------------------------------------------------------------------
@@ -112,18 +82,31 @@ class AttackController(Controller):
         # will be merged by ServicesRequester.add_target)
         url = args.target_ip_or_url if args.target_mode == TargetMode.URL else ''
         ip  = args.target_ip_or_url if args.target_mode == TargetMode.IP else ''
-        service = Service(name=args.service,
-                          port=int(args.target_port),
-                          protocol=self.settings.services.get_protocol2(args.service),
-                          url=url)
+        service = Service(
+            name=args.service,
+            port=int(args.target_port),
+            protocol=self.settings.services.get_protocol2(args.service),
+            url=url)
         host = Host(ip=ip) # Will be updated when initializing Target()
         host.services.append(service)
 
-        # Update credentials, options, products if specified in command-line
-        for c in self.creds[args.service]    : service.credentials.append(c)
-        for u in self.users[args.service]    : service.credentials.append(u)
-        for p in self.products[args.service] : service.products.append(p)
-        for o in self.options[args.service]  : service.options.append(o)
+        # Update context (credentials, options, products) if specified in command-line
+        if args.creds:
+            for c in args.creds[args.service]:
+                self.sqlsess.add(c)
+                service.credentials.append(c)
+        if args.users:
+            for u in args.users[args.service]: 
+                self.sqlsess.add(u)
+                service.credentials.append(u)
+        if args.products:
+            for p in args.products[args.service]: 
+                self.sqlsess.add(p)
+                service.products.append(p)
+        if args.options:
+            for o in args.options[args.service]: 
+                self.sqlsess.add(o)
+                service.options.append(o)
 
         # Initialize Target
         try:
@@ -132,16 +115,25 @@ class AttackController(Controller):
             logger.error(e)
             sys.exit(1)
 
-        # Check if target is reachable 
-        # (by default, perform reverve DNS lookup & Nmap banner grabbing)
+        # Check Target and update its information:
+        # - Reverse DNS lookup: by default
+        # - Port check: always
+        # - Nmap service detection: by default
+        # - HTML title grabbing: always
+        # - Web technologies detection: always
+        # - Context initialization via SmartStart: always
         reachable = target.smart_check(
-            reverse_dns=(args.reverse_dns is None or args.reverse_dns == 'on'),
-            availability_check=True,
-            grab_banner_nmap=(args.nmap_banner_grab is None \
-                or args.nmap_banner_grab == 'on'))
+            reverse_dns_lookup=(args.reverse_dns is None or args.reverse_dns == 'on'),
+            availability_check=True, 
+            nmap_banner_grabbing=(args.nmap_banner_grab is None \
+                or args.nmap_banner_grab == 'on'),
+            html_title_grabbing=True,
+            web_technos_detection=True,
+            smart_context_initialize=True)
 
+        # Display availability status, exit if not reachable
         if args.target_mode == TargetMode.IP:
-            msg = 'Target {neg}reachable: {target}'.format(
+            msg = 'Target service {neg}reachable: {target}'.format(
                 neg='not ' if not reachable else '',
                 target=target)
         else:
@@ -152,11 +144,11 @@ class AttackController(Controller):
         if reachable:
             logger.success(msg)
         else: 
-            # Skip target if not reachable
             logger.error(msg)
             return
 
-        # Commit new data into database if target must be added to a mission
+        # Commit the target with updated information inside the appropriate 
+        # mission in the database
         if mission:
             logger.info('Results from this attack will be saved under mission ' \
                 '"{mission}" in database'.format(mission=mission.name))
@@ -166,6 +158,7 @@ class AttackController(Controller):
         # Run the attack
         self.attack_scope.add_target(target)
         self.attack_scope.attack()
+        return
 
 
     #------------------------------------------------------------------------------------
@@ -206,10 +199,18 @@ class AttackController(Controller):
         for service in services:
 
             # Update credentials, options, products if specified in command-line
-            for c in self.creds[service.name]    : service.credentials.append(c)
-            for u in self.users[service.name]    : service.credentials.append(u)
-            for p in self.products[service.name] : service.products.append(p)
-            for o in self.options[service.name]  : service.options.append(o)
+            if args.creds:
+                for c in args.creds[service.name]: 
+                    service.add_credential(c.clone())
+            if args.users:
+                for u in args.users[service.name]: 
+                    service.add_credential(u.clone())
+            if args.products:
+                for p in args.products[service.name]: 
+                    service.add_product(p.clone())
+            if args.options:
+                for o in args.options[service.name]: 
+                    service.add_option(o.clone())
 
             # Initialize Target 
             try:
