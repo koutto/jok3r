@@ -5,6 +5,6 @@ from lib.smartmodules.matchstrings.MatchStrings import products_match
 
 products_match['postgresql']['postgresql-server'] = {
     'Postgresql': {
-        'nmap-banner': 'PostgreSQL DB(\s+[VERSION])?',
+        'nmap-banner': 'PostgreSQL (DB)?(\s*[VERSION])?',
     },
 }
