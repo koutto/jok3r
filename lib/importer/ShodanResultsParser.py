@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 ###
-### Core > ShodanResultsParser
-### Api key need to be store in apikeys.py
+### Importer > ShodanResultsParser
+### API key needs to be store in apikeys.py
 ###
 from shodan import Shodan
 
 from lib.core.Config import *
 from lib.core.Target import Target
+from lib.importer.Config import get_service_name
 from lib.utils.FileUtils import *
 from lib.utils.NetUtils import NetUtils
 from lib.utils.OSUtils import OSUtils
@@ -54,9 +55,11 @@ class ShodanResultsParser:
 
     # ------------------------------------------------------------------------------------
 
-    def parse(self):
+    def parse(self, http_recheck=True):
         """
         Parse the Shodan results
+
+        :param bool http_recheck: If set to True, TCP ports are re-checked for HTTP(s)
 
         :return: Hosts 
         :rtype: list(Host)|None
@@ -102,8 +105,8 @@ class ShodanResultsParser:
                 os=os,
                 os_vendor=os_vendor,
                 os_family=os_family,
-                mac="",
-                vendor=os_vendor,
+                mac='',
+                vendor='',
                 type=device_type,
             )
 
@@ -119,13 +122,27 @@ class ShodanResultsParser:
             for service in services:
                 port_id += 1
                 module = service["_shodan"]["module"]
-                name = ShodanResultsParser.shodan_to_joker_service_name(module)
+                name = get_service_name(module)
                 port = service.get("port", None)
                 protocol = service.get("transport", None)
                 url = ''
                 comment = ''
                 html_title = ''
                 http_headers = ''
+
+                # Print current processed service
+                print()
+                logger.info('[Host {current_host}/{total_host} | ' \
+                    'Service {current_svc}/{total_svc}] Parsing service: ' \
+                    'host {ip} | port {port}/{proto} | service {service} ...'.format(
+                        current_host=host_id,
+                        total_host=len(self.ips_list),
+                        current_svc=port_id,
+                        total_svc=len(services),
+                        ip=host.ip, 
+                        port=port, 
+                        proto=protocol, 
+                        service=name))
 
                 # Get banner
                 product_name = service.get('product', '')
@@ -153,41 +170,20 @@ class ShodanResultsParser:
                     )
 
                 # Recheck for HTTP/HTTPS for services undetermined by Shodan
-                # Should not be useful for Shodan
-                # if (
-                #     http_recheck
-                #     and protocol == "tcp"
-                #     and not self.services_config.is_service_supported(name, multi=False)
-                # ):
-
-                #     url = WebUtils.is_returning_http_data(hostname or ip, port)
-                #     if url:
-                #         logger.success(
-                #             "{url} seems to return HTTP data, marking it "
-                #             "as http service".format(url=url)
-                #         )
-                #         name = "http"
+                if http_recheck \
+                    and protocol == "tcp" \
+                    and not self.services_config.is_service_supported(name, multi=False):
+                    url = WebUtils.is_returning_http_data(ip, port)
+                    if url:
+                        logger.success("{url} seems to return HTTP data, marking it " \
+                            "as http service".format(url=url))
+                        name = "http"
 
                 # Get page title and HTTP headers for HTTP services
                 if "http" in name:
                     if 'http' in service:
                         html_title = service['http'].get('title', '')
                     http_headers = service.get('data', '')
-
-
-                # Print current processed service
-                print()
-                logger.info('[Host {current_host}/{total_host} | ' \
-                    'Service {current_svc}/{total_svc}] Parsing service: ' \
-                    'host {ip} | port {port}/{proto} | service {service} ...'.format(
-                        current_host=host_id,
-                        total_host=len(self.ips_list),
-                        current_svc=port_id,
-                        total_svc=len(services),
-                        ip=host.ip, 
-                        port=port, 
-                        proto=protocol, 
-                        service=name))
 
                 # Only keep services supported by Jok3r
                 if not self.services_config.is_service_supported(name, multi=False):
@@ -242,18 +238,3 @@ class ShodanResultsParser:
 
         return results
 
-    # ------------------------------------------------------------------------------------
-
-    @staticmethod
-    def shodan_to_joker_service_name(shodan_service):
-        """
-        Convert Shodan service name to Jok3r name if there is a match.
-
-        :param str nmap_service: Service name as given by Nmap
-        :return: Service name compliant with Jok3r naming convention
-        :rtype: str
-        """
-        if shodan_service in SERVICES_SHODAN_TO_JOKER.keys():
-            return SERVICES_SHODAN_TO_JOKER[shodan_service]
-        else:
-            return shodan_service

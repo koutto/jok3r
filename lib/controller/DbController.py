@@ -1257,10 +1257,10 @@ class DbController(cmd2.Cmd):
     shodan = argparse.ArgumentParser(
         description='Import Shodan host (ips)', 
         formatter_class=formatter_class)
-    # shodan.add_argument(
-    #     '-n', '--no-http-recheck', 
-    #     action  = 'store_true', 
-    #     help    = 'Do not recheck for HTTP services')
+    shodan.add_argument(
+        '-n', '--no-http-recheck', 
+        action  = 'store_true', 
+        help    = 'Do not recheck for HTTP services')
     shodan.add_argument(
         'ips', 
         nargs   = 1, 
@@ -1306,7 +1306,7 @@ class DbController(cmd2.Cmd):
         if parser is None:
             print()
             return
-        results = parser.parse()
+        results = parser.parse(http_recheck=not args.no_http_recheck)
         print()
 
         if results is not None:
