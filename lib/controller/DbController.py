@@ -15,6 +15,7 @@ from lib.core.Constants import *
 from lib.core.Exceptions import FilterException
 from lib.core.Target import Target
 from lib.importer.NmapResultsParser import NmapResultsParser
+from lib.importer.ShodanResultsParser import ShodanResultsParser
 from lib.utils.ArgParseUtils import *
 from lib.utils.FileUtils import FileUtils
 from lib.utils.NetUtils import NetUtils
@@ -34,6 +35,7 @@ from lib.requester.ServicesRequester import ServicesRequester
 from lib.requester.VulnsRequester import VulnsRequester
 from lib.output.Logger import logger
 from lib.output.Output import Output
+from apikeys import API_KEYS
 
 
 class DbController(cmd2.Cmd):
@@ -1248,6 +1250,76 @@ class DbController(cmd2.Cmd):
         }
 
         return self.flag_based_complete(text, line, begidx, endidx, flag_dict=flag_dict)
+
+    #------------------------------------------------------------------------------------
+    # Import Shodan host
+
+    shodan = argparse.ArgumentParser(
+        description='Import Shodan host (ips)', 
+        formatter_class=formatter_class)
+    # shodan.add_argument(
+    #     '-n', '--no-http-recheck', 
+    #     action  = 'store_true', 
+    #     help    = 'Do not recheck for HTTP services')
+    shodan.add_argument(
+        'ips', 
+        nargs   = 1, 
+        metavar = '<ip1,ip2...>', 
+        help    = 'Import a list of IPs (single IP comma-separated)')
+
+    @cmd2.with_category(CMD_CAT_IMPORT)
+    @cmd2.with_argparser(shodan)
+    def do_shodan(self, args):
+        """Import Shodan results"""
+        print()
+
+        # Before all, check if we have a defined Shodan API key
+        if 'shodan' not in API_KEYS.keys() or not API_KEYS['shodan']:
+            logger.error('You must add a valid Shodan API key in "apikeys.py" to use '\
+                'this feature')
+            print()
+            return
+
+        # Check IPs
+        ips = args.ips[0]
+        if not ips:
+            logger.error('Please type an ip address or several seperated with comma')
+            print()
+            return
+        ips = ips.split(',')
+
+        valid_ips = list()
+        for ip in ips:
+            if not NetUtils.is_valid_ip(ip):
+                logger.warning(
+                    '{ip} is an invalid IP address, it will be skipped'.format(ip=ip))
+            else:
+                valid_ips.append(ip)
+
+        if len(valid_ips) == 0:
+            logger.error('No valid IP address has been provided')
+            print()
+            return
+
+        # Request Shodan API and parse results
+        parser = ShodanResultsParser(valid_ips, self.settings.services)
+        if parser is None:
+            print()
+            return
+        results = parser.parse()
+        print()
+
+        if results is not None:
+            if len(results) == 0:
+                logger.warning('No new service has been added into current mission')
+            else:
+                req = HostsRequester(self.sqlsess)
+                req.select_mission(self.current_mission)
+                for host in results:
+                    req.add_or_merge_host(host)
+                logger.success('Shodan results imported with success into current mission')
+
+        print()
 
 
     #------------------------------------------------------------------------------------

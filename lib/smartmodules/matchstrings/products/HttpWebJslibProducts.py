@@ -45,9 +45,9 @@ products_match['http']['web-jslib'] = {
             WIG_REGEXP2.format('jQuery'),
         ],
     },
-    'Jquery UI': {
-        'wappalyzer': 'jQuery UI',
-    },
+    # 'Jquery UI': {
+    #     'wappalyzer': 'jQuery UI',
+    # },
     'Lightbox': {
         'wappalyzer': 'Lightbox',
     },

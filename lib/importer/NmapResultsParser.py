@@ -29,7 +29,6 @@ class NmapResultsParser:
         """
         self.nmap_file = nmap_file
         self.services_config = services_config
-        self.results = None
 
 
     #------------------------------------------------------------------------------------
@@ -161,6 +160,9 @@ class NmapResultsParser:
                 # Deduce OS from banner if possible
                 if not os:
                     host.os = OSUtils.os_from_nmap_banner(s.banner)
+                    if host.os:
+                        host.os_vendor = OSUtils.get_os_vendor(host.os)
+                        host.os_family = OSUtils.get_os_family(host.os)
 
                 # Clean Nmap banner
                 banner = NetUtils.clean_nmap_banner(s.banner)

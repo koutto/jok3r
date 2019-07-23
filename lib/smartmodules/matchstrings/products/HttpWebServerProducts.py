@@ -30,6 +30,10 @@ products_match['http']['web-server'] = {
         'wappalyzer': 'IBM HTTP Server',
         'nmap-banner': 'IBM(\s*(HTTP Server|httpd))?(\s*[VERSION])?',
     },
+    'Lighttpd': {
+        'wappalyzer': 'lighttpd',
+        'nmap-banner': 'lighttpd(\s*[VERSION])?',
+    },
     'LiteSpeed Web Server': {
         'wappalyzer': 'LiteSpeed',
         'nmap-banner': 'LiteSpeed httpd(\s+[VERSION])?',

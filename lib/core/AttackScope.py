@@ -225,7 +225,7 @@ class AttackScope:
             id_max = self.current_targetid+ATTACK_SUMMARY_TABLE_MAX_SIZE-1 \
                 -(self.current_targetid-id_min)
             if id_max > len(self.targets):
-                id_min = id_min-(len(self.targets)-id_max)
+                id_min = id_min-(id_max-len(self.targets))
                 id_max = len(self.targets)
         else:
             id_min = 1

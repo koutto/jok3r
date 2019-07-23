@@ -109,6 +109,7 @@ apt-get install -y --ignore-missing python-dev python3-dev python-setuptools
 apt-get install -y --ignore-missing python3-setuptools python3-distutils
 apt-get install -y --ignore-missing python-ipy python-nmap python3-pymysql
 apt-get install -y --ignore-missing python3-psycopg2
+apt-get install -y --ignore-missing python3-shodan
 pip3 uninstall -y psycopg2
 pip3 install psycopg2-binary
 print_delimiter

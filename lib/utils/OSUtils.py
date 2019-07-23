@@ -27,15 +27,20 @@ class OSUtils:
             'Linux': [
                 'ostype: linux',
                 'ostype: unix',
-                'Red Hat',
                 'Unix',
-            ]
+            ],
+            'Red Hat Linux': [
+                'Red Hat',
+            ],
+            'Ubuntu Linux': [
+                'Ubuntu',
+            ],
         }
 
-        for ostype in matches.keys():
-            for string in matches[ostype]:
+        for os in matches.keys():
+            for string in matches[os]:
                 if string.lower() in banner.lower():
-                    return ostype
+                    return os
 
         return ''
 
