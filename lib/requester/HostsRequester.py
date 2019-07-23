@@ -42,7 +42,7 @@ class HostsRequester(Requester):
             for r in results:
                 data.append([
                     r.ip,
-                    StringUtils.wrap(r.hostname, 35) if r.hostname != str(r.ip) else '',
+                    StringUtils.wrap(r.hostname, 45) if r.hostname != str(r.ip) else '',
                     StringUtils.wrap(r.os, 50),
                     r.type,
                     StringUtils.wrap(r.vendor, 30),
