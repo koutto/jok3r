@@ -27,3 +27,6 @@ geckodriver.log
 
 # API keys file
 apikeys.py
+
+# Junk files
+shodan
