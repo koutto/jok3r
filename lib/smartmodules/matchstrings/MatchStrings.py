@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from collections import defaultdict
 
-VERSION_REGEXP = '(?P<version>[0-9.]+)?'
+VERSION_REGEXP = '(?P<version>[0-9.]*[0-9])?'
 
 #----------------------------------------------------------------------------------------
 # Credentials

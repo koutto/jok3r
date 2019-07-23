@@ -198,6 +198,7 @@ SERVICES_NMAP_TO_JOKER = {
     'ssl/ssl'       : 'http',
     'oracle-tns'    : 'oracle', 
     'smtps'         : 'smtp',
+    'telnets'       : 'telnets',
 }
 
 # Service names matching between Shodan and Jok3r
@@ -230,5 +231,6 @@ SERVICES_SHODAN_TO_JOKER = {
     'ssl/http'        : 'http',
     'oracle-tns'      : 'oracle', 
     'smtps'           : 'smtp',
+    'telnets'         : 'telnet',
 }  
   
