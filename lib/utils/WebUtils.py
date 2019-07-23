@@ -99,7 +99,7 @@ class WebUtils:
         Check if the given ip:port actually returns HTTP data
         :return: URL if ok, else ''
         """
-        timeout = urllib3.util.timeout.Timeout(0.4)
+        timeout = urllib3.util.timeout.Timeout(1.0)
         http_url  = 'http://{0}:{1}'.format(ip, port)
         https_url = 'https://{0}:{1}'.format(ip, port)
         regex = re.compile(HTTP_KEYWORDS, re.IGNORECASE)
