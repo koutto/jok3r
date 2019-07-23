@@ -7,6 +7,7 @@ from libnmap.parser import NmapParser
 
 from lib.core.Config import *
 from lib.core.Target import Target
+from lib.importer.Config import get_service_name
 from lib.utils.FileUtils import FileUtils
 from lib.utils.NetUtils import NetUtils
 from lib.utils.OSUtils import OSUtils
@@ -107,10 +108,25 @@ class NmapResultsParser:
             for p in h.get_open_ports():
                 port_id += 1
                 s = h.get_service(p[0], protocol=p[1])
-                name = NmapResultsParser.nmap_to_joker_service_name(s.service)
+                name = get_service_name(s.service)
                 url = ''
                 comment = ''
                 html_title = ''
+
+                # Print current processed service
+                print()
+                logger.info('[File {file} | Host {current_host}/{total_host} | ' \
+                    'Service {current_svc}/{total_svc}] Parsing service: ' \
+                    'host {ip} | port {port}/{proto} | service {service} ...'.format(
+                        file=FileUtils.extract_filename(self.nmap_file),
+                        current_host=host_id,
+                        total_host=len(nmap_report.hosts),
+                        current_svc=port_id,
+                        total_svc=len(h.get_open_ports()),
+                        ip=h.ipv4, 
+                        port=s.port, 
+                        proto=s.protocol, 
+                        service=name))
 
                 # Get URL for http services
                 if name == 'http':
@@ -128,27 +144,11 @@ class NmapResultsParser:
                    and s.protocol == 'tcp' \
                    and not self.services_config.is_service_supported(name, multi=False):
 
-                    url = WebUtils.is_returning_http_data(host.hostname or host.ip, 
-                                                          s.port)
+                    url = WebUtils.is_returning_http_data(host.ip, s.port)
                     if url:
                         logger.success('{url} seems to return HTTP data, marking it ' \
                             'as http service'.format(url=url))
                         name = 'http'
-
-                # Print current processed service
-                print()
-                logger.info('[File {file} | Host {current_host}/{total_host} | ' \
-                    'Service {current_svc}/{total_svc}] Parsing service: ' \
-                    'host {ip} | port {port}/{proto} | service {service} ...'.format(
-                        file=FileUtils.extract_filename(self.nmap_file),
-                        current_host=host_id,
-                        total_host=len(nmap_report.hosts),
-                        current_svc=port_id,
-                        total_svc=len(h.get_open_ports()),
-                        ip=h.ipv4, 
-                        port=s.port, 
-                        proto=s.protocol, 
-                        service=name))
 
                 # Only keep services supported by Jok3r
                 if not self.services_config.is_service_supported(name, multi=False):
@@ -202,20 +202,3 @@ class NmapResultsParser:
                 results.append(host)
 
         return results
-
-
-    #------------------------------------------------------------------------------------
-
-    @staticmethod
-    def nmap_to_joker_service_name(nmap_service):
-        """
-        Convert Nmap service name to Jok3r name if there is a match.
-
-        :param str nmap_service: Service name as given by Nmap
-        :return: Service name compliant with Jok3r naming convention
-        :rtype: str
-        """
-        if nmap_service in SERVICES_NMAP_TO_JOKER.keys():
-            return SERVICES_NMAP_TO_JOKER[nmap_service]
-        else:
-            return nmap_service
