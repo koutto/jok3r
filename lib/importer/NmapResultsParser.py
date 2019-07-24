@@ -169,14 +169,15 @@ class NmapResultsParser:
 
                 # Create Service object
                 service = Service(
-                    name       = name,
-                    port       = s.port,
-                    protocol   = {'tcp': Protocol.TCP,'udp': Protocol.UDP}.get(s.protocol),
-                    url        = url,
-                    up         = True,
-                    banner     = banner,
-                    comment    = comment,
-                    html_title = html_title)
+                    name=name,
+                    name_original=s.service,
+                    port=s.port,
+                    protocol={'tcp': Protocol.TCP,'udp': Protocol.UDP}.get(s.protocol),
+                    url=url,
+                    up=True,
+                    banner=banner,
+                    comment=comment,
+                    html_title=html_title)
                 host.services.append(service)
 
                 # Target smart check:

@@ -127,6 +127,7 @@ class NetUtils:
         :rtype: dict|None
         """
         results = {
+            'service_name': '',
             'banner': '',
             'os': '',
             'os_vendor': '',
@@ -153,6 +154,7 @@ class NetUtils:
         if len(report.hosts):
             host = report.hosts[0]
             if len(host.services):
+                results['service_name'] = host.services[0].service
                 results['banner'] = host.services[0].banner
                 results['mac'] = host.mac
                 results['vendor'] = host.vendor

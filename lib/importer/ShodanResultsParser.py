@@ -199,6 +199,7 @@ class ShodanResultsParser:
                 if protocol and port:
                     service = Service(
                         name=name,
+                        name_original=module,
                         port=port,
                         protocol={"tcp": Protocol.TCP, "udp": Protocol.UDP}.get(protocol),
                         url=url,

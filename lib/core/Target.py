@@ -480,6 +480,9 @@ class Target:
         nmap_info = NetUtils.grab_nmap_info(
             str(self.service.host.ip), self.service.port)
         
+        # Get original service name as returned by Nmap
+        self.service.name_original = nmap_info['service_name']
+
         # Get banner 
         self.service.banner = NetUtils.clean_nmap_banner(nmap_info['banner'])
         logger.info('Banner = {banner}'.format(banner=self.service.banner))
