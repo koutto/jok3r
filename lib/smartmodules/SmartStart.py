@@ -35,12 +35,22 @@ class SmartStart:
         """Initialize the context for the targeted service"""
         logger.smartinfo('SmartStart processing to initialize context...')
 
-        # Get products from banner
+        # Detect if encrypted protocol (SSL/TLS) from original service name
+        # (from Nmap/Shodan)
+        processor = MatchstringsProcessor(self.service,
+                                          'service-name-original',
+                                          self.service.name_original,
+                                          self.cu)
+        processor.detect_specific_options()
+        self.cu.update()
+
+        # Update context from banner
         processor = MatchstringsProcessor(self.service, 
                                           'banner',
                                           self.service.banner,
                                           self.cu)
         processor.detect_products()
+        processor.detect_specific_options()
         self.cu.update()
 
         # Run start method corresponding to target service if available
