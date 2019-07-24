@@ -374,6 +374,39 @@ class MatchstringsProcessor:
                             self.cu.add_vuln(StringUtils.remove_non_printable_chars(name))    
 
 
+
+    #------------------------------------------------------------------------------------
+
+    def detect_os(self):
+        """
+        Detect product from command output
+        """
+        for os in os_match.keys():
+            if self.tool_name in os_match[os].keys():
+                patterns = os_match[os][self.tool_name]
+
+                if type(patterns) == str:
+                    patterns = [ patterns ]
+
+                for pattern in patterns:
+                    logger.debug('Search for os pattern: {pattern}'.format(
+                        pattern=pattern))
+
+                    try:
+                        m = re.search(pattern, self.cmd_output, re.IGNORECASE)
+                    except Exception as e:
+                        logger.warning('Error with matchstring [{pattern}], ' \
+                            'you should review it. Exception: {exc}'.format(
+                                pattern=pattern, exc=e))
+                        break
+
+                    # If pattern matches, add detected OS
+                    if m:
+                        logger.debug('')
+
+                        # TODO 
+
+
     #------------------------------------------------------------------------------------
 
     def __replace_tokens_from_matchobj(self, string, match):

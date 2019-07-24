@@ -123,3 +123,22 @@ from lib.smartmodules.matchstrings.vulns.RdpVulns import *
 from lib.smartmodules.matchstrings.vulns.SmbVulns import *
 from lib.smartmodules.matchstrings.vulns.SmtpVulns import *
 from lib.smartmodules.matchstrings.vulns.SshVulns import *
+
+
+#----------------------------------------------------------------------------------------
+# OS
+#
+# Sample:
+# os_match = {
+#     'Windows': {
+#		  'banner': [
+#		       'microsoft',
+#              'windows',
+#          ],
+#          'wappalyzer': [
+# 		       'Windows',
+# 		   ],
+#     }
+# } 
+os_match = dict()
+from lib.smartmodules.matchstrings.os.OS import *
