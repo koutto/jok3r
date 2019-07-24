@@ -51,10 +51,13 @@ from lib.smartmodules.matchstrings.creds.VncCreds import *
 # }
 
 options_match = dict()
+from lib.smartmodules.matchstrings.options.FtpOptions import *
 from lib.smartmodules.matchstrings.options.HttpOptions import *
 from lib.smartmodules.matchstrings.options.JavaRmiOptions import *
 from lib.smartmodules.matchstrings.options.OracleOptions import *
 from lib.smartmodules.matchstrings.options.SmbOptions import *
+from lib.smartmodules.matchstrings.options.SmtpOptions import *
+from lib.smartmodules.matchstrings.options.TelnetOptions import *
 
 
 #----------------------------------------------------------------------------------------
