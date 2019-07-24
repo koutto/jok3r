@@ -340,12 +340,17 @@ Database Access & Reporting
 
     [*] Selected mission is now mayhem
 
-
-* Import hosts/services from Nmap results (XML) into the mission scope:
+* Scan and import hosts/services from Nmap results into the mission scope:
 
 .. code-block:: console
 
-    jok3rdb[mayhem]> nmap results.xml
+    jok3rdb[mayhem]> nmap_scan ip
+
+* Import hosts/services from Nmap results file (XML) into the mission scope:
+
+.. code-block:: console
+
+    jok3rdb[mayhem]> nmap_import results.xml
 
 * Import hosts/services from Shodan results (ip) into the mission scope:
 
