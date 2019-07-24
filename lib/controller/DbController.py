@@ -1200,10 +1200,10 @@ class DbController(cmd2.Cmd):
         metavar = '<params>',
         help = 'Nmap params, eg: -O -sV -T3')
     nmap_scan.add_argument(
-        'addr', 
+        'addrs', 
         nargs   = 1, 
-        metavar = '<addr>', 
-        help    = 'ip/network to scan')
+        metavar = '<addr[,addr...]>', 
+        help    = 'ips/networks to scan')
 
     @cmd2.with_category(CMD_CAT_IMPORT)
     @cmd2.with_argparser(nmap_scan)
@@ -1211,12 +1211,28 @@ class DbController(cmd2.Cmd):
         """Import Nmap scan results"""
         print()
 
-        # Todo: Handle comma separated addresses list
-        if not NetUtils.is_valid_ip(args.addr[0]) or not NetUtils.is_valid_ip_range(args.addr[0]):
-            logger.error("Invalid ip or network address")
+        # Check addresses
+        addrs = args.addrs[0]
+        if not addrs:
+            logger.error('Please type an ip address/network or several seperated with comma')
+            print()
+            return
+        addrs = addrs.split(',')
+
+        valid_addrs = list()
+        for addr in addrs:
+            if not NetUtils.is_valid_ip(addr) and not NetUtils.is_valid_ip_range(addr):
+                logger.warning(
+                    '{addr} is an invalid IP address/network, it will be skipped'.format(addr=addr))
+            else:
+                valid_addrs.append(addr)
+
+        if len(valid_addrs) == 0:
+            logger.error('No valid IP address has been provided')
+            print()
             return
 
-        results = NetUtils.do_full_scan(args.addr[0], args.nmap_options)
+        results = NetUtils.do_nmap_scan(valid_addrs, args.nmap_options)
             
         if not args.no_http_recheck:
             logger.info('Each service will be re-checked to detect HTTP services. ' \

@@ -212,7 +212,7 @@ class NmapResultsParser:
                 # - Nmap banner grabbing if specified by user and banner is missing in 
                 #   imported results;
                 # - HTML title and HTTP response headers grabbing for HTTP service;
-                # - Web technoparselogies detection for HTTP service, except if disabled by
+                # - Web technologies detection for HTTP service, except if disabled by
                 #   user;
                 # - Initialize the context of the target via SmartModules, based on the
                 #   information already known (i.e. banner, web technologies...)
