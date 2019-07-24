@@ -85,10 +85,13 @@ class NetUtils:
 
 
     @staticmethod
-    def do_full_scan(ip, nmap_options=None):
+    def do_full_scan(ip, options):
         """Run a full nmap scan"""
-        if not nmap_options:
+        if options:
+            nmap_options = str(options)
+        else:
             nmap_options = "-A -Pn -sTU --top-ports 1000"
+
         print("nmap {0} {1} started. This can be slow, please be patient...".format(nmap_options, str(ip)))
         nmproc = NmapProcess(ip, nmap_options)
         rc = nmproc.run()

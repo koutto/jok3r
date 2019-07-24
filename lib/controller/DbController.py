@@ -1195,9 +1195,14 @@ class DbController(cmd2.Cmd):
         action  = 'store_true',
         help    = 'Run Nmap version detection for each service with no banner')
     nmap_scan.add_argument(
+        '-o', '--nmap-options',
+        nargs   = '?', 
+        metavar = '<params>',
+        help = 'Nmap params, eg: -O -sV -T3')
+    nmap_scan.add_argument(
         'addr', 
         nargs   = 1, 
-        metavar = '<xml-results>', 
+        metavar = '<addr>', 
         help    = 'ip/network to scan')
 
     @cmd2.with_category(CMD_CAT_IMPORT)
@@ -1206,12 +1211,12 @@ class DbController(cmd2.Cmd):
         """Import Nmap scan results"""
         print()
 
-        addr = args.addr[0]
-        if not NetUtils.is_valid_ip(addr) or not NetUtils.is_valid_ip_range(addr):
+        # Todo: Handle comma separated addresses list
+        if not NetUtils.is_valid_ip(args.addr[0]) or not NetUtils.is_valid_ip_range(args.addr[0]):
             logger.error("Invalid ip or network address")
             return
 
-        results = NetUtils.do_full_scan(addr)
+        results = NetUtils.do_full_scan(args.addr[0], args.nmap_options)
             
         if not args.no_http_recheck:
             logger.info('Each service will be re-checked to detect HTTP services. ' \
