@@ -1170,7 +1170,7 @@ class DbController(cmd2.Cmd):
     #------------------------------------------------------------------------------------
     # Import Nmap
 
-    nmap = argparse.ArgumentParser(
+    nmap_import = argparse.ArgumentParser(
         description='Import Nmap results (XML)', 
         formatter_class=formatter_class, 
         epilog='Note: it is recommended to run Nmap scans with -A or -sV options ' \
@@ -1178,31 +1178,31 @@ class DbController(cmd2.Cmd):
             'results from a scan run without version detection,\nyou can add ' \
             '--version-detection to tell Jok3r to run Nmap version detection for ' \
             'each service\nit has not been already run.')
-    nmap.add_argument(
+    nmap_import.add_argument(
         '-n', '--no-http-recheck', 
         action  = 'store_true', 
         help    = 'Do not recheck for HTTP services')
-    nmap.add_argument(
+    nmap_import.add_argument(
         '--no-html-title', 
         action  = 'store_true', 
         help    = 'Do not grab HTML title for HTTP services')
-    nmap.add_argument(
+    nmap_import.add_argument(
         '--no-web-technos-detection',
         action  = 'store_true',
         help    = 'Disable web technologies detection for HTTP services')
-    nmap.add_argument(
+    nmap_import.add_argument(
         '--version-detection',
         action  = 'store_true',
         help    = 'Run Nmap version detection for each service with no banner')
-    nmap.add_argument(
+    nmap_import.add_argument(
         'file', 
         nargs   = 1, 
         metavar = '<xml-results>', 
         help    = 'Nmap XML results file')
 
     @cmd2.with_category(CMD_CAT_IMPORT)
-    @cmd2.with_argparser(nmap)
-    def do_nmap(self, args):
+    @cmd2.with_argparser(nmap_import)
+    def do_nmap_import(self, args):
         """Import Nmap results"""
         print()
 
@@ -1242,7 +1242,7 @@ class DbController(cmd2.Cmd):
             print()
 
 
-    def complete_nmap(self, text, line, begidx, endidx):
+    def complete_nmap_import(self, text, line, begidx, endidx):
         """Complete with filename"""
         flag_dict = {
             'nmap': self.path_complete,
