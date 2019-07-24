@@ -21,14 +21,16 @@ from lib.output.Output import Output
 
 class NmapResultsParser:
 
-    def __init__(self, nmap_file, services_config):
+    def __init__(self, nmap_file, nmap_string, services_config):
         """
         Initialize Nmap Parser from results file.
 
         :param str nmap_file: Nmap XML results file
+        :param str nmap_string: Nmap XML results strings
         :param ServicesConfig services_config: Services configuration
         """
         self.nmap_file = nmap_file
+        self.nmap_string = nmap_string
         self.services_config = services_config
 
 
@@ -55,7 +57,12 @@ class NmapResultsParser:
         :rtype: list(Host)|None
         """
         try:
-            nmap_report = NmapParser.parse_fromfile(self.nmap_file)
+            if self.nmap_file and not self.nmap_string:
+                nmap_report = NmapParser.parse_fromfile(self.nmap_file)
+            elif self.nmap_string and not self.nmap_file:
+                nmap_report = NmapParser.parse_fromstring(self.nmap_string)
+            else:
+                logger.error('Take a nmap XML file OR a nmap XML string')
         except Exception as e:
             logger.error('Error when parsing the Nmap file: {0}'.format(e))
             return None
@@ -95,14 +102,22 @@ class NmapResultsParser:
                         mac=h.mac,
                         vendor=h.vendor,
                         type=device_type)
-            logger.info('[File {file} | Host {current_host}/{total_host}] ' \
-                'Parsing host: {ip}{hostname} ...'.format(
-                    file=FileUtils.extract_filename(self.nmap_file),
-                    current_host=host_id,
-                    total_host=len(nmap_report.hosts),
-                    ip=host.ip, 
-                    hostname=' ('+host.hostname+')' if host.hostname != host.ip else ''))
-
+            if self.nmap_file:
+                logger.info('[File {file} | Host {current_host}/{total_host}] ' \
+                    'Parsing host: {ip}{hostname} ...'.format(
+                        file=FileUtils.extract_filename(self.nmap_file),
+                        current_host=host_id,
+                        total_host=len(nmap_report.hosts),
+                        ip=host.ip, 
+                        hostname=' ('+host.hostname+')' if host.hostname != host.ip else ''))
+            if self.nmap_string:
+                logger.info('[Host {current_host}/{total_host}] ' \
+                    'Parsing host: {ip}{hostname} ...'.format(
+                        current_host=host_id,
+                        total_host=len(nmap_report.hosts),
+                        ip=host.ip, 
+                        hostname=' ('+host.hostname+')' if host.hostname != host.ip else ''))
+            
             # Loop over open ports
             port_id = 0
             for p in h.get_open_ports():
@@ -115,18 +130,31 @@ class NmapResultsParser:
 
                 # Print current processed service
                 print()
-                logger.info('[File {file} | Host {current_host}/{total_host} | ' \
-                    'Service {current_svc}/{total_svc}] Parsing service: ' \
-                    'host {ip} | port {port}/{proto} | service {service} ...'.format(
-                        file=FileUtils.extract_filename(self.nmap_file),
-                        current_host=host_id,
-                        total_host=len(nmap_report.hosts),
-                        current_svc=port_id,
-                        total_svc=len(h.get_open_ports()),
-                        ip=h.ipv4, 
-                        port=s.port, 
-                        proto=s.protocol, 
-                        service=name))
+                if self.nmap_file:
+                    logger.info('[File {file} | Host {current_host}/{total_host} | ' \
+                        'Service {current_svc}/{total_svc}] Parsing service: ' \
+                        'host {ip} | port {port}/{proto} | service {service} ...'.format(
+                            file=FileUtils.extract_filename(self.nmap_file),
+                            current_host=host_id,
+                            total_host=len(nmap_report.hosts),
+                            current_svc=port_id,
+                            total_svc=len(h.get_open_ports()),
+                            ip=h.ipv4, 
+                            port=s.port, 
+                            proto=s.protocol, 
+                            service=name))
+                if self.nmap_string:
+                    logger.info('[Host {current_host}/{total_host} | ' \
+                        'Service {current_svc}/{total_svc}] Parsing service: ' \
+                        'host {ip} | port {port}/{proto} | service {service} ...'.format(
+                            current_host=host_id,
+                            total_host=len(nmap_report.hosts),
+                            current_svc=port_id,
+                            total_svc=len(h.get_open_ports()),
+                            ip=h.ipv4, 
+                            port=s.port, 
+                            proto=s.protocol, 
+                            service=name))
 
                 # Get URL for http services
                 if name == 'http':
@@ -184,7 +212,7 @@ class NmapResultsParser:
                 # - Nmap banner grabbing if specified by user and banner is missing in 
                 #   imported results;
                 # - HTML title and HTTP response headers grabbing for HTTP service;
-                # - Web technologies detection for HTTP service, except if disabled by
+                # - Web technoparselogies detection for HTTP service, except if disabled by
                 #   user;
                 # - Initialize the context of the target via SmartModules, based on the
                 #   information already known (i.e. banner, web technologies...)

@@ -1168,7 +1168,80 @@ class DbController(cmd2.Cmd):
 
 
     #------------------------------------------------------------------------------------
-    # Import Nmap
+    # Run a Nmap scan
+
+    nmap_scan = argparse.ArgumentParser(
+        description='Run an import Nmap results (XML)', 
+        formatter_class=formatter_class, 
+        epilog='Note: it is recommended to run Nmap scans with -A or -sV options ' \
+            'in order to get service\nbanners in imported results. If you import ' \
+            'results from a scan run without version detection,\nyou can add ' \
+            '--version-detection to tell Jok3r to run Nmap version detection for ' \
+            'each service\nit has not been already run.')
+    nmap_scan.add_argument(
+        '-n', '--no-http-recheck', 
+        action  = 'store_true', 
+        help    = 'Do not recheck for HTTP services')
+    nmap_scan.add_argument(
+        '--no-html-title', 
+        action  = 'store_true', 
+        help    = 'Do not grab HTML title for HTTP services')
+    nmap_scan.add_argument(
+        '--no-web-technos-detection',
+        action  = 'store_true',
+        help    = 'Disable web technologies detection for HTTP services')
+    nmap_scan.add_argument(
+        '--version-detection',
+        action  = 'store_true',
+        help    = 'Run Nmap version detection for each service with no banner')
+    nmap_scan.add_argument(
+        'addr', 
+        nargs   = 1, 
+        metavar = '<xml-results>', 
+        help    = 'ip/network to scan')
+
+    @cmd2.with_category(CMD_CAT_IMPORT)
+    @cmd2.with_argparser(nmap_scan)
+    def do_nmap_scan(self, args):
+        """Import Nmap scan results"""
+        print()
+
+        addr = args.addr[0]
+        if not NetUtils.is_valid_ip(addr) or not NetUtils.is_valid_ip_range(addr):
+            logger.error("Invalid ip or network address")
+            return
+
+        results = NetUtils.do_full_scan(addr)
+            
+        if not args.no_http_recheck:
+            logger.info('Each service will be re-checked to detect HTTP services. ' \
+                'Use --no-http-recheck if you want to disable it (faster import)')
+
+        # Parse Nmap file
+        parser = NmapResultsParser(None, results, self.settings.services)
+        results = parser.parse(
+            http_recheck=not args.no_http_recheck,
+            html_title_grabbing=not args.no_html_title,
+            nmap_banner_grabbing=args.version_detection,
+            web_technos_detection=not args.no_web_technos_detection)
+        print()
+
+        if results is not None:
+            if len(results) == 0:
+                logger.warning('No new service has been added into current mission')
+            else:
+                logger.info('Update the database...')
+                req = HostsRequester(self.sqlsess)
+                req.select_mission(self.current_mission)
+                for host in results:
+                    req.add_or_merge_host(host)
+                logger.success('Nmap results imported with success into current mission')
+
+        print()
+
+
+  #------------------------------------------------------------------------------------
+    # Import Nmap XML file
 
     nmap_import = argparse.ArgumentParser(
         description='Import Nmap results (XML)', 
@@ -1220,7 +1293,7 @@ class DbController(cmd2.Cmd):
                     'Use --no-http-recheck if you want to disable it (faster import)')
 
             # Parse Nmap file
-            parser = NmapResultsParser(file, self.settings.services)
+            parser = NmapResultsParser(file, None, self.settings.services)
             results = parser.parse(
                 http_recheck=not args.no_http_recheck,
                 html_title_grabbing=not args.no_html_title,
@@ -1245,11 +1318,12 @@ class DbController(cmd2.Cmd):
     def complete_nmap_import(self, text, line, begidx, endidx):
         """Complete with filename"""
         flag_dict = {
-            'nmap': self.path_complete,
+            'nmap_import': self.path_complete,
             '-n'  : self.path_complete, 
         }
 
         return self.flag_based_complete(text, line, begidx, endidx, flag_dict=flag_dict)
+
 
     #------------------------------------------------------------------------------------
     # Import Shodan host

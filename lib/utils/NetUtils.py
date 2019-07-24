@@ -85,6 +85,21 @@ class NetUtils:
 
 
     @staticmethod
+    def do_full_scan(ip, nmap_options=None):
+        """Run a full nmap scan"""
+        if not nmap_options:
+            nmap_options = "-A -Pn -sTU --top-ports 1000"
+        print("nmap {0} {1} started. This can be slow, please be patient...".format(nmap_options, str(ip)))
+        nmproc = NmapProcess(ip, nmap_options)
+        rc = nmproc.run()
+        if rc != 0:
+            print("Nmap scan failed (check if running as root): {0}".format(
+                nmproc.stderr))
+            return False
+        
+        return nmproc.stdout
+
+    @staticmethod
     def is_udp_port_open(ip, port):
         """Check if given UDP port is open"""
         nmproc = NmapProcess(ip, '-sU -T5 -p '+str(port))
