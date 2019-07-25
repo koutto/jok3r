@@ -113,7 +113,7 @@ class AttackScope:
                     cur    = i,
                     total  = len(self.targets),
                     target = target)
-
+                    
             attack_progress.desc = '{status}{fill}'.format(
                 status = status,
                 fill   = ' '*(DESC_LENGTH-len(status)))

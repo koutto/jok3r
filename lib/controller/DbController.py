@@ -1232,6 +1232,10 @@ class DbController(cmd2.Cmd):
             print()
             return
 
+        if not Output.prompt_confirm('Start scan ?', default=True):
+            logger.warning('Scan canceled !')
+            sys.exit(1)
+
         results = NetUtils.do_nmap_scan(valid_addrs, args.nmap_options)
             
         if not args.no_http_recheck:

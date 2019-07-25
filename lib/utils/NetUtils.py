@@ -8,10 +8,9 @@ import ipaddress
 import time
 from libnmap.process import NmapProcess
 from libnmap.parser import NmapParser, NmapParserException
-from time import sleep
 
 from lib.utils.OSUtils import OSUtils
-
+from lib.output.StatusBar import *
 
 class NetUtils:
 
@@ -93,21 +92,56 @@ class NetUtils:
         else:
             nmap_options = "-A -Pn -sTU --top-ports 100"
 
+        xml = ''
+
         print("nmap {0} {1} started. This can be slow, please be patient...".format(nmap_options, ' '.join(addrs)))
-        nmproc = NmapProcess(addrs, options=nmap_options)
-        rc = nmproc.run_background()
-        while nmproc.is_running():
-            print("Nmap Scan running: {0}% done".format(nmproc.progress))
-            sleep(2)
 
-        print("{0}".format(nmproc.summary))
+        # Initialize top status/progress bar
+        # If single target (total=None), the counter format will be used instead of 
+        # the progress bar format
+        scan_progress = manager.counter(
+            total=100,
+            desc='', 
+            unit='target',
+            bar_format=STATUSBAR_FORMAT, # For multi targets
+            counter_format=STATUSBAR_FORMAT_SINGLE) # For single target
 
-        if rc != 0:
-            print("Nmap scan failed (check if running as root): {0}".format(
-                nmproc.stderr))
-            return False
-        
-        return nmproc.stdout
+        time.sleep(.5) # hack for progress bar display
+
+        for addr in addrs:
+            nmproc = NmapProcess(addr, nmap_options)
+            nmproc.run_background()
+
+            while nmproc.is_running():
+                # Update status/progress bar
+                status = 'Nmap scan running on {target}'.format(target = addr)
+                scan_progress.desc = '{status}'.format(
+                    status = status
+                )
+
+                scan_progress.count = round(float(nmproc.progress))
+                scan_progress.update()
+
+                time.sleep(.5)
+
+            if nmproc.rc != 0:
+                print("Nmap scan failed (check if running as root): {0}".format(
+                    nmproc.stderr))
+                break
+            else:            
+                xml = xml + nmproc.stdout
+            
+            print(nmproc.summary)
+
+        # Clear progress bars
+        scan_progress.count = 100
+        scan_progress.update()
+        time.sleep(.5)
+
+        scan_progress.close()
+        manager.stop()
+
+        return xml
 
     @staticmethod
     def is_udp_port_open(ip, port):

@@ -60,7 +60,7 @@ class NmapResultsParser:
             if self.nmap_file and not self.nmap_string:
                 nmap_report = NmapParser.parse_fromfile(self.nmap_file)
             elif self.nmap_string and not self.nmap_file:
-                nmap_report = NmapParser.parse_fromstring(self.nmap_string, incomplete=True)
+                nmap_report = NmapParser.parse_fromstring(self.nmap_string)
             else:
                 logger.error('Take a nmap XML file OR a nmap XML string')
         except Exception as e:
