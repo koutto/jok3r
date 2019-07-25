@@ -1247,10 +1247,10 @@ class DbController(cmd2.Cmd):
                 sys.exit(1)
 
         for addr in valid_addrs:
-            results = NetUtils.do_nmap_scan(addr, args.nmap_options)
+            results, incomplete = NetUtils.do_nmap_scan(addr, args.nmap_options)
 
             # Parse Nmap file
-            parser = NmapResultsParser(None, results, self.settings.services)
+            parser = NmapResultsParser(None, results, self.settings.services, incomplete=incomplete)
             results = parser.parse(
                 http_recheck=not args.no_http_recheck,
                 html_title_grabbing=not args.no_html_title,

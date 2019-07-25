@@ -21,7 +21,7 @@ from lib.output.Output import Output
 
 class NmapResultsParser:
 
-    def __init__(self, nmap_file, nmap_string, services_config):
+    def __init__(self, nmap_file, nmap_string, services_config, incomplete=False):
         """
         Initialize Nmap Parser from results file.
 
@@ -32,6 +32,7 @@ class NmapResultsParser:
         self.nmap_file = nmap_file
         self.nmap_string = nmap_string
         self.services_config = services_config
+        self.incomplete = incomplete
 
 
     #------------------------------------------------------------------------------------
@@ -58,9 +59,9 @@ class NmapResultsParser:
         """
         try:
             if self.nmap_file and not self.nmap_string:
-                nmap_report = NmapParser.parse_fromfile(self.nmap_file)
+                nmap_report = NmapParser.parse_fromfile(self.nmap_file, incomplete=self.incomplete)
             elif self.nmap_string and not self.nmap_file:
-                nmap_report = NmapParser.parse_fromstring(self.nmap_string)
+                nmap_report = NmapParser.parse_fromstring(self.nmap_string, incomplete=self.incomplete)
             else:
                 logger.error('Take a nmap XML file OR a nmap XML string')
         except Exception as e:

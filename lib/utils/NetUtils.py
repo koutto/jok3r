@@ -88,11 +88,12 @@ class NetUtils:
         """Run a nmap scan"""
 
         REGEX_NMAP = 'task.* task="(?P<task>.*)" time="(?P<time>.*)"'
-
+        incomplete=False
+        
         if options:
             nmap_options = str(options)
         else:
-            nmap_options = "-T5 -O -Pn -sV -sTU --top-ports 100"
+            nmap_options = "-T5 -O -Pn -sV -sC -sTU --top-ports 100"
 
         # Init progress bar
         scan_progress = manager.counter(
@@ -112,41 +113,48 @@ class NetUtils:
         logger.info("Press Ctrl+C to abort")
         nmproc.sudo_run_background()
 
-        while nmproc.is_running():
-            # Update status/progress bar
-            task = None
-            try:
-                lines = nmproc.stdout.splitlines()
-                logger.debug(lines[-1])
-                m = re.search(REGEX_NMAP, lines[-1], re.IGNORECASE)
-                if m:
-                    task = m.group("task")
-            except Exception as e:
-                pass
-            scan_progress.desc = "{task} -> {addr}".format(
-                task=task if task else "Scan starting", addr=addr
-            )
-            scan_progress.count = round(float(nmproc.progress))
+        try:
+            while nmproc.is_running():
+                # Update status/progress bar
+                task = None
+                try:
+                    lines = nmproc.stdout.splitlines()
+                    m = re.search(REGEX_NMAP, lines[-1], re.IGNORECASE)
+                    if m:
+                        task = m.group("task")
+                except Exception as e:
+                    pass
+                scan_progress.desc = "{task} -> {addr}".format(
+                    task=task if task else "Scan starting", addr=addr
+                )
+                scan_progress.count = round(float(nmproc.progress))
+                scan_progress.update()
+                time.sleep(0.5)
+
+            if nmproc.rc != 0:
+                logger.error(
+                    "Nmap scan failed (check if running as root): {0}".format(nmproc.stderr)
+                )
+                return
+            else:
+                logger.success(nmproc.summary)
+
+            # Clear progress bars
+            scan_progress.count = 100
             scan_progress.update()
             time.sleep(0.5)
+            scan_progress.close()
+            manager.stop()
 
-        if nmproc.rc != 0:
-            logger.error(
-                "Nmap scan failed (check if running as root): {0}".format(nmproc.stderr)
-            )
-            return
-        else:
-            logger.success(nmproc.summary)
+            return nmproc.stdout, incomplete
 
-        # Clear progress bars
-        scan_progress.count = 100
-        scan_progress.update()
-        time.sleep(0.5)
+        except KeyboardInterrupt:
+            print()
 
-        scan_progress.close()
-        # manager.stop()
-
-        return nmproc.stdout
+            incomplete=True
+            logger.error('Ctrl+C received ! User aborted')
+            return nmproc.stdout, incomplete
+            
 
     @staticmethod
     def is_udp_port_open(ip, port):
