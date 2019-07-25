@@ -8,6 +8,7 @@ import ipaddress
 import time
 from libnmap.process import NmapProcess
 from libnmap.parser import NmapParser, NmapParserException
+from time import sleep
 
 from lib.utils.OSUtils import OSUtils
 
@@ -93,8 +94,14 @@ class NetUtils:
             nmap_options = "-A -Pn -sTU --top-ports 100"
 
         print("nmap {0} {1} started. This can be slow, please be patient...".format(nmap_options, ' '.join(addrs)))
-        nmproc = NmapProcess(addrs, nmap_options)
-        rc = nmproc.run()
+        nmproc = NmapProcess(addrs, options=nmap_options)
+        rc = nmproc.run_background()
+        while nmproc.is_running():
+            print("Nmap Scan running: {0}% done".format(nmproc.progress))
+            sleep(2)
+
+        print("{0}".format(nmproc.summary))
+
         if rc != 0:
             print("Nmap scan failed (check if running as root): {0}".format(
                 nmproc.stderr))
