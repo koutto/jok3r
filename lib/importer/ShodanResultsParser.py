@@ -151,12 +151,12 @@ class ShodanResultsParser:
                     name=product_name,
                     version=' {}'.format(product_version) if product_version else '')
 
-                # Deduce OS from banner if possible
-                if not host.os:
-                    host.os = OSUtils.os_from_nmap_banner(banner)
-                    if host.os:
-                        host.os_vendor = OSUtils.get_os_vendor(host.os)
-                        host.os_family = OSUtils.get_os_family(host.os)
+                # # Deduce OS from banner if possible
+                # if not host.os:
+                #     host.os = OSUtils.os_from_nmap_banner(banner)
+                #     if host.os:
+                #         host.os_vendor = OSUtils.get_os_vendor(host.os)
+                #         host.os_family = OSUtils.get_os_family(host.os)
 
                 # Get URL for http services
                 if name == 'http':

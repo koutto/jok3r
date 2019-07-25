@@ -29,7 +29,7 @@ class MatchstringsProcessor:
         """
         self.service = service
         self.tool_name = tool_name
-        self.cmd_output = cmd_output
+        self.cmd_output = cmd_output or ''
         self.cu = context_updater
 
 
@@ -391,7 +391,7 @@ class MatchstringsProcessor:
                 for pattern in patterns:
                     logger.debug('Search for os pattern: {pattern}'.format(
                         pattern=pattern))
-
+                    
                     try:
                         m = re.search(pattern, self.cmd_output, re.IGNORECASE)
                     except Exception as e:
@@ -402,9 +402,11 @@ class MatchstringsProcessor:
 
                     # If pattern matches, add detected OS
                     if m:
-                        logger.debug('')
+                        logger.debug('OS pattern matches')
 
-                        # TODO 
+                        # Add detected OS to the context
+                        self.cu.add_os(os)
+                        return
 
 
     #------------------------------------------------------------------------------------

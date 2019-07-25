@@ -51,6 +51,8 @@ class SmartStart:
                                           self.cu)
         processor.detect_products()
         processor.detect_specific_options()
+        if not self.service.host.os:
+            processor.detect_os()
         self.cu.update()
 
         # Run start method corresponding to target service if available
@@ -66,6 +68,7 @@ class SmartStart:
     #------------------------------------------------------------------------------------
 
     def start_http(self):
+        """Method run specifically for HTTP services"""
 
         # Autodetect HTTPS
         if self.service.url.lower().startswith('https://'):
@@ -80,8 +83,17 @@ class SmartStart:
                 '(401 Unauthorized)')
             self.cu.add_option('htaccess', 'true')
 
-        # Try to detect supported products from web technologies
+        # Update context with web technologies
         if self.service.web_technos:
+            # Detect OS
+            if not self.service.host.os:
+                processor = MatchstringsProcessor(self.service, 
+                                                  'wappalyzer',
+                                                  self.service.host.os,
+                                                  self.cu)
+                processor.detect_os()
+
+            # Detect products
             try:
                 technos = ast.literal_eval(self.service.web_technos)
             except Exception as e:
