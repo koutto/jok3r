@@ -85,11 +85,13 @@ class WebUtils:
     def is_url_reachable(url):
         """Check if an URL is reachable"""
         try:
-            http = urllib3.PoolManager(cert_reqs='CERT_NONE', timeout=10.0, retries=2)
-            r = http.request('GET', url, headers={'User-Agent': USER_AGENT})
-            return (True, r.status, r.getheaders())
+            # http = urllib3.PoolManager(cert_reqs='CERT_NONE', timeout=10.0, retries=2)
+            # r = http.request('GET', url, headers={'User-Agent': USER_AGENT})
+            # return (True, r.status, r.getheaders())
+            r = requests.get(url, verify=False, allow_redirects=False)
+            return (True, r.status_code, r.headers)
         except Exception as e:
-            #print(e)
+            print(e)
             return (False, None, None)
 
 
