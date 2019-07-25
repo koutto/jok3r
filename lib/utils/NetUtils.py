@@ -11,7 +11,7 @@ from libnmap.parser import NmapParser, NmapParserException
 
 from lib.utils.OSUtils import OSUtils
 from lib.output.StatusBar import *
-
+from lib.output.Logger import logger
 class NetUtils:
 
     @staticmethod
@@ -91,48 +91,42 @@ class NetUtils:
             nmap_options = str(options)
         else:
             nmap_options = "-A -Pn -sTU --top-ports 100"
-
         xml = ''
-
-        print("nmap {0} {1} started. This can be slow, please be patient...".format(nmap_options, ' '.join(addrs)))
 
         # Initialize top status/progress bar
         # If single target (total=None), the counter format will be used instead of 
         # the progress bar format
         scan_progress = manager.counter(
             total=100,
-            desc='', 
-            unit='target',
+            desc='Nmap scan', 
+            unit='scan_progress',
             bar_format=STATUSBAR_FORMAT, # For multi targets
             counter_format=STATUSBAR_FORMAT_SINGLE) # For single target
 
         time.sleep(.5) # hack for progress bar display
 
         for addr in addrs:
+            logger.info("Starting scan: nmap {0} {1} started. This can be slow, please be patient...".format(nmap_options, addr))
             nmproc = NmapProcess(addr, nmap_options)
             nmproc.run_background()
 
             while nmproc.is_running():
                 # Update status/progress bar
-                status = 'Nmap scan running on {target}'.format(target = addr)
-                scan_progress.desc = '{status}'.format(
-                    status = status
-                )
-
+                status = 'Nmap scan running on {target}'.format(target=addr)
+                scan_progress.desc = status
                 scan_progress.count = round(float(nmproc.progress))
                 scan_progress.update()
 
                 time.sleep(.5)
 
             if nmproc.rc != 0:
-                print("Nmap scan failed (check if running as root): {0}".format(
+                logger.error("Nmap scan failed (check if running as root): {0}".format(
                     nmproc.stderr))
                 break
-            else:            
+            else:
+                logger.success(nmproc.summary)            
                 xml = xml + nmproc.stdout
             
-            print(nmproc.summary)
-
         # Clear progress bars
         scan_progress.count = 100
         scan_progress.update()
@@ -140,6 +134,8 @@ class NetUtils:
 
         scan_progress.close()
         manager.stop()
+
+        print()
 
         return xml
 
