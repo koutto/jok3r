@@ -7,6 +7,6 @@ from lib.smartmodules.matchstrings.MatchStrings import products_match
 
 products_match['oracle']['oracle-server'] = {
     'Oracle/Database Server': {
-        'nmap-banner': 'Oracle (Database|TNS Listener)(\s*[VERSION])?',
+        'banner': 'Oracle (Database|TNS Listener)(\s*[VERSION])?',
     },
 }

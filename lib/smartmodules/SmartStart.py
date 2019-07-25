@@ -10,6 +10,7 @@ import re
 from lib.output.Logger import logger
 from lib.output.Output import Output
 from lib.smartmodules.ContextUpdater import ContextUpdater
+from lib.smartmodules.MatchstringsProcessor import MatchstringsProcessor
 from lib.smartmodules.matchstrings.MatchStrings import *
 
 
@@ -27,34 +28,47 @@ class SmartStart:
         :param Service service: Target Service model
         """
         self.service = service
-        self.cu = None # ContextUpdater
+        self.cu = ContextUpdater(self.service)
 
 
     def run(self):
-        """Run start method corresponding to target service if available"""
+        """Initialize the context for the targeted service"""
+        logger.smartinfo('SmartStart processing to initialize context...')
+
+        # Detect if encrypted protocol (SSL/TLS) from original service name
+        # (from Nmap/Shodan)
+        processor = MatchstringsProcessor(self.service,
+                                          'service-name-original',
+                                          self.service.name_original,
+                                          self.cu)
+        processor.detect_specific_options()
+        self.cu.update()
+
+        # Update context from banner
+        processor = MatchstringsProcessor(self.service, 
+                                          'banner',
+                                          self.service.banner,
+                                          self.cu)
+        processor.detect_products()
+        processor.detect_specific_options()
+        if not self.service.host.os:
+            processor.detect_os()
+        self.cu.update()
+
+        # Run start method corresponding to target service if available
         list_methods = [method_name for method_name in dir(self) \
                                     if callable(getattr(self, method_name))]
         start_method_name = 'start_{}'.format(self.service.name)
-
         if start_method_name in list_methods:
-            logger.smartinfo('SmartStart processing to initialize context...')
             start_method = getattr(self, start_method_name)
-            self.cu = ContextUpdater(self.service)
             start_method()
             self.cu.update()
 
 
     #------------------------------------------------------------------------------------
 
-    def start_ftp(self):
-
-        # Try to detect ftp server from Nmap banner
-        self.__detect_product_from_banner('ftp-server')
-
-
-    #------------------------------------------------------------------------------------
-
     def start_http(self):
+        """Method run specifically for HTTP services"""
 
         # Autodetect HTTPS
         if self.service.url.lower().startswith('https://'):
@@ -69,12 +83,17 @@ class SmartStart:
                 '(401 Unauthorized)')
             self.cu.add_option('htaccess', 'true')
 
-        # Try to detect web server and/or appserver from Nmap banner
-        self.__detect_product_from_banner('web-server')
-        self.__detect_product_from_banner('web-appserver')
-
-        # Try to detect supported products from web technologies
+        # Update context with web technologies
         if self.service.web_technos:
+            # Detect OS
+            if not self.service.host.os:
+                processor = MatchstringsProcessor(self.service, 
+                                                  'wappalyzer',
+                                                  self.service.host.os,
+                                                  self.cu)
+                processor.detect_os()
+
+            # Detect products
             try:
                 technos = ast.literal_eval(self.service.web_technos)
             except Exception as e:
@@ -96,105 +115,5 @@ class SmartStart:
 
                                 # Move to next product type if something found
                                 break
-
-
-    #------------------------------------------------------------------------------------
-
-    def start_ftp(self):
-
-        # Try to detect ftp server from Nmap banner
-        self.__detect_product_from_banner('ftp-server')
-
-
-    #------------------------------------------------------------------------------------
-
-    def start_mssql(self):
-
-        # Try to detect mssql server from Nmap banner
-        self.__detect_product_from_banner('mssql-server')
-
-
-    #------------------------------------------------------------------------------------
-
-    def start_mysql(self):
-
-        # Try to detect mysql server from Nmap banner
-        self.__detect_product_from_banner('mysql-server')
-
-
-    #------------------------------------------------------------------------------------
-
-    def start_oracle(self):
-
-        # Try to detect oracle server from Nmap banner
-        self.__detect_product_from_banner('oracle-server')
-
-
-    #------------------------------------------------------------------------------------
-
-    def start_postgresql(self):
-
-        # Try to detect postgresql server from Nmap banner
-        self.__detect_product_from_banner('postgresql-server')
-
-
-    #------------------------------------------------------------------------------------
-
-    def start_ssh(self):
-
-        # Try to detect ssh server from Nmap banner
-        self.__detect_product_from_banner('ssh-server')
-
-
-    #------------------------------------------------------------------------------------
-
-    def __detect_product_from_banner(self, prodtype):
-        """
-        Detect product from Nmap banner.
-        :param str prodtype: Product type
-        """
-
-        if self.service.banner:
-            p = products_match[self.service.name][prodtype]
-            for servername in p:
-                if 'nmap-banner' in p[servername]:
-                    pattern = p[servername]['nmap-banner']
-                    version_detection = '[VERSION]' in pattern
-                    pattern = pattern.replace('[VERSION]', VERSION_REGEXP)
-                    
-                    try:
-                        m = re.search(pattern, self.service.banner, 
-                            re.IGNORECASE|re.DOTALL)
-                    except Exception as e:
-                        logger.warning('Error with matchstring [{pattern}], you should '\
-                            'review it. Exception: {exception}'.format(
-                                pattern=pattern, exception=e))
-                        break
-
-                    # If pattern matches banner, add detected product
-                    if m:
-                        # Add version if present
-                        if version_detection:
-                            try:
-                                if m.group('version') is not None:
-                                    version = m.group('version')
-                                else:
-                                    version = ''
-                            except:
-                                version = ''
-                        else:
-                            version = ''
-
-                        logger.smartinfo('Product detected from banner: {type} = ' \
-                            '{name} {version}'.format(
-                                type=prodtype,
-                                name=servername,
-                                version=version))
-
-                        # Add detected product to context
-                        self.cu.add_product(prodtype, servername, version)
-
-                        # Stop product detection from banner if something found
-                        break
 
 

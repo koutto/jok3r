@@ -27,31 +27,34 @@ class Protocol(enum.Enum):
 class Service(Base):
     __tablename__ = 'services'
 
-    id           = Column(Integer, primary_key=True)
-    name         = Column(String(100), nullable=False, default='')
-    port         = Column(Integer, nullable=False)
-    protocol     = Column(sqlalchemy.types.Enum(Protocol), nullable=False)
-    url          = Column(String(3000), nullable=False, default='')
-    up           = Column(Boolean, default=True)
-    banner       = Column(String(255), nullable=False, default='')
-    html_title   = Column(String(255), nullable=False, default='')
-    http_headers = Column(Text, nullable=False, default='')
-    web_technos  = Column(Text, nullable=False, default='')
-    comment      = Column(Text, nullable=False, default='')
-    host_id      = Column(Integer, ForeignKey('hosts.id'))
+    id            = Column(Integer, primary_key=True)
+    # Service name as used in Jok3r
+    name          = Column(String(100), nullable=False, default='')
+    # Original service name as given by Nmap/Shodan
+    name_original = Column(String(100), nullable=False, default='')
+    port          = Column(Integer, nullable=False)
+    protocol      = Column(sqlalchemy.types.Enum(Protocol), nullable=False)
+    url           = Column(String(3000), nullable=False, default='')
+    up            = Column(Boolean, default=True)
+    banner        = Column(String(255), nullable=False, default='')
+    html_title    = Column(String(255), nullable=False, default='')
+    http_headers  = Column(Text, nullable=False, default='')
+    web_technos   = Column(Text, nullable=False, default='')
+    comment       = Column(Text, nullable=False, default='')
+    host_id       = Column(Integer, ForeignKey('hosts.id'))
 
-    host         = relationship('Host', back_populates='services')
-    credentials  = relationship('Credential', order_by=Credential.username, 
+    host          = relationship('Host', back_populates='services')
+    credentials   = relationship('Credential', order_by=Credential.username, 
         back_populates='service', cascade='save-update, merge, delete, delete-orphan')
-    options      = relationship('Option', order_by=Option.name, 
+    options       = relationship('Option', order_by=Option.name, 
         back_populates='service', cascade='save-update, merge, delete, delete-orphan')
-    products     = relationship('Product', order_by=Product.type, 
+    products      = relationship('Product', order_by=Product.type, 
         back_populates='service', cascade='save-update, merge, delete, delete-orphan')
-    results      = relationship('Result', order_by=Result.id, 
+    results       = relationship('Result', order_by=Result.id, 
         back_populates='service', cascade='save-update, merge, delete, delete-orphan')
-    vulns        = relationship('Vuln', order_by=Vuln.id, 
+    vulns         = relationship('Vuln', order_by=Vuln.id, 
         back_populates='service', cascade='save-update, merge, delete, delete-orphan')
-    screenshot   = relationship('Screenshot', uselist=False, 
+    screenshot    = relationship('Screenshot', uselist=False, 
         back_populates='service', cascade='save-update, merge, delete, delete-orphan')
 
 

@@ -8,6 +8,7 @@ from lib.db.Product import Product
 from lib.db.Vuln import Vuln
 from lib.core.Config import *
 from lib.output.Logger import logger
+from lib.utils.OSUtils import OSUtils
 from lib.utils.VersionUtils import VersionUtils
 
 
@@ -27,6 +28,7 @@ class ContextUpdater:
         self.credentials = list()
         self.products = list()
         self.vulns = list()
+        self.os = ''
 
 
     #------------------------------------------------------------------------------------
@@ -71,6 +73,10 @@ class ContextUpdater:
         self.vulns.append(Vuln(name=name))
 
 
+    def add_os(self, os):
+        self.os = os
+
+
     #------------------------------------------------------------------------------------
     # Update database
 
@@ -81,6 +87,7 @@ class ContextUpdater:
         self.__update_credentials()
         self.__update_products()
         self.__update_vulns()
+        self.__update_os()
 
 
     #------------------------------------------------------------------------------------
@@ -267,6 +274,21 @@ class ContextUpdater:
                 logger.smartsuccess('New vulnerability detected: {name}'.format(
                     name=vuln.name))
                 self.service.vulns.append(vuln)
+
+
+    #------------------------------------------------------------------------------------
+
+    def __update_os(self):
+        """Update OS (Service.host.os)"""
+        if self.os:
+            logger.smartsuccess('Detected OS: {os}'.format(os=self.os))
+            self.service.host.os = self.os
+            self.service.host.os_vendor = OSUtils.get_os_vendor(self.os)
+            self.service.host.os_family = OSUtils.get_os_family(self.os)
+            # self.service.host.type = OSUtils.get_device_type(
+            #             self.service.host.os,
+            #             self.service.host.os_family,
+            #             '')
 
 
                 

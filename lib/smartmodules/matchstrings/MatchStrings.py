@@ -51,10 +51,13 @@ from lib.smartmodules.matchstrings.creds.VncCreds import *
 # }
 
 options_match = dict()
+from lib.smartmodules.matchstrings.options.FtpOptions import *
 from lib.smartmodules.matchstrings.options.HttpOptions import *
 from lib.smartmodules.matchstrings.options.JavaRmiOptions import *
 from lib.smartmodules.matchstrings.options.OracleOptions import *
 from lib.smartmodules.matchstrings.options.SmbOptions import *
+from lib.smartmodules.matchstrings.options.SmtpOptions import *
+from lib.smartmodules.matchstrings.options.TelnetOptions import *
 
 
 #----------------------------------------------------------------------------------------
@@ -120,3 +123,22 @@ from lib.smartmodules.matchstrings.vulns.RdpVulns import *
 from lib.smartmodules.matchstrings.vulns.SmbVulns import *
 from lib.smartmodules.matchstrings.vulns.SmtpVulns import *
 from lib.smartmodules.matchstrings.vulns.SshVulns import *
+
+
+#----------------------------------------------------------------------------------------
+# OS
+#
+# Sample:
+# os_match = {
+#     'Windows': {
+#		  'banner': [
+#		       'microsoft',
+#              'windows',
+#          ],
+#          'wappalyzer': [
+# 		       'Windows',
+# 		   ],
+#     }
+# } 
+os_match = dict()
+from lib.smartmodules.matchstrings.os.OS import *

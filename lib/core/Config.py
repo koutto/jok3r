@@ -163,6 +163,7 @@ OPTIONS_ENCRYTPED_PROTO = (
     'ftps',
     'https',
     'rmissl',
+    'smtps',
     'telnets',
 )
 

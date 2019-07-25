@@ -211,7 +211,7 @@ products_match['http']['web-cms'] = {
     },
     'Domino': {
         'wappalyzer': 'Lotus Domino',
-        'nmap-banner': 'Lotus Domino(\s*(International|Go))?\s*httpd(\s*[VERSION])?',
+        'banner': 'Lotus Domino(\s*(International|Go))?\s*httpd(\s*[VERSION])?',
         'wig': [
             WIG_REGEXP3.format('Lotus Domino'),
             WIG_REGEXP4.format('Lotus Domino'),

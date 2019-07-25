@@ -349,19 +349,19 @@ class Target:
             self.service.web_technos = str(technos)
             detector.print_technos()
             
-            # Try to deduce OS from detected web technologies
-            if not self.service.host.os:
-                detected_os = detector.get_os()
-                if detected_os:
-                    self.service.host.os = detected_os
-                    self.service.host.os_vendor = OSUtils.get_os_vendor(detected_os)
-                    self.service.host.os_family = OSUtils.get_os_family(detected_os)
-                    self.service.host.type = OSUtils.get_device_type(
-                        self.service.host.os,
-                        self.service.host.os_family,
-                        '')
-                    logger.info('Detected OS from web technologies = {os}'.format(
-                        os=detected_os))
+            # # Try to deduce OS from detected web technologies
+            # if not self.service.host.os:
+            #     detected_os = detector.get_os()
+            #     if detected_os:
+            #         self.service.host.os = detected_os
+            #         self.service.host.os_vendor = OSUtils.get_os_vendor(detected_os)
+            #         self.service.host.os_family = OSUtils.get_os_family(detected_os)
+            #         self.service.host.type = OSUtils.get_device_type(
+            #             self.service.host.os,
+            #             self.service.host.os_family,
+            #             '')
+            #         logger.info('Detected OS from web technologies = {os}'.format(
+            #             os=detected_os))
 
         # Run SmartModules Start to initialize the context of the target based on the
         # information already known (i.e. banner, web technologies...)
@@ -434,7 +434,7 @@ class Target:
                         self.service.url,
                         self.service.host.ip,
                         self.service.port)
-                    #print(new_url)
+                    print(new_url)
 
                     is_reachable, status, resp_headers = WebUtils.is_url_reachable(
                         new_url)
@@ -480,6 +480,9 @@ class Target:
         nmap_info = NetUtils.grab_nmap_info(
             str(self.service.host.ip), self.service.port)
         
+        # Get original service name as returned by Nmap
+        self.service.name_original = nmap_info['service_name']
+
         # Get banner 
         self.service.banner = NetUtils.clean_nmap_banner(nmap_info['banner'])
         logger.info('Banner = {banner}'.format(banner=self.service.banner))
@@ -508,14 +511,14 @@ class Target:
         if nmap_info['type']:
             self.service.host.type = nmap_info['type']
 
-        # Try to deduce OS from banner if possible and not already done by Nmap
-        if not self.service.host.os:
-            detected_os = OSUtils.os_from_nmap_banner(self.service.banner)
-            if detected_os:
-                self.service.host.os = detected_os
-                self.service.host.os_vendor = OSUtils.get_os_vendor(detected_os)
-                self.service.host.os_family = OSUtils.get_os_family(detected_os)
-                logger.info('Detected OS from banner = {os}'.format(os=detected_os))
+        # # Try to deduce OS from banner if possible and not already done by Nmap
+        # if not self.service.host.os:
+        #     detected_os = OSUtils.os_from_nmap_banner(self.service.banner)
+        #     if detected_os:
+        #         self.service.host.os = detected_os
+        #         self.service.host.os_vendor = OSUtils.get_os_vendor(detected_os)
+        #         self.service.host.os_family = OSUtils.get_os_family(detected_os)
+        #         logger.info('Detected OS from banner = {os}'.format(os=detected_os))
 
 
     #------------------------------------------------------------------------------------

@@ -157,26 +157,27 @@ class NmapResultsParser:
                             ip = h.ipv4, port=s.port, proto=s.protocol, service=name))
                     continue
 
-                # Deduce OS from banner if possible
-                if not os:
-                    host.os = OSUtils.os_from_nmap_banner(s.banner)
-                    if host.os:
-                        host.os_vendor = OSUtils.get_os_vendor(host.os)
-                        host.os_family = OSUtils.get_os_family(host.os)
+                # # Deduce OS from banner if possible
+                # if not os:
+                #     host.os = OSUtils.os_from_nmap_banner(s.banner)
+                #     if host.os:
+                #         host.os_vendor = OSUtils.get_os_vendor(host.os)
+                #         host.os_family = OSUtils.get_os_family(host.os)
 
                 # Clean Nmap banner
                 banner = NetUtils.clean_nmap_banner(s.banner)
 
                 # Create Service object
                 service = Service(
-                    name       = name,
-                    port       = s.port,
-                    protocol   = {'tcp': Protocol.TCP,'udp': Protocol.UDP}.get(s.protocol),
-                    url        = url,
-                    up         = True,
-                    banner     = banner,
-                    comment    = comment,
-                    html_title = html_title)
+                    name=name,
+                    name_original=s.service,
+                    port=s.port,
+                    protocol={'tcp': Protocol.TCP,'udp': Protocol.UDP}.get(s.protocol),
+                    url=url,
+                    up=True,
+                    banner=banner,
+                    comment=comment,
+                    html_title=html_title)
                 host.services.append(service)
 
                 # Target smart check:
