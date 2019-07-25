@@ -1200,6 +1200,10 @@ class DbController(cmd2.Cmd):
         metavar = '<params>',
         help = 'Nmap params, eg: -O -sV -T3')
     nmap_scan.add_argument(
+        '-f', '--fast',
+        action  = 'store_true',
+        help    = 'Run in non-interactive mode')
+    nmap_scan.add_argument(
         'addrs', 
         nargs   = 1, 
         metavar = '<addr[,addr...]>', 
@@ -1231,38 +1235,41 @@ class DbController(cmd2.Cmd):
             logger.error('No valid IP address has been provided')
             print()
             return
-
-        if not Output.prompt_confirm('Start scan ?', default=True):
-            logger.warning('Scan canceled !')
-            sys.exit(1)
-
-        results = NetUtils.do_nmap_scan(valid_addrs, args.nmap_options)
             
         if not args.no_http_recheck:
             logger.info('Each service will be re-checked to detect HTTP services. ' \
                 'Use --no-http-recheck if you want to disable it (faster import)')
 
-        # Parse Nmap file
-        parser = NmapResultsParser(None, results, self.settings.services)
-        results = parser.parse(
-            http_recheck=not args.no_http_recheck,
-            html_title_grabbing=not args.no_html_title,
-            nmap_banner_grabbing=args.version_detection,
-            web_technos_detection=not args.no_web_technos_detection)
-        print()
+        if not args.fast:
+            # Start the scan
+            if not Output.prompt_confirm('Start scan ?', default=True):
+                logger.warning('Scan canceled !')
+                sys.exit(1)
 
-        if results is not None:
-            if len(results) == 0:
-                logger.warning('No new service has been added into current mission')
-            else:
-                logger.info('Update the database...')
-                req = HostsRequester(self.sqlsess)
-                req.select_mission(self.current_mission)
-                for host in results:
-                    req.add_or_merge_host(host)
-                logger.success('Nmap results imported with success into current mission')
+        for addr in valid_addrs:
+            results = NetUtils.do_nmap_scan(addr, args.nmap_options)
 
-        print()
+            # Parse Nmap file
+            parser = NmapResultsParser(None, results, self.settings.services)
+            results = parser.parse(
+                http_recheck=not args.no_http_recheck,
+                html_title_grabbing=not args.no_html_title,
+                nmap_banner_grabbing=args.version_detection,
+                web_technos_detection=not args.no_web_technos_detection)
+            print()
+
+            if results is not None:
+                if len(results) == 0:
+                    logger.warning('No new service has been added into current mission')
+                else:
+                    logger.info('Update the database...')
+                    req = HostsRequester(self.sqlsess)
+                    req.select_mission(self.current_mission)
+                    for host in results:
+                        req.add_or_merge_host(host)
+                    logger.success('Nmap scan results imported with success into current mission')
+
+            print()
 
 
   #------------------------------------------------------------------------------------
