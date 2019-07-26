@@ -19,3 +19,4 @@ SQLAlchemy>=1.2.8
 SQLAlchemy-Utils>=0.33.3
 urllib3
 tld
+shodan
