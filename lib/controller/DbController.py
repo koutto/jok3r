@@ -1197,8 +1197,8 @@ class DbController(cmd2.Cmd):
     nmap_scan.add_argument(
         '-o', '--nmap-options',
         nargs   = '?', 
-        metavar = '<params>',
-        help = 'Nmap params, eg: -O -sV -T3')
+        metavar = '<nmap_options>',
+        help = 'Nmap options, eg: -O -sV -T3')
     nmap_scan.add_argument(
         '-f', '--fast',
         action  = 'store_true',
