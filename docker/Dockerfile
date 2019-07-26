@@ -22,6 +22,7 @@ RUN apt-get update && \
     echo 'export LANG="en_US.UTF-8"' >> /root/.bashrc && \
     echo 'export LANGUAGE="en_US:en"' >> /root/.bashrc && \
     echo 'export PS1="\[$(tput bold)\]\[$(tput setaf 2)\]\u@jok3r-docker:\[$(tput setaf 4)\]\w\\$\[$(tput sgr0)\]\[$(tput sgr0)\] "' >> /root/.bashrc && \
+    echo 'jok3r() { python3 ~/jok3r/jok3r.py "$@"; }' >> /root/.bashrc && \ 
     echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen && \
     git clone https://github.com/koutto/jok3r.git 
 
