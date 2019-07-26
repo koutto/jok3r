@@ -21,13 +21,14 @@ from lib.output.Output import Output
 
 class NmapResultsParser:
 
-    def __init__(self, nmap_file, nmap_string, services_config, incomplete=False):
+    def __init__(self, nmap_file=None, nmap_string=None, services_config=None, incomplete=False):
         """
         Initialize Nmap Parser from results file.
 
         :param str nmap_file: Nmap XML results file
         :param str nmap_string: Nmap XML results strings
         :param ServicesConfig services_config: Services configuration
+        :param bool incomplete: Nmap incomplete state
         """
         self.nmap_file = nmap_file
         self.nmap_string = nmap_string

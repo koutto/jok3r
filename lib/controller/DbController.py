@@ -1202,7 +1202,7 @@ class DbController(cmd2.Cmd):
     nmap_scan.add_argument(
         '-f', '--fast',
         action  = 'store_true',
-        help    = 'Run in non-interactive mode')
+        help    = ' Fast mode, disable prompts')
     nmap_scan.add_argument(
         'addrs', 
         nargs   = 1, 

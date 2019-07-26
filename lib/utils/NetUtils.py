@@ -85,8 +85,15 @@ class NetUtils:
 
     @staticmethod
     def do_nmap_scan(addr, options):
-        """Run a nmap scan"""
+        """
+        Run a nmap scan
 
+        :param str addr: ip/network address
+        :param str options: nmap options: default "-T5 -O -Pn -sV -sC -sTU --top-ports 100"
+
+        :return: NmapProcess nmproc: nmap process and incomplete state # TODO: ugly?
+        :rtype: list(NmapProcess)|None
+        """
         REGEX_NMAP = 'task.* task="(?P<task>.*)" time="(?P<time>.*)"'
 
         if options:
@@ -138,7 +145,7 @@ class NetUtils:
                 logger.error(
                     "Nmap scan failed (check if running as root): {0}".format(nmproc.stderr)
                 )
-                return
+                return None
             else:
                 logger.success(nmproc.summary)
 
@@ -147,11 +154,11 @@ class NetUtils:
             scan_progress.update()
             time.sleep(0.5)
             scan_progress.close()
-            manager.stop()
-            
+            # manager.stop()
+
         except KeyboardInterrupt:
             print()
-            incomplete = True
+            incomplete = True # Scan was aborted, so incomplete
             logger.error('Ctrl+C received ! User aborted')
 
         nmproc.incomplete = incomplete
