@@ -1202,7 +1202,7 @@ class DbController(cmd2.Cmd):
     nmap_scan.add_argument(
         '-f', '--fast',
         action  = 'store_true',
-        help    = ' Fast mode, disable prompts')
+        help    = 'Fast mode, disable prompts')
     nmap_scan.add_argument(
         'addrs', 
         nargs   = 1, 
@@ -1304,6 +1304,10 @@ class DbController(cmd2.Cmd):
         action  = 'store_true',
         help    = 'Run Nmap version detection for each service with no banner')
     nmap_import.add_argument(
+        '-i', '--incomplete',
+        action  = 'store_true',
+        help    = 'Try to import an incomplete scan')
+    nmap_import.add_argument(
         'file', 
         nargs   = 1, 
         metavar = '<xml-results>', 
@@ -1323,13 +1327,17 @@ class DbController(cmd2.Cmd):
                 print()
                 return
             
-            logger.info('Importing Nmap results from {file}'.format(file=file))
+            logger.info('Importing Nmap results from {0}'.format(file))
             if not args.no_http_recheck:
                 logger.info('Each service will be re-checked to detect HTTP services. ' \
                     'Use --no-http-recheck if you want to disable it (faster import)')
 
             # Parse Nmap file
-            parser = NmapResultsParser(nmap_file=file, service_config=self.settings.services)
+            parser = NmapResultsParser(
+                nmap_file=file, 
+                services_config=self.settings.services, 
+                incomplete=args.incomplete)
+
             results = parser.parse(
                 http_recheck=not args.no_http_recheck,
                 html_title_grabbing=not args.no_html_title,
