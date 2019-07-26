@@ -1247,10 +1247,14 @@ class DbController(cmd2.Cmd):
                 sys.exit(1)
 
         for addr in valid_addrs:
-            results, incomplete = NetUtils.do_nmap_scan(addr, args.nmap_options)
+            nmproc = NetUtils.do_nmap_scan(addr, args.nmap_options)
 
-            # Parse Nmap file
-            parser = NmapResultsParser(None, results, self.settings.services, incomplete=incomplete)
+            # Parse Nmap results
+            parser = NmapResultsParser(
+                nmap_string=nmproc.stdout, 
+                services_config=self.settings.services, 
+                incomplete=nmproc.incomplete
+            )
             results = parser.parse(
                 http_recheck=not args.no_http_recheck,
                 html_title_grabbing=not args.no_html_title,
@@ -1325,7 +1329,7 @@ class DbController(cmd2.Cmd):
                     'Use --no-http-recheck if you want to disable it (faster import)')
 
             # Parse Nmap file
-            parser = NmapResultsParser(file, None, self.settings.services)
+            parser = NmapResultsParser(nmap_file=file, service_config=self.settings.services)
             results = parser.parse(
                 http_recheck=not args.no_http_recheck,
                 html_title_grabbing=not args.no_html_title,

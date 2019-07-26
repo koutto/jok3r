@@ -88,12 +88,13 @@ class NetUtils:
         """Run a nmap scan"""
 
         REGEX_NMAP = 'task.* task="(?P<task>.*)" time="(?P<time>.*)"'
-        incomplete=False
-        
+
         if options:
             nmap_options = str(options)
         else:
             nmap_options = "-T5 -O -Pn -sV -sC -sTU --top-ports 100"
+
+        incomplete = False
 
         # Init progress bar
         scan_progress = manager.counter(
@@ -108,7 +109,9 @@ class NetUtils:
 
         # Start scan
         nmproc = NmapProcess(addr, nmap_options)
-        logger.info("Starting scan: {0}".format(nmproc.get_command_line()))
+        logger.info("Starting scan: {0}".format(
+            nmproc.get_command_line().strip())
+        )
         logger.warn("This can be slow, please be patient...")
         logger.info("Press Ctrl+C to abort")
         nmproc.sudo_run_background()
@@ -122,7 +125,7 @@ class NetUtils:
                     m = re.search(REGEX_NMAP, lines[-1], re.IGNORECASE)
                     if m:
                         task = m.group("task")
-                except Exception as e:
+                except:
                     pass
                 scan_progress.desc = "{task} -> {addr}".format(
                     task=task if task else "Scan starting", addr=addr
@@ -145,16 +148,14 @@ class NetUtils:
             time.sleep(0.5)
             scan_progress.close()
             manager.stop()
-
-            return nmproc.stdout, incomplete
-
+            
         except KeyboardInterrupt:
             print()
-
-            incomplete=True
+            incomplete = True
             logger.error('Ctrl+C received ! User aborted')
-            return nmproc.stdout, incomplete
-            
+
+        nmproc.incomplete = incomplete
+        return nmproc
 
     @staticmethod
     def is_udp_port_open(ip, port):
