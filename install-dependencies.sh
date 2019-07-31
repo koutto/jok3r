@@ -104,12 +104,23 @@ print_delimiter
 # -----------------------------------------------------------------------------
 
 print_title "[~] Install Python 2.7 + 3 and useful related packages (if missing)"
-apt-get install -y --ignore-missing python python2.7 python3 python-pip python3-pip 
-apt-get install -y --ignore-missing python-dev python3-dev python-setuptools 
-apt-get install -y --ignore-missing python3-setuptools python3-distutils
-apt-get install -y --ignore-missing python-ipy python-nmap python3-pymysql
+apt-get install -y --ignore-missing python 
+apt-get install -y --ignore-missing python2.7 
+apt-get install -y --ignore-missing python3 
+apt-get install -y --ignore-missing python-pip 
+apt-get install -y --ignore-missing python3-pip 
+apt-get install -y --ignore-missing python-dev 
+apt-get install -y --ignore-missing python3-dev 
+apt-get install -y --ignore-missing python-setuptools 
+apt-get install -y --ignore-missing python3-setuptools 
+apt-get install -y --ignore-missing python3-distutils
+apt-get install -y --ignore-missing python-ipy 
+apt-get install -y --ignore-missing python-nmap 
+apt-get install -y --ignore-missing python3-pymysql
 apt-get install -y --ignore-missing python3-psycopg2
 apt-get install -y --ignore-missing python3-shodan
+pip2 install --upgrade pip
+pip3 install --upgrade pip
 pip3 uninstall -y psycopg2
 pip3 install psycopg2-binary
 print_delimiter
@@ -238,13 +249,34 @@ print_delimiter
 # -----------------------------------------------------------------------------
 
 print_title "[~] Install other required packages (if missing)"
-apt-get install -y --ignore-missing zlib1g-dev libcurl4-openssl-dev liblzma-dev 
-apt-get install -y --ignore-missing libxml2 libxml2-dev libxslt1-dev build-essential 
-apt-get install -y --ignore-missing gcc make automake patch libssl-dev locate
-apt-get install -y --ignore-missing smbclient dnsutils libgmp-dev libffi-dev 
-apt-get install -y --ignore-missing libxml2-utils unixodbc unixodbc-dev alien
-apt-get install -y --ignore-missing bc libwhisker2-perl libwww-perl postgresql
-apt-get install -y --ignore-missing postgresql-contrib libpq-dev net-tools
+apt-get install -y --ignore-missing zlib1g-dev 
+apt-get install -y --ignore-missing libcurl4-openssl-dev 
+apt-get install -y --ignore-missing liblzma-dev 
+apt-get install -y --ignore-missing libxml2 
+apt-get install -y --ignore-missing libxml2-dev 
+apt-get install -y --ignore-missing libxslt1-dev 
+apt-get install -y --ignore-missing build-essential 
+apt-get install -y --ignore-missing gcc 
+apt-get install -y --ignore-missing make 
+apt-get install -y --ignore-missing automake 
+apt-get install -y --ignore-missing patch 
+apt-get install -y --ignore-missing libssl-dev 
+apt-get install -y --ignore-missing locate
+apt-get install -y --ignore-missing smbclient 
+apt-get install -y --ignore-missing dnsutils 
+apt-get install -y --ignore-missing libgmp-dev 
+apt-get install -y --ignore-missing libffi-dev 
+apt-get install -y --ignore-missing libxml2-utils 
+apt-get install -y --ignore-missing unixodbc 
+apt-get install -y --ignore-missing unixodbc-dev 
+apt-get install -y --ignore-missing alien
+apt-get install -y --ignore-missing bc 
+apt-get install -y --ignore-missing libwhisker2-perl 
+apt-get install -y --ignore-missing libwww-perl 
+apt-get install -y --ignore-missing postgresql
+apt-get install -y --ignore-missing postgresql-contrib 
+apt-get install -y --ignore-missing libpq-dev 
+apt-get install -y --ignore-missing net-tools
 print_delimiter
 
 # -----------------------------------------------------------------------------
@@ -252,6 +284,15 @@ print_delimiter
 print_title "[~] Install Python3 libraries required by Jok3r (if missing)"
 pip3 install -r requirements.txt
 pip3 install --upgrade requests
+print_delimiter
+
+# -----------------------------------------------------------------------------
+
+print_title "[~] Install virtual environment packages"
+pip2 install virtualenv
+pip3 install virtualenv
+pip3 install virtualenvwrapper
+source /usr/local/bin/virtualenvwrapper.sh
 print_delimiter
 
 # -----------------------------------------------------------------------------
