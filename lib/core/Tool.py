@@ -26,6 +26,7 @@ class Tool:
                  target_service,
                  installed,
                  last_update='',
+                 virtualenv='',
                  install_command=None,
                  update_command=None,
                  check_command=None):
@@ -38,6 +39,7 @@ class Tool:
             (might be "multi" for tools that could be used against various services)
         :param bool installed: Install status
         :param str last_update: Datetime of the last updated ('' if not installed)
+        :param str virtualenv: Language of virtual environment to use (optional)
         :param Command install_command: Install command (optional)
         :param Command update_command: Update command (optional)
         :param Command check_command: Command to check install (optional)
@@ -47,6 +49,7 @@ class Tool:
         self.target_service  = target_service
         self.installed       = installed if isinstance(installed, bool) else False
         self.last_update     = last_update
+        self.virtualenv      = virtualenv
         self.install_command = install_command
         self.update_command  = update_command
         self.check_command   = check_command
@@ -251,8 +254,8 @@ class Tool:
         :return: Install/Update status
         :rtype: bool
         """
-        if update : cmd = self.update_command.get_cmdline(self.tool_dir)
-        else      : cmd = self.install_command.get_cmdline(self.tool_dir)
+        if update : cmd = self.update_command.get_cmdline(self)
+        else      : cmd = self.install_command.get_cmdline(self)
 
         mode = 'update' if update else 'install'
 
@@ -369,7 +372,7 @@ class Tool:
         logger.info('Running the check command for the tool {tool}...'.format(
             tool=self.name))
 
-        cmd = self.check_command.get_cmdline(self.tool_dir)
+        cmd = self.check_command.get_cmdline(self)
 
         Output.begin_cmd(cmd)
         returncode, _ = ProcessLauncher(cmd).start()

@@ -12,6 +12,7 @@ For each tool registered inside toolbox:
   name           = name to display (mandatory)
   description    = short text describing the tool (mandatory)
   target_service = targeted service or "multi" (mandatory)
+  virtualenv     = language of the virtual env to use (e.g. python2.7) (optional) 
   install        = installation command-line (optional)
   update         = update command-line (optional)
   check_command  = command to check for correct install (run without args) (optional)
@@ -222,6 +223,7 @@ class Settings:
             tool_config['target_service'],
             tool_config['installed'],
             tool_config['last_update'],
+            tool_config['virtualenv'],
             tool_config['install'],
             tool_config['update'],
             tool_config['check_command']
@@ -274,6 +276,9 @@ class Settings:
                     logger.warning('{prefix} Service specified in "target_service" is ' \
                         'not supported, tool is skipped'.format(prefix=log_prefix))
                     return False
+
+            elif opt == 'virtualenv':
+                tool_config[opt] = val.lower()
 
             elif opt == 'install':
                 tool_config[opt] = Command(cmdtype=CmdType.INSTALL, cmdline=val)

@@ -109,7 +109,7 @@ class Command:
         self.services_config = services_config
         
 
-    def get_cmdline(self, directory, target=None, arguments=None):
+    def get_cmdline(self, tool=None, target=None, arguments=None):
         """
         Get the formatted command line, i.e. with the tags replaced by their correct 
         values according to target's information.
@@ -117,8 +117,7 @@ class Command:
         Note: the command-line is prefixed by a "cd" command to move to the correct 
         directory before running the actual command.
 
-        :param str directory: Directory where the command should be run (if empty,
-            the current directory is selected)
+        :param Tool tool: Tool related to the target
         :param Target target: Target (for RUN)
         :param ArgumentsParser arguments: Arguments (for RUN)
 
@@ -170,10 +169,22 @@ class Command:
 
         self.__replace_tag_toolboxdir(TOOLBOX_DIR)
 
-        if directory:
-            return 'cd {dir}; {cmd}'.format(dir=directory, cmd=self.formatted_cmdline)
-        else:
-            return self.formatted_cmdline
+        result = self.formatted_cmdline
+
+        # Virtual environment
+        if tool is not None and tool.virtualenv:
+            if tool.virtualenv.startswith('python'):
+                if self.cmdtype == CmdType.RUN:
+                    result = 'workon {name}; {cmd}'.format(name=tool.name, cmd=result)
+                else:
+                    result = 'mkvirtualenv -p $(which {python}) {name}; {cmd}'.format(
+                        python=tool.virtualenv, name=tool.name, cmd=result)
+
+
+        if tool is not None and tool.tool_dir:
+            result = 'cd {dir}; {cmd}'.format(dir=tool.tool_dir, cmd=result)
+        
+        return result
 
 
     #------------------------------------------------------------------------------------

@@ -129,6 +129,7 @@ TOOL_OPTIONS = {
         'target_service',
     ],
     OPTIONAL: [
+        'virtualenv',
         'install',
         'update',
         'check_command',
