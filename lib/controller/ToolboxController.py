@@ -66,5 +66,10 @@ class ToolboxController(Controller):
         elif self.arguments.args.uninstall_all:
             self.settings.toolbox.remove_all()
 
+        # --check
+        elif self.arguments.args.check_toolbox:
+            self.settings.toolbox.check()
+
+
 
 
