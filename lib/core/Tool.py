@@ -107,7 +107,7 @@ class Tool:
             if not FileUtils.is_dir(self.tool_dir):
                 logger.warning('Directory "{dir}" does not exist'.format(
                     dir=self.tool_dir))
-                return False
+                #return False
             elif not FileUtils.remove_directory(self.tool_dir):
                 logger.error('Unable to delete directory "{dir}". ' \
                     'Check permissions and/or re-run with sudo'.format(
@@ -264,9 +264,14 @@ class Tool:
            or Output.prompt_confirm('Confirm {mode} ?'.format(mode=mode), default=True):
 
             Output.begin_cmd(cmd)
-            ProcessLauncher(cmd).start()
+            returncode, _ = ProcessLauncher(cmd).start()
             Output.delimiter()
-            logger.success('Tool {mode} has finished'.format(mode=mode))
+            if returncode != 0:
+                logger.warning('Tool {mode} has finished with an error ' \
+                    'exit code: {code}'.format(mode=mode, code=returncode))
+            else:
+                logger.success('Tool {mode} has finished with success exit code'.format(
+                    mode=mode))
             return True
         else:
             logger.warning('Tool {mode} aborted'.format(mode=mode))
@@ -292,15 +297,18 @@ class Tool:
         status = True
 
         # Check install/update
-        if not fast_mode:
-            if not self.check_command:
-                logger.info('No check_command defined in settings for {tool}, will ' \
-                    'assume it is correctly {mode}'.format(tool=self.name, mode=mode[1]))
-            else:
-                logger.info('Now, checking if {tool} has been {mode} correctly. ' \
-                    'Hit any key to run test...'.format(tool=self.name, mode=mode[1]))
+        if not self.check_command:
+            logger.info('No check_command defined in settings for {tool}, will ' \
+                'assume it is correctly {mode}'.format(tool=self.name, mode=mode[1]))
+        else:
+            logger.info('Now, checking if {tool} has been {mode} correctly.' \
+                '{key}'.format(
+                    tool=self.name, 
+                    mode=mode[1], 
+                    key='Hit any key to run test...' if not fast_mode else ''))
+            if not fast_mode:
                 CLIUtils.getch()
-                status = self.__run_check_command()
+            status = self.run_check_command(fast_mode)
 
         # Change install status in configuration file
         if status:
@@ -341,26 +349,43 @@ class Tool:
             return False
 
 
-    def __run_check_command(self):
+    def run_check_command(self, fast_mode=False):
         """
         Run the check command.
         The goal is to quickly check if the tool is not buggy or missing some 
         dependencies. The user must analyze the output and gives an answer.
 
-        :return: Response from user
+        :param bool fast_mode: Set to true to disable prompts
+
+        :return: Response from user in interactive mode, otherwise status
+            based on exit code (True if exit code is 0)
         :rtype: bool
         """
+        if not self.check_command:
+            logger.info('No check_command defined in settings for the tool ' \
+                '{tool}'.format(tool=self.name))
+            return True
+
         logger.info('Running the check command for the tool {tool}...'.format(
             tool=self.name))
 
         cmd = self.check_command.get_cmdline(self.tool_dir)
 
         Output.begin_cmd(cmd)
-        ProcessLauncher(cmd).start()
+        returncode, _ = ProcessLauncher(cmd).start()
         Output.delimiter()
 
-        return Output.prompt_confirm('Does the tool {tool} seem to be running ' \
-            'correctly ?'.format(tool=self.name), default=True) 
+        if returncode != 0:
+            logger.warning('Check command has finished with an error ' \
+                'exit code: {code}'.format(code=returncode))
+        else:
+            logger.success('Check command has finished with success exit code')
+
+        if fast_mode:
+            return (returncode == 0)
+        else:
+            return Output.prompt_confirm('Does the tool {tool} seem to be running ' \
+                'correctly ?'.format(tool=self.name), default=True) 
 
 
     #------------------------------------------------------------------------------------
