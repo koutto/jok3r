@@ -140,7 +140,7 @@ class Check:
                     Output.begin_cmd(cmdline)
                     process = ProcessLauncher(cmdline)
                     if mode == 'y' or mode == 'f':
-                        output = process.start()
+                        returncode, output = process.start()
                     # elif mode == 't':
                     #     output = process.start_in_new_tab()
                     #     logger.info('Command started in new tab')
@@ -148,6 +148,10 @@ class Check:
                     #     output = process.start_in_new_window(self.name)
                     #     logger.info('Command started in new window')
                     Output.delimiter()
+                    if returncode != 0:
+                        logger.warning('Command has finished with an error ' \
+                            'exit code: {code}. A problem might have occured'.format(
+                                code=returncode))
                     print()
 
                     output = StringUtils.interpret_ansi_escape_clear_lines(output)

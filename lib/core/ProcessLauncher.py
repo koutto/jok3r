@@ -76,6 +76,7 @@ class ProcessLauncher:
         :return: Command output (stdout+stderr)
         :rtype: str
         """
+        returncode = None
         output = ''
         
         try:
@@ -106,10 +107,11 @@ class ProcessLauncher:
 
                 # Break if process has finished
                 if out == ''  and proc.poll() != None:
+                    returncode = proc.returncode
                     break
 
         except Exception as e:
             logger.error('Error when trying to run command: {exception}'.format(
                 exception=e))
 
-        return output
+        return (returncode, output)
