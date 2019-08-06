@@ -291,8 +291,8 @@ print_delimiter
 print_title "[~] Install virtual environment packages"
 pip2 install virtualenv
 pip3 install virtualenv
-pip3 install virtualenvwrapper
-source /usr/local/bin/virtualenvwrapper.sh
+# pip3 install virtualenvwrapper
+# source /usr/local/bin/virtualenvwrapper.sh
 print_delimiter
 
 # -----------------------------------------------------------------------------
