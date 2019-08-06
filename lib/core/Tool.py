@@ -120,6 +120,14 @@ class Tool:
                 logger.success('Tool directory "{dir}" deleted'.format(
                     dir=self.tool_dir))
 
+        # Remove virtualenv files if necessary
+        virtualenv_dir = '{}/{}'.format(VIRTUALENVS_DIR, self.name)
+        if FileUtils.is_dir(virtualenv_dir):
+            if FileUtils.remove_directory(virtualenv_dir):
+                logger.success('Virtualenv directory deleted')
+            else:
+                logger.warning('Unable to delete Virtualenv directory')
+
         # Make sure "installed" option in config file is set to False
         if settings.change_installed_status(self.target_service, 
                                             self.name, 

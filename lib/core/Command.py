@@ -169,21 +169,26 @@ class Command:
 
         self.__replace_tag_toolboxdir(TOOLBOX_DIR)
 
-        result = self.formatted_cmdline
-
         # Virtual environment
+        venv = ''
         if tool is not None and tool.virtualenv:
             if tool.virtualenv.startswith('python'):
-                if self.cmdtype == CmdType.RUN:
-                    result = 'workon {name}; {cmd}'.format(name=tool.name, cmd=result)
-                else:
-                    result = 'mkvirtualenv -p $(which {python}) {name}; {cmd}'.format(
-                        python=tool.virtualenv, name=tool.name, cmd=result)
+                if self.cmdtype == CmdType.INSTALL:
+                    venv = 'virtualenv -p $(which {python}) {path}/{name}; '.format(
+                            python=tool.virtualenv, 
+                            path=VIRTUALENVS_DIR,
+                            name=tool.name)
+                
+                venv = venv + 'source {path}/{name}/bin/activate; '.format(
+                    path=VIRTUALENVS_DIR,
+                    name=tool.name)
 
-
+        # Move to the tool directory
+        cd = ''
         if tool is not None and tool.tool_dir:
-            result = 'cd {dir}; {cmd}'.format(dir=tool.tool_dir, cmd=result)
-        
+            cd = 'cd {dir}; '.format(dir=tool.tool_dir)
+
+        result = '{cd}{venv}{cmd}'.format(cd=cd, venv=venv, cmd=self.formatted_cmdline)
         return result
 
 

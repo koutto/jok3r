@@ -105,7 +105,7 @@ class Check:
                     logger.info('Command #{num:02} matches requirements: ' \
                         '{context}'.format(num=i, context=command.context_requirements))
 
-                cmdline = command.get_cmdline(self.tool.tool_dir, target, arguments)
+                cmdline = command.get_cmdline(self.tool, target, arguments)
 
                 if arguments.args.fast_mode:
                     # If fast mode enabled, no prompt is displayed

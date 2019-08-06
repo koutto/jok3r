@@ -103,7 +103,7 @@ DB_FILE            = TOOL_BASEPATH + '/local.db'
 DB_HIST_FILE       = TOOL_BASEPATH + '/.dbhistory'
 REPORT_TPL_DIR     = TOOL_BASEPATH + '/lib/reporter/templates'
 REPORT_PATH        = TOOL_BASEPATH + '/reports'
-
+VIRTUALENVS_DIR    = TOOL_BASEPATH + '/toolbox/virtualenvs'
 
 #----------------------------------------------------------------------------------------
 # Display Settings
