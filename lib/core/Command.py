@@ -183,6 +183,11 @@ class Command:
                     path=VIRTUALENVS_DIR,
                     name=tool.name)
 
+            elif tool.virtualenv.startswith('ruby'):
+                if self.cmdtype = CmdType.INSTALL:
+                    venv = 'rvm use {ruby}; '
+                    # TODO
+
         # Move to the tool directory
         cd = ''
         if tool is not None and tool.tool_dir:

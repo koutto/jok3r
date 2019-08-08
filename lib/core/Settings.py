@@ -280,6 +280,30 @@ class Settings:
             elif opt == 'virtualenv':
                 tool_config[opt] = val.lower()
 
+                # For Python, format must be "python<version>"
+                if tool_config[opt].startswith('python'):
+                    m = re.match('python(?P<version>[0-9](\.[0-9])*)', tool_config[opt])
+                    if not m:
+                        logger.warning('{prefix} Invalid Python virtualenv, must be: ' \
+                            'virtualenv = python<version>. Tool is skipped'.format(
+                                prefix=log_prefix))
+                        return False                                
+
+                # For Ruby, make sure to have a format like "ruby-<version>"
+                # Format "ruby<version>" is accepted and turned into "ruby-<version>"
+                if tool_config[opt].startswith('ruby'):
+                    m1 = re.match('ruby(?P<version>[0-9](\.[0-9])*)', tool_config[opt])
+                    m2 = re.match('ruby-(?P<version>[0-9](\.[0-9])*)', tool_config[opt])
+                    if m1:
+                        tool_config[opt] = 'ruby-{version}'.format(
+                            version=m.group('version'))
+                    elif not m2:
+                        logger.warning('{prefix} Invalid Ruby virtualenv, must be: ' \
+                            'virtualenv = ruby-<version>. Tool is skipped'.format(
+                                prefix=log_prefix))
+                        return False
+                        
+
             elif opt == 'install':
                 tool_config[opt] = Command(cmdtype=CmdType.INSTALL, cmdline=val)
 

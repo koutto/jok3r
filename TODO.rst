@@ -72,3 +72,17 @@ SERVICES TO ADD
 
 
 
+rvm list
+rvm use ruby-2.4
+rvm gemset create ww
+
+rvm gemset list
+rvm gemset delete whatweb-test --force
+
+rvm use ruby-2.4@ww
+or
+rvm use ruby-2.4
+rvm gemset use ww
+
+rvm current # show current env
+ruby -v
