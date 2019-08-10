@@ -189,14 +189,16 @@ class Command:
 
             elif tool.virtualenv.startswith('ruby'):
                 if self.cmdtype == CmdType.INSTALL:
-                    venv = 'source /usr/local/rvm/scripts/rvm; rvm use {ruby}; rvm gemset create {name}; '.format(
-                        ruby=tool.virtualenv,
-                        name=tool.name)
+                    venv = 'source /usr/local/rvm/scripts/rvm; rvm use {ruby}; ' \
+                        'rvm gemset create {name}; '.format(
+                            ruby=tool.virtualenv,
+                            name=tool.name)
                     venv += 'rvm gemset use {name}; '.format(name=tool.name)
                 else:
-                    venv = 'source /usr/local/rvm/scripts/rvm; rvm use {ruby}; rvm gemset use {name}; '.format(
-                        ruby=tool.virtualenv,
-                        name=tool.name)
+                    venv = 'source /usr/local/rvm/scripts/rvm; rvm use {ruby}; ' \
+                        'rvm gemset use {name}; '.format(
+                            ruby=tool.virtualenv,
+                            name=tool.name)
 
         # Move to the tool directory
         cd = ''
