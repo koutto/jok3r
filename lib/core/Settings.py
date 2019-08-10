@@ -65,6 +65,7 @@ description = short text describing the profile (mandatory)
 
 """
 import ast
+import re
 import traceback
 import configparser
 from datetime import datetime
