@@ -128,6 +128,21 @@ class Tool:
             else:
                 logger.warning('Unable to delete Virtualenv directory')
 
+        if self.virtualenv.startswith('ruby'):
+            logger.info('Delete RVM environment ({ruby}@{name})...'.format(
+                ruby=self.virtualenv,
+                name=self.name))
+            cmd = 'source /usr/local/rvm/scripts/rvm; rvm use {ruby} && ' \
+                'rvm gemset delete {name} --force'.format(
+                    ruby=self.virtualenv,
+                    name=self.name)
+            returncode, _ = ProcessLauncher(cmd).start()
+
+            if returncode == 0:
+                logger.success('RVM environment deleted with success')
+            else:
+                logger.warning('Unable to delete RVM environment')
+
         # Make sure "installed" option in config file is set to False
         if settings.change_installed_status(self.target_service, 
                                             self.name, 
