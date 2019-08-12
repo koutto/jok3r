@@ -182,6 +182,7 @@ class Toolbox:
             logger.warning('No tool with this name in the toolbox')
             return False
         else:
+            Output.title2('Install {tool_name}:'.format(tool_name=tool.name))
             return tool.install(self.settings, fast_mode)
 
 
@@ -237,6 +238,7 @@ class Toolbox:
             logger.warning('No tool with this name in the toolbox')
             return False
         else:
+            Output.title2('Update {tool_name}:'.format(tool_name=tool.name))
             return tool.update(self.settings, fast_mode)
 
 
@@ -302,6 +304,7 @@ class Toolbox:
             logger.warning('No tool with this name in the toolbox')
             return False
         else:
+            Output.title2('Remove {tool_name}:'.format(tool_name=tool.name))
             return tool.remove(self.settings)
 
 
@@ -384,3 +387,41 @@ class Toolbox:
         Output.table(columns, data, hrules=False)
 
 
+    #------------------------------------------------------------------------------------
+    # Compare Toolbox objects
+
+    def compare_with_new(self, toolbox_new):
+        """
+
+        :return: new tools, tools with updated config, removed tools
+        :rtype: { 'new': list(str), 'updated': list(str), 'deleted': list(str) }
+        """
+        results = {
+            'new': list(),
+            'updated': list(),
+            'deleted': list(),
+        }
+
+        toolbox_new_toolnames = list()
+        for s in toolbox_new.tools.keys():
+            for tool_new in toolbox_new.tools[s]:
+                tool_bak = self.get_tool(tool_new.name)
+                toolbox_new_toolnames.append(tool_new.name)
+
+                # New tool
+                if tool_bak is None:
+                    results['new'].append(tool_new.name)
+
+                # Updated tool
+                elif tool_bak.target_service != tool_new.target_service \
+                     or tool_bak.install_command != tool_new.install_command \
+                     or tool_bak.update_commmand != tool_new.update_commmand:
+                    results['updated'].append(tool_new.name)
+
+        # Look for deleted tools
+        for s in self.tools.keys():
+            for tool_bak in self.tools[s]:
+                if tool_bak.name not in toolbox_new_toolnames:
+                    results['deleted'].append(tool_bak.name)
+
+        return results
