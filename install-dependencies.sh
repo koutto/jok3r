@@ -148,6 +148,7 @@ smbclient
 sudo
 unixodbc
 unixodbc-dev
+unzip
 wget
 zlib1g-dev
 "
