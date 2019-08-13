@@ -80,6 +80,12 @@ if [[ ! $(grep "deb http://http.kali.org/kali kali-rolling main" /etc/apt/source
 else
     print_blue "[~] Kali repository detected in /etc/apt/sources.list. Updating repositories..."
     apt-get update
+    if [ $? -eq 0 ]; then
+        print_green "[+] Repositories updated with success"
+    else
+        print_red "[!] Error occured while updating repositories"
+        exit 1
+    fi
 fi
 print_delimiter
 
@@ -98,6 +104,60 @@ if ! [ -x "$(command -v git)" ]; then
 else
     print_green "[+] Git is already installed"
 fi
+print_delimiter
+
+# -----------------------------------------------------------------------------
+# Install various required packages 
+
+print_blue "[~] Install various required packages (if missing)"
+
+PACKAGES="
+alien
+apt-transport-https
+apt-utils
+automake
+bc
+build-essential
+curl
+dnsutils
+gawk
+gcc
+gnupg2
+iputils-ping
+libcurl4-openssl-dev
+libffi-dev
+libgmp-dev
+liblzma-dev
+libpq-dev
+libssl-dev
+libwhisker2-perl
+libwww-perl
+libxml2
+libxml2-dev
+libxml2-utils
+libxslt1-dev
+locales
+locate
+make
+net-tools
+patch
+postgresql
+postgresql-contrib
+procps
+smbclient
+sudo
+unixodbc
+unixodbc-dev
+wget
+zlib1g-dev
+"
+for package in $PACKAGES; do    
+    if [[ ! $(dpkg-query -W -f='${Status}' $package 2>/dev/null | grep "ok installed") ]]; then
+        echo
+        print_blue "[~] Install ${package} ..."
+        apt-get install -y $package 
+    fi
+done
 print_delimiter
 
 # -----------------------------------------------------------------------------
@@ -164,53 +224,34 @@ print_delimiter
 
 # -----------------------------------------------------------------------------
 # Install Python and related packages
-
 print_blue "[~] Install Python 2.7 + 3 and useful related packages (if missing)"
-if [[ ! $(dpkg-query -W -f='${Status}' python 2>/dev/null | grep "ok installed") ]]; then
-    apt-get install -y python 
-fi
-if [[ ! $(dpkg-query -W -f='${Status}' python2.7 2>/dev/null | grep "ok installed") ]]; then
-    apt-get install -y python2.7 
-fi
-if [[ ! $(dpkg-query -W -f='${Status}' python3 2>/dev/null | grep "ok installed") ]]; then
-    apt-get install -y python3 
-fi
-if [[ ! $(dpkg-query -W -f='${Status}' python-pip 2>/dev/null | grep "ok installed") ]]; then
-    apt-get install -y python-pip 
-fi
-if [[ ! $(dpkg-query -W -f='${Status}' python3-pip 2>/dev/null | grep "ok installed") ]]; then
-    apt-get install -y python3-pip 
-fi
-if [[ ! $(dpkg-query -W -f='${Status}' python-dev 2>/dev/null | grep "ok installed") ]]; then
-    apt-get install -y python-dev 
-fi
-if [[ ! $(dpkg-query -W -f='${Status}' python3-dev 2>/dev/null | grep "ok installed") ]]; then
-    apt-get install -y python3-dev 
-fi
-if [[ ! $(dpkg-query -W -f='${Status}' python-setuptools 2>/dev/null | grep "ok installed") ]]; then
-    apt-get install -y python-setuptools
-fi
-if [[ ! $(dpkg-query -W -f='${Status}' python3-setuptools 2>/dev/null | grep "ok installed") ]]; then
-    apt-get install -y python3-setuptools 
-fi
-if [[ ! $(dpkg-query -W -f='${Status}' python3-distutils 2>/dev/null | grep "ok installed") ]]; then
-    apt-get install -y python3-distutils 
-fi
-if [[ ! $(dpkg-query -W -f='${Status}' python-ipy 2>/dev/null | grep "ok installed") ]]; then
-    apt-get install -y python-ipy 
-fi
-if [[ ! $(dpkg-query -W -f='${Status}' python-nmap 2>/dev/null | grep "ok installed") ]]; then
-    apt-get install -y python-nmap 
-fi
-if [[ ! $(dpkg-query -W -f='${Status}' python3-pymysql 2>/dev/null | grep "ok installed") ]]; then
-    apt-get install -y python3-pymysql 
-fi
-if [[ ! $(dpkg-query -W -f='${Status}' python3-psycopg2 2>/dev/null | grep "ok installed") ]]; then
-    apt-get install -y python3-psycopg2 
-fi
-if [[ ! $(dpkg-query -W -f='${Status}' python3-shodan 2>/dev/null | grep "ok installed") ]]; then
-    apt-get install -y python3-shodan 
-fi
+
+PACKAGES="
+python
+python2.7
+python3
+python-pip
+python3-pip
+python-dev
+python3-dev
+python-setuptools
+python3-setuptools
+python3-distutils
+python-ipy
+python-nmap
+python3-pymysql
+python3-psycopg2
+python3-shodan
+"
+
+for package in $PACKAGES; do    
+    if [[ ! $(dpkg-query -W -f='${Status}' $package 2>/dev/null | grep "ok installed") ]]; then
+        echo
+        print_blue "[~] Install ${package} ..."
+        apt-get install -y $package 
+    fi
+done
+
 pip2 install --upgrade pip
 pip3 install --upgrade pip
 # pip3 uninstall -y psycopg2
@@ -277,7 +318,6 @@ asn1crypto
 bcrypt
 beautifulsoup4
 bs4
-cement
 certifi
 cffi
 chardet
@@ -340,6 +380,7 @@ Werkzeug
 PIP2FREEZE=$(pip2 freeze)
 for lib in $LIBPY2; do    
     if [[ ! $(echo $PIP2FREEZE | grep -i $lib) ]]; then
+        echo
         print_blue "[~] Install Python library ${lib} (py2)"
         pip2 install $lib
     fi
@@ -357,6 +398,7 @@ bcrypt
 beautifulsoup4
 blessed
 bs4
+cement
 Cerberus
 certifi
 cffi
@@ -432,7 +474,7 @@ selenium
 shodan
 six
 snowballstemmer
-soupsieve=
+soupsieve
 Sphinx
 sphinx-better-theme
 sphinxcontrib-napoleon
@@ -459,6 +501,7 @@ yarl
 PIP3FREEZE=$(pip3 freeze)
 for lib in $LIBPY3; do    
     if [[ ! $(echo $PIP3FREEZE | grep -i $lib) ]]; then
+        echo
         print_blue "[~] Install Python library ${lib} (py3)"
         pip3 install $lib
     fi
@@ -503,7 +546,11 @@ print_delimiter
 # -----------------------------------------------------------------------------
 # Install RVM (Ruby Version Manager)
 
-if ! [ -x "$(command -v rvm)" ]; then
+if [ -a /usr/local/rvm/scripts/rvm ]; then
+    source /usr/local/rvm/scripts/rvm
+fi
+
+if ! [ -n "$(command -v rvm)" ]; then
     print_blue "[~] Install Ruby RVM (Ruby Version Manager)"
     curl -sSL https://get.rvm.io | bash
     source /etc/profile.d/rvm.sh
@@ -517,7 +564,8 @@ if ! [ -x "$(command -v rvm)" ]; then
         echo "[[ -s /usr/local/rvm/scripts/rvm ]] && source /usr/local/rvm/scripts/rvm" >> ~/.bashrc
     fi
     source ~/.bashrc
-    if [ -x "$(command -v rvm)" ]; then
+    source /usr/local/rvm/scripts/rvm
+    if [ -n "$(command -v rvm)" ]; then
         print_green "[+] Ruby RVM installed successfully"
     else
         print_red "[!] An error occured during Ruby RVM install"
@@ -531,6 +579,9 @@ print_delimiter
 # -----------------------------------------------------------------------------
 # Install different versions of Ruby via RVM
 
+if [ -a /usr/local/rvm/scripts/rvm ]; then
+    source /usr/local/rvm/scripts/rvm
+fi
 if [[ ! $(rvm list | grep ruby-2.4) ]]; then
     print_blue "[~] Install Ruby 2.4 (old version)"
     apt-get install -y ruby-psych
@@ -683,96 +734,6 @@ if ! [ -x "$(command -v geckodriver)" ]; then
     fi   
 else
     print_green "[+] Geckodriver is already installed"
-fi
-print_delimiter
-
-# -----------------------------------------------------------------------------
-# Install various required packages 
-
-print_blue "[~] Install other required packages (if missing)"
-if [[ ! $(dpkg-query -W -f='${Status}' zlib1g-dev 2>/dev/null | grep "ok installed") ]]; then
-    apt-get install -y zlib1g-dev
-fi
-if [[ ! $(dpkg-query -W -f='${Status}' libcurl4-openssl-dev 2>/dev/null | grep "ok installed") ]]; then
-    apt-get install -y libcurl4-openssl-dev 
-fi
-if [[ ! $(dpkg-query -W -f='${Status}' liblzma-dev 2>/dev/null | grep "ok installed") ]]; then
-    apt-get install -y liblzma-dev
-fi
-if [[ ! $(dpkg-query -W -f='${Status}' libxml2 2>/dev/null | grep "ok installed") ]]; then
-    apt-get install -y libxml2
-fi
-if [[ ! $(dpkg-query -W -f='${Status}' libxml2-dev 2>/dev/null | grep "ok installed") ]]; then
-    apt-get install -y libxml2-dev
-fi
-if [[ ! $(dpkg-query -W -f='${Status}' libxslt1-dev 2>/dev/null | grep "ok installed") ]]; then
-    apt-get install -y libxslt1-dev
-fi
-if [[ ! $(dpkg-query -W -f='${Status}' build-essential 2>/dev/null | grep "ok installed") ]]; then
-    apt-get install -y build-essential 
-fi
-if [[ ! $(dpkg-query -W -f='${Status}' gcc 2>/dev/null | grep "ok installed") ]]; then
-    apt-get install -y gcc 
-fi
-if [[ ! $(dpkg-query -W -f='${Status}' make 2>/dev/null | grep "ok installed") ]]; then
-    apt-get install -y make
-fi
-if [[ ! $(dpkg-query -W -f='${Status}' automake 2>/dev/null | grep "ok installed") ]]; then
-    apt-get install -y automake
-fi
-if [[ ! $(dpkg-query -W -f='${Status}' patch 2>/dev/null | grep "ok installed") ]]; then
-    apt-get install -y patch
-fi
-if [[ ! $(dpkg-query -W -f='${Status}' libssl-dev 2>/dev/null | grep "ok installed") ]]; then
-    apt-get install -y libssl-dev
-fi
-if [[ ! $(dpkg-query -W -f='${Status}' locate 2>/dev/null | grep "ok installed") ]]; then
-    apt-get install -y locate
-fi
-if [[ ! $(dpkg-query -W -f='${Status}' smbclient 2>/dev/null | grep "ok installed") ]]; then
-    apt-get install -y smbclient
-fi
-if [[ ! $(dpkg-query -W -f='${Status}' dnsutils 2>/dev/null | grep "ok installed") ]]; then
-    apt-get install -y dnsutils 
-fi
-if [[ ! $(dpkg-query -W -f='${Status}' libgmp-dev 2>/dev/null | grep "ok installed") ]]; then
-    apt-get install -y libgmp-dev
-fi
-if [[ ! $(dpkg-query -W -f='${Status}' libffi-dev 2>/dev/null | grep "ok installed") ]]; then
-    apt-get install -y libffi-dev
-fi
-if [[ ! $(dpkg-query -W -f='${Status}' libxml2-utils 2>/dev/null | grep "ok installed") ]]; then
-    apt-get install -y libxml2-utils
-fi
-if [[ ! $(dpkg-query -W -f='${Status}' unixodbc 2>/dev/null | grep "ok installed") ]]; then
-    apt-get install -y unixodbc
-fi
-if [[ ! $(dpkg-query -W -f='${Status}' unixodbc-dev 2>/dev/null | grep "ok installed") ]]; then
-    apt-get install -y unixodbc-dev
-fi
-if [[ ! $(dpkg-query -W -f='${Status}' alien 2>/dev/null | grep "ok installed") ]]; then
-    apt-get install -y alien
-fi
-if [[ ! $(dpkg-query -W -f='${Status}' bc 2>/dev/null | grep "ok installed") ]]; then
-    apt-get install -y bc
-fi
-if [[ ! $(dpkg-query -W -f='${Status}' libwhisker2-perl 2>/dev/null | grep "ok installed") ]]; then
-    apt-get install -y libwhisker2-perl
-fi
-if [[ ! $(dpkg-query -W -f='${Status}' libwww-perl 2>/dev/null | grep "ok installed") ]]; then
-    apt-get install -y libwww-perl
-fi
-if [[ ! $(dpkg-query -W -f='${Status}' postgresql 2>/dev/null | grep "ok installed") ]]; then
-    apt-get install -y postgresql
-fi
-if [[ ! $(dpkg-query -W -f='${Status}' postgresql-contrib 2>/dev/null | grep "ok installed") ]]; then
-    apt-get install -y postgresql-contrib
-fi
-if [[ ! $(dpkg-query -W -f='${Status}' libpq-dev 2>/dev/null | grep "ok installed") ]]; then
-    apt-get install -y libpq-dev
-fi
-if [[ ! $(dpkg-query -W -f='${Status}' net-tools 2>/dev/null | grep "ok installed") ]]; then
-    apt-get install -y net-tools
 fi
 print_delimiter
 
