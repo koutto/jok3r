@@ -30,8 +30,6 @@ print_delimiter() {
     echo
 }
 
-clear
-
 echo
 echo
 print_blue "=============================="

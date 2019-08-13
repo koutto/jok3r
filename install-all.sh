@@ -30,8 +30,6 @@ print_delimiter() {
     echo
 }
 
-clear
-
 echo
 echo
 print_blue "=============================="
@@ -45,8 +43,6 @@ if [ "$EUID" -ne 0 ]; then
     print_red "[!] Must be run as root"
     exit 1
 fi
-
-print_delimiter
 
 # -----------------------------------------------------------------------------
 
@@ -88,3 +84,7 @@ print_delimiter
 
 print_blue "[~] Print toolbox content"
 python3 jok3r.py toolbox --show-all
+
+# -----------------------------------------------------------------------------
+
+print_green "[+] Install script finished with success"
