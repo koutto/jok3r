@@ -46,7 +46,7 @@ if [ "$EUID" -ne 0 ]; then
 fi
 
 # Make sure we are on Debian-based OS
-OS=`(lsb_release -sd || grep DISTRIB_ID /etc/*-release) 2> /dev/null`
+OS=`(lsb_release -sd || grep NAME /etc/*-release) 2> /dev/null`
 print_blue "[~] Detected OS:"
 echo $OS
 if [[ `echo $OS | egrep -i '(kali|debian|ubuntu)'` ]]; then
