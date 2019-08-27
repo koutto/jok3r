@@ -71,16 +71,20 @@ class ProcessLauncher:
         """
         Run a command. Display output (stdout+stderr) in live and also store it into
         a variable which is returned by the function.
+        Commands are run using Bash shell (required to be able to run built-in 
+        commands such as "source" in some cases such as virtualenv activation)
 
         :param str cmd: Command to execute
         :return: Command output (stdout+stderr)
         :rtype: str
         """
+        returncode = None
         output = ''
         
         try:
             proc = subprocess.Popen(cmd, 
                                     shell=True, 
+                                    executable='/bin/bash',
                                     stdout=subprocess.PIPE, 
                                     stderr=subprocess.STDOUT)
 
@@ -106,10 +110,11 @@ class ProcessLauncher:
 
                 # Break if process has finished
                 if out == ''  and proc.poll() != None:
+                    returncode = proc.returncode
                     break
 
         except Exception as e:
             logger.error('Error when trying to run command: {exception}'.format(
                 exception=e))
 
-        return output
+        return (returncode, output)

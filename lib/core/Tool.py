@@ -26,6 +26,7 @@ class Tool:
                  target_service,
                  installed,
                  last_update='',
+                 virtualenv='',
                  install_command=None,
                  update_command=None,
                  check_command=None):
@@ -38,6 +39,7 @@ class Tool:
             (might be "multi" for tools that could be used against various services)
         :param bool installed: Install status
         :param str last_update: Datetime of the last updated ('' if not installed)
+        :param str virtualenv: Language of virtual environment to use (optional)
         :param Command install_command: Install command (optional)
         :param Command update_command: Update command (optional)
         :param Command check_command: Command to check install (optional)
@@ -47,6 +49,7 @@ class Tool:
         self.target_service  = target_service
         self.installed       = installed if isinstance(installed, bool) else False
         self.last_update     = last_update
+        self.virtualenv      = virtualenv
         self.install_command = install_command
         self.update_command  = update_command
         self.check_command   = check_command
@@ -107,7 +110,7 @@ class Tool:
             if not FileUtils.is_dir(self.tool_dir):
                 logger.warning('Directory "{dir}" does not exist'.format(
                     dir=self.tool_dir))
-                return False
+                #return False
             elif not FileUtils.remove_directory(self.tool_dir):
                 logger.error('Unable to delete directory "{dir}". ' \
                     'Check permissions and/or re-run with sudo'.format(
@@ -116,6 +119,29 @@ class Tool:
             else:
                 logger.success('Tool directory "{dir}" deleted'.format(
                     dir=self.tool_dir))
+
+        # Remove virtualenv files if necessary
+        virtualenv_dir = '{}/{}'.format(VIRTUALENVS_DIR, self.name)
+        if FileUtils.is_dir(virtualenv_dir):
+            if FileUtils.remove_directory(virtualenv_dir):
+                logger.success('Virtualenv directory deleted')
+            else:
+                logger.warning('Unable to delete Virtualenv directory')
+
+        if self.virtualenv.startswith('ruby'):
+            logger.info('Delete RVM environment ({ruby}@{name})...'.format(
+                ruby=self.virtualenv,
+                name=self.name))
+            cmd = 'source /usr/local/rvm/scripts/rvm; rvm use {ruby} && ' \
+                'rvm gemset delete {name} --force'.format(
+                    ruby=self.virtualenv,
+                    name=self.name)
+            returncode, _ = ProcessLauncher(cmd).start()
+
+            if returncode == 0:
+                logger.success('RVM environment deleted with success')
+            else:
+                logger.warning('Unable to delete RVM environment')
 
         # Make sure "installed" option in config file is set to False
         if settings.change_installed_status(self.target_service, 
@@ -251,8 +277,8 @@ class Tool:
         :return: Install/Update status
         :rtype: bool
         """
-        if update : cmd = self.update_command.get_cmdline(self.tool_dir)
-        else      : cmd = self.install_command.get_cmdline(self.tool_dir)
+        if update : cmd = self.update_command.get_cmdline(self)
+        else      : cmd = self.install_command.get_cmdline(self)
 
         mode = 'update' if update else 'install'
 
@@ -264,9 +290,14 @@ class Tool:
            or Output.prompt_confirm('Confirm {mode} ?'.format(mode=mode), default=True):
 
             Output.begin_cmd(cmd)
-            ProcessLauncher(cmd).start()
+            returncode, _ = ProcessLauncher(cmd).start()
             Output.delimiter()
-            logger.success('Tool {mode} has finished'.format(mode=mode))
+            if returncode != 0:
+                logger.warning('Tool {mode} has finished with an error ' \
+                    'exit code: {code}'.format(mode=mode, code=returncode))
+            else:
+                logger.success('Tool {mode} has finished with success exit code'.format(
+                    mode=mode))
             return True
         else:
             logger.warning('Tool {mode} aborted'.format(mode=mode))
@@ -292,15 +323,18 @@ class Tool:
         status = True
 
         # Check install/update
-        if not fast_mode:
-            if not self.check_command:
-                logger.info('No check_command defined in settings for {tool}, will ' \
-                    'assume it is correctly {mode}'.format(tool=self.name, mode=mode[1]))
-            else:
-                logger.info('Now, checking if {tool} has been {mode} correctly. ' \
-                    'Hit any key to run test...'.format(tool=self.name, mode=mode[1]))
+        if not self.check_command:
+            logger.info('No check_command defined in settings for {tool}, will ' \
+                'assume it is correctly {mode}'.format(tool=self.name, mode=mode[1]))
+        else:
+            logger.info('Now, checking if {tool} has been {mode} correctly.' \
+                '{key}'.format(
+                    tool=self.name, 
+                    mode=mode[1], 
+                    key='Hit any key to run test...' if not fast_mode else ''))
+            if not fast_mode:
                 CLIUtils.getch()
-                status = self.__run_check_command()
+            status = self.run_check_command(fast_mode)
 
         # Change install status in configuration file
         if status:
@@ -341,26 +375,43 @@ class Tool:
             return False
 
 
-    def __run_check_command(self):
+    def run_check_command(self, fast_mode=False):
         """
         Run the check command.
         The goal is to quickly check if the tool is not buggy or missing some 
         dependencies. The user must analyze the output and gives an answer.
 
-        :return: Response from user
+        :param bool fast_mode: Set to true to disable prompts
+
+        :return: Response from user in interactive mode, otherwise status
+            based on exit code (True if exit code is 0)
         :rtype: bool
         """
+        if not self.check_command:
+            logger.info('No check_command defined in settings for the tool ' \
+                '{tool}'.format(tool=self.name))
+            return True
+
         logger.info('Running the check command for the tool {tool}...'.format(
             tool=self.name))
 
-        cmd = self.check_command.get_cmdline(self.tool_dir)
+        cmd = self.check_command.get_cmdline(self)
 
         Output.begin_cmd(cmd)
-        ProcessLauncher(cmd).start()
+        returncode, _ = ProcessLauncher(cmd).start()
         Output.delimiter()
 
-        return Output.prompt_confirm('Does the tool {tool} seem to be running ' \
-            'correctly ?'.format(tool=self.name), default=True) 
+        if returncode != 0:
+            logger.warning('Check command has finished with an error ' \
+                'exit code: {code}'.format(code=returncode))
+        else:
+            logger.success('Check command has finished with success exit code')
+
+        if fast_mode:
+            return (returncode == 0)
+        else:
+            return Output.prompt_confirm('Does the tool {tool} seem to be running ' \
+                'correctly ?'.format(tool=self.name), default=True) 
 
 
     #------------------------------------------------------------------------------------
