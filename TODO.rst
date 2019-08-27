@@ -45,7 +45,8 @@ TOOLS/CHECKS TO ADD
 * https://github.com/RhinoSecurityLabs/CVEs/tree/master/CVE-2019-0227
 * http://pentestit.com/apache-jmeter-rmi-remote-code-execution-vulnerability-poc-cve-2018-1297/
 * Wordpress RCE https://github.com/opsxcq/exploit-CVE-2016-10033
-
+* https://github.com/peacand/winsharecrawler
+* https://github.com/Bo0oM/fuzz.txt/blob/master/fuzz.txt
 
 DOCUMENTATION
 ===============================================================================
@@ -72,3 +73,18 @@ SERVICES TO ADD
 
 
 
+rvm list
+rvm use ruby-2.4
+rvm gemset create ww
+
+rvm gemset list
+rvm gemset delete whatweb-test --force
+
+rvm use ruby-2.4@ww
+or
+rvm use ruby-2.4
+rvm gemset use ww
+
+rvm current # show current env
+ruby -v
+http://masnun.com/2012/01/28/fetching-changed-files-diff-between-two-git-commits-in-python.html

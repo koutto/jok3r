@@ -109,7 +109,7 @@ class Command:
         self.services_config = services_config
         
 
-    def get_cmdline(self, directory, target=None, arguments=None):
+    def get_cmdline(self, tool=None, target=None, arguments=None):
         """
         Get the formatted command line, i.e. with the tags replaced by their correct 
         values according to target's information.
@@ -117,8 +117,7 @@ class Command:
         Note: the command-line is prefixed by a "cd" command to move to the correct 
         directory before running the actual command.
 
-        :param str directory: Directory where the command should be run (if empty,
-            the current directory is selected)
+        :param Tool tool: Tool related to the target
         :param Target target: Target (for RUN)
         :param ArgumentsParser arguments: Arguments (for RUN)
 
@@ -170,10 +169,44 @@ class Command:
 
         self.__replace_tag_toolboxdir(TOOLBOX_DIR)
 
-        if directory:
-            return 'cd {dir}; {cmd}'.format(dir=directory, cmd=self.formatted_cmdline)
-        else:
-            return self.formatted_cmdline
+        # Virtual environment
+        venv = ''
+        if tool is not None and tool.virtualenv:
+            if tool.virtualenv.startswith('python'):
+                if self.cmdtype == CmdType.INSTALL:
+                    # Inherit the system site package because sometimes softwares/tools
+                    # do not provide complete requirements.txt or do not install all
+                    # required libraries in setup.py for instance. 
+                    venv = 'virtualenv -p $(which {python}) --system-site-packages ' \
+                        '{path}/{name}; '.format(
+                            python=tool.virtualenv, 
+                            path=VIRTUALENVS_DIR,
+                            name=tool.name)
+                
+                venv = venv + 'source {path}/{name}/bin/activate; '.format(
+                    path=VIRTUALENVS_DIR,
+                    name=tool.name)
+
+            elif tool.virtualenv.startswith('ruby'):
+                if self.cmdtype == CmdType.INSTALL:
+                    venv = 'source /usr/local/rvm/scripts/rvm; rvm use {ruby}; ' \
+                        'rvm gemset create {name}; '.format(
+                            ruby=tool.virtualenv,
+                            name=tool.name)
+                    venv += 'rvm gemset use {name}; '.format(name=tool.name)
+                else:
+                    venv = 'source /usr/local/rvm/scripts/rvm; rvm use {ruby}; ' \
+                        'rvm gemset use {name}; '.format(
+                            ruby=tool.virtualenv,
+                            name=tool.name)
+
+        # Move to the tool directory
+        cd = ''
+        if tool is not None and tool.tool_dir:
+            cd = 'cd {dir}; '.format(dir=tool.tool_dir)
+
+        result = '{cd}{venv}{cmd}'.format(cd=cd, venv=venv, cmd=self.formatted_cmdline)
+        return result
 
 
     #------------------------------------------------------------------------------------

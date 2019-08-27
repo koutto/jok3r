@@ -16,6 +16,7 @@ toolbox/
   ...
 """
 import os
+import sys
 from collections import OrderedDict
 
 from lib.core.Config import *
@@ -181,6 +182,7 @@ class Toolbox:
             logger.warning('No tool with this name in the toolbox')
             return False
         else:
+            Output.title2('Install {tool_name}:'.format(tool_name=tool.name))
             return tool.install(self.settings, fast_mode)
 
 
@@ -236,6 +238,7 @@ class Toolbox:
             logger.warning('No tool with this name in the toolbox')
             return False
         else:
+            Output.title2('Update {tool_name}:'.format(tool_name=tool.name))
             return tool.update(self.settings, fast_mode)
 
 
@@ -301,7 +304,41 @@ class Toolbox:
             logger.warning('No tool with this name in the toolbox')
             return False
         else:
+            Output.title2('Remove {tool_name}:'.format(tool_name=tool.name))
             return tool.remove(self.settings)
+
+
+    #------------------------------------------------------------------------------------
+    # Check
+
+    def check(self):
+        """
+        Check the toolbox: Run all check commands (when available) from all
+        installed tools, in automatic mode (i.e. checks based on exit codes)
+
+        In case of an error code returned by one check command (!= 0), the function
+        stops and exits the program with exit code 1 (error). 
+        Otherwise, if all check commands have returned a success exit code (0), 
+        it exits the program with exit code 0 (success).
+
+        Designed to be used for Continuous Integration.
+        """    
+        Output.title1('Automatic check of installed tools')
+        for service in self.services:
+            for tool in self.tools[service]:
+                if tool.installed:
+                    # Automatic mode (no prompt), only based on exit status
+                    status = tool.run_check_command(fast_mode=True)
+                    if not status:
+                        logger.error('An error occured with the tool "{tool}". Exit ' \
+                            'check with exit code 1...'.format(tool=tool.name))
+                        sys.exit(1)
+                print()
+                print()
+
+        logger.success('No error has been detected with all tools check commands. ' \
+            'Exit with success code 0...')
+        sys.exit(0)
 
 
     #------------------------------------------------------------------------------------
@@ -350,3 +387,41 @@ class Toolbox:
         Output.table(columns, data, hrules=False)
 
 
+    #------------------------------------------------------------------------------------
+    # Compare Toolbox objects
+
+    def compare_with_new(self, toolbox_new):
+        """
+
+        :return: new tools, tools with updated config, removed tools
+        :rtype: { 'new': list(str), 'updated': list(str), 'deleted': list(str) }
+        """
+        results = {
+            'new': list(),
+            'updated': list(),
+            'deleted': list(),
+        }
+
+        toolbox_new_toolnames = list()
+        for s in toolbox_new.tools.keys():
+            for tool_new in toolbox_new.tools[s]:
+                tool_bak = self.get_tool(tool_new.name)
+                toolbox_new_toolnames.append(tool_new.name)
+
+                # New tool
+                if tool_bak is None:
+                    results['new'].append(tool_new.name)
+
+                # Updated tool
+                elif tool_bak.target_service != tool_new.target_service \
+                     or tool_bak.install_command != tool_new.install_command \
+                     or tool_bak.update_commmand != tool_new.update_commmand:
+                    results['updated'].append(tool_new.name)
+
+        # Look for deleted tools
+        for s in self.tools.keys():
+            for tool_bak in self.tools[s]:
+                if tool_bak.name not in toolbox_new_toolnames:
+                    results['deleted'].append(tool_bak.name)
+
+        return results

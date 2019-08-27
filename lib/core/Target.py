@@ -434,7 +434,6 @@ class Target:
                         self.service.url,
                         self.service.host.ip,
                         self.service.port)
-                    print(new_url)
 
                     is_reachable, status, resp_headers = WebUtils.is_url_reachable(
                         new_url)
