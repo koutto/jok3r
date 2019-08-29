@@ -6,14 +6,16 @@
 import socket
 import ipaddress
 import time
+import re
 from libnmap.process import NmapProcess
 from libnmap.parser import NmapParser, NmapParserException
 
 from lib.utils.OSUtils import OSUtils
+from lib.output.StatusBar import *
+from lib.output.Logger import logger
 
 
 class NetUtils:
-
     @staticmethod
     def is_valid_ip(string):
         """Check if given string represents a valid IP address"""
@@ -22,7 +24,6 @@ class NetUtils:
             return True
         except:
             return False
-
 
     @staticmethod
     def is_valid_ip_range(string):
@@ -33,28 +34,27 @@ class NetUtils:
         except:
             return False
 
-
     @staticmethod
     def is_valid_port(string):
         """Check if given string represents a valid port number"""
         try:
             port = int(string)
-            return (0 <= port <= 65535)
+            return 0 <= port <= 65535
         except:
             return False
-
 
     @staticmethod
     def is_valid_port_range(string):
         """Check if given string represents a valid port range (e.g. 80-100)"""
-        if string.count('-') == 1:
-            minport, maxport = string.split('-')
-            return NetUtils.is_valid_port(minport) and \
-                   NetUtils.is_valid_port(maxport) and \
-                   minport <= maxport
+        if string.count("-") == 1:
+            minport, maxport = string.split("-")
+            return (
+                NetUtils.is_valid_port(minport)
+                and NetUtils.is_valid_port(maxport)
+                and minport <= maxport
+            )
         else:
             return False
-
 
     @staticmethod
     def is_tcp_port_open(ip, port):
@@ -79,19 +79,100 @@ class NetUtils:
             except:
                 time.sleep(1)
             finally:
-                #s.shutdown(socket.SHUT_RDWR)
+                # s.shutdown(socket.SHUT_RDWR)
                 s.close()
         return False
 
+    @staticmethod
+    def do_nmap_scan(addr, options):
+        """
+        Run a nmap scan
+
+        :param str addr: ip/network address
+        :param str options: nmap options: default "-T5 -O -Pn -sV -sC -sTU --top-ports 100"
+
+        :return: NmapProcess nmproc: nmap process and incomplete state # TODO: ugly?
+        :rtype: list(NmapProcess)|None
+        """
+        REGEX_NMAP = 'task.* task="(?P<task>.*)" time="(?P<time>.*)"'
+
+        if options:
+            nmap_options = str(options)
+        else:
+            nmap_options = "-T5 -O -Pn -sV -sC -sTU --top-ports 100"
+
+        incomplete = False
+
+        # Init progress bar
+        scan_progress = manager.counter(
+            total=100,
+            desc="Nmap scan",
+            unit="scan_progress",
+            bar_format=STATUSBAR_FORMAT,  # For multi targets
+            counter_format=STATUSBAR_FORMAT_SINGLE, # For single target
+        )  
+
+        time.sleep(0.5)  # hack for progress bar display
+
+        # Start scan
+        nmproc = NmapProcess(addr, nmap_options)
+        logger.info("Starting scan: {0}".format(
+            nmproc.get_command_line().strip())
+        )
+        logger.warn("This can be slow, please be patient...")
+        logger.info("Press Ctrl+C to abort")
+        nmproc.sudo_run_background()
+
+        try:
+            while nmproc.is_running():
+                # Update status/progress bar
+                task = None
+                try:
+                    lines = nmproc.stdout.splitlines()
+                    m = re.search(REGEX_NMAP, lines[-1], re.IGNORECASE)
+                    if m:
+                        task = m.group("task")
+                except:
+                    pass
+                scan_progress.desc = "{task} -> {addr}".format(
+                    task=task if task else "Scan starting", addr=addr
+                )
+                scan_progress.count = round(float(nmproc.progress))
+                scan_progress.update()
+                time.sleep(0.5)
+
+            if nmproc.rc != 0:
+                logger.error(
+                    "Nmap scan failed (check if running as root): {0}".format(nmproc.stderr)
+                )
+                return None
+            else:
+                logger.success(nmproc.summary)
+
+            # Clear progress bars
+            scan_progress.count = 100
+            scan_progress.update()
+            time.sleep(0.5)
+            scan_progress.close()
+            # manager.stop()
+
+        except KeyboardInterrupt:
+            print()
+            incomplete = True # Scan was aborted, so incomplete
+            logger.error('Ctrl+C received ! User aborted')
+
+        nmproc.incomplete = incomplete
+        return nmproc
 
     @staticmethod
     def is_udp_port_open(ip, port):
         """Check if given UDP port is open"""
-        nmproc = NmapProcess(ip, '-sU -T5 -p '+str(port))
+        nmproc = NmapProcess(ip, "-sU -T5 -p " + str(port))
         rc = nmproc.run()
         if rc != 0:
-            print("Nmap scan failed (check if running as root): {0}".format(
-                nmproc.stderr))
+            print(
+                "Nmap scan failed (check if running as root): {0}".format(nmproc.stderr)
+            )
             return True
 
         try:
@@ -103,10 +184,9 @@ class NetUtils:
         if len(report.hosts):
             host = report.hosts[0]
             if len(host.services):
-                return 'open' in host.services[0].state
-        
-        return False
+                return "open" in host.services[0].state
 
+        return False
 
     @staticmethod
     def grab_nmap_info(ip, port):
@@ -127,23 +207,23 @@ class NetUtils:
         :rtype: dict|None
         """
         results = {
-            'service_name': '',
-            'banner': '',
-            'os': '',
-            'os_vendor': '',
-            'os_family': '',
-            'mac': '',
-            'vendor': '',
-            'type': '',
+            "service_name": "",
+            "banner": "",
+            "os": "",
+            "os_vendor": "",
+            "os_family": "",
+            "mac": "",
+            "vendor": "",
+            "type": "",
         }
         report = None
-        #nmproc = NmapProcess(ip, '-sT -sV -Pn -p '+str(port))
-        nmproc = NmapProcess(ip, '-A -Pn -T5 -p '+str(port))
+        # nmproc = NmapProcess(ip, '-sT -sV -Pn -p '+str(port))
+        nmproc = NmapProcess(ip, "-A -Pn -T5 -p " + str(port))
         rc = nmproc.run()
         if rc != 0:
             print("Nmap scan failed: {0}".format(nmproc.stderr))
             return None
-        #print(type(nmproc.stdout))
+        # print(type(nmproc.stdout))
 
         try:
             report = NmapParser.parse(nmproc.stdout)
@@ -154,27 +234,31 @@ class NetUtils:
         if len(report.hosts):
             host = report.hosts[0]
             if len(host.services):
-                results['service_name'] = host.services[0].service
-                results['banner'] = host.services[0].banner
-                results['mac'] = host.mac
-                results['vendor'] = host.vendor
-                if host.os_fingerprinted is True \
-                        and host.os_match_probabilities() is not None \
-                        and len(host.os_match_probabilities()) > 0:
+                results["service_name"] = host.services[0].service
+                results["banner"] = host.services[0].banner
+                results["mac"] = host.mac
+                results["vendor"] = host.vendor
+                if (
+                    host.os_fingerprinted is True
+                    and host.os_match_probabilities() is not None
+                    and len(host.os_match_probabilities()) > 0
+                ):
                     os_matchs = host.os_match_probabilities()
                     if len(os_matchs) > 0:
-                        results['os'] = os_matchs[0].name
-                        if os_matchs[0].osclasses is not None \
-                                and len(os_matchs[0].osclasses) > 0:
-                            results['os_vendor'] = os_matchs[0].osclasses[0].vendor
-                            results['os_family'] = os_matchs[0].osclasses[0].osfamily
-                            results['type'] = OSUtils.get_device_type(
-                                results['os'],
-                                results['os_family'],
-                                os_matchs[0].osclasses[0].type)
+                        results["os"] = os_matchs[0].name
+                        if (
+                            os_matchs[0].osclasses is not None
+                            and len(os_matchs[0].osclasses) > 0
+                        ):
+                            results["os_vendor"] = os_matchs[0].osclasses[0].vendor
+                            results["os_family"] = os_matchs[0].osclasses[0].osfamily
+                            results["type"] = OSUtils.get_device_type(
+                                results["os"],
+                                results["os_family"],
+                                os_matchs[0].osclasses[0].type,
+                            )
 
         return results
-
 
     @staticmethod
     def clean_nmap_banner(banner):
@@ -183,8 +267,7 @@ class NetUtils:
             - Delete "product: "
             - Delete "version: "
         """
-        return banner.replace('product: ', '').replace('version: ', '')
-
+        return banner.replace("product: ", "").replace("version: ", "")
 
     @staticmethod
     def grab_banner_simple(ip, port):
@@ -200,7 +283,6 @@ class NetUtils:
             # Handle Timeout and connection refuse error
         except:
             return None
-
 
     @staticmethod
     def dns_lookup(host):
@@ -221,7 +303,6 @@ class NetUtils:
                 return ip
         return ip_list[0]
 
-
     @staticmethod
     def reverse_dns_lookup(ip):
         """Get hostname from IP if reverse DNS entry exists"""
@@ -229,7 +310,6 @@ class NetUtils:
             return socket.gethostbyaddr(ip)[0]
         except:
             return ip
-
 
     @staticmethod
     def get_local_ip_address():
