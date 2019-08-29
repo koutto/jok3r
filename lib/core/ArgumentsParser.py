@@ -164,11 +164,22 @@ class ArgumentsParser:
 
         parameter = parser.add_argument_group(Output.colored('Parameter', attrs='bold'))
         parameter.add_argument(
-            '--fast', 
-            help    = 'Fast mode, disable prompts and manual post-install checks',
+            '--auto', 
+            help    = 'Automatic mode. Disable manual post-install checks, rely only ' \
+                'on exit code instead',
             action  = 'store_true', 
             dest    = 'fast_mode', 
             default = False)
+
+        check = parser.add_argument_group(Output.colored('Check', attrs='bold'))
+        check.add_argument(
+            '--check', 
+            help    = 'Check all installed tools automatically. Return exit code 1 ' \
+                'for any problem',
+            action  = 'store_true', 
+            dest    = 'check_toolbox', 
+            default = False)
+
 
         self.subparser = parser
         # Inside Mode, so ignore the first TWO argvs

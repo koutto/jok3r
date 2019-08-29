@@ -211,7 +211,7 @@ Pentest Toolbox management
 
 .. code-block:: console
 
-    python3 jok3r.py toolbox --install-all --fast
+    python3 jok3r.py toolbox --install-all --auto
 
 
 * Update all the tools in the toolbox and prompt each time to check update:
@@ -225,7 +225,7 @@ Pentest Toolbox management
 
 .. code-block:: console
 
-    python3 jok3r.py toolbox --update-all --fast
+    python3 jok3r.py toolbox --update-all --auto
 
 
 Information

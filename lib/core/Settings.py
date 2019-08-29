@@ -12,6 +12,7 @@ For each tool registered inside toolbox:
   name           = name to display (mandatory)
   description    = short text describing the tool (mandatory)
   target_service = targeted service or "multi" (mandatory)
+  virtualenv     = language of the virtual env to use (e.g. python2.7) (optional) 
   install        = installation command-line (optional)
   update         = update command-line (optional)
   check_command  = command to check for correct install (run without args) (optional)
@@ -64,6 +65,7 @@ description = short text describing the profile (mandatory)
 
 """
 import ast
+import re
 import traceback
 import configparser
 from datetime import datetime
@@ -222,6 +224,7 @@ class Settings:
             tool_config['target_service'],
             tool_config['installed'],
             tool_config['last_update'],
+            tool_config['virtualenv'],
             tool_config['install'],
             tool_config['update'],
             tool_config['check_command']
@@ -274,6 +277,33 @@ class Settings:
                     logger.warning('{prefix} Service specified in "target_service" is ' \
                         'not supported, tool is skipped'.format(prefix=log_prefix))
                     return False
+
+            elif opt == 'virtualenv':
+                tool_config[opt] = val.lower()
+
+                # For Python, format must be "python<version>"
+                if tool_config[opt].startswith('python'):
+                    m = re.match('python(?P<version>[0-9](\.[0-9])*)', tool_config[opt])
+                    if not m:
+                        logger.warning('{prefix} Invalid Python virtualenv, must be: ' \
+                            'virtualenv = python<version>. Tool is skipped'.format(
+                                prefix=log_prefix))
+                        return False                                
+
+                # For Ruby, make sure to have a format like "ruby-<version>"
+                # Format "ruby<version>" is accepted and turned into "ruby-<version>"
+                if tool_config[opt].startswith('ruby'):
+                    m1 = re.match('ruby(?P<version>[0-9](\.[0-9])*)', tool_config[opt])
+                    m2 = re.match('ruby-(?P<version>[0-9](\.[0-9])*)', tool_config[opt])
+                    if m1:
+                        tool_config[opt] = 'ruby-{version}'.format(
+                            version=m.group('version'))
+                    elif not m2:
+                        logger.warning('{prefix} Invalid Ruby virtualenv, must be: ' \
+                            'virtualenv = ruby-<version>. Tool is skipped'.format(
+                                prefix=log_prefix))
+                        return False
+                        
 
             elif opt == 'install':
                 tool_config[opt] = Command(cmdtype=CmdType.INSTALL, cmdline=val)
