@@ -243,6 +243,7 @@ python-nmap
 python3-pymysql
 python3-psycopg2
 python3-shodan
+python3-git
 "
 
 for package in $PACKAGES; do    

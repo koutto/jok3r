@@ -7,7 +7,7 @@ import enum
 from sqlalchemy import ForeignKey, Column, Integer, String
 from sqlalchemy.orm import relationship
 
-from lib.db.Session import Base
+from lib.db.Base import Base
 
 
 class Vuln(Base):

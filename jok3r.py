@@ -12,7 +12,8 @@ from lib.core.Exceptions import *
 from lib.core.Settings import Settings
 from lib.controller.MainController import MainController
 from lib.db.Mission import Mission
-from lib.db.Session import *
+from lib.db.Base import Base
+from lib.db.Session import Session, engine
 from lib.output.Logger import logger
 
 

@@ -91,11 +91,13 @@ class MissionsRequester(Requester):
         results = self.get_results()
         if not results:
             logger.error('No mission with this name')
+            return False
         else:
             for r in results:
                 self.sqlsess.delete(r)
             self.sqlsess.commit()
             logger.success('Mission deleted')
+            return True
 
 
     def reset(self):
@@ -150,8 +152,10 @@ class MissionsRequester(Requester):
         results = self.get_results()
         if not results:
             logger.error('No mission with this name')
+            return False
         else:
             for r in results:
                 r.comment = comment
             self.sqlsess.commit()
             logger.success('Comment edited')
+            return True

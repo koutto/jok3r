@@ -16,7 +16,7 @@ from lib.db.Option import Option
 from lib.db.Product import Product
 from lib.db.Result import Result
 from lib.db.Vuln import Vuln
-from lib.db.Session import Base
+from lib.db.Base import Base
 
 
 class Protocol(enum.Enum):
@@ -250,6 +250,24 @@ class Service(Base):
                 if cred.username is not None and cred.password is not None:
                     nb += 1
         return nb
+
+
+    @hybrid_method
+    def get_checks_categories(self):
+        """
+        Get list of categories of checks that have been partially or fully run for the
+        service.
+        Note: If only one single check in a category (e.g. recon) has been run for the
+        service, it is returned.
+        :return: List of categories of checks
+        :rtype: list(str)
+        """
+        categories = list()
+        for res in self.results:
+            if res.category not in categories:
+                categories.append(res.category)
+
+        return categories
 
 
     #------------------------------------------------------------------------------------

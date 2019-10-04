@@ -8,7 +8,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.ext.hybrid import hybrid_method
 from sqlalchemy.sql import func
 
-from lib.db.Session import Base
+from lib.db.Base import Base
 from lib.db.Host import Host
 
 

@@ -18,3 +18,13 @@ class AttackException(Exception):
 
 class FilterException(Exception):
     pass
+
+
+#----------------------------------------------------------------------------------------
+# REST API Exceptions
+
+class ApiException(Exception):
+    pass
+
+class ApiNoResultFound(Exception):
+    pass

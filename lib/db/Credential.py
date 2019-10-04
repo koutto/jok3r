@@ -7,7 +7,7 @@ from sqlalchemy import ForeignKey, Column, Integer, String, Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.hybrid import hybrid_method
 
-from lib.db.Session import Base
+from lib.db.Base import Base
 
 
 class Credential(Base):

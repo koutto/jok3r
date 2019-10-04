@@ -131,11 +131,13 @@ class HostsRequester(Requester):
         results = self.get_results()
         if not results:
             logger.error('No matching host')
+            return False
         else:
             for r in results:
                 r.comment = comment
             self.sqlsess.commit()
             logger.success('Comment edited')
+            return True
 
 
     def delete(self):
@@ -143,6 +145,7 @@ class HostsRequester(Requester):
         results = self.get_results()
         if not results:
             logger.error('No matching host')
+            return False
         else:
             for r in results:
                 logger.info('Host {ip} {hostname} (and its {nb_services} services) ' \
@@ -153,6 +156,7 @@ class HostsRequester(Requester):
                 self.sqlsess.delete(r)
 
             self.sqlsess.commit()
+            return True
 
 
     #------------------------------------------------------------------------------------

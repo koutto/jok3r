@@ -32,6 +32,7 @@ class OptionType(Enum):
 class FilterData(Enum):
     IP              = auto()
     HOST            = auto()
+    HOST_ID         = auto()
     PORT            = auto()
     PROTOCOL        = auto()
     UP              = auto()
@@ -54,6 +55,7 @@ class FilterData(Enum):
     COMMENT_HOST    = auto()
     COMMENT_CRED    = auto()
     COMMENT_MISSION = auto()
+    MISSION_ID      = auto()
     MISSION_EXACT   = auto()
     MISSION         = auto()
     CHECK_ID        = auto()

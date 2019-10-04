@@ -7,6 +7,8 @@ colorama
 colored>=1.3.93
 colorlog>=3.1.4
 enlighten>=1.0.7
+flask
+flask-restplus
 GitPython
 humanfriendly>=4.12.1
 Pillow

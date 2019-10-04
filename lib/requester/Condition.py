@@ -44,6 +44,7 @@ class Condition:
         self.mapping = {
             FilterData.IP              : self.__translate_ip,
             FilterData.HOST            : self.__translate_host,
+            FilterData.HOST_ID         : self.__translate_host_id,
             FilterData.PORT            : self.__translate_port,
             FilterData.PROTOCOL        : self.__translate_protocol,
             FilterData.UP              : self.__translate_up,
@@ -66,6 +67,7 @@ class Condition:
             FilterData.COMMENT_HOST    : self.__translate_comment_host,
             FilterData.COMMENT_CRED    : self.__translate_comment_cred,
             FilterData.COMMENT_MISSION : self.__translate_comment_mission,
+            FilterData.MISSION_ID      : self.__translate_mission_id,
             FilterData.MISSION_EXACT   : self.__translate_mission_exact,
             FilterData.MISSION         : self.__translate_mission,
             FilterData.CHECK_ID        : self.__translate_check_id,
@@ -123,6 +125,11 @@ class Condition:
         LIKE %value%
         """
         return (Host.hostname.ilike('%'+str(value)+'%'))
+
+
+    def __translate_host_id(self, value):
+        """Translate host id into filter"""
+        return (Host.id == int(value))
 
 
     def __translate_port(self, value):
@@ -259,6 +266,11 @@ class Condition:
     def __translate_comment_mission(self, value):
         """Translate mission comment into LIKE filter"""
         return (Mission.comment.ilike('%'+str(value)+'%'))
+
+
+    def __translate_mission_id(self, value):
+        """Translate mission name into exact filter"""
+        return (Mission.id == int(value))
 
 
     def __translate_mission_exact(self, value):
