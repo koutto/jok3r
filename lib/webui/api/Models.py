@@ -4,6 +4,8 @@
 ### Web-UI > Backend > Models
 ###
 from lib.db.Service import Protocol
+from lib.db.Screenshot import ScreenStatus
+from lib.webui.api.Api import api
 
 class Mission:
     def __init__(self, mission):
@@ -41,6 +43,7 @@ class Service:
         self.id = service.id
         self.name = service.name
         self.name_original = service.name_original
+        self.host_ip = service.host.ip 
         self.port = service.port
         self.protocol = service.protocol
         self.encrypted = service.is_encrypted()
@@ -50,10 +53,21 @@ class Service:
         self.html_title = service.html_title
         self.web_technos = service.web_technos
         self.comment = service.comment
+        self.credentials = service.credentials
+        self.options = service.options
         self.products = service.products
+        self.vulns = service.vulns
         self.creds_count = service.get_nb_credentials(single_username=False)
         self.users_count = service.get_nb_credentials(single_username=True)
         self.vulns_count = len(service.vulns)
         self.checks_categories = service.get_checks_categories()
         self.host_id = service.host_id
-        self.host_ip = service.host.ip 
+        self.screenshot = ''
+        self.screenshot_thumb = ''
+        if service.screenshot is not None \
+                and service.screenshot.status == ScreenStatus.OK:
+            url = '{base_url}services/{id}/screenshot'.format(
+                base_url=api.base_url,
+                id=service.id)
+            self.screenshot = '{}/large'.format(url)
+            self.screenshot_thumb = '{}/thumb'.format(url)

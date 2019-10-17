@@ -45,17 +45,37 @@ host = api.model('Host', {
     'mission_id': fields.Integer(description='Mission identifier'),
 })
 
-option = api.model('Product', {
+credential = api.model('Credential', {
+    'id': fields.Integer(readonly=True, description='The credential unique identifier'),
+    'type': fields.String(description='Credential type'),
+    'username': fields.String(description='Username'),
+    'password': fields.String(description='Password'),
+    'comment': fields.String(description='Credential comment'), 
+})
+
+option = api.model('Option', {
     'id': fields.Integer(readonly=True, description='The option unique identifier'),
+    'name': fields.String(description='Option name'),
+    'value': fields.String(description='Option value'),
+})
+
+product = api.model('Product', {
+    'id': fields.Integer(readonly=True, description='The product unique identifier'),
     'type': fields.String(description='Product type'),
     'name': fields.String(description='Product name'),
     'version': fields.String(description='Product version'), 
+})
+
+vuln = api.model('Vuln', {
+    'id': fields.Integer(readonly=True, description='The vulnerability unique identifier'),
+    'name': fields.String(description='Vulnerability name'),
 })
 
 service = api.model('Service', {
     'id': fields.Integer(readonly=True, description='The service unique identifier'),
     'name': fields.String(description='Service name'),
     'name_original': fields.String(description='Service original name (as given by Nmap/Shodan'),
+    'host_ip': fields.String(description='Host IP address'),
     'port': fields.Integer(description='Port number'),
     'protocol': ProtocolString(attribute='protocol', description='Protocol (tcp/udp)', default='tcp', enum=['tcp', 'udp']),
     'encrypted': fields.Boolean(description='Boolean indicating if encrypted protocol (SSL/TLS)', default=False),
@@ -65,17 +85,29 @@ service = api.model('Service', {
     'html_title': fields.String(description='HTML title (for HTTP(s))'),
     'web_technos': fields.String(description='Web technologies (for HTTP(s)) (unused)'),
     'comment': fields.String(description='Service comment'),
-    'products': fields.List(fields.Nested(option)),
+    'credentials': fields.List(fields.Nested(credential)),
+    'options': fields.List(fields.Nested(option)),
+    'products': fields.List(fields.Nested(product)),
+    'vulns': fields.List(fields.Nested(vuln)),
     'creds_count': fields.Integer(description='Credentials (username & password) count'),
     'users_count': fields.Integer(description='Single usernames count'),
     'vulns_count': fields.Integer(description='Vulnerabilities count'),
     'checks_categories': fields.List(fields.String()),
     'host_id': fields.Integer(description='Host identifier'),
-    'host_ip': fields.String(description='Host IP address'),
+    'screenshot': fields.String(description='Web screenshot'),
+    'screenshot_thumb': fields.String(description='Web screenshot thumbnail'),
 })
 
 mission_with_hosts = api.inherit('Mission with hosts', mission, {
     'hosts': fields.List(fields.Nested(host))
+})
+
+mission_with_services = api.inherit('Mission with services', mission, {
+    'services': fields.List(fields.Nested(service))
+})
+
+mission_with_options = api.inherit('Mission with options', mission, {
+    'options': fields.List(fields.Nested(option))
 })
 
 host_with_services = api.inherit('Host with services', host, {

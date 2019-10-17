@@ -10,10 +10,11 @@ from lib.webui.api.Api import api
 from lib.webui.api.Config import *
 from lib.webui.api.endpoints.HostsApi import ns as hosts_namespace
 from lib.webui.api.endpoints.MissionsApi import ns as missions_namespace
+from lib.webui.api.endpoints.ServicesApi import ns as services_namespace
 
 
 app = Flask(__name__, static_url_path="")
-
+app.url_map.strict_slashes = False
 
 #----------------------------------------------------------------------------------------
 # Exceptions handlers
@@ -45,9 +46,16 @@ def initialize_app(flask_app):
     api.init_app(blueprint)
     api.add_namespace(missions_namespace)
     api.add_namespace(hosts_namespace)
+    api.add_namespace(services_namespace)
     flask_app.register_blueprint(blueprint)
 
 
 def run_server():
     initialize_app(app)
     app.run(debug=FLASK_DEBUG)
+
+
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response

@@ -13,8 +13,8 @@ from lib.requester.Condition import Condition
 from lib.requester.Filter import Filter
 from lib.requester.MissionsRequester import MissionsRequester
 from lib.webui.api.Api import api, sqlsession
-from lib.webui.api.Models import Mission, Host
-from lib.webui.api.Serializers import mission, host, mission_with_hosts
+from lib.webui.api.Models import Mission, Host, Service
+from lib.webui.api.Serializers import mission, host, mission_with_hosts, mission_with_services, mission_with_options
 
 ns = api.namespace('missions', description='Operations related to missions')
 
@@ -142,3 +142,80 @@ class MissionHostsAPI(Resource):
 
         else:
             raise ApiNoResultFound()
+
+
+@ns.route('/<int:id>/services')
+class MissionServicesAPI(Resource):
+
+    @ns.doc('list_services_in_mission')
+    @ns.marshal_with(mission_with_services)
+    def get(self, id):
+        """List all services in a mission"""
+        missions_req = MissionsRequester(sqlsession)
+        filter_ = Filter()
+        filter_.add_condition(Condition(id, FilterData.MISSION_ID))
+        missions_req.add_filter(filter_)
+        m = missions_req.get_first_result()   
+        if m:
+            m = Mission(m)
+            services_list = list()
+            for host in m.hosts:
+                for service in host.services:
+                    services_list.append(Service(service))
+            m.services = services_list
+            return m
+
+        else:
+            raise ApiNoResultFound()
+
+
+@ns.route('/<int:id>/web')
+class MissionWebAPI(Resource):
+
+    @ns.doc('list_web_in_mission')
+    @ns.marshal_with(mission_with_services)
+    def get(self, id):
+        """List all HTTP services in a mission"""
+        missions_req = MissionsRequester(sqlsession)
+        filter_ = Filter()
+        filter_.add_condition(Condition(id, FilterData.MISSION_ID))
+        missions_req.add_filter(filter_)
+        m = missions_req.get_first_result()   
+        if m:
+            m = Mission(m)
+            services_list = list()
+            for host in m.hosts:
+                for service in host.services:
+                    if service.name == 'http':
+                        services_list.append(Service(service))
+            m.services = services_list
+            return m
+
+        else:
+            raise ApiNoResultFound()
+
+
+# @ns.route('/<int:id>/options')
+# class MissionOptionsAPI(Resource):
+
+#     @ns.doc('list_options_in_mission')
+#     @ns.marshal_with(mission_with_options)
+#     def get(self, id):
+#         """List all options in a mission"""
+#         missions_req = MissionsRequester(sqlsession)
+#         filter_ = Filter()
+#         filter_.add_condition(Condition(id, FilterData.MISSION_ID))
+#         missions_req.add_filter(filter_)
+#         m = missions_req.get_first_result()   
+#         if m:
+#             m = Mission(m)
+#             options_list = list()
+#             for host in m.hosts:
+#                 for service in host.services:
+#                     for option in service.options:
+#                         options_list.append(option)
+#             m.options = options_list
+#             return m
+
+#         else:
+#             raise ApiNoResultFound()
