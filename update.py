@@ -75,7 +75,7 @@ if __name__ == '__main__':
         # runs install of required libraries
         logger.info('requirements.txt has been updated. Will install python ' \
             'libraries...') 
-        returncode, _ = ProcessLauncher('pip3 install requirements.txt').start()
+        returncode, _ = ProcessLauncher('pip3 install -r requirements.txt').start()
         if returncode != 0:
             logger.error('An error occured during execution of "pip3 install ' \
                 'requirements.txt" (exitcode = {})'.format(returncode))
