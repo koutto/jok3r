@@ -4,6 +4,7 @@
 ### Core > Attack Controller
 ###
 import datetime
+import sys
 from humanfriendly import format_timespan
 
 from lib.core.AttackScope import AttackScope
