@@ -23,7 +23,12 @@ mission = api.model('Mission', {
     'name': fields.String(required=True, description='Mission name'),
     'comment': fields.String(description='Mission comment'),
     'creation_date': fields.DateTime(description='Creation datetime of the mission'),
+    'hosts_count': fields.Integer(description='Number of hosts in the mission'),
     'services_count': fields.Integer(description='Number of services in the mission'),
+    'creds_count': fields.Integer(description='Credentials (username & password) count'),
+    'users_count': fields.Integer(description='Single usernames count'),
+    'products_count': fields.Integer(description='Detected products count'),
+    'vulns_count': fields.Integer(description='Vulnerabilities count'),
 })
 
 host = api.model('Host', {
@@ -42,6 +47,7 @@ host = api.model('Host', {
     'creds_count': fields.Integer(description='Credentials (username & password) count'),
     'users_count': fields.Integer(description='Single usernames count'),
     'vulns_count': fields.Integer(description='Vulnerabilities count'),
+    'services_list': fields.List(fields.List(fields.String())),
     'mission_id': fields.Integer(description='Mission identifier'),
 })
 

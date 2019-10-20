@@ -13,7 +13,12 @@ class Mission:
         self.name = mission.name
         self.comment = mission.comment
         self.creation_date = mission.creation_date
+        self.hosts_count = len(mission.hosts)
         self.services_count = mission.get_nb_services()
+        self.creds_count = mission.get_nb_credentials(single_username=False)
+        self.users_count = mission.get_nb_credentials(single_username=True)
+        self.products_count = mission.get_nb_products()
+        self.vulns_count = mission.get_nb_vulns()
         self.hosts = mission.hosts
 
 
@@ -34,6 +39,15 @@ class Host:
         self.creds_count = host.get_nb_credentials(single_username=False)
         self.users_count = host.get_nb_credentials(single_username=True)
         self.vulns_count = host.get_nb_vulns()
+        self.services_list = list()
+        for service in host.services:
+            self.services_list.append([ 
+                service.port, 
+                { 
+                    'Protocol.TCP': 'tcp',
+                    'Protocol.UDP': 'udp'
+                }.get(service.protocol, 'tcp'),
+                service.name ])
         self.mission_id = host.mission_id
         self.services = host.services
 

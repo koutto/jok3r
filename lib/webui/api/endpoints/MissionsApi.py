@@ -6,6 +6,7 @@
 from flask import request
 from flask_restplus import Resource
 
+from lib.db.Session import Session
 from lib.db.Service import Protocol
 from lib.core.Constants import FilterData
 from lib.core.Exceptions import ApiException, ApiNoResultFound
@@ -26,7 +27,7 @@ class MissionListAPI(Resource):
     @ns.marshal_list_with(mission)
     def get(self):
         """List all missions"""
-        missions = MissionsRequester(sqlsession).get_results()
+        missions = MissionsRequester(Session()).get_results()
         # missions_json = []
         # for m in missions:
         #     m_json = api.marshal(m, mission)
@@ -42,7 +43,7 @@ class MissionListAPI(Resource):
     def post(self):
         """Create a new mission"""
         name = request.json['name']
-        missions_req = MissionsRequester(sqlsession)
+        missions_req = MissionsRequester(Session())
         if missions_req.add(name):
             filter_ = Filter()
             filter_.add_condition(Condition(name, FilterData.MISSION_EXACT))
@@ -65,7 +66,7 @@ class MissionAPI(Resource):
     @ns.marshal_with(mission)
     def get(self, id):
         """Get a mission"""
-        missions_req = MissionsRequester(sqlsession)
+        missions_req = MissionsRequester(Session())
         filter_ = Filter()
         filter_.add_condition(Condition(id, FilterData.MISSION_ID))
         missions_req.add_filter(filter_)
@@ -81,13 +82,14 @@ class MissionAPI(Resource):
     @ns.marshal_with(mission, code=201)
     def put(self, id):
         """Update a mission name or comment"""
-        missions_req = MissionsRequester(sqlsession)
+        missions_req = MissionsRequester(Session())
         filter_ = Filter()
         filter_.add_condition(Condition(id, FilterData.MISSION_ID))
         missions_req.add_filter(filter_)
         m = missions_req.get_first_result()   
         if m:
             # Rename mission
+            print(request.json)
             if 'name' in request.json:
                 if request.json['name'] != m.name:
                     if not missions_req.rename(m.name, request.json['name']):
