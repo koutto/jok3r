@@ -121,6 +121,20 @@ class Host(Base):
 
 
     @hybrid_method
+    def get_nb_products(self):
+        """
+        Get total number of detected products for all services referenced for this host.
+        :return: Number of detected products
+        :rtype: int
+        """
+        nb = 0
+        for s in self.services:
+            nb += len(s.products)
+            
+        return nb
+
+
+    @hybrid_method
     def get_nb_vulns(self):
         """
         Get total number of vulnerabilities for all services referenced for this host.

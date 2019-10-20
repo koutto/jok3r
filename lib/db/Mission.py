@@ -34,6 +34,49 @@ class Mission(Base):
             nb += len(host.services)
         return nb
 
+
+    @hybrid_method
+    def get_nb_credentials(self, single_username=False):
+        """
+        Get total number of credentials for all services referenced for this mission.
+        :param bool single_username: If True, get the number of single usernames 
+            (password unknown). If False, get the number of username/password couples
+        :return: Number of selected credentials
+        :rtype: int
+        """
+        nb = 0
+        for h in self.hosts:
+            nb += h.get_nb_credentials(single_username)
+        return nb
+
+
+    @hybrid_method
+    def get_nb_products(self):
+        """
+        Get total number of detected products for all services referenced for 
+        this mission.
+        :return: Number of detected products
+        :rtype: int
+        """
+        nb = 0
+        for h in self.hosts:
+            nb += h.get_nb_products()
+        return nb
+
+
+    @hybrid_method
+    def get_nb_vulns(self):
+        """
+        Get total number of detected vulns for all services referenced for 
+        this mission.
+        :return: Number of detected vulns
+        :rtype: int
+        """
+        nb = 0
+        for h in self.hosts:
+            nb += h.get_nb_vulns()
+        return nb
+
     #------------------------------------------------------------------------------------
             
     def __repr__(self):
