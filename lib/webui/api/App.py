@@ -59,5 +59,5 @@ def run_server():
 def after_request(response):
     response.headers.add('Access-Control-Allow-Origin', '*')
     response.headers.add('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, HEAD, DELETE')
-    response.headers.add('Access-Control-Allow-Headers', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'content-type')
     return response
