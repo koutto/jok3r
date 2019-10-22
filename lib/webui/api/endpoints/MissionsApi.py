@@ -110,7 +110,7 @@ class MissionAPI(Resource):
     @ns.doc('delete_mission')
     def delete(self, id):
         """Delete a mission"""
-        missions_req = MissionsRequester(sqlsession)
+        missions_req = MissionsRequester(Session())
         filter_ = Filter()
         filter_.add_condition(Condition(id, FilterData.MISSION_ID))
         missions_req.add_filter(filter_)
@@ -132,7 +132,7 @@ class MissionHostsAPI(Resource):
     @ns.marshal_with(mission_with_hosts)
     def get(self, id):
         """List all hosts in a mission"""
-        missions_req = MissionsRequester(sqlsession)
+        missions_req = MissionsRequester(Session())
         filter_ = Filter()
         filter_.add_condition(Condition(id, FilterData.MISSION_ID))
         missions_req.add_filter(filter_)
@@ -153,7 +153,7 @@ class MissionServicesAPI(Resource):
     @ns.marshal_with(mission_with_services)
     def get(self, id):
         """List all services in a mission"""
-        missions_req = MissionsRequester(sqlsession)
+        missions_req = MissionsRequester(Session())
         filter_ = Filter()
         filter_.add_condition(Condition(id, FilterData.MISSION_ID))
         missions_req.add_filter(filter_)
@@ -178,7 +178,7 @@ class MissionWebAPI(Resource):
     @ns.marshal_with(mission_with_services)
     def get(self, id):
         """List all HTTP services in a mission"""
-        missions_req = MissionsRequester(sqlsession)
+        missions_req = MissionsRequester(Session())
         filter_ = Filter()
         filter_.add_condition(Condition(id, FilterData.MISSION_ID))
         missions_req.add_filter(filter_)
