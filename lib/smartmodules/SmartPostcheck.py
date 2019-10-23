@@ -3,6 +3,8 @@
 ###
 ### SmartModules > Smart Postcheck
 ###
+import re
+
 from lib.output.Logger import logger
 from lib.smartmodules.ContextUpdater import ContextUpdater
 from lib.smartmodules.MatchstringsProcessor import MatchstringsProcessor
@@ -44,4 +46,26 @@ class SmartPostcheck:
         self.processor.detect_vulns()
         self.cu.update()
 
+        if self.tool_name == 'nmap':
+            self.__check_banner_nmap()
+
+
+    def __check_banner_nmap(self):
+        """
+        Additional method run when the tool is Nmap.
+        Product detection is performed using regexp "banner" if available
+        on the line from output that corresponds to the banner, e.g. :
+
+        PORT   STATE SERVICE REASON  VERSION
+        21/tcp open  ftp     syn-ack ProFTPD 1.2.10
+        """
+        m = re.search('^[0-9]+/tcp\s+open\s+\S+\s+\S+\s+?(?P<banner>.*?)$', self.cmd_output, re.MULTILINE)
+        if m:
+            if m.group('banner'):
+                self.processor = MatchstringsProcessor(self.service, 
+                                                       'banner',
+                                                       m.group('banner'),
+                                                       self.cu)
+                self.processor.detect_products()
+                self.cu.update()
 
