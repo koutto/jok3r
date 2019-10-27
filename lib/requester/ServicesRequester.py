@@ -395,15 +395,19 @@ class ServicesRequester(Requester):
         """
         Edit comment of selected services.
         :param str comment: New comment
+        :return: Status
+        :rtype: bool
         """
         results = self.get_results()
         if not results:
             logger.error('No matching service')
+            return False
         else:
             for r in results:
                 r.comment = comment
             self.sqlsess.commit()
             logger.success('Comment edited')
+            return True
 
 
     def switch_https(self):
@@ -421,10 +425,15 @@ class ServicesRequester(Requester):
 
 
     def delete(self):
-        """Delete selected services"""
+        """
+        Delete selected services
+        :return: Status
+        :rtype: bool
+        """
         results = self.get_results()
         if not results:
             logger.error('No matching service')
+            return False
         else:
             for r in results:
                 logger.info('Service {service} host={ip}{hostname} ' \
@@ -447,7 +456,8 @@ class ServicesRequester(Requester):
                         hostname='('+r.host.hostname+')' if r.host.hostname else ''))
 
                     self.sqlsess.delete(r.host)
-                    self.sqlsess.commit()          
+                    self.sqlsess.commit()    
+            return True      
 
 
     #------------------------------------------------------------------------------------

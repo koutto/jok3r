@@ -58,6 +58,7 @@ class Service:
         self.name = service.name
         self.name_original = service.name_original
         self.host_ip = service.host.ip 
+        self.host_hostname = service.host.hostname
         self.port = service.port
         self.protocol = service.protocol
         self.encrypted = service.is_encrypted()

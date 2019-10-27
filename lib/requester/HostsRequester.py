@@ -127,6 +127,8 @@ class HostsRequester(Requester):
         """
         Edit comment of selected hosts.
         :param str comment: New comment
+        :return: Status
+        :rtype: bool
         """
         results = self.get_results()
         if not results:
@@ -141,7 +143,11 @@ class HostsRequester(Requester):
 
 
     def delete(self):
-        """Delete selected hosts"""
+        """
+        Delete selected hosts
+        :return: Status
+        :rtype: bool
+        """
         results = self.get_results()
         if not results:
             logger.error('No matching host')

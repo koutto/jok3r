@@ -123,9 +123,15 @@ class MissionsRequester(Requester):
         Rename selected missions.
         :param str old: Name of the mission to rename
         :param str new: New mission name
+        :return: Status
+        :rtype: bool
         """
         if old == 'default':
             logger.warning('Default mission cannot be renamed')
+            return False
+
+        if not new:
+            logger.warning('New mission name cannot be empty')
             return False
 
         mission = self.sqlsess.query(Mission).filter(Mission.name == old).first()
@@ -148,6 +154,8 @@ class MissionsRequester(Requester):
         """
         Edit comment of selected missions.
         :param str comment: New comment
+        :return: Status
+        :rtype: bool
         """
         results = self.get_results()
         if not results:

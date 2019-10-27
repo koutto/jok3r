@@ -8,17 +8,76 @@ from flask import request, send_file
 from flask_restplus import Resource
 from PIL import Image
 
+from lib.db.Session import Session
 from lib.db.Screenshot import ScreenStatus
 from lib.core.Constants import FilterData
 from lib.core.Exceptions import ApiException, ApiNoResultFound
 from lib.requester.Condition import Condition
 from lib.requester.Filter import Filter
 from lib.requester.ServicesRequester import ServicesRequester
-from lib.webui.api.Api import api, sqlsession
+from lib.webui.api.Api import api
 from lib.webui.api.Models import Service
+from lib.webui.api.Serializers import service
 
 
 ns = api.namespace('services', description='Operations related to services')
+
+
+@ns.route('/<int:id>')
+class ServiceAPI(Resource):
+
+    @ns.doc('get_service')
+    @ns.marshal_with(service)
+    def get(self, id):
+        """Return a service"""
+        services_req = ServicesRequester(Session)
+        filter_ = Filter()
+        filter_.add_condition(Condition(id, FilterData.SERVICE_ID))
+        services_req.add_filter(filter_)
+        s = services_req.get_first_result()   
+        if s:
+            return Service(s)
+        else:
+            raise ApiNoResultFound()
+
+
+    @ns.doc('update_service')
+    @ns.expect(service)
+    @ns.marshal_with(service, code=201)
+    def put(self, id):
+        """Update a service comment"""
+        services_req = ServicesRequester(Session)
+        filter_ = Filter()
+        filter_.add_condition(Condition(id, FilterData.SERVICE_ID))
+        services_req.add_filter(filter_)
+        s = services_req.get_first_result()   
+        if s:
+            if 'comment' in request.json:
+                if request.json['comment'] != s.comment:
+                    if not services_req.edit_comment(request.json['comment']):
+                        raise ApiException('An error occured when trying to edit ' \
+                            'comment for service')
+
+            return Service(s)
+        else:
+            raise ApiNoResultFound()
+
+
+    @ns.doc('delete_service')
+    def delete(self, id):
+        """Delete a service"""
+        services_req = ServicesRequester(Session)
+        filter_ = Filter()
+        filter_.add_condition(Condition(id, FilterData.SERVICE_ID))
+        services_req.add_filter(filter_)
+        s = services_req.get_first_result()   
+        if s:
+            if services_req.delete():
+                return None, 201
+            else:
+                raise ApiException('An error occured when trying to delete service')
+        else:
+            raise ApiNoResultFound()     
 
 
 @ns.route('/<int:id>/screenshot/<string:size>')
@@ -29,7 +88,7 @@ class ServiceScreenshotAPI(Resource):
     @ns.produces(['image/png'])
     def get(self, id, size):
         """Get a screenshot for an HTTP service"""
-        services_req = ServicesRequester(sqlsession)
+        services_req = ServicesRequester(Session)
         filter_ = Filter()
         filter_.add_condition(Condition(id, FilterData.SERVICE_ID))
         services_req.add_filter(filter_)

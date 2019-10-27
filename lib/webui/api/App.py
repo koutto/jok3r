@@ -5,6 +5,7 @@
 ###
 from flask import Flask, Blueprint
 
+from lib.db.Session import Session
 from lib.core.Exceptions import ApiException, ApiNoResultFound
 from lib.webui.api.Api import api
 from lib.webui.api.Config import *
@@ -15,6 +16,7 @@ from lib.webui.api.endpoints.ServicesApi import ns as services_namespace
 
 app = Flask(__name__, static_url_path="")
 app.url_map.strict_slashes = False
+
 
 #----------------------------------------------------------------------------------------
 # Exceptions handlers
@@ -59,5 +61,9 @@ def run_server():
 def after_request(response):
     response.headers.add('Access-Control-Allow-Origin', '*')
     response.headers.add('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, HEAD, DELETE')
-    response.headers.add('Access-Control-Allow-Headers', 'content-type')
+    response.headers.add('Access-Control-Allow-Headers', 'content-type, x-requested-with')
     return response
+
+@app.teardown_request
+def remove_session(ex=None):
+    Session.remove()

@@ -14,6 +14,7 @@ engine = sqlalchemy.create_engine('sqlite:///' + DB_FILE)
 
 # Thread-safe sessions
 # https://docs.sqlalchemy.org/en/13/orm/contextual.html
+# https://stackoverflow.com/questions/34009296/using-sqlalchemy-session-from-flask-raises-sqlite-objects-created-in-a-thread-c
 session_factory = sqlalchemy.orm.sessionmaker(bind=engine)
 Session = sqlalchemy.orm.scoped_session(session_factory)
 

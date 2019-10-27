@@ -82,6 +82,7 @@ service = api.model('Service', {
     'name': fields.String(description='Service name'),
     'name_original': fields.String(description='Service original name (as given by Nmap/Shodan'),
     'host_ip': fields.String(description='Host IP address'),
+    'host_hostname': fields.String(description='Hostname'),
     'port': fields.Integer(description='Port number'),
     'protocol': ProtocolString(attribute='protocol', description='Protocol (tcp/udp)', default='tcp', enum=['tcp', 'udp']),
     'encrypted': fields.Boolean(description='Boolean indicating if encrypted protocol (SSL/TLS)', default=False),
