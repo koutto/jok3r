@@ -55,11 +55,35 @@ class VulnsRequester(Requester):
 
     #------------------------------------------------------------------------------------
 
+    def edit_vuln_name(self, new_name):
+        """
+        Edit vuln name of selected vulnerabilities.
+        :param str new_name: New name to set
+        :return: Status
+        :rtype: bool
+        """
+        results = self.get_results()
+        if not results:
+            logger.error('No vulnerability selected')
+            return False
+        else:
+            for r in results:
+                r.name = new_name
+            self.sqlsess.commit()
+            logger.success('Vulnerability edited')
+            return True
+
+
     def delete(self):
-        """Delete selected vulnerabilities"""
+        """
+        Delete selected vulnerabilities
+        :return: Status
+        :rtype: bool
+        """
         results = self.get_results()
         if not results:
             logger.error('No matching vulnerability')
+            return False
         else:
             for r in results:
                 logger.info('Vulnerability deleted: "{vuln}" for service={service} ' \
@@ -72,6 +96,7 @@ class VulnsRequester(Requester):
                             r.service.protocol)))
                 self.sqlsess.delete(r)
             self.sqlsess.commit()
+            return True
 
 
     #------------------------------------------------------------------------------------

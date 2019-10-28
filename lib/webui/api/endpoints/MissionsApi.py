@@ -17,8 +17,9 @@ from lib.requester.Filter import Filter
 from lib.requester.MissionsRequester import MissionsRequester
 from lib.requester.HostsRequester import HostsRequester
 from lib.webui.api.Api import api, settings
-from lib.webui.api.Models import Mission, Host, Service
-from lib.webui.api.Serializers import mission, host, mission_with_hosts, mission_with_services, mission_with_options
+from lib.webui.api.Models import Mission, Host, Service, Vuln
+from lib.webui.api.Serializers import mission, host, mission_with_hosts, \
+    mission_with_services, mission_with_options, mission_with_vulns
 
 ns = api.namespace('missions', description='Operations related to missions')
 
@@ -92,7 +93,6 @@ class MissionAPI(Resource):
         m = missions_req.get_first_result()   
         if m:
             # Rename mission
-            print(request.json)
             if 'name' in request.json:
                 if request.json['name'] != m.name:
                     if not missions_req.rename(m.name, request.json['name']):
@@ -147,7 +147,6 @@ class MissionHostsAPI(Resource):
             m = Mission(m)
             m.hosts = list(map(lambda x: Host(x), m.hosts))
             return m
-
         else:
             raise ApiNoResultFound()
 

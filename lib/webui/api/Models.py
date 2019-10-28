@@ -39,15 +39,7 @@ class Host:
         self.creds_count = host.get_nb_credentials(single_username=False)
         self.users_count = host.get_nb_credentials(single_username=True)
         self.vulns_count = host.get_nb_vulns()
-        self.services_list = list()
-        for service in host.services:
-            self.services_list.append([ 
-                service.port, 
-                { 
-                    'Protocol.TCP': 'tcp',
-                    'Protocol.UDP': 'udp'
-                }.get(service.protocol, 'tcp'),
-                service.name ])
+        self.services_list = host.get_list_services()
         self.mission_id = host.mission_id
         self.services = host.services
 

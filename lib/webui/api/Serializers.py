@@ -31,6 +31,13 @@ mission = api.model('Mission', {
     'vulns_count': fields.Integer(description='Vulnerabilities count'),
 })
 
+service_short = api.model('ServiceShort', {
+    'port': fields.Integer(description='Port number'),
+    'protocol': fields.String(description='Protocol'),
+    'name': fields.String(description='Service name'),
+})
+
+
 host = api.model('Host', {
     'id': fields.Integer(readonly=True, description='The host unique identifier'),
     'ip': fields.String(required=True, description='Host IP address'),
@@ -47,9 +54,10 @@ host = api.model('Host', {
     'creds_count': fields.Integer(description='Credentials (username & password) count'),
     'users_count': fields.Integer(description='Single usernames count'),
     'vulns_count': fields.Integer(description='Vulnerabilities count'),
-    'services_list': fields.List(fields.List(fields.String())),
+    'services_list': fields.List(fields.Nested(service_short)),
     'mission_id': fields.Integer(description='Mission identifier'),
 })
+
 
 credential = api.model('Credential', {
     'id': fields.Integer(readonly=True, description='The credential unique identifier'),

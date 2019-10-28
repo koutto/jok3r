@@ -150,6 +150,35 @@ class Host(Base):
 
     #------------------------------------------------------------------------------------
 
+    @hybrid_method
+    def get_list_services(self):
+        """
+        Get list of unique services for this host. 
+        There might be several HTTP services registered on the same port (different 
+        URLs): in this particular case, the corresponding service is returned only once
+        in the list.
+        :return: List of services
+        :rtype: list({'port': int, 'protocol': str, 'name': str})
+        """
+        services = list()
+        for svc in self.services:
+            found = False
+            for svc2 in services:
+                if svc.port == svc2['port']:
+                    found = True
+                    break
+            if not found:
+                services.append({
+                    'port': svc.port,
+                    'protocol': { Protocol.TCP: 'tcp', Protocol.UDP: 'udp' }.get(
+                        svc.protocol, 'tcp'),
+                    'name': svc.name,
+                })
+        return services
+
+
+    #------------------------------------------------------------------------------------
+
     def __repr__(self):
         return '<Host(ip="{ip}", hostname="{hostname}", os="{os}", ' \
             'os_vendor="{os_vendor}", os_family="{os_family}", mac="{mac}", ' \

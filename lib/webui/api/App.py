@@ -12,6 +12,7 @@ from lib.webui.api.Config import *
 from lib.webui.api.endpoints.HostsApi import ns as hosts_namespace
 from lib.webui.api.endpoints.MissionsApi import ns as missions_namespace
 from lib.webui.api.endpoints.ServicesApi import ns as services_namespace
+from lib.webui.api.endpoints.VulnsApi import ns as vulns_namespace
 
 
 app = Flask(__name__, static_url_path="")
@@ -49,6 +50,7 @@ def initialize_app(flask_app):
     api.add_namespace(missions_namespace)
     api.add_namespace(hosts_namespace)
     api.add_namespace(services_namespace)
+    api.add_namespace(vulns_namespace)
     flask_app.register_blueprint(blueprint)
 
 

@@ -61,6 +61,7 @@ class FilterData(Enum):
     CHECK_ID        = auto()
     CHECK_NAME      = auto()
     COMMAND_OUTPUT  = auto()
+    VULN_ID         = auto()
     VULN            = auto()
     OPTION_NAME     = auto()
     OPTION_VALUE    = auto()

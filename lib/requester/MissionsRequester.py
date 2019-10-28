@@ -87,7 +87,11 @@ class MissionsRequester(Requester):
     #------------------------------------------------------------------------------------
 
     def delete(self):
-        """Delete selected missions in database"""
+        """
+        Delete selected missions in database
+        :return: Status
+        :rtype: bool
+        """
         results = self.get_results()
         if not results:
             logger.error('No mission with this name')
