@@ -379,8 +379,8 @@ class ContextRequirements:
                             VersionUtils.check_version_requirement(
                                 prodversion, req_prodvers))
 
-                        if inversion and not status:
-                            return True
+                    if inversion and not status:
+                        return True
 
                     if status:
                         return True
