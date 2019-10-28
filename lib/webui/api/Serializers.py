@@ -75,6 +75,16 @@ product = api.model('Product', {
 vuln = api.model('Vuln', {
     'id': fields.Integer(readonly=True, description='The vulnerability unique identifier'),
     'name': fields.String(description='Vulnerability name'),
+    'host_ip': fields.String(description='Host IP address'),
+    'host_hostname': fields.String(description='Hostname'),
+    'service_name': fields.String(description='Service name'),
+    'service_port': fields.Integer(description='Port number'),
+    'service_protocol': ProtocolString(attribute='protocol', description='Protocol (tcp/udp)', default='tcp', enum=['tcp', 'udp']),
+})
+
+checks_category = api.model('ChecksCategory', {
+    'name': fields.String(),
+    'count': fields.Integer(),
 })
 
 service = api.model('Service', {
@@ -99,7 +109,7 @@ service = api.model('Service', {
     'creds_count': fields.Integer(description='Credentials (username & password) count'),
     'users_count': fields.Integer(description='Single usernames count'),
     'vulns_count': fields.Integer(description='Vulnerabilities count'),
-    'checks_categories': fields.List(fields.String()),
+    'checks_categories': fields.List(fields.Nested(checks_category)),
     'host_id': fields.Integer(description='Host identifier'),
     'screenshot': fields.String(description='Web screenshot'),
     'screenshot_thumb': fields.String(description='Web screenshot thumbnail'),
@@ -115,6 +125,10 @@ mission_with_services = api.inherit('Mission with services', mission, {
 
 mission_with_options = api.inherit('Mission with options', mission, {
     'options': fields.List(fields.Nested(option))
+})
+
+mission_with_vulns = api.inherit('Mission with vulns', mission, {
+    'vulns': fields.List(fields.Nested(vuln))
 })
 
 host_with_services = api.inherit('Host with services', host, {

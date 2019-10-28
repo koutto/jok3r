@@ -260,12 +260,21 @@ class Service(Base):
         Note: If only one single check in a category (e.g. recon) has been run for the
         service, it is returned.
         :return: List of categories of checks
-        :rtype: list(str)
+        :rtype: list([str, int])
         """
         categories = list()
         for res in self.results:
-            if res.category not in categories:
-                categories.append(res.category)
+            found = False
+            for cat in categories:
+                if res.category == cat['name']:
+                    cat['count'] += 1
+                    found = True
+                    break
+            if not found:
+                categories.append({
+                    'name': res.category,
+                    'count': 1,
+                })
 
         return categories
 

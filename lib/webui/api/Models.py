@@ -86,3 +86,14 @@ class Service:
                 id=service.id)
             self.screenshot = '{}/large'.format(url)
             self.screenshot_thumb = '{}/thumb'.format(url)
+
+
+class Vuln:
+    def __init__(self, vuln):
+        self.id = vuln.id
+        self.name = vuln.name
+        self.host_ip = vuln.service.host.ip
+        self.host_hostname = vuln.service.host.hostname
+        self.service_name = vuln.service.name
+        self.service_port = vuln.service.port
+        self.service_protocol = vuln.service.protocol

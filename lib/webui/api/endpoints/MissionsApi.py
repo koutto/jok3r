@@ -203,6 +203,33 @@ class MissionWebAPI(Resource):
             raise ApiNoResultFound()
 
 
+@ns.route('/<int:id>/vulns')
+class MissionVulnsAPI(Resource):
+
+    @ns.doc('list_vulns_in_mission')
+    @ns.marshal_with(mission_with_vulns)
+    def get(self, id):
+        """List all Vulns in a mission"""
+        missions_req = MissionsRequester(Session)
+        filter_ = Filter()
+        filter_.add_condition(Condition(id, FilterData.MISSION_ID))
+        missions_req.add_filter(filter_)
+        m = missions_req.get_first_result()   
+        if m:
+            m = Mission(m)
+            vulns_list = list()
+            for host in m.hosts:
+                for svc in host.services:
+                    for vuln in svc.vulns:
+                        vulns_list.append(Vuln(vuln))
+            m.vulns = vulns_list
+            return m
+
+        else:
+            raise ApiNoResultFound()
+
+
+
 @ns.route('/<int:id>/importnmap')
 class MissionNmapAPI(Resource):
 

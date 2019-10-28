@@ -61,6 +61,7 @@ SERVICES TO ADD
 * RPC
     * https://github.com/hegusung/RPCScan.git
 * DNS
+	* DNS Cache Snooping - https://github.com/felmoltor/DNSSnoopDogg
 * LDAP
 * MDNS
     * https://github.com/chadillac/mdns_recon
