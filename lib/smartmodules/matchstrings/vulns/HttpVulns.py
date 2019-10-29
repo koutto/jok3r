@@ -101,6 +101,9 @@ vulns_match['http'] = {
         'coldfusion_locale_traversal[\s\S]*\[\+\].*?FILE:': 'Coldfusion: Path Traversal (CVE-2010-2861)',
         'coldfusion_pwd_props[\s\S]*password\.properties stored in': 'Coldfusion: Path Traversal (CVE-2013-3336)',
     },
+    'nikto': {
+        '"\S+?","\S+?","\S+?","\S+?","\S+?","(?P<m1>.*?)","(?P<m2>.+?)"': '$2 ($1)',
+    },
     'nmap': {
         'VULNERABLE:\s*\n\s*\|\s*(?P<m1>.+?)\s*\n\s*\|\s*State: VULNERABLE\s*\n\s*\|\s*IDs:\s*CVE:(?P<m2>\S+)': '$1 ($2)',
     },
