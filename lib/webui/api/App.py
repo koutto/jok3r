@@ -3,7 +3,12 @@
 ###
 ### Web-UI > API > App main
 ###
+import os
+import uuid
+import json
 from flask import Flask, Blueprint
+from flask_socketio import SocketIO, emit
+from flask_cors import CORS
 
 from lib.db.Session import Session
 from lib.core.Exceptions import ApiException, ApiNoResultFound
@@ -17,7 +22,8 @@ from lib.webui.api.endpoints.VulnsApi import ns as vulns_namespace
 
 app = Flask(__name__, static_url_path="")
 app.url_map.strict_slashes = False
-
+socketio = SocketIO(app, cors_allowed_origins='*')
+CORS(app)
 
 #----------------------------------------------------------------------------------------
 # Exceptions handlers
@@ -69,3 +75,51 @@ def after_request(response):
 @app.teardown_request
 def remove_session(ex=None):
     Session.remove()
+
+
+
+
+
+@socketio.on('connected')
+def connected():
+    print("%s connected" % (request.sid))
+
+
+@socketio.on('disconnect')
+def disconnect():
+    print("%s disconnected" % (request.sid))
+
+
+
+@socketio.on('start-transfer')
+def start_transfer(filename, size):
+    """Process an upload request from the client."""
+    print(filename)
+    _, ext = os.path.splitext(filename)
+    print(filename)
+    if ext not in ['.xml']:
+        return False  # reject the upload
+    id = uuid.uuid4().hex  # server-side filename
+    with open('/tmp/' + id + '.json', 'wt') as f:
+        json.dump({'filename': filename, 'size': size}, f)
+    with open('/tmp/' + id + ext, 'wb') as f:
+        pass
+    print(id + ext)
+    emit('log', {'message': 'Server receiving file {} ...'.format(filename)})
+    return id + ext  # allow the upload
+
+
+@socketio.on('write-chunk')
+def write_chunk(filename, offset, data):
+    """Write a chunk of data sent by the client."""
+    if not os.path.exists('/tmp/' + filename):
+        return False
+    try:
+        with open('/tmp/' + filename, 'r+b') as f:
+            f.seek(offset)
+            f.write(data)
+            print(data)
+            emit('log', {'message': 'File received by server'})
+    except IOError:
+        return False
+    return True
