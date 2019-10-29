@@ -77,6 +77,14 @@ def remove_session(ex=None):
     Session.remove()
 
 
+import time
+def process_nmap_file(filepath): 
+    emit('log', {'message': 'Processing nmap file ...'})
+    time.sleep(2)
+    emit('log', {'message': 'Level 1'})
+    time.sleep(2)
+    emit('log', {'message': 'Level 2'})
+    return
 
 
 
@@ -92,14 +100,22 @@ def disconnect():
 
 
 @socketio.on('start-transfer')
-def start_transfer(filename, size):
+def start_transfer(filename, size, type_transfert):
     """Process an upload request from the client."""
     print(filename)
     _, ext = os.path.splitext(filename)
-    print(filename)
-    if ext not in ['.xml']:
-        return False  # reject the upload
-    id = uuid.uuid4().hex  # server-side filename
+
+    # Check type of transfert and extension, reject upload if not valid
+    if type_transfert == 'nmap':
+        if ext not in ['.xml']:
+            emit('log', {'message': 'Invalid file extension, only Nmap XML results ' \
+                'are authorized. Reject upload.'})
+            return False
+    else:
+        return False
+
+    # Temporary server-side filename
+    id = uuid.uuid4().hex
     with open('/tmp/' + id + '.json', 'wt') as f:
         json.dump({'filename': filename, 'size': size}, f)
     with open('/tmp/' + id + ext, 'wb') as f:
@@ -112,14 +128,29 @@ def start_transfer(filename, size):
 @socketio.on('write-chunk')
 def write_chunk(filename, offset, data):
     """Write a chunk of data sent by the client."""
-    if not os.path.exists('/tmp/' + filename):
+    filepath = '/tmp/' + filename
+    if not os.path.exists(filepath):
         return False
+
     try:
-        with open('/tmp/' + filename, 'r+b') as f:
+        with open(filepath, 'r+b') as f:
             f.seek(offset)
             f.write(data)
             print(data)
-            emit('log', {'message': 'File received by server'})
     except IOError:
         return False
+
     return True
+
+
+@socketio.on('process-file')
+def process_file(type_transfert, filename):
+
+    filepath = '/tmp/' + filename
+    if not os.path.exists(filepath):
+        return False
+
+    if type_transfert == 'nmap':
+        process_nmap_file(filepath)
+    else:
+        return False
