@@ -112,7 +112,7 @@ service = api.model('Service', {
     'comment': fields.String(description='Service comment'),
     #'credentials': fields.List(fields.Nested(credential)),
     'options': fields.List(fields.Nested(option)),
-    #'products': fields.List(fields.Nested(product)),
+    'products': fields.List(fields.Nested(product)),
     #'vulns': fields.List(fields.Nested(vuln)),
     'creds_count': fields.Integer(description='Credentials (username & password) count'),
     'users_count': fields.Integer(description='Single usernames count'),

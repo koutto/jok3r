@@ -62,7 +62,7 @@ class Service:
         self.comment = service.comment
         #self.credentials = service.credentials
         self.options = service.options
-        #self.products = service.products
+        self.products = service.products
         #self.vulns = service.vulns
         self.creds_count = service.get_nb_credentials(single_username=False)
         self.users_count = service.get_nb_credentials(single_username=True)
