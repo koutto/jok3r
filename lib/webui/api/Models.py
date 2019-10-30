@@ -60,10 +60,10 @@ class Service:
         self.html_title = service.html_title
         self.web_technos = service.web_technos
         self.comment = service.comment
-        self.credentials = service.credentials
+        #self.credentials = service.credentials
         self.options = service.options
-        self.products = service.products
-        self.vulns = service.vulns
+        #self.products = service.products
+        #self.vulns = service.vulns
         self.creds_count = service.get_nb_credentials(single_username=False)
         self.users_count = service.get_nb_credentials(single_username=True)
         self.vulns_count = len(service.vulns)

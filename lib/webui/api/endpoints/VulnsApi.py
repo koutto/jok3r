@@ -63,18 +63,19 @@ class VulnAPI(Resource):
             raise ApiNoResultFound()
 
 
-    @ns.doc('delete_service')
+    @ns.doc('delete_vuln')
     def delete(self, id):
-        """Delete a service"""
-        services_req = ServicesRequester(Session)
+        """Delete a vulnerability"""
+        req = VulnsRequester(Session)
         filter_ = Filter()
-        filter_.add_condition(Condition(id, FilterData.SERVICE_ID))
-        services_req.add_filter(filter_)
-        s = services_req.get_first_result()   
-        if s:
-            if services_req.delete():
+        filter_.add_condition(Condition(id, FilterData.VULN_ID))
+        req.add_filter(filter_)
+        v = req.get_first_result()   
+        if v:
+            if req.delete():
                 return None, 201
             else:
-                raise ApiException('An error occured when trying to delete service')
+                raise ApiException('An error occured when trying to delete ' \
+                    'vulnerability')
         else:
             raise ApiNoResultFound()     

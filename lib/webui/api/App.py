@@ -121,7 +121,6 @@ def start_transfer(filename, size, type_transfert):
     with open('/tmp/' + id + ext, 'wb') as f:
         pass
     print(id + ext)
-    emit('log', {'message': 'Server receiving file {} ...'.format(filename)})
     return id + ext  # allow the upload
 
 
@@ -145,7 +144,7 @@ def write_chunk(filename, offset, data):
 
 @socketio.on('process-file')
 def process_file(type_transfert, filename):
-
+    emit('log', {'message': 'Server received file {} ...'.format(filename)})
     filepath = '/tmp/' + filename
     if not os.path.exists(filepath):
         return False
