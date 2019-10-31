@@ -105,7 +105,11 @@ vulns_match['http'] = {
         'coldfusion_pwd_props[\s\S]*password\.properties stored in': 'Coldfusion: Path Traversal (CVE-2013-3336)',
     },
     'nikto': {
-        '"\S+?","\S+?","\S+?","\S+?","\S+?","(?P<m1>.*?)","(?P<m2>.+?)"': '$2 ($1)',
+        # Remove unrelevant vulnerabilities
+        '^"\S+?","\S+?","\S+?","\S+?","\S+?",' 
+        '"(?P<m1>(?!/nikto-updates).*?)",'
+        '"(?P<m2>(?!The anti-clickjacking|The X-XSS-Protection|The site uses SSL and Expect-CT header)'
+        '.+?)"$': '$2 ($1)',
     },
     'nmap': {
         'VULNERABLE:\s*\n\s*\|\s*(?P<m1>.+?)\s*\n\s*\|\s*State: VULNERABLE\s*\n\s*\|\s*IDs:\s*CVE:(?P<m2>\S+)': '$1 ($2)',
