@@ -14,6 +14,7 @@ from lib.core.Config import *
 from lib.core.Constants import *
 from lib.core.Exceptions import FilterException
 from lib.core.Target import Target
+from lib.importer.ListImporter import ListImporter
 from lib.importer.NmapResultsParser import NmapResultsParser
 from lib.importer.ShodanResultsParser import ShodanResultsParser
 from lib.utils.ArgParseUtils import *
@@ -1354,8 +1355,8 @@ class DbController(cmd2.Cmd):
     def do_file(self, args):
         """Import a list of targets from a file into current mission scope"""
         print()
-        req = ServicesRequester(self.sqlsess)
-        req.select_mission(self.current_mission)
+        # req = ServicesRequester(self.sqlsess)
+        # req.select_mission(self.current_mission)
 
         # Check file
         file = os.path.expanduser(args.file[0])
@@ -1365,66 +1366,26 @@ class DbController(cmd2.Cmd):
 
         logger.info('Importing targets from the file "{file}"'.format(file=file))
 
-        # Parse file
-        f = open(file, 'r').read().splitlines()
+        # Read file content
+        file_content = open(file, 'r').read()
 
-        if len(f) == 0:
+        if len(file_content) == 0:
             logger.warning('File is empty')
             return
 
-        # Process all lines
-        i = 1
-        for l in f:
-            if i > 1:
-                print()
-            logger.info('Processing line [{i}/{total}]: "{line}" ...'.format(
-                i=i, total=len(f), line=l))
-            i += 1
-
-            # For line with syntax: <IP/HOST>:<PORT>,<SERVICE>
-            if ',' in l:
-                ip_port, service = l.split(',', maxsplit=1)
-                if not self.settings.services.is_service_supported(service, multi=False):
-                    logger.error('Service {name} is not valid/supported. ' \
-                        'Line skipped'.format(name=service.lower()))
-                    continue
-
-                ip, port = ip_port.split(':', maxsplit=1)
-                if not NetUtils.is_valid_port(port):
-                    logger.error('Port is invalid, not in range [0-65535]. ' \
-                        'Line skipped')
-                    continue
-
-                # Add the service in current mission scope
-                up = req.add_service(
-                    ip, 
-                    port, 
-                    self.settings.services.get_protocol(service),
-                    service, 
-                    self.settings.services,
-                    nmap_banner_grabbing=not args.no_nmap_banner,
-                    reverse_dns_lookup=not args.no_dns_reverse, 
-                    availability_check=True,
-                    html_title_grabbing=True,
-                    web_technos_detection=True)
-
-            # For line with syntax: <URL>
-            elif l.lower().startswith('http://') or l.lower().startswith('https://'):
-
-                if not WebUtils.is_valid_url(l):
-                    logger.error('URL is invalid')
-                else:
-                    # Add the URL in current mission scope
-                    req.add_url(l,
-                                self.settings.services,
-                                reverse_dns_lookup=not args.no_dns_reverse,
-                                availability_check=True,
-                                nmap_banner_grabbing=not args.no_nmap_banner,
-                                html_title_grabbing=True,
-                                web_technos_detection=True)
-
-            else:
-                logger.error('Incorrect syntax, line skipped')
+        # Parse file content and import target services
+        importer = ListImporter(
+            file_content,
+            self.settings.services,
+            self.sqlsess,
+            self.current_mission
+        )
+        importer.run(
+            reverse_dns_lookup=not args.no_dns_reverse,
+            html_title_grabbing=True,
+            nmap_banner_grabbing=not args.no_nmap_banner,
+            web_technos_detection=True
+        )
 
         print()
 
