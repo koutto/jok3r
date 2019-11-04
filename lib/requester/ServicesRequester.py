@@ -171,7 +171,7 @@ class ServicesRequester(Requester):
                     service.host = matching_host
                 else:
                     mission = self.sqlsess.query(Mission)\
-                                  .filter(Mission.name == self.current_mission).first()
+                        .filter(Mission.name == self.current_mission).first()
                     new_host.mission = mission
                     service.host = new_host
                     self.sqlsess.add(new_host)
