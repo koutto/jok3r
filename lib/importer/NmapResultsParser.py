@@ -17,11 +17,16 @@ from lib.db.Option import Option
 from lib.db.Service import Service, Protocol
 from lib.output.Logger import logger
 from lib.output.Output import Output
+from lib.webui.api.WebsocketCallable import WebsocketCallable
 
 
-class NmapResultsParser:
+class NmapResultsParser(WebsocketCallable):
 
-    def __init__(self, nmap_file, services_config):
+    def __init__(self, 
+                 nmap_file, 
+                 services_config, 
+                 called_from_websocket=False, 
+                 alt_filename=''):
         """
         Initialize Nmap Parser from results file.
 
@@ -30,6 +35,10 @@ class NmapResultsParser:
         """
         self.nmap_file = nmap_file
         self.services_config = services_config
+        self.filename_log = \
+            FileUtils.extract_filename(self.nmap_file) if not alt_filename \
+            else alt_filename
+        super().__init__(called_from_websocket, 'log-import-nmap')
 
 
     #------------------------------------------------------------------------------------
@@ -57,7 +66,10 @@ class NmapResultsParser:
         try:
             nmap_report = NmapParser.parse_fromfile(self.nmap_file)
         except Exception as e:
-            logger.error('Error when parsing the Nmap file: {0}'.format(e))
+            self.log(
+                'error', 
+                'Error when parsing the Nmap file: {0}'.format(e)
+            )
             return None
 
         results = list()
@@ -95,13 +107,16 @@ class NmapResultsParser:
                         mac=h.mac,
                         vendor=h.vendor,
                         type=device_type)
-            logger.info('[File {file} | Host {current_host}/{total_host}] ' \
+            self.log(
+                'info', 
+                '[File {file}] [Host {current_host}/{total_host}] ' \
                 'Parsing host: {ip}{hostname} ...'.format(
-                    file=FileUtils.extract_filename(self.nmap_file),
+                    file=self.filename_log,
                     current_host=host_id,
                     total_host=len(nmap_report.hosts),
                     ip=host.ip, 
-                    hostname=' ('+host.hostname+')' if host.hostname != host.ip else ''))
+                    hostname=' ('+host.hostname+')' if host.hostname != host.ip else '')
+            )
 
             # Loop over open ports
             port_id = 0
@@ -115,10 +130,12 @@ class NmapResultsParser:
 
                 # Print current processed service
                 print()
-                logger.info('[File {file} | Host {current_host}/{total_host} | ' \
+                self.log(
+                    'info', 
+                    '[File {file}] [Host {current_host}/{total_host} | ' \
                     'Service {current_svc}/{total_svc}] Parsing service: ' \
                     'host {ip} | port {port}/{proto} | service {service} ...'.format(
-                        file=FileUtils.extract_filename(self.nmap_file),
+                        file=self.filename_log,
                         current_host=host_id,
                         total_host=len(nmap_report.hosts),
                         current_svc=port_id,
@@ -126,7 +143,8 @@ class NmapResultsParser:
                         ip=h.ipv4, 
                         port=s.port, 
                         proto=s.protocol, 
-                        service=name))
+                        service=name)
+                )
 
                 # Get URL for http services
                 if name == 'http':
@@ -146,15 +164,27 @@ class NmapResultsParser:
 
                     url = WebUtils.is_returning_http_data(host.ip, s.port)
                     if url:
-                        logger.success('{url} seems to return HTTP data, marking it ' \
-                            'as http service'.format(url=url))
+                        self.log(
+                            'success', 
+                            '[File {file}] {url} seems to return ' \
+                            'HTTP data, marking it as http service'.format(
+                                file=self.filename_log,
+                                url=url)
+                        )
                         name = 'http'
 
                 # Only keep services supported by Jok3r
                 if not self.services_config.is_service_supported(name, multi=False):
-                    logger.warning('Service not supported: host {ip} | port ' \
-                        '{port}/{proto} | service {service}'.format(
-                            ip = h.ipv4, port=s.port, proto=s.protocol, service=name))
+                    self.log(
+                        'warning', 
+                        '[File {file}] Service not supported: ' \
+                        'host {ip} | port {port}/{proto} | service {service}'.format(
+                            file=self.filename_log,
+                            ip = h.ipv4, 
+                            port=s.port, 
+                            proto=s.protocol, 
+                            service=name)
+                    )
                     continue
 
                 # # Deduce OS from banner if possible
@@ -197,7 +227,11 @@ class NmapResultsParser:
                     web_technos_detection=web_technos_detection, # Default: True
                     smart_context_initialize=True)
                 if not up:
-                    logger.warning('Service not reachable')
+                    self.log(
+                        'warning', 
+                        '[File {file}] Service not reachable'.format(
+                            file=self.filename_log)
+                    )
 
             if host.services:
                 results.append(host)
