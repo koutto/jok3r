@@ -131,7 +131,7 @@ class AttackScope:
             # - Web technologies detection: always
             # - Context initialization via SmartStart: always
             if len(self.targets) > 1:
-                reachable = target.smart_check(
+                reachable, _ = target.smart_check(
                     reverse_dns_lookup=(self.arguments.args.reverse_dns == 'on'), 
                     availability_check=True, 
                     nmap_banner_grabbing=(self.arguments.args.nmap_banner_grab == 'on'),

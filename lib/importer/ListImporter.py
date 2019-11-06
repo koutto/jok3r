@@ -59,11 +59,10 @@ class ListImporter(WebsocketCallable):
         :rtype: None
         """
         lines = self.list_targets.splitlines()
+        nb_new_services = 0
 
         if len(lines) == 0:
-            self.log(
-                'warning', 
-                'List is empty, nothing to import')
+            self.log('warning', 'List is empty, nothing to import')
             return
 
         # Process all lines
@@ -77,14 +76,40 @@ class ListImporter(WebsocketCallable):
                     i=i, total=len(lines), line=l))
             i += 1
 
-            # For line with syntax: <IP/HOST>:<PORT>,<SERVICE>
-            if ',' in l:
-                ip_port, service = l.split(',', maxsplit=1)
-                if not self.services_config.is_service_supported(service, multi=False):
+            # For line with syntax: <URL>
+            if l.lower().startswith('http://') or l.lower().startswith('https://'):
+
+                if not WebUtils.is_valid_url(l):
                     self.log(
                         'error', 
-                        'Service {name} is not valid/supported, ' \
-                        'line skipped'.format(name=service.lower()))
+                        'URL is invalid, line skipped.')
+                else:
+                    # Add the URL in current mission scope
+                    service, reason = self.req.add_url(
+                        l,
+                        self.services_config,
+                        reverse_dns_lookup=reverse_dns_lookup,
+                        availability_check=not nmap_banner_grabbing,
+                        nmap_banner_grabbing=nmap_banner_grabbing,
+                        html_title_grabbing=html_title_grabbing,
+                        web_technos_detection=web_technos_detection)
+
+            # For line with syntax: <IP/HOST>:<PORT>[,<SERVICE>]
+            else:
+                if ',' in l:
+                    ip_port, service = l.split(',', maxsplit=1)
+                    if not self.services_config.is_service_supported(service, multi=False):
+                        self.log(
+                            'error', 
+                            'Service {name} is not valid/supported, ' \
+                            'line skipped'.format(name=service.lower()))
+                        continue
+                elif ':' in l:
+                    ip_port = l
+                    service = '' # service unspecified, should be determined
+                                 # in Target.smart_check() if possible
+                else:
+                    self.log('error', 'Incorrect syntax, line skipped')
                     continue
 
                 ip, port = ip_port.split(':', maxsplit=1)
@@ -95,7 +120,7 @@ class ListImporter(WebsocketCallable):
                     continue
 
                 # Add the service in current mission scope
-                status = self.req.add_service(
+                service, reason = self.req.add_service(
                     ip, 
                     port, 
                     self.services_config.get_protocol(service),
@@ -107,47 +132,24 @@ class ListImporter(WebsocketCallable):
                     html_title_grabbing=html_title_grabbing,
                     web_technos_detection=web_technos_detection)
 
-                if not status:
-                    self.log(
-                        'error', 
-                        'Service {line} not added (already present in ' \
-                        'database or not reachable !'.format(line=l))
-                else:
-                    self.log(
-                        'success', 
-                        'Service {line} added in database'.format(line=l))
 
-            # For line with syntax: <URL>
-            elif l.lower().startswith('http://') or l.lower().startswith('https://'):
-
-                if not WebUtils.is_valid_url(l):
-                    self.log(
-                        'error', 
-                        'URL is invalid, line skipped.')
-                else:
-                    # Add the URL in current mission scope
-                    status = self.req.add_url(
-                        l,
-                        self.services_config,
-                        reverse_dns_lookup=reverse_dns_lookup,
-                        availability_check=not nmap_banner_grabbing,
-                        nmap_banner_grabbing=nmap_banner_grabbing,
-                        html_title_grabbing=html_title_grabbing,
-                        web_technos_detection=web_technos_detection)
-
-                    if not status:
-                        self.log(
-                            'error',
-                            '{line} not added (already present in ' \
-                            'database or not reachable)'.format(line=l))
-                    else:
-                        self.log(
-                            'success', 
-                            '{line} added in database'.format(line=l))
-
+            # Handle errors/success
+            if not service:
+                if reason == 'target-init-error':
+                    self.logweb('error', 'Error during target initialization')
+                elif reason == 'service-existing':
+                    self.logweb('warning', 'Service is already present in database')
+                elif reason == 'no-ip':
+                    self.logweb('error', 'DNS lookup failed (cannot resolve to an IP)')
+                elif reason == 'unreachable':
+                    self.logweb('error', 'Service is unreachable, skipped')
+                elif reason == 'unsupported':
+                    self.logweb('warning', 'Service is unsupported, skipped')
+                elif reason == 'unspecified-service':
+                    self.logweb('error', 'Cannot determine service (should re-run with ' \
+                        'Nmap service detection enabled)')
             else:
-                self.log(
-                    'error', 
-                    'Incorrect syntax, line skipped')
+                self.logweb('success', 'Service {line} added in database'.format(line=l))
+                nb_new_services += 1
 
-        return
+        return nb_new_services

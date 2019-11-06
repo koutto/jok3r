@@ -66,10 +66,7 @@ class NmapResultsParser(WebsocketCallable):
         try:
             nmap_report = NmapParser.parse_fromfile(self.nmap_file)
         except Exception as e:
-            self.log(
-                'error', 
-                'Error when parsing the Nmap file: {0}'.format(e)
-            )
+            self.log('error', 'Error when parsing the Nmap file: {0}'.format(e))
             return None
 
         results = list()
@@ -219,19 +216,16 @@ class NmapResultsParser(WebsocketCallable):
                 # - Initialize the context of the target via SmartModules, based on the
                 #   information already known (i.e. banner, web technologies...)
                 target = Target(service, self.services_config)
-                up = target.smart_check(
+                status, _ = target.smart_check(
                     reverse_dns_lookup=False, # Done by Nmap 
                     availability_check=False, # Done by Nmap
                     nmap_banner_grabbing=nmap_banner_grabbing, # Default: False
                     html_title_grabbing=html_title_grabbing,
                     web_technos_detection=web_technos_detection, # Default: True
                     smart_context_initialize=True)
-                if not up:
-                    self.log(
-                        'warning', 
-                        '[File {file}] Service not reachable'.format(
-                            file=self.filename_log)
-                    )
+                if not status:
+                    self.log('warning', '[File {file}] Service not reachable'.format(
+                            file=self.filename_log))
 
             if host.services:
                 results.append(host)

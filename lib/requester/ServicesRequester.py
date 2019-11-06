@@ -114,8 +114,16 @@ class ServicesRequester(Requester):
         :param bool html_title_grabbing: If set to True, grab HTML title and HTTP headers
         :param bool web_technos_detection: If set to True, try to detect web technos
 
-        :return: Status
-        :rtype: bool
+        :return: New service, Reason of fail if problem occurs
+            Possible reasons:
+                - target-init-error
+                - service-existing
+                - no-ip
+                - unreachable
+                - unsupported
+                - unspecified-service
+                - ok
+        :rtype: Service, str
         """
         proto = {'tcp': Protocol.TCP, 'udp': Protocol.UDP}.get(protocol, Protocol.TCP)
 
@@ -128,7 +136,7 @@ class ServicesRequester(Requester):
             target = Target(service, services_config)
         except Exception as e:
             logger.error(e)
-            return False
+            return None, 'target-init-error'
 
         matching_service = self.sqlsess.query(Service).join(Host).join(Mission)\
                                 .filter(Mission.name == self.current_mission)\
@@ -138,11 +146,11 @@ class ServicesRequester(Requester):
 
         if matching_service:
             logger.warning('Service already present into database')
-            return False
+            return None, 'service-existing'
 
         else:
 
-            up = target.smart_check(
+            status, reason = target.smart_check(
                 reverse_dns_lookup, 
                 availability_check, 
                 nmap_banner_grabbing,
@@ -150,7 +158,7 @@ class ServicesRequester(Requester):
                 web_technos_detection,
                 smart_context_initialize=True)
 
-            if up:
+            if status:
                 # Add service in db (and host if not existing)
                 matching_host = self.sqlsess.query(Host).join(Mission)\
                                     .filter(Mission.name == self.current_mission)\
@@ -185,11 +193,20 @@ class ServicesRequester(Requester):
                         port=port, 
                         proto=protocol, 
                         service=service.name))
-                return True
+                return service, 'ok'
 
             else:
-                logger.error('Service is not reachable, therefore it is not added')
-                return False
+                if reason == 'no-ip':
+                    logger.error('Cannot resolve to an IP address, service not added')
+                elif reason == 'unreachable':
+                    logger.error('Service is unreachable, therefore it is not added')
+                elif reason == 'unsupported':
+                    logger.error('Service is unsupported, therefore it is not added')
+                elif reason == 'unspecified-service':
+                    logger.error('Service is unspecified, and it cannot be ' \
+                        'automatically determined')
+
+                return None, reason
 
 
     #------------------------------------------------------------------------------------
@@ -213,8 +230,16 @@ class ServicesRequester(Requester):
         :param bool html_title_grabbing: If set to True, grab HTML title and HTTP headers
         :param bool web_technos_detection: If set to True, try to detect web technos
 
-        :return: Status
-        :rtype: bool
+        :return: New Service, Reason of fail if problem occurs
+            Possible reasons:
+                - target-init-error
+                - service-existing
+                - no-ip
+                - unreachable
+                - unsupported
+                - unspecified-service
+                - ok
+        :rtype: Service, str
         """
         matching_service = self.sqlsess.query(Service).join(Host).join(Mission)\
             .filter(Mission.name == self.current_mission)\
@@ -223,7 +248,7 @@ class ServicesRequester(Requester):
 
         if matching_service:
             logger.warning('URL already present into database')
-            return False
+            return None, 'service-existing'
 
         else:
             service = Service(
@@ -235,9 +260,9 @@ class ServicesRequester(Requester):
                 target = Target(service, services_config)
             except Exception as e:
                 logger.error(e)
-                return False
+                return None, 'target-init-error'
 
-            up = target.smart_check(
+            status, reason = target.smart_check(
                 reverse_dns_lookup, 
                 availability_check, 
                 nmap_banner_grabbing,
@@ -245,7 +270,7 @@ class ServicesRequester(Requester):
                 web_technos_detection,
                 smart_context_initialize=True)
 
-            if up:
+            if status:
                 matching_host = self.sqlsess.query(Host).join(Mission)\
                                             .filter(Mission.name == self.current_mission)\
                                             .filter(Host.ip == service.host.ip).first()
@@ -273,11 +298,15 @@ class ServicesRequester(Requester):
                 self.sqlsess.add(service)
                 self.sqlsess.commit()
                 logger.success('Service/URL added: {url}'.format(url=url))
-                return True
+                return service, 'ok'
 
             else:
-                logger.error('URL is not reachable, therefore it is not added')
-                return False
+                if reason == 'no-ip':
+                    logger.error('Cannot resolve to an IP address, service not added')
+                elif reason == 'unreachable':
+                    logger.error('URL is not reachable, therefore it is not added')
+
+                return None, reason
 
 
     #------------------------------------------------------------------------------------

@@ -218,10 +218,10 @@ class ShodanResultsParser:
                     # - Perform web technologies detection: We could use the technologies
                     #   returned by Shodan API in host['data'][id]['http']['components'],
                     #   however it does not detect the version if it is possible
-                    # - Initialize the context of the target via SmartModules, based on the
-                    #   information already known (i.e. banner, web technologies...)
+                    # - Initialize the context of the target via SmartModules, based on
+                    #   the information already known (i.e. banner, web technologies...)
                     target = Target(service, self.services_config)
-                    up = target.smart_check(
+                    status, _ = target.smart_check(
                         reverse_dns_lookup=False, # Done by Shodan
                         availability_check=True, # Check if service is still reachable
                         nmap_banner_grabbing=False, # Done by Shodan
@@ -231,7 +231,7 @@ class ShodanResultsParser:
                         # TODO: Add an option to disable web technos detections by Jok3r
                         # and only use technos names returned by Shodan (to speed up import
                         # if needed)
-                    if not up:
+                    if not status:
                         logger.warning('Service not reachable')
 
             if host.services:

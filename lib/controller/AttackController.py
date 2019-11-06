@@ -122,7 +122,7 @@ class AttackController(Controller):
         # - HTML title grabbing: always
         # - Web technologies detection: always
         # - Context initialization via SmartStart: always
-        reachable = target.smart_check(
+        reachable, _ = target.smart_check(
             reverse_dns_lookup=(args.reverse_dns is None or args.reverse_dns == 'on'),
             availability_check=True, 
             nmap_banner_grabbing=(args.nmap_banner_grab is None \
