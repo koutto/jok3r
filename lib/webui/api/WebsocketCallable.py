@@ -24,11 +24,10 @@ class WebsocketCallable:
 
 
     def log(self, type, message):
-        if self.called_from_websocket:
-            emit(self.log_label, {
-                'type': type,
-                'message': message
-            })
+        """
+        Log both in stdout and via websocket emit
+        """
+        self.logweb(type, message)
 
         if   type == 'info':    logger.info(message)
         elif type == 'error':   logger.error(message)
@@ -36,3 +35,14 @@ class WebsocketCallable:
         elif type == 'warning': logger.warning(message)
         return 
 
+
+    def logweb(self, type, message):
+        """
+        Log only via websocket emit
+        """
+        if self.called_from_websocket:
+            emit(self.log_label, {
+                'type': type,
+                'message': message
+            })
+        return 
