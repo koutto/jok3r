@@ -1,0 +1,33 @@
+
+
+
+    "Outlook Web Access": {
+        "headers": {
+          "X-OWA-Version": "([\\d.]+)\\;version:\\1",
+          "X-OWA-DiagnosticsInfo": "",
+          "X-OWA-MinimumSupportedOWSVersion": "",
+          "X-OWA-OWSVersion": ""
+        },
+        "script": [
+          ".*/([\\d.]+)/scripts/microsoft.owa\\S*.js\\;version:\\1",
+          ".*/([\\d.]+)/scripts/owa.mail.js\\;version:\\1"
+        ]
+    },
+
+    "Weblogic Server": {
+      "cats": [
+        22
+      ],
+      "headers": {
+        "Server": "WebLogic Server(?: ([\\d.]+))?\\;version:\\1"
+      }
+    },
+
+    "Websphere Application Server": {
+      "cats": [
+        22
+      ],
+      "headers": {
+        "Server": "WebSphere Application Server(?:/([\\d.]+))?\\;version:\\1"
+      }
+    }
