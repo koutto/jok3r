@@ -63,10 +63,15 @@ class ProductsRequester(Requester):
     #------------------------------------------------------------------------------------
 
     def delete(self):
-        """Delete selected products"""
+        """
+        Delete selected products
+        :return: Status
+        :rtype: bool
+        """
         results = self.get_results()
         if not results:
             logger.error('No matching product')
+            return False
         else:
             for r in results:
                 logger.info('Product deleted: {type}={name}{version} for ' \
@@ -83,6 +88,7 @@ class ProductsRequester(Requester):
                 self.sqlsess.delete(r)
 
             self.sqlsess.commit()
+            return True
 
 
     #------------------------------------------------------------------------------------

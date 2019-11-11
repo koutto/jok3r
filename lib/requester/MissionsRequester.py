@@ -67,21 +67,24 @@ class MissionsRequester(Requester):
 
     #------------------------------------------------------------------------------------
 
-    def add(self, name):
+    def add(self, name, comment=''):
         """
         Add new mission.
         :param str name: Name of the mission to add
+        :return: Newly created mission
+        :rtype: Mission|None
         """
         mission = self.sqlsess.query(Mission).filter(Mission.name == name).first()
         if mission:
             logger.warning('A mission named "{name}" already exists'.format(
                 name=mission.name))
-            return False
+            return None
         else:
-            self.sqlsess.add(Mission(name=name))
+            new_mission = Mission(name=name, comment=comment)
+            self.sqlsess.add(new_mission)
             self.sqlsess.commit()
             logger.success('Mission "{name}" successfully added'.format(name=name))
-            return True
+            return new_mission
 
 
     #------------------------------------------------------------------------------------

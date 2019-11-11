@@ -190,6 +190,21 @@ class Service(Base):
 
 
     @hybrid_method
+    def get_options_no_encrypt(self):
+        """
+        Get all options related to the service, except options related to 
+        encryption (https, ftps...)
+        :return: List of Specific options
+        :rtype: list(Option)
+        """
+        res = list()
+        for opt in self.options:
+            if opt.name not in OPTIONS_ENCRYTPED_PROTO:
+                res.append(opt)
+        return res
+
+
+    @hybrid_method
     def get_product(self, product_type):
         """
         Get product corresponding to given product type.

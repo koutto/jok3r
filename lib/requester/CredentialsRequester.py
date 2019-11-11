@@ -75,6 +75,8 @@ class CredentialsRequester(Requester):
         :param str username: Username
         :param str password: Password (None if unknown)
         :param str auth_type: Authentication type for HTTP service
+        :return: Newly created credential
+        :rtype: Credential|None
         """
         cred = self.sqlsess.query(Credential).join(Service)\
                            .filter(Service.id == service_id)\
@@ -83,12 +85,14 @@ class CredentialsRequester(Requester):
                            .filter(Credential.type == auth_type).first()
         if cred:
             logger.warning('Credential already exists in database')
+            return None
         else:
 
             service = self.sqlsess.query(Service).filter(Service.id == service_id)\
                                   .first()
             if not service:
                 logger.error('Service id {id} is invalid'.format(id=service_id))
+                return None
             else:
 
                 # Check if username already in database
@@ -137,9 +141,43 @@ class CredentialsRequester(Requester):
                     proto     = protocol))
 
                 self.sqlsess.commit()
+                return cred
 
 
     #------------------------------------------------------------------------------------
+
+    def edit_cred(self, username, password, comment, auth_type=None):
+        """
+        Edit selected credentials.
+        :param str username: Username of new credential to add
+        :param str password: Password of new credential to add (can be None)
+        :param str comment: Comment of new credential of add (can be None)
+        :param str auth_type: For HTTP, type of credential (can be None)
+        :return: Edited credential
+        :rtype: Credential|None
+        """
+        results = self.get_results()
+        if not results:
+            logger.error('No matching credential')
+            return None
+        elif len(results) > 1:
+            logger.error('Matching with more than 1 credential')
+            return None
+        else:
+            if username is None:
+                logger.error('Username cannot be None')
+                return None
+
+            cred = results[0]
+            cred.username = username
+            cred.password = password
+            cred.comment = comment
+            cred.auth_type = auth_type if cred.service.name == 'http' else None
+
+            self.sqlsess.commit()
+            logger.success('Credential edited')
+            return cred
+
 
     def edit_comment(self, comment):
         """
@@ -157,10 +195,15 @@ class CredentialsRequester(Requester):
 
 
     def delete(self):
-        """Delete selected credentials"""
+        """
+        Delete selected credentials
+        :return: Status
+        :rtype: bool
+        """
         results = self.get_results()
         if not results:
             logger.error('No matching credential')
+            return False
         else:
             for r in results:
                 logger.info('Credential {username}/{password} from host={ip} ' \
@@ -176,6 +219,7 @@ class CredentialsRequester(Requester):
                 self.sqlsess.delete(r)
 
             self.sqlsess.commit()
+            return True
 
 
     #------------------------------------------------------------------------------------

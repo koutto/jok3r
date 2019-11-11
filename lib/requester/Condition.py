@@ -75,8 +75,10 @@ class Condition:
             FilterData.COMMAND_OUTPUT  : self.__translate_command_output,
             FilterData.VULN_ID         : self.__translate_vuln_id,
             FilterData.VULN            : self.__translate_vuln,
+            FilterData.CREDENTIAL_ID   : self.__translate_credential_id,
             FilterData.OPTION_NAME     : self.__translate_option_name,
             FilterData.OPTION_VALUE    : self.__translate_option_value,
+            FilterData.PRODUCT_ID      : self.__translate_product_id,
             FilterData.PRODUCT_TYPE    : self.__translate_product_type,
             FilterData.PRODUCT_NAME    : self.__translate_product_name,
             FilterData.PRODUCT_VERSION : self.__translate_product_version,
@@ -309,6 +311,11 @@ class Condition:
         return (Vuln.name.ilike('%'+str(value)+'%'))
 
 
+    def __translate_credential_id(self, value):
+        """Translate cred id into filter"""
+        return (Credential.id == int(value))
+
+
     def __translate_option_name(self, value):
         """Translate specific option name into LIKE filter"""
         return (Option.name.ilike('%'+str(value)+'%'))
@@ -322,6 +329,11 @@ class Condition:
     def __translate_product_type(self, value):
         """Translate product type into LIKE filter"""
         return (Product.type.ilike('%'+str(value)+'%'))
+
+
+    def __translate_product_id(self, value):
+        """Translate product id into filter"""
+        return (Product.id == int(value))
 
 
     def __translate_product_name(self, value):
