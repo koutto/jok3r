@@ -58,13 +58,19 @@ host = api.model('Host', {
     'mission_id': fields.Integer(description='Mission identifier'),
 })
 
-
 credential = api.model('Credential', {
     'id': fields.Integer(readonly=True, description='The credential unique identifier'),
     'type': fields.String(description='Credential type'),
     'username': fields.String(description='Username'),
     'password': fields.String(description='Password'),
-    'comment': fields.String(description='Credential comment'), 
+    'comment': fields.String(description='Credential comment'),
+    'host_ip': fields.String(description='Host IP address'),
+    'host_hostname': fields.String(description='Hostname'),
+    'service_id': fields.Integer(description='Service identifier'),
+    'service_name': fields.String(description='Service name'),
+    'service_port': fields.Integer(description='Port number'),
+    'service_protocol': ProtocolString(attribute='protocol', description='Protocol (tcp/udp)', default='tcp', enum=['tcp', 'udp']),
+    'service_url': fields.String(description='Service URL'),
 })
 
 option = api.model('Option', {
@@ -75,19 +81,28 @@ option = api.model('Option', {
 
 product = api.model('Product', {
     'id': fields.Integer(readonly=True, description='The product unique identifier'),
-    'type': fields.String(description='Product type'),
-    'name': fields.String(description='Product name'),
-    'version': fields.String(description='Product version'), 
+    'product_type': fields.String(description='Product type'),
+    'product_name': fields.String(description='Product name'),
+    'product_version': fields.String(description='Product version'), 
+    'host_ip': fields.String(description='Host IP address'),
+    'host_hostname': fields.String(description='Hostname'),
+    'service_id': fields.Integer(description='Service identifier'),
+    'service_name': fields.String(description='Service name'),
+    'service_port': fields.Integer(description='Port number'),
+    'service_protocol': ProtocolString(attribute='protocol', description='Protocol (tcp/udp)', default='tcp', enum=['tcp', 'udp']),
+    'service_url': fields.String(description='Service URL'),
 })
 
 vuln = api.model('Vuln', {
     'id': fields.Integer(readonly=True, description='The vulnerability unique identifier'),
-    'name': fields.String(description='Vulnerability name'),
+    'vuln_name': fields.String(description='Vulnerability name'),
     'host_ip': fields.String(description='Host IP address'),
     'host_hostname': fields.String(description='Hostname'),
+    'service_id': fields.Integer(description='Service identifier'),
     'service_name': fields.String(description='Service name'),
     'service_port': fields.Integer(description='Port number'),
     'service_protocol': ProtocolString(attribute='protocol', description='Protocol (tcp/udp)', default='tcp', enum=['tcp', 'udp']),
+    'service_url': fields.String(description='Service URL'),
 })
 
 checks_category = api.model('ChecksCategory', {
@@ -108,6 +123,7 @@ service = api.model('Service', {
     'up': fields.Boolean(description='Status', default=True),
     'banner': fields.String(description='Service banner'),
     'html_title': fields.String(description='HTML title (for HTTP(s))'),
+    'http_headers': fields.String(description='HTTP Headers'),
     'web_technos': fields.String(description='Web technologies (for HTTP(s)) (unused)'),
     'comment': fields.String(description='Service comment'),
     #'credentials': fields.List(fields.Nested(credential)),
@@ -131,8 +147,27 @@ mission_with_services = api.inherit('Mission with services', mission, {
     'services': fields.List(fields.Nested(service))
 })
 
+mission_with_web = api.inherit('Mission with HTTP services', mission, {
+    'services': fields.List(fields.Nested(service)),
+    'screenshots': fields.List(fields.Nested(api.model('Screenshot', {
+        'caption': fields.String(description='Screenshot caption'),
+        'source': fields.Nested(api.model('Screenshot source', {
+            'regular': fields.String(description='Screenshot URL'),
+            'thumbnail': fields.String(description='Screenshot thumbnail URL')
+        }))
+    })))
+})
+
 mission_with_options = api.inherit('Mission with options', mission, {
     'options': fields.List(fields.Nested(option))
+})
+
+mission_with_credentials = api.inherit('Mission with credentials', mission, {
+    'credentials': fields.List(fields.Nested(credential))
+})
+
+mission_with_products = api.inherit('Mission with products', mission, {
+    'products': fields.List(fields.Nested(product))
 })
 
 mission_with_vulns = api.inherit('Mission with vulns', mission, {
@@ -141,4 +176,13 @@ mission_with_vulns = api.inherit('Mission with vulns', mission, {
 
 host_with_services = api.inherit('Host with services', host, {
     'services': fields.List(fields.Nested(service))
+})
+
+
+tool = api.model('Tool', {
+    'tool_name': fields.String(description='Tool name'),
+    'target_service': fields.String(description='Targeted service name'),
+    'is_installed': fields.Boolean(description='Installation status'),
+    'last_update': fields.String(description='Last update date (if installed)'),
+    'description': fields.String(description='Tool description'),
 })

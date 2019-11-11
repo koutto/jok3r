@@ -44,19 +44,20 @@ class VulnAPI(Resource):
     @ns.marshal_with(vuln, code=201)
     def put(self, id):
         """Update a vulnerability"""
+        if 'name' not in request.json:
+            raise ApiException('Vulnerability name must be specified')
+        elif not request.json['name']:
+            raise ApiException('Vulnerability name cannot be empty')
+
         req = VulnsRequester(Session)
         filter_ = Filter()
         filter_.add_condition(Condition(id, FilterData.VULN_ID))
         req.add_filter(filter_)
         v = req.get_first_result()   
         if v:
-            if 'name' in request.json:
-                if len(request.json['name']) == 0:
-                    raise ApiException('Vulnerability cannot be empty')
-                else:
-                    if not req.edit_vuln_name(request.json['name']):
-                        raise ApiException('An error occured when trying to change ' \
-                            'the name of the vulnerability')
+            if not req.edit_vuln_name(request.json['name']):
+                raise ApiException('An error occured when trying to change ' \
+                    'the name of the vulnerability')
 
             return Vuln(v)
         else:

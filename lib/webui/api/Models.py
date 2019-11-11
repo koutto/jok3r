@@ -58,11 +58,12 @@ class Service:
         self.up = service.up
         self.banner = service.banner
         self.html_title = service.html_title
+        self.http_headers = service.http_headers
         self.web_technos = service.web_technos
         self.comment = service.comment
         #self.credentials = service.credentials
-        self.options = service.options
-        self.products = service.products
+        self.options = service.get_options_no_encrypt() # Do not get encrypt options
+        self.products = list(map(lambda x: Product(x), service.products))
         #self.vulns = service.vulns
         self.creds_count = service.get_nb_credentials(single_username=False)
         self.users_count = service.get_nb_credentials(single_username=True)
@@ -80,12 +81,45 @@ class Service:
             self.screenshot_thumb = '{}/thumb'.format(url)
 
 
+class Credential:
+    def __init__(self, credential):
+        self.id = credential.id
+        self.type = credential.type
+        self.username = credential.username
+        self.password = credential.password
+        self.comment = credential.comment
+        self.host_ip = credential.service.host.ip
+        self.host_hostname = credential.service.host.hostname
+        self.service_id = credential.service.id
+        self.service_name = credential.service.name
+        self.service_port = credential.service.port
+        self.service_protocol = credential.service.protocol
+        self.service_url = credential.service.url
+
+
+class Product:
+    def __init__(self, product):
+        self.id = product.id
+        self.product_type = product.type
+        self.product_name = product.name
+        self.product_version = product.version
+        self.host_ip = product.service.host.ip
+        self.host_hostname = product.service.host.hostname
+        self.service_id = product.service.id
+        self.service_name = product.service.name
+        self.service_port = product.service.port
+        self.service_protocol = product.service.protocol
+        self.service_url = product.service.url        
+
+
 class Vuln:
     def __init__(self, vuln):
         self.id = vuln.id
-        self.name = vuln.name
+        self.vuln_name = vuln.name
         self.host_ip = vuln.service.host.ip
         self.host_hostname = vuln.service.host.hostname
+        self.service_id = vuln.service.id
         self.service_name = vuln.service.name
         self.service_port = vuln.service.port
         self.service_protocol = vuln.service.protocol
+        self.service_url = vuln.service.url

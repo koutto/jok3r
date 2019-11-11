@@ -8,6 +8,7 @@ from flask import request
 from flask_restplus import Resource
 
 from lib.db.Session import Session
+from lib.db.Screenshot import ScreenStatus
 from lib.db.Service import Protocol
 from lib.core.Constants import FilterData
 from lib.core.Exceptions import ApiException, ApiNoResultFound
@@ -17,9 +18,10 @@ from lib.requester.Filter import Filter
 from lib.requester.MissionsRequester import MissionsRequester
 from lib.requester.HostsRequester import HostsRequester
 from lib.webui.api.Api import api, settings
-from lib.webui.api.Models import Mission, Host, Service, Vuln
+from lib.webui.api.Models import Mission, Host, Service, Credential, Product, Vuln
 from lib.webui.api.Serializers import mission, host, mission_with_hosts, \
-    mission_with_services, mission_with_options, mission_with_vulns
+    mission_with_services, mission_with_web, mission_with_options, \
+    mission_with_credentials, mission_with_products, mission_with_vulns
 
 ns = api.namespace('missions', description='Operations related to missions')
 
@@ -46,17 +48,18 @@ class MissionListAPI(Resource):
     @ns.marshal_with(mission, code=201)
     def post(self):
         """Create a new mission"""
+        if 'name' not in request.json:
+            raise ApiException('No name has been provided')
+
         name = request.json['name']
         missions_req = MissionsRequester(Session)
-        if missions_req.add(name):
-            filter_ = Filter()
-            filter_.add_condition(Condition(name, FilterData.MISSION_EXACT))
-            missions_req.add_filter(filter_)
-            m = missions_req.get_first_result()
-            if m:
-                return Mission(m)
-            else:
-                raise ApiNoResultFound()
+        new_mission = missions_req.add(
+            name, 
+            request.json['comment'] if 'comment' in request.json else ''
+        )
+            
+        if new_mission:
+            return Mission(new_mission)
         else:
             raise ApiException('A mission with the name "{name}" already exists'.format(
                 name=name))
@@ -180,7 +183,7 @@ class MissionServicesAPI(Resource):
 class MissionWebAPI(Resource):
 
     @ns.doc('list_web_in_mission')
-    @ns.marshal_with(mission_with_services)
+    @ns.marshal_with(mission_with_web)
     def get(self, id):
         """List all HTTP services in a mission"""
         missions_req = MissionsRequester(Session)
@@ -191,11 +194,81 @@ class MissionWebAPI(Resource):
         if m:
             m = Mission(m)
             services_list = list()
+            screenshots_list = list()
             for host in m.hosts:
                 for service in host.services:
                     if service.name == 'http':
                         services_list.append(Service(service))
+                        
+                        if service.screenshot is not None \
+                            and service.screenshot.status == ScreenStatus.OK:
+                            
+                            url = '{base_url}services/{id}/screenshot'.format(
+                                base_url=api.base_url,
+                                id=service.id)
+                            screenshots_list.append({
+                                'caption': '{} | {}'.format(
+                                    service.url, service.html_title),
+                                'source': {
+                                    'regular': '{}/large'.format(url),
+                                    'thumbnail': '{}/thumb'.format(url)
+                                }
+                            })
+
             m.services = services_list
+            m.screenshots = screenshots_list
+            return m
+
+        else:
+            raise ApiNoResultFound()
+
+
+@ns.route('/<int:id>/credentials')
+class MissionCredentialsAPI(Resource):
+
+    @ns.doc('list_credentials_in_mission')
+    @ns.marshal_with(mission_with_credentials)
+    def get(self, id):
+        """List all Credentials in a mission"""
+        missions_req = MissionsRequester(Session)
+        filter_ = Filter()
+        filter_.add_condition(Condition(id, FilterData.MISSION_ID))
+        missions_req.add_filter(filter_)
+        m = missions_req.get_first_result()   
+        if m:
+            m = Mission(m)
+            credentials_list = list()
+            for host in m.hosts:
+                for svc in host.services:
+                    for credential in svc.credentials:
+                        credentials_list.append(Credential(credential))
+            m.credentials = credentials_list
+            return m
+
+        else:
+            raise ApiNoResultFound()
+
+
+@ns.route('/<int:id>/products')
+class MissionProductsAPI(Resource):
+
+    @ns.doc('list_products_in_mission')
+    @ns.marshal_with(mission_with_products)
+    def get(self, id):
+        """List all Products in a mission"""
+        missions_req = MissionsRequester(Session)
+        filter_ = Filter()
+        filter_.add_condition(Condition(id, FilterData.MISSION_ID))
+        missions_req.add_filter(filter_)
+        m = missions_req.get_first_result()   
+        if m:
+            m = Mission(m)
+            products_list = list()
+            for host in m.hosts:
+                for svc in host.services:
+                    for product in svc.products:
+                        products_list.append(Product(product))
+            m.products = products_list
             return m
 
         else:
