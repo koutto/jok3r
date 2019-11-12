@@ -32,6 +32,7 @@ mission = api.model('Mission', {
 })
 
 service_short = api.model('ServiceShort', {
+    'id': fields.Integer(description='Service identifier'),
     'port': fields.Integer(description='Port number'),
     'protocol': fields.String(description='Protocol'),
     'name': fields.String(description='Service name'),

@@ -158,7 +158,7 @@ class Host(Base):
         URLs): in this particular case, the corresponding service is returned only once
         in the list.
         :return: List of services
-        :rtype: list({'port': int, 'protocol': str, 'name': str})
+        :rtype: list({'id': int, port': int, 'protocol': str, 'name': str})
         """
         services = list()
         for svc in self.services:
@@ -169,6 +169,7 @@ class Host(Base):
                     break
             if not found:
                 services.append({
+                    'id': svc.id,
                     'port': svc.port,
                     'protocol': { Protocol.TCP: 'tcp', Protocol.UDP: 'udp' }.get(
                         svc.protocol, 'tcp'),
