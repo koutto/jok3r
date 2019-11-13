@@ -3,6 +3,9 @@
 ###
 ### Web-UI > Backend > Models
 ###
+import ansi2html
+import re
+
 from lib.db.Service import Protocol
 from lib.db.Screenshot import ScreenStatus
 from lib.webui.api.Api import api
@@ -123,3 +126,37 @@ class Vuln:
         self.service_port = vuln.service.port
         self.service_protocol = vuln.service.protocol
         self.service_url = vuln.service.url
+
+
+class CommandOutput:
+    def __init__(self, command_output):
+        self.id = command_output.id
+        self.cmdline = command_output.cmdline
+
+        conv = ansi2html.Ansi2HTMLConverter(
+            inline=True, scheme='solarized', linkify=True)
+        output = conv.convert(command_output.output)
+
+        # Warning: ansi2html generates HTML document with <html>, <style>...
+        # tags. We only keep the content inside <pre> ... </pre>
+        m = re.search('<pre class="ansi2html-content">(?P<output>.*)' \
+            '</pre>\n</body>', output, re.DOTALL)
+        if m:
+            output = m.group('output')
+
+        self.output = output      
+
+class Result:
+    def __init__(self, result):
+        self.id = result.id
+        self.category = result.category
+        self.check = result.check
+        self.command_outputs = list(map(lambda x: CommandOutput(x), result.command_outputs))
+
+
+class ServiceWithAll(Service):
+    def __init__(self, service):
+        super().__init__(service)
+        self.credentials = service.credentials
+        self.vulns = service.vulns
+        self.results = list(map(lambda x: Result(x), service.results))

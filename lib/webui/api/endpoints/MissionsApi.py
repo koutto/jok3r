@@ -23,6 +23,7 @@ from lib.webui.api.Serializers import mission, host, mission_with_hosts, \
     mission_with_services, mission_with_web, mission_with_options, \
     mission_with_credentials, mission_with_products, mission_with_vulns
 
+
 ns = api.namespace('missions', description='Operations related to missions')
 
 
@@ -384,3 +385,6 @@ class MissionNmapAPI(Resource):
 
 #         else:
 #             raise ApiNoResultFound()
+
+
+

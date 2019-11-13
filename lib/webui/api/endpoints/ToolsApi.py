@@ -8,15 +8,8 @@ from flask import request
 from flask_restplus import Resource
 
 from lib.db.Session import Session
-from lib.db.Screenshot import ScreenStatus
-from lib.db.Service import Protocol
 from lib.core.Constants import FilterData
 from lib.core.Exceptions import ApiException, ApiNoResultFound
-from lib.importer.NmapResultsParser import NmapResultsParser
-from lib.requester.Condition import Condition
-from lib.requester.Filter import Filter
-from lib.requester.MissionsRequester import MissionsRequester
-from lib.requester.HostsRequester import HostsRequester
 from lib.webui.api.Api import api, settings
 from lib.webui.api.Serializers import tool
 

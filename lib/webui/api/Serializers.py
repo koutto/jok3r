@@ -140,6 +140,25 @@ service = api.model('Service', {
     'screenshot_thumb': fields.String(description='Web screenshot thumbnail'),
 })
 
+command_output = api.model('Command Output', {
+    'id': fields.Integer(readonly=True, description='The command output unique identifier'),
+    'cmdline': fields.String(description='Command line'),
+    'output': fields.String(description='Command output'),
+})
+
+result = api.model('Result', {
+    'id': fields.Integer(readonly=True, description='The result unique identifier'),
+    'category': fields.String(description='Category name'),
+    'check': fields.String(description='Security check name'),
+    'command_outputs': fields.List(fields.Nested(command_output)),
+})
+
+service_with_all = api.inherit('Service with all related data', service, {
+    'credentials': fields.List(fields.Nested(credential)),
+    'vulns': fields.List(fields.Nested(vuln)),
+    'results': fields.List(fields.Nested(result)),
+})
+
 mission_with_hosts = api.inherit('Mission with hosts', mission, {
     'hosts': fields.List(fields.Nested(host))
 })

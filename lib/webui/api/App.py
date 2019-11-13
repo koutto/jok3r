@@ -17,6 +17,7 @@ from lib.webui.api.endpoints.MissionsApi import ns as missions_namespace
 from lib.webui.api.endpoints.ProductsApi import ns as products_namespace
 from lib.webui.api.endpoints.ServicesApi import ns as services_namespace
 from lib.webui.api.endpoints.VulnsApi import ns as vulns_namespace
+from lib.webui.api.endpoints.ResultsApi import ns as results_namespace
 from lib.webui.api.endpoints.ToolsApi import ns as tools_namespace
 
 
@@ -62,6 +63,7 @@ def initialize_app(flask_app):
     api.add_namespace(credentials_namespace)
     api.add_namespace(products_namespace)
     api.add_namespace(vulns_namespace)
+    api.add_namespace(results_namespace)
     api.add_namespace(tools_namespace)
     flask_app.register_blueprint(blueprint)
 
