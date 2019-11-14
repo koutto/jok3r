@@ -7,6 +7,9 @@ WIG_REGEXP2 = '- Found platform {}(\s*[VERSION])?'
 
 
 products_match['http']['web-language'] = {
+    'AsciiDoc': {
+        'wappalyzer': 'AsciiDoc',
+    },
     'Microsoft/ASP.NET': {
         'wappalyzer': 'Microsoft ASP.NET',
         'wig': [
@@ -16,6 +19,15 @@ products_match['http']['web-language'] = {
     },
     'CFML': {
         'wappalyzer': 'CFML',
+    },
+    'Dart': {
+        'wappalyzer': 'Dart',
+    },
+    'Erlang': {
+        'wappalyzer': 'Erlang',
+    },
+    'Haskell': {
+        'wappalyzer': 'Haskell',
     },
     'Go': {
         'wappalyzer': 'Go',
@@ -42,7 +54,13 @@ products_match['http']['web-language'] = {
     'Python': {
         'wappalyzer': 'Python',
     },
+    'Rdf': {
+        'wappalyzer': 'Rdf',
+    },
     'Ruby': {
         'wappalyzer': 'Ruby',
+    },
+    'Scala': {
+        'wappalyzer': 'Scala',
     },
 }
