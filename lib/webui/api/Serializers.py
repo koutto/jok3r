@@ -150,6 +150,7 @@ result = api.model('Result', {
     'id': fields.Integer(readonly=True, description='The result unique identifier'),
     'category': fields.String(description='Category name'),
     'check': fields.String(description='Security check name'),
+    'check_description': fields.String(description='Description of the check'),
     'command_outputs': fields.List(fields.Nested(command_output)),
 })
 

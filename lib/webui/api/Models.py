@@ -8,7 +8,7 @@ import re
 
 from lib.db.Service import Protocol
 from lib.db.Screenshot import ScreenStatus
-from lib.webui.api.Api import api
+from lib.webui.api.Api import api, settings
 
 class Mission:
     def __init__(self, mission):
@@ -151,6 +151,8 @@ class Result:
         self.id = result.id
         self.category = result.category
         self.check = result.check
+        check = settings.services[result.service.name]['checks'].get_check(self.check)
+        self.check_description = check.description if check else ''
         self.command_outputs = list(map(lambda x: CommandOutput(x), result.command_outputs))
 
 
