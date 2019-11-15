@@ -29,8 +29,6 @@
 /new/openx2/www/admin/index.php
 0.php
 00.php
-0000_007f.php
-000da69e222012bd88fbae0122d66528.php
 001.phpt
 002.php
 002.phpt

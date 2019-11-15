@@ -7,3 +7,5 @@ References for Wordlists used in Jok3r:
 * https://github.com/berzerk0/Probable-Wordlists
 * https://github.com/danielmiessler/SecLists
 * https://github.com/tarraschk/richelieu
+* https://github.com/huntergregal/dir_list
+* https://github.com/pentester-io/commonspeak
