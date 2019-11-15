@@ -3,7 +3,7 @@
 from lib.smartmodules.matchstrings.MatchStrings import products_match
 
 # Match wafw00f 1.0.0
-WAFW00F_REGEXP = r'The site http.* is behind {} WAF\.'
+WAFW00F_REGEXP = r'The site http.* is behind {}'
 
 products_match['http']['web-application-firewall'] = {
     'aeSecure/aeSecure': {
