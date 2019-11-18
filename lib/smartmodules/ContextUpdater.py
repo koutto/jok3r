@@ -174,85 +174,85 @@ class ContextUpdater:
                 type=product.type,
                 name=product.name)
 
-            match_product = self.service.get_product(product.type)
+            match_product = self.service.get_product(product.type, product.name)
 
-            # Same type already present in database
+            # Same type + name already present in database
             if match_product:
-                # Same product name detected
-                if match_product.name == product.name:
+                # # Same product name detected
+                # if match_product.name == product.name:
 
-                    # Version detected
-                    if product.version:
+                # Version detected
+                if product.version:
 
-                        # Version freshly detected
-                        if match_product.version == '':
-                            logger.smartsuccess('Version detected for product ' \
-                                '{product}: {version}'.format(
+                    # Version freshly detected
+                    if match_product.version == '':
+                        logger.smartsuccess('Version detected for product ' \
+                            '{product}: {version}'.format(
+                                product=product_str,
+                                version=product.version))
+                        match_product.version = product.version
+
+                    # Update version if new version is "more accurate" than the 
+                    # one already known
+                    elif match_product.version != product.version:
+                        if VersionUtils.is_version_more_accurate(
+                            old_version=match_product.version, 
+                            new_version=product.version):
+                            logger.smartsuccess('Version for product ' \
+                                '{product} updated: {oldvers} -> {newvers}'.format(
                                     product=product_str,
-                                    version=product.version))
+                                    oldvers=match_product.version,
+                                    newvers=product.version))
                             match_product.version = product.version
-
-                        # Update version if new version is "more accurate" than the 
-                        # one already known
-                        elif match_product.version != product.version:
-                            if VersionUtils.is_version_more_accurate(
-                                old_version=match_product.version, 
-                                new_version=product.version):
-                                logger.smartsuccess('Version for product ' \
-                                    '{product} updated: {oldvers} -> {newvers}'.format(
-                                        product=product_str,
-                                        oldvers=match_product.version,
-                                        newvers=product.version))
-                                match_product.version = product.version
-                            else:
-                                logger.smartinfo('Version detected for product ' \
-                                    '{product}: {newvers}. Not updated in db ' \
-                                    'because less accurate than {oldvers}'.format(
-                                        product=product_str,
-                                        newvers=product.version,
-                                        oldvers=match_product.version))
-
-                        # Version detected is superior (newer version) to the one in 
-                        # db, no update
-                        # elif match_product.version < product.version:
-                        #     logger.smartsuccess('Version for product ' \
-                        #         '{product} detected: {newvers}. Not updated in db ' \
-                        #         'because older version {oldvers} already detected'.format(
-                        #             product=product_str,
-                        #             newvers=product.version,
-                        #             oldvers=match_product.version))
-                        #     match_product.version = product.version
-
-                        # Same version as already detected
                         else:
-                            logger.smartinfo('Product detected: {product} ' \
-                                '{version}. Not updated because already in db'.format(
+                            logger.smartinfo('Version detected for product ' \
+                                '{product}: {newvers}. Not updated in db ' \
+                                'because less accurate than {oldvers}'.format(
                                     product=product_str,
-                                    version=product.version))
+                                    newvers=product.version,
+                                    oldvers=match_product.version))
 
-                    # Version not detected
+                    # Version detected is superior (newer version) to the one in 
+                    # db, no update
+                    # elif match_product.version < product.version:
+                    #     logger.smartsuccess('Version for product ' \
+                    #         '{product} detected: {newvers}. Not updated in db ' \
+                    #         'because older version {oldvers} already detected'.format(
+                    #             product=product_str,
+                    #             newvers=product.version,
+                    #             oldvers=match_product.version))
+                    #     match_product.version = product.version
+
+                    # Same version as already detected
                     else:
-                        logger.smartinfo('Product detected (already in db): ' \
-                            '{product} (version unknown)'.format(product=product_str))
+                        logger.smartinfo('Product detected: {product} ' \
+                            '{version}. Not updated because already in db'.format(
+                                product=product_str,
+                                version=product.version))
 
-                # Different product name detected
+                # Version not detected
                 else:
-                    oldprod = '{name}{vers}'.format(
-                        name=match_product.name, 
-                        vers=' '+match_product.version if match_product.version else '')
-                    newprod = '{name}{vers}'.format(
-                        name=product.name,
-                        vers=' '+product.version if product.version else '')
+                    logger.smartinfo('Product detected (already in db): ' \
+                        '{product}'.format(product=product_str))
 
-                    logger.smartsuccess('Change product {type}: {oldprod} -> ' \
-                        '{newprod}'.format(
-                            type=product.type,
-                            oldprod=oldprod,
-                            newprod=newprod))
-                    match_product.name = product.name
-                    match_product.version = product.version
+                # # Different product name detected
+                # else:
+                #     oldprod = '{name}{vers}'.format(
+                #         name=match_product.name, 
+                #         vers=' '+match_product.version if match_product.version else '')
+                #     newprod = '{name}{vers}'.format(
+                #         name=product.name,
+                #         vers=' '+product.version if product.version else '')
 
-            # Type not present in database
+                #     logger.smartsuccess('Change product {type}: {oldprod} -> ' \
+                #         '{newprod}'.format(
+                #             type=product.type,
+                #             oldprod=oldprod,
+                #             newprod=newprod))
+                #     match_product.name = product.name
+                #     match_product.version = product.version
+
+            # Type + name not present in database
             else:
 
                 logger.smartsuccess('New product detected: {product} {version}'.format(

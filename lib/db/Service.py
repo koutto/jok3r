@@ -145,13 +145,14 @@ class Service(Base):
         """
         Add product to the service.
         Make sure to not add twice the same product.
-        Update value if necessary
+        Update value if necessary.
+        Multiple products for a single product type are supported.
 
         :param Product product: Product object to add
         """
-        matching_product = self.get_product(product.type)
+        matching_product = self.get_product(product.type, product.name)
         if matching_product:
-            matching_product.name = product.name
+            #matching_product.name = product.name
             matching_product.version = product.version
         else:
             self.products.append(product)
@@ -205,15 +206,33 @@ class Service(Base):
 
 
     @hybrid_method
-    def get_product(self, product_type):
+    def get_products(self, product_type):
         """
-        Get product corresponding to given product type.
+        Get list of products corresponding to given product type 
+        (case insensitive match).
         :param str product_type: Product type to look for
-        :return: Product
+        :return: List of Products
+        :rtype: list(Product)
+        """
+        list_products = list()
+        for prod in self.products:
+            if prod.type.lower() == product_type.lower():
+                list_products.append(prod)
+        return list_products
+
+
+    @hybrid_method
+    def get_product(self, product_type, product_name):
+        """
+        Get a product by type and name if existing (case insensitive match).
+        :param str product_type: Product type to look for
+        :param str product_name: Product name to look for
+        :return: Matching Product
         :rtype: Product|None
         """
         for prod in self.products:
-            if prod.type == product_type.lower():
+            if prod.type.lower() == product_type.lower() and \
+               prod.name.lower() == product_name.lower():
                 return prod
         return None
 

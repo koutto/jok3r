@@ -577,30 +577,73 @@ class Command:
         service = target.get_service_name()
         products = self.services_config[service]['products']
 
+        cmd = ''
         for product_type in products:
-            name, version = target.get_product_name_version(product_type)
-            name = name or ''
-            version = version or ''
+            target_products_name_version = target.get_products_name_version(product_type)
+            for name, version in target_products_name_version:
+                name = name or ''
+                version = version or ''
+                # Handle case where name stores vendor name to avoid ambiguity
+                if '/' in name:
+                    vendor, name = name.split('/', maxsplit=1)
+                else:
+                    vendor = ''
 
-            # Handle case where name stores vendor name to avoid ambiguity
-            if '/' in name:
-                vendor, name = name.split('/', maxsplit=1)
-            else:
-                vendor = ''
+                cmd += self.__replace_tag_product(
+                    self.formatted_cmdline,
+                    product_type,
+                    vendor,
+                    name,
+                    version)
+                cmd += '; '
 
-            pattern = re.compile('\['+product_type+'-VENDOR\]', re.IGNORECASE)
-            self.formatted_cmdline = pattern.sub(vendor, self.formatted_cmdline)
-
-            pattern = re.compile('\['+product_type+'-NAME\]', re.IGNORECASE)
-            self.formatted_cmdline = pattern.sub(name, self.formatted_cmdline)
-
-            pattern = re.compile('\['+product_type+'-VERSION\]', re.IGNORECASE)
-            self.formatted_cmdline = pattern.sub(version, self.formatted_cmdline)        
-
-            pattern = re.compile('\['+product_type+'-VERSION_MAJOR\]', re.IGNORECASE)
-            self.formatted_cmdline = pattern.sub(version.split('.')[0], 
-                self.formatted_cmdline)          
+        if cmd != '':
+            self.formatted_cmdline = cmd
  
+
+     def __replace_tag_product(self, cmd, type, vendor, name, version):
+        """
+        Replace tags related to product in command line:
+            [<PRODUCT_TYPE>-VENDOR]
+            [<PRODUCT_TYPE>-NAME]
+            [<PRODUCT_TYPE>-VERSION]
+            [<PRODUCT_TYPE>-VERSION_MAJOR]
+
+        :param str cmd: Command line to format
+        :param str type: Product type
+        :param str vendor: Product vendor
+        :param str name: Product name
+        :param str version: Product version number
+        :return: Formatted command line
+        :rtype: str
+        """
+        pattern = re.compile('\['+product_type+'-VENDOR\]', re.IGNORECASE)
+        tmp = pattern.sub(vendor, cmd)
+
+        pattern = re.compile('\['+product_type+'-NAME\]', re.IGNORECASE)
+        tmp = pattern.sub(name, tmp)
+
+        pattern = re.compile('\['+product_type+'-VERSION\]', re.IGNORECASE)
+        tmp = pattern.sub(version, tmp)
+
+        pattern = re.compile('\['+product_type+'-VERSION_MAJOR\]', re.IGNORECASE)
+        tmp = pattern.sub(version.split('.')[0], tmp)
+
+        return tmp
+
+
+    def __replace_tag_password(self, cmd, password):
+        """
+        Replace tag [PASSWORD] in command line.
+
+        :param str cmd: Command line to format
+        :param str username: Password to put in command
+        :return: Formatted command line
+        :rtype: str
+        """
+        pattern = re.compile('\[PASSWORD\]', re.IGNORECASE)
+        return pattern.sub(password, cmd)
+
 
     #------------------------------------------------------------------------------------
     # API key Replacement

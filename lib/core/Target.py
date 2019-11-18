@@ -208,20 +208,20 @@ class Target:
                 return None
 
 
-    def get_product_name_version(self, product_type):
+    def get_products_name_version(self, product_type):
         """
-        Get the product name and version for a given product type.
+        Get list of (product name, product version) for a given product type.
         (e.g for HTTP, for product_type=web_server, it might be product_name=Apache)
 
         :param str product_type: Product type
-        :return: (Product name, version) if present, otherwise (None, None)
-        :rtype: tuple
+        :return: list((Product name, version)) if present
+        :rtype: list((str, str))
         """
-        prod = self.service.get_product(product_type)
-        if prod:
-            return (prod.name, prod.version)
-        else:
-            return (None, None)
+        products = self.service.get_products(product_type)
+        list_name_version = list()
+        for prod in products:
+            list_name_version.append((prod.name, prod.version))
+        return list_name_version
 
 
     def get_usernames_only(self, auth_type=None):

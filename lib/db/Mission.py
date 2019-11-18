@@ -19,6 +19,7 @@ class Mission(Base):
     name          = Column(String(255), nullable=False, default='')
     comment       = Column(String(255), nullable=False, default='')
     creation_date = Column(DateTime, default=func.now())
+    notes         = Column(Text)
 
     hosts         = relationship('Host', order_by=Host.id, back_populates='mission',
         cascade='save-update, merge, delete, delete-orphan')

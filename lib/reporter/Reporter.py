@@ -228,8 +228,8 @@ class Reporter:
                         'web-jslib'
                     )
                     for t in product_types:
-                        product = service.get_product(t)
-                        if product:
+                        products = service.get_products(t)
+                        for product in products:
                             technos += '<span class="badge badge-{type} badge-light">' \
                                 '{name}{version}</span>'.format(
                                     type=t,
@@ -431,8 +431,8 @@ class Reporter:
                     'web-jslib'
                 )
                 for t in product_types:
-                    product = service.get_product(t)
-                    if product:
+                    products = service.get_products(t)
+                    for product in products:
                         webtechnos += '<span class="badge badge-{type} badge-light">' \
                             '{name}{version}</span>'.format(
                                 type=t,
@@ -441,10 +441,10 @@ class Reporter:
                                     if product.version else '')
 
                 # Web Application Firewall
-                product = service.get_product('web-application-firewall')
+                products = service.get_products('web-application-firewall')
                 waf = ''
-                if product:
-                    waf = '<span class="badge badge-web-application-firewall ' \
+                for product in products:
+                    waf += '<span class="badge badge-web-application-firewall ' \
                         'badge-light">{name}{version}</span>'.format(
                             name=product.name,
                             version=' '+str(product.version) \

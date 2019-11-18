@@ -733,4 +733,418 @@ products_match['http']['web-cms'] = {
             WIG_REGEXP2.format('Zenphoto'),
         ],
     },
+    '1C-Bitrix': {
+        'wappalyzer': '1C-Bitrix',
+    },
+    'AMP Plugin': {
+        'wappalyzer': 'AMP Plugin',
+    },
+    'Arc Publishing': {
+        'wappalyzer': 'Arc Publishing',
+    },
+    'Adobe Experience Manager': {
+        'wappalyzer': 'Adobe Experience Manager',
+    },
+    'Amiro.CMS': {
+        'wappalyzer': 'Amiro.CMS',
+    },
+    'Apostrophe CMS': {
+        'wappalyzer': 'Apostrophe CMS',
+    },
+    'BIGACE': {
+        'wappalyzer': 'BIGACE',
+    },
+    'Backdrop': {
+        'wappalyzer': 'Backdrop',
+    },
+    'Banshee': {
+        'wappalyzer': 'Banshee',
+    },
+    'BoldGrid': {
+        'wappalyzer': 'BoldGrid',
+    },
+    'BOOM': {
+        'wappalyzer': 'BOOM',
+    },
+    'Brightspot': {
+        'wappalyzer': 'Brightspot',
+    },
+    'Cargo': {
+        'wappalyzer': 'Cargo',
+    },
+    'Chameleon': {
+        'wappalyzer': 'Chameleon',
+    },
+    'Chamilo': {
+        'wappalyzer': 'Chamilo',
+    },
+    'Chorus': {
+        'wappalyzer': 'Chorus',
+    },
+    'Coaster CMS': {
+        'wappalyzer': 'Coaster CMS',
+    },
+    'Contensis': {
+        'wappalyzer': 'Contensis',
+    },
+    'Contentful': {
+        'wappalyzer': 'Contentful',
+    },
+    'CppCMS': {
+        'wappalyzer': 'CppCMS',
+    },
+    'DM Polopoly': {
+        'wappalyzer': 'DM Polopoly',
+    },
+    'DTG': {
+        'wappalyzer': 'DTG',
+    },
+    'DataLife Engine': {
+        'wappalyzer': 'DataLife Engine',
+    },
+    'Dokeos': {
+        'wappalyzer': 'Dokeos',
+    },
+    'Dotclear': {
+        'wappalyzer': 'Dotclear',
+    },
+    'DovetailWRP': {
+        'wappalyzer': 'DovetailWRP',
+    },
+    'Dynamicweb': {
+        'wappalyzer': 'Dynamicweb',
+    },
+    'Eleanor CMS': {
+        'wappalyzer': 'Eleanor CMS',
+    },
+    'Fork CMS': {
+        'wappalyzer': 'Fork CMS',
+    },
+    'GX WebManager': {
+        'wappalyzer': 'GX WebManager',
+    },
+    'GoDaddy Website Builder': {
+        'wappalyzer': 'GoDaddy Website Builder',
+    },
+    'Google Sites': {
+        'wappalyzer': 'Google Sites',
+    },
+    'Graffiti CMS': {
+        'wappalyzer': 'Graffiti CMS',
+    },
+    'Green Valley CMS': {
+        'wappalyzer': 'Green Valley CMS',
+    },
+    'Hinza Advanced CMS': {
+        'wappalyzer': 'Hinza Advanced CMS',
+    },
+    'Bloomreach': {
+        'wappalyzer': 'Bloomreach',
+    },
+    'Homeland': {
+        'wappalyzer': 'Homeland',
+    },
+    'IBM WebSphere Portal': {
+        'wappalyzer': 'IBM WebSphere Portal',
+    },
+    'ImpressCMS': {
+        'wappalyzer': 'ImpressCMS',
+    },
+    'InProces': {
+        'wappalyzer': 'InProces',
+    },
+    'Indico': {
+        'wappalyzer': 'Indico',
+    },
+    'InstantCMS': {
+        'wappalyzer': 'InstantCMS',
+    },
+    'Jahia DX': {
+        'wappalyzer': 'Jahia DX',
+    },
+    'Kentico CMS': {
+        'wappalyzer': 'Kentico CMS',
+    },
+    'Koala Framework': {
+        'wappalyzer': 'Koala Framework',
+    },
+    'Koha': {
+        'wappalyzer': 'Koha',
+    },
+    'Kolibri CMS': {
+        'wappalyzer': 'Kolibri CMS',
+    },
+    'Komodo CMS': {
+        'wappalyzer': 'Komodo CMS',
+    },
+    'Koobi': {
+        'wappalyzer': 'Koobi',
+    },
+    'Kotisivukone': {
+        'wappalyzer': 'Kotisivukone',
+    },
+    'LightMon Engine': {
+        'wappalyzer': 'LightMon Engine',
+    },
+    'Lithium': {
+        'wappalyzer': 'Lithium',
+    },
+    'Locomotive': {
+        'wappalyzer': 'Locomotive',
+    },
+    'MYPAGE Platform': {
+        'wappalyzer': 'MYPAGE Platform',
+    },
+    'Botble CMS': {
+        'wappalyzer': 'Botble CMS',
+    },
+    'MaxSite CMS': {
+        'wappalyzer': 'MaxSite CMS',
+    },
+    'Melis CMS V2': {
+        'wappalyzer': 'Melis CMS V2',
+    },
+    'Methode': {
+        'wappalyzer': 'Methode',
+    },
+    'Moguta.CMS': {
+        'wappalyzer': 'Moguta.CMS',
+    },
+    'Mono.net': {
+        'wappalyzer': 'Mono.net',
+    },
+    'Mozard Suite': {
+        'wappalyzer': 'Mozard Suite',
+    },
+    'Mynetcap': {
+        'wappalyzer': 'Mynetcap',
+    },
+    'Neos CMS': {
+        'wappalyzer': 'Neos CMS',
+    },
+    'Nepso': {
+        'wappalyzer': 'Nepso',
+    },
+    'OpenNemas': {
+        'wappalyzer': 'OpenNemas',
+    },
+    'PANSITE': {
+        'wappalyzer': 'PANSITE',
+    },
+    'PHP-Fusion': {
+        'wappalyzer': 'PHP-Fusion',
+    },
+    'Pagekit': {
+        'wappalyzer': 'Pagekit',
+    },
+    'Pagevamp': {
+        'wappalyzer': 'Pagevamp',
+    },
+    'Pars Elecom Portal': {
+        'wappalyzer': 'Pars Elecom Portal',
+    },
+    'Pingoteam': {
+        'wappalyzer': 'Pingoteam',
+    },
+    'PlatformOS': {
+        'wappalyzer': 'PlatformOS',
+    },
+    'Pligg': {
+        'wappalyzer': 'Pligg',
+    },
+    'Posterous': {
+        'wappalyzer': 'Posterous',
+    },
+    'Proximis Omnichannel': {
+        'wappalyzer': 'Proximis Omnichannel',
+    },
+    'Public CMS': {
+        'wappalyzer': 'Public CMS',
+    },
+    'PyroCMS': {
+        'wappalyzer': 'PyroCMS',
+    },
+    'RBS Change': {
+        'wappalyzer': 'RBS Change',
+    },
+    'Rayo': {
+        'wappalyzer': 'Rayo',
+    },
+    'Redaxscript': {
+        'wappalyzer': 'Redaxscript',
+    },
+    'S.Builder': {
+        'wappalyzer': 'S.Builder',
+    },
+    'Scenari': {
+        'wappalyzer': 'Scenari',
+    },
+    'SDL Tridion': {
+        'wappalyzer': 'SDL Tridion',
+    },
+    'SIMsite': {
+        'wappalyzer': 'SIMsite',
+    },
+    'SPIP': {
+        'wappalyzer': 'SPIP',
+    },
+    'Sarka-SPIP': {
+        'wappalyzer': 'Sarka-SPIP',
+    },
+    'Scholica': {
+        'wappalyzer': 'Scholica',
+    },
+    'SeamlessCMS': {
+        'wappalyzer': 'SeamlessCMS',
+    },
+    'Simplébo': {
+        'wappalyzer': 'Simplébo',
+    },
+    'SiteEdit': {
+        'wappalyzer': 'SiteEdit',
+    },
+    'Sivuviidakko': {
+        'wappalyzer': 'Sivuviidakko',
+    },
+    'SmartSite': {
+        'wappalyzer': 'SmartSite',
+    },
+    'SpinCMS': {
+        'wappalyzer': 'SpinCMS',
+    },
+    'Squarespace': {
+        'wappalyzer': 'Squarespace',
+    },
+    'Storyblok': {
+        'wappalyzer': 'Storyblok',
+    },
+    'Strapi': {
+        'wappalyzer': 'Strapi',
+    },
+    'Telescope': {
+        'wappalyzer': 'Telescope',
+    },
+    'TN Express Web': {
+        'wappalyzer': 'TN Express Web',
+    },
+    'Thelia': {
+        'wappalyzer': 'Thelia',
+    },
+    'Tilda': {
+        'wappalyzer': 'Tilda',
+    },
+    'Translucide': {
+        'wappalyzer': 'Translucide',
+    },
+    'Twilight CMS': {
+        'wappalyzer': 'Twilight CMS',
+    },
+    'UMI.CMS': {
+        'wappalyzer': 'UMI.CMS',
+    },
+    'VIVVO': {
+        'wappalyzer': 'VIVVO',
+    },
+    'Vigbo': {
+        'wappalyzer': 'Vigbo',
+    },
+    'Vignette': {
+        'wappalyzer': 'Vignette',
+    },
+    'WebPublisher': {
+        'wappalyzer': 'WebPublisher',
+    },
+    'Webs': {
+        'wappalyzer': 'Webs',
+    },
+    'WebsPlanet': {
+        'wappalyzer': 'WebsPlanet',
+    },
+    'Website Creator': {
+        'wappalyzer': 'Website Creator',
+    },
+    'Weebly': {
+        'wappalyzer': 'Weebly',
+    },
+    'Webzi': {
+        'wappalyzer': 'Webzi',
+    },
+    'Wix': {
+        'wappalyzer': 'Wix',
+    },
+    'Woosa': {
+        'wappalyzer': 'Woosa',
+    },
+    'XpressEngine': {
+        'wappalyzer': 'XpressEngine',
+    },
+    'iEXExchanger': {
+        'wappalyzer': 'iEXExchanger',
+    },
+    'Zendesk': {
+        'wappalyzer': 'Zendesk',
+    },
+    'a-blog cms': {
+        'wappalyzer': 'a-blog cms',
+    },
+    'actionhero.js': {
+        'wappalyzer': 'actionhero.js',
+    },
+    'eSyndiCat': {
+        'wappalyzer': 'eSyndiCat',
+    },
+    'enduro.js': {
+        'wappalyzer': 'enduro.js',
+    },
+    'govCMS': {
+        'wappalyzer': 'govCMS',
+    },
+    'imperia CMS': {
+        'wappalyzer': 'imperia CMS',
+    },
+    'io4 CMS': {
+        'wappalyzer': 'io4 CMS',
+    },
+    'openEngine': {
+        'wappalyzer': 'openEngine',
+    },
+    'papaya CMS': {
+        'wappalyzer': 'papaya CMS',
+    },
+    'PhotoShelter': {
+        'wappalyzer': 'PhotoShelter',
+    },
+    'phpSQLiteCMS': {
+        'wappalyzer': 'phpSQLiteCMS',
+    },
+    'phpwind': {
+        'wappalyzer': 'phpwind',
+    },
+    'pirobase CMS': {
+        'wappalyzer': 'pirobase CMS',
+    },
+    'Siteglide': {
+        'wappalyzer': 'Siteglide',
+    },
+    'swift.engine': {
+        'wappalyzer': 'swift.engine',
+    },
+    'uCore': {
+        'wappalyzer': 'uCore',
+    },
+    'uCoz': {
+        'wappalyzer': 'uCoz',
+    },
+    'webEdition': {
+        'wappalyzer': 'webEdition',
+    },
+    'wisyCMS': {
+        'wappalyzer': 'wisyCMS',
+    },
+    'Halo': {
+        'wappalyzer': 'Halo',
+    },
+    'Rocket': {
+        'wappalyzer': 'Rocket',
+    },
 }

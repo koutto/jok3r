@@ -44,6 +44,8 @@ For each option of type "list":
 [products] (optional)
   <product_type> ([a-z0-9_-]) = list of supported product names ([a-zA-Z0-9_\/-. ])
   format: [vendor/]product_name (vendor can be omitted if no confusion)
+  It is also possible to specify the special value "any" in order to support any product
+  name for this type
 
 For each check:
   [check_<check_name>]
@@ -51,7 +53,7 @@ For each check:
   category       = category inside which this check is classified (mandatory)
   description    = short text describing the check (mandatory)
   tool           = tool_name of the tool to use (mandatory)
-  apikey         = name of required API key to run the check (e.g. "vulners") (mandatory)
+  apikey         = name of required API key to run the check (e.g. "vulners") (optional)
   For each command (there must be at least one command):
       command_<command_number> = command-line for the check, multiple tags supported
       context_<command_number> = context that must be met to run the command (optional)
@@ -918,21 +920,29 @@ class Settings:
                 else:
                     if isinstance(val, str):
                         val = [val]
+                    list_supported_product_names = list(map(lambda x: x.lower(), 
+                        self.services[service]['products'][cond]))
+
                     for e in val:
                         # Check if [vendor/]product_name is in the list of supported 
-                        # product names (ignore version requirements if present)
-                        product_name = e[:e.index('|')] if '|' in e else e
-                        # Handle the case where inversion is used with prefix "!"
-                        if len(product_name) > 0 and product_name[0] == '!':
-                            product_name = product_name[1:]
-                        if product_name.lower() not in list(map(lambda x: x.lower(), 
-                                self.services[service]['products'][cond])):
-                            logger.warning('{prefix} Context requirement "{option}" ' \
-                                'contains an invalid product ("{product}")'.format(
-                                    prefix=log_prefix, 
-                                    option=cond, 
-                                    product=product_name))
-                        req_products[cond] = val                
+                        # product names (ignore version requirements if present) if such
+                        # list has been provided. Otherwise, if "any" has been provided
+                        # no need to perform any check on product name here.
+                        if 'any' in list_supported_product_names:
+                            req_products[cond] = val 
+                        else:
+                            product_name = e[:e.index('|')] if '|' in e else e
+                            # Handle the case where inversion is used with prefix "!"
+                            if len(product_name) > 0 and product_name[0] == '!':
+                                product_name = product_name[1:]
+                            if product_name.lower() not in list_supported_product_names:
+                                logger.warning('{prefix} Context requirement "{option}" '\
+                                    'contains an invalid product ("{product}")'.format(
+                                        prefix=log_prefix, 
+                                        option=cond, 
+                                        product=product_name))
+                            else:
+                                req_products[cond] = val                
 
             # Not supported
             else:

@@ -333,7 +333,12 @@ class ServicesConfig:
         """
         Check if a product name associated to a given type is valid.
         Case insensitive lookup.
-        (e.g. product_type=web_server, product_name=Apache)
+        (e.g. product_type=web_server, product_name=Apache).
+        It is based on data defined in settings files. For a given product type, it is
+        indeed possible to specify a list of supported product names (all others will
+        be rejected). But it is also possible to be more flexible and allow any 
+        product name for a given product type: to do so, the special value "any" must
+        be given as value for the product type in setting file.
 
         :param str product_type: Product type
         :param str product_name: Product name to check
@@ -342,8 +347,10 @@ class ServicesConfig:
         """
         service = self.get_service_for_product_type(product_type)
         if service:
-            return product_name.lower() in list(map(lambda x: x.lower(), 
+            list_supported_product_names = list(map(lambda x: x.lower(), 
                 self.services[service]['products'][product_type]))
+            return 'any' in list_supported_product_names or \
+                product_name.lower() in list_supported_product_names
         return False
 
 

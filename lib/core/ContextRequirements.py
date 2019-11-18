@@ -182,10 +182,17 @@ class ContextRequirements:
         status = True
 
         for prodtype in self.products:
-            name, version = target.get_product_name_version(prodtype)
-            # (None, None) when not product detected for this type
+            # Get list of (product name, product version) for the current product type
+            # that have been detected for the target
+            target_products_name_version = target.get_products_name_version(prodtype)
+            # name, version = target.get_product_name_version(prodtype)
+            # # (None, None) when not product detected for this type
 
-            status &= self.__check_product(prodtype, name, version)
+            status_prodtype = False
+            for name, version in target_products_name_version:
+                status_prodtype |= self.__check_product(prodtype, name, version)
+
+            status &= status_prodtype
 
         return status
 
