@@ -975,10 +975,10 @@ class ArgumentsParser:
                             name=name, type=type_))
                     return False
 
-                elif type_ in products.keys():
-                    logger.error('Same product type "{type}" is defined several ' \
-                        'times'.format(type=type_))
-                    return False
+                # elif type_ in products.keys():
+                #     logger.error('Same product type "{type}" is defined several ' \
+                #         'times'.format(type=type_))
+                #     return False
 
                 else:
                     service = self.settings.services.get_service_for_product_type(type_)

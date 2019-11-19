@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 from lib.smartmodules.matchstrings.MatchStrings import products_match
 
+CMSEEK_REGEXP = '"cms_name":\s*"{}"(,[\s\S]*"cms_version":\s*"[VERSION]")?'
 WIG_REGEXP = '{}\s*[VERSION]\s*Platform' 
 WIG_REGEXP2 = '- Found platform {}(\s*[VERSION])?'
 
@@ -9,6 +10,7 @@ WIG_REGEXP2 = '- Found platform {}(\s*[VERSION])?'
 products_match['http']['web-language'] = {
     'AsciiDoc': {
         'wappalyzer': 'AsciiDoc',
+        'cmseek': CMSEEK_REGEXP.format('AsciiDoc'),
     },
     'Microsoft/ASP.NET': {
         'wappalyzer': 'Microsoft ASP.NET',

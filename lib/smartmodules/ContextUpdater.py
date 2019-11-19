@@ -252,7 +252,7 @@ class ContextUpdater:
                 #     match_product.name = product.name
                 #     match_product.version = product.version
 
-            # Type + name not present in database
+            # Type + name not already present in database
             else:
 
                 logger.smartsuccess('New product detected: {product} {version}'.format(

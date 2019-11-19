@@ -350,7 +350,9 @@
       "cats": [
         42
       ],
-      "script": "//assets.adobedtm.com/",
+      "js": {
+        "_satellite": ""
+      },
       "icon": "adobedmt.png",
       "website": "https://marketing.adobe.com/resources/help/en_US/dtm/c_overview.html"
     },
@@ -796,7 +798,7 @@
     },
     "Angular Material": {
       "cats": [
-        18
+        66
       ],
       "icon": "AngularJS.svg",
       "implies": "AngularJS",
@@ -1249,6 +1251,10 @@
       "cats": [
         1
       ],
+      "headers": {
+        "X-Backdrop-Cache": "",
+        "X-Generator": "^Backdrop CMS(?:\\s([\\d.]+))?\\;version:\\1"
+      },
       "excludes": "Drupal",
       "icon": "Backdrop.png",
       "implies": "PHP",
@@ -1256,9 +1262,9 @@
         "Backdrop": ""
       },
       "meta": {
-        "generator": "Backdrop CMS(?: (\\d))?\\;version:\\1"
+        "generator": "^Backdrop CMS(?:\\s([\\d.]+))?\\;version:\\1"
       },
-      "website": "http://backdropcms.org"
+      "website": "https://backdropcms.org"
     },
     "Backpack": {
       "cats": [
@@ -1517,7 +1523,7 @@
     },
     "Bootstrap": {
       "cats": [
-        18
+        66
       ],
       "cpe": "cpe:/a:getbootstrap:bootstrap",
       "html": [
@@ -1607,14 +1613,20 @@
     "Bubble": {
       "cats": [
         1,
-        3,
-        18,
-        22
+        18
       ],
       "icon": "bubble.png",
       "implies": "Node.js",
-      "js": {
-        "appquery": ""
+      "headers": {
+        "x-bubble-capacity-limit": "",
+        "x-bubble-capacity-used": "",
+        "x-bubble-perf": ""
+      },
+      "js":{
+        "bubble_environment": "",
+        "bubble_hostname_modifier": "",
+        "bubble_version": "",
+        "_bubble_page_load_data": ""
       },
       "website": "http://bubble.is"
     },
@@ -1657,7 +1669,7 @@
     },
     "Bulma": {
       "cats": [
-        18
+        66
       ],
       "html": "<link[^>]+?href=\"[^\"]+bulma(?:\\.min)?\\.css",
       "icon": "Bulma.png",
@@ -2025,7 +2037,7 @@
     },
     "Clarity": {
       "cats": [
-        18
+        66
       ],
       "html": [
         "<clr-main-container",
@@ -3368,7 +3380,6 @@
     "Essential JS 2": {
       "cats": [
         12,
-        18,
         59
       ],
       "html": "<[^>]+ class ?= ?\"(?:e-control|[^\"]+ e-control)(?: )[^\"]* e-lib\\b",
@@ -3647,7 +3658,7 @@
     },
     "Flat UI": {
       "cats": [
-        18
+        66
       ],
       "html": "<link[^>]* href=[^>]+flat-ui(?:\\.min)?\\.css",
       "icon": "Flat UI.png",
@@ -4063,14 +4074,16 @@
     },
     "GitHub Pages": {
       "cats": [
-        31
+        62
       ],
       "headers": {
         "Server": "^GitHub\\.com$",
         "X-GitHub-Request-Id": ""
       },
       "icon": "GitHub.svg",
-      "implies": "Ruby on Rails",
+      "implies": [
+        "Ruby on Rails"
+      ],
       "url": "^https?://[^/]+\\.github\\.io/",
       "website": "https://pages.github.com/"
     },
@@ -5063,15 +5076,6 @@
       },
       "website": "http://impresspages.org"
     },
-    "InProces": {
-      "cats": [
-        1
-      ],
-      "html": "<!-- CSS InProces Portaal default -->",
-      "icon": "InProces.png",
-      "script": "brein/inproces/website/websitefuncties\\.js",
-      "website": "http://www.brein.nl/oplossing/product/website"
-    },
     "Incapsula": {
       "cats": [
         31
@@ -5650,7 +5654,7 @@
     },
     "Kendo UI": {
       "cats": [
-        18
+        66
       ],
       "html": "<link[^>]*\\s+href=[^>]*styles/kendo\\.common(?:\\.min)?\\.css[^>]*/>",
       "icon": "Kendo UI.png",
@@ -5787,7 +5791,7 @@
     },
     "Koha": {
       "cats": [
-        21
+        50
       ],
       "cpe": "cpe:/a:koha:koha",
       "html": [
@@ -6328,44 +6332,6 @@
       },
       "website": "https://www.luigisbox.com"
     },
-    "M.R. Inc BoxyOS": {
-      "cats": [
-        28
-      ],
-      "icon": "M.R. Inc.png",
-      "website": "http://mrincworld.com"
-    },
-    "M.R. Inc SiteFrame": {
-      "cats": [
-        18
-      ],
-      "headers": {
-        "Powered-By": "M\\.R\\. Inc SiteFrame"
-      },
-      "icon": "M.R. Inc.png",
-      "website": "http://mrincworld.com"
-    },
-    "M.R. Inc Webserver": {
-      "cats": [
-        22
-      ],
-      "headers": {
-        "Server": "M\\.R\\. Inc Webserver"
-      },
-      "icon": "M.R. Inc.png",
-      "implies": [
-        "M.R. Inc BoxyOS"
-      ],
-      "website": "http://mrincworld.com"
-    },
-    "MHonArc": {
-      "cats": [
-        50
-      ],
-      "html": "<!-- MHonArc v([0-9.]+) -->\\;version:\\1",
-      "icon": "mhonarc.png",
-      "website": "http://www.mhonarc.at"
-    },
     "MODX": {
       "cats": [
         1
@@ -6570,7 +6536,7 @@
     },
     "Material Design Lite": {
       "cats": [
-        18
+        66
       ],
       "html": "<link[^>]* href=\"[^\"]*material(?:\\.[\\w]+-[\\w]+)?(?:\\.min)?\\.css",
       "icon": "Material Design Lite.png",
@@ -6582,7 +6548,7 @@
     },
     "Materialize CSS": {
       "cats": [
-        18
+        66
       ],
       "html": "<link[^>]* href=\"[^\"]*materialize(?:\\.min)?\\.css",
       "icon": "Materialize CSS.png",
@@ -6795,7 +6761,8 @@
     },
     "Meteor": {
       "cats": [
-        12
+        12,
+        18
       ],
       "html": "<link[^>]+__meteor-css__",
       "icon": "Meteor.png",
@@ -6939,7 +6906,7 @@
     },
     "Milligram": {
       "cats": [
-        18
+        66
       ],
       "html": [
         "<link[^>]+?href=\"[^\"]+milligram(?:\\.min)?\\.css"
@@ -7461,13 +7428,14 @@
     },
     "Netlify": {
       "cats": [
-        22,
+        62,
         31
       ],
       "headers": {
         "X-NF-Request-ID": "",
         "Server": "^Netlify"
       },
+      "url": "^https?://[^/]+\\.netlify\\.com/",
       "icon": "Netlify.svg",
       "website": "https://www.netlify.com/"
     },
@@ -7909,23 +7877,6 @@
         "https?://[^/]*\\.servedbyopenx\\.com"
       ],
       "website": "http://openx.com"
-    },
-    "Ophal": {
-      "cats": [
-        1,
-        11,
-        18
-      ],
-      "headers": {
-        "X-Powered-By": "Ophal(?: (.+))? \\(ophal\\.org\\)\\;version:\\1"
-      },
-      "icon": "Ophal.png",
-      "implies": "Lua",
-      "meta": {
-        "generator": "Ophal(?: (.+))? \\(ophal\\.org\\)\\;version:\\1"
-      },
-      "script": "ophal\\.js",
-      "website": "http://ophal.org"
     },
     "Optimizely": {
       "cats": [
@@ -8396,8 +8347,7 @@
     "Pimcore": {
       "cats": [
         1,
-        6,
-        18
+        6
       ],
       "cpe": "cpe:/a:pimcore:pimcore",
       "headers": {
@@ -8771,7 +8721,7 @@
     },
     "Pure CSS": {
       "cats": [
-        18
+        66
       ],
       "html": [
         "<link[^>]+(?:([\\d.])+/)?pure(?:-min)?\\.css\\;version:\\1",
@@ -9646,8 +9596,7 @@
     },
     "Phoenix": {
       "cats": [
-        18,
-        22
+        18
       ],
       "icon": "sazito-phoenix.png",
       "js": {
@@ -9726,7 +9675,7 @@
     },
     "Semantic-ui": {
       "cats": [
-        18
+        66
       ],
       "html": [
         "<link[^>]+semantic(?:\\.min)\\.css\""
@@ -9770,20 +9719,9 @@
       },
       "website": "http://s9y.org"
     },
-    "Shadow": {
-      "cats": [
-        18
-      ],
-      "headers": {
-        "X-Powered-By": "ShadowFramework"
-      },
-      "icon": "Shadow.png",
-      "implies": "PHP",
-      "website": "http://shadow-technologies.co.uk"
-    },
     "Shapecss": {
       "cats": [
-        18
+        66
       ],
       "html": "<link[^>]* href=\"[^\"]*shapecss(?:\\.min)?\\.css",
       "icon": "Shapecss.svg",
@@ -10705,7 +10643,7 @@
       "cookies": {
         "sf_redirect": ""
       },
-      "html": "(?:<div id=\"sfwdt[^\"]+\" class=\"[^\"]*sf-toolbar|<div class=\"sf-toolbar[^>]+?>[^]+<span class=\"sf-toolbar-value\">([\\d.])+)\\;version:\\1",
+
       "js": {
         "Sfjs": ""
       },
@@ -10764,7 +10702,7 @@
     },
     "tailwindcss": {
       "cats": [
-        18
+        66
       ],
       "html": "<link[^>]+?href=\"[^\"]+tailwindcss(?:\\.min)?\\.css",
       "icon": "tailwindcss.svg",
@@ -11266,7 +11204,7 @@
     },
     "UIKit": {
       "cats": [
-        18
+        66
       ],
       "html": "<[^>]+class=\"[^\"]*(?:uk-container|uk-section)",
       "icon": "UIKit.png",
@@ -11651,22 +11589,6 @@
       "url": "/sparql",
       "website": "https://virtuoso.openlinksw.com/"
     },
-    "Visual WebGUI": {
-      "cats": [
-        18
-      ],
-      "icon": "Visual WebGUI.png",
-      "implies": "Microsoft ASP.NET",
-      "js": {
-        "VWGEventArgs": ""
-      },
-      "meta": {
-        "generator": "^Visual WebGUI"
-      },
-      "script": "\\.js\\.wgx$",
-      "url": "\\.wgx$",
-      "website": "http://www.gizmox.com/products/visual-web-gui/"
-    },
     "Visual Website Optimizer": {
       "cats": [
         10
@@ -11718,7 +11640,7 @@
       "cats": [
         12
       ],
-      "html": "<[^>]+data-v(?:ue)-",
+      "html": "<[^>]+\\sdata-v(?:ue)?-",
       "icon": "Vue.js.png",
       "js": {
         "Vue.version": "^(.+)$\\;version:\\1"
@@ -12175,7 +12097,7 @@
     },
     "Woltlab Community Framework": {
       "cats": [
-        18
+        1
       ],
       "html": "var WCF_PATH[^>]+",
       "icon": "Woltlab Community Framework.png",
@@ -12418,15 +12340,16 @@
     },
     "Xeora": {
       "cats": [
-        18,
-        22,
-        27
+        18
       ],
       "headers": {
         "Server": "XeoraEngine",
         "X-Powered-By": "XeoraCube"
       },
       "html": "<input type=\"hidden\" name=\"_sys_bind_\\d+\" id=\"_sys_bind_\\d+\" />",
+      "implies": [
+        "Microsoft ASP.NET"
+      ],
       "icon": "xeora.png",
       "script": "/_bi_sps_v.+\\.js",
       "website": "http://www.xeora.org"
@@ -12684,7 +12607,7 @@
     },
     "ZURB Foundation": {
       "cats": [
-        18
+        66
       ],
       "html": [
         "<link[^>]+foundation[^>\"]+css",
@@ -12858,7 +12781,6 @@
     },
     "actionhero.js": {
       "cats": [
-        1,
         18,
         22
       ],
@@ -12886,7 +12808,7 @@
     },
     "animate.css": {
       "cats": [
-        18
+        66
       ],
       "html": [
         "<link [^>]+(?:/([\\d.]+)/)?animate\\.(?:min\\.)?css\\;version:\\1"
@@ -13033,12 +12955,10 @@
     },
     "enduro.js": {
       "cats": [
-        1,
-        18,
-        47
+        1
       ],
       "headers": {
-        "X-Powered-By": "^enduro\\.js$"
+        "X-Powered-By": "^enduro\\.js"
       },
       "icon": "enduro.js.svg",
       "implies": "Node.js",
@@ -13106,18 +13026,6 @@
       "icon": "gunicorn.png",
       "implies": "Python",
       "website": "http://gunicorn.org"
-    },
-    "hapi.js": {
-      "cats": [
-        18,
-        22
-      ],
-      "cookies": {
-        "Fe26.2**": "\\;confidence:50"
-      },
-      "icon": "hapi.js.png",
-      "implies": "Node.js",
-      "website": "http://hapijs.com"
     },
     "iCongo": {
       "cats": [
@@ -13602,8 +13510,9 @@
       ],
       "html": [
         "<!--\\s+#+ Powered by the PhotoShelter Beam platform",
-        "<link rel=[\"']dns-prefetch[\"'] [^>]+photoshelter.com"
+        "<link[^>]+c\\.photoshelter\\.com"
       ],
+      "url": "photoshelter\\.com",
       "implies": [
         "PHP",
         "MySQL",
@@ -13921,21 +13830,6 @@
       "implies": "Node.js",
       "website": "https://totaljs.com"
     },
-    "uCore": {
-      "cats": [
-        1,
-        18
-      ],
-      "cookies": {
-        "ucore": ""
-      },
-      "icon": "uCore.png",
-      "implies": "PHP",
-      "meta": {
-        "generator": "uCore PHP Framework"
-      },
-      "website": "http://ucore.io"
-    },
     "uCoz": {
       "cats": [
         1
@@ -13950,7 +13844,6 @@
       "cats": [
         1,
         2,
-        18,
         50
       ],
       "headers": {
@@ -14129,23 +14022,6 @@
       "implies": "Java",
       "website": "https://halo.run"
     },
-    "Rocket": {
-      "cats": [
-        1,
-        6
-      ],
-      "headers": {
-        "x-powered-by": "^Rocket=https://rocketcms.io/"
-      },
-      "icon": "Rocket.svg",
-      "implies": [
-        "webpack",
-        "Node.js",
-        "MySQL",
-        "Less"
-      ],
-      "website": "https://rocketcms.io"
-    },
     "Zipkin": {
       "cats": [
         10
@@ -14268,6 +14144,7 @@
       }
     }
 
+
   },
   "categories": {
     "1": {
@@ -14339,7 +14216,7 @@
       "priority": 9
     },
     "18": {
-      "name": "Web Frameworks",
+      "name": "Web Application Frameworks",
       "priority": 7
     },
     "19": {
@@ -14520,6 +14397,10 @@
     },
     "65": {
       "name": "Load Balancer",
+      "priority": 7
+    },
+    "66": {
+      "name": "UI Frameworks",
       "priority": 7
     }
   }

@@ -68,6 +68,9 @@ products_match['http']['web-appserver'] = {
             WIG_REGEXP2.format('jBoss'),
         ],
     },
+    'Redhat/JBoss Web Server': {
+        'wappalyzer': 'JBoss Web',
+    },
     'Jenkins': {
         'wappalyzer': 'Jenkins',
         'banner': 'Jenkins(\s*[VERSION])?',
@@ -91,12 +94,21 @@ products_match['http']['web-appserver'] = {
             'WebLogic Admin Console (\(https\))?\s*\(version Any\)',
         ],
     },
+    'Oracle/Application Server': {
+        'wappalyzer': 'Oracle Application Server',
+    },
+    'Phusion/Passenger': {
+        'wappalyzer': 'Phusion Passenger',
+    },
     'Railo': {
         'clusterd': [
             'Matched [0-9]+ fingerprints for service railo',
             'Railo (Server|Web Administrator|Server Administrator|AJP)\s*\(version [VERSION]\)',
             'Railo (Server|Web Administrator|Server Administrator|AJP)\s*\(version Any\)',
         ],
+    },
+    'Caucho Technology/Resin': {
+        'wappalyzer': 'Resin',
     },
     'Websphere Application Server': {
         'wappalyzer': 'Websphere Application Server',
@@ -110,4 +122,21 @@ products_match['http']['web-appserver'] = {
             WIG_REGEXP2.format('Zope'),
         ],
     },
+    'Google/App Engine': {
+        'wappalyzer': 'Google App Engine',
+    },
+    'SAP/Netweaver': {
+        'wappalyzer': 'SAP',
+    },
+    'Winstone/Servlet Container': {
+        'wappalyzer': 'Winstone Servlet Container',
+    },
+    'Apachefriends/XAMPP': {
+        'wappalyzer': 'XAMPP',
+    },
+    'Imatix/Xitami': {
+        'wappalyzer': 'Xitami',
+    },
+
+
 }

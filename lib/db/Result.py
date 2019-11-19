@@ -9,6 +9,7 @@ from sqlalchemy.ext.hybrid import hybrid_method
 
 from lib.db.Base import Base
 from lib.db.CommandOutput import CommandOutput
+from lib.db.Credential import Credential
 from lib.db.Vuln import Vuln
 
 

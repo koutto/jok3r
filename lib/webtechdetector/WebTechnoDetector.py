@@ -3,6 +3,7 @@
 ###
 ### Smartmodules > Web Technologies > Web Techno Detector
 ###
+import traceback
 from lib.webtechdetector.Wappalyzer import Wappalyzer
 from lib.output.Output import Output
 from lib.output.Logger import logger
@@ -59,5 +60,6 @@ class WebTechnoDetector:
             del wappalyzer
         except Exception as e:
             logger.error('Error with Wappalyzer: {}'.format(e))
+            #traceback.print_exc()
             return ''
         return technos

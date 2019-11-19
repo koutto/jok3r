@@ -93,7 +93,7 @@ class SmartStart:
                                                   self.cu)
                 processor.detect_os()
 
-            # Detect products
+            # Detect products from web technologies results
             try:
                 technos = ast.literal_eval(self.service.web_technos)
             except Exception as e:
@@ -102,18 +102,29 @@ class SmartStart:
                 technos = list()
 
             for t in technos:
+                is_techno_referenced = False # Referenced in matchstrings
+
                 for prodtype in products_match['http']:
+                    if is_techno_referenced:
+                        break
+
                     p = products_match['http'][prodtype]
                     for prodname in p:
                         if 'wappalyzer' in p[prodname]:
                             pattern = p[prodname]['wappalyzer']
                         
                             #m = re.search(pattern, t['name'], re.IGNORECASE|re.DOTALL)
+                            # Strict equal for wappalyzer names
                             if pattern.lower() == t['name'].lower():
                                 version = t['version']
                                 self.cu.add_product(prodtype, prodname, version)
+                                is_techno_referenced = True
 
-                                # Move to next product type if something found
+                                # Move to next techno if found in matchstring
                                 break
 
+                if not is_techno_referenced:
+                    # If techno has not been found in matchstrings, we add it as new
+                    # product of type "web-other"
+                    self.cu.add_product('web-other', t['name'], t['version'])
 

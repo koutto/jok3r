@@ -60,10 +60,6 @@ products_match['http']['web-cms'] = {
         'wappalyzer': 'Arastta',
         'cmseek': CMSEEK_REGEXP.format('Arastta'),
     },
-    'AsciiDoc': {
-        'wappalyzer': 'AsciiDoc',
-        'cmseek': CMSEEK_REGEXP.format('AsciiDoc'),
-    },
     'Aspnetforum': {
         'cmseek': CMSEEK_REGEXP.format('AspNetForum'),
     },
@@ -209,7 +205,7 @@ products_match['http']['web-cms'] = {
         ],
         'fingerprinter': '-a dotnetnuke[\s\S]*Intersection of potential versions returned only one version v[VERSION]',
     },
-    'Domino': {
+    'Lotus/Domino': {
         'wappalyzer': 'Lotus Domino',
         'banner': 'Lotus Domino(\s*(International|Go))?\s*httpd(\s*[VERSION])?',
         'wig': [
@@ -865,9 +861,6 @@ products_match['http']['web-cms'] = {
     'Kentico CMS': {
         'wappalyzer': 'Kentico CMS',
     },
-    'Koala Framework': {
-        'wappalyzer': 'Koala Framework',
-    },
     'Koha': {
         'wappalyzer': 'Koha',
     },
@@ -1086,9 +1079,6 @@ products_match['http']['web-cms'] = {
     },
     'a-blog cms': {
         'wappalyzer': 'a-blog cms',
-    },
-    'actionhero.js': {
-        'wappalyzer': 'actionhero.js',
     },
     'eSyndiCat': {
         'wappalyzer': 'eSyndiCat',

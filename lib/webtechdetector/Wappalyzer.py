@@ -224,9 +224,13 @@ class Wappalyzer(requests.Session):
     def analyzeHtml(self, app, html):
         patterns = self.parsePatterns(app.props.html)
         if patterns:
-            for pattern in patterns:
-                if 'regex' in pattern and re.search(pattern['regex'], html):
-                    self.addDetected(app, pattern, 'html', html)
+            try:
+                for pattern in patterns:
+                    #print(pattern)
+                    if 'regex' in pattern and re.search(pattern['regex'], html):
+                        self.addDetected(app, pattern, 'html', html)
+            except:
+                pass
 
 
     def analyzeScripts(self, app: Application, scripts):

@@ -21,6 +21,19 @@ def is_in_matchstings(name, type):
                 return True
     return False
 
+def check_duplicates():
+    for type in products_match['http']:
+        for name in products_match['http'][type]:
+            for type2 in products_match['http']:
+                if type2 == type:
+                    continue
+                for name2 in products_match['http'][type2]:
+                    if name == name2:
+                        print('Duplicate on {name}. Type1 = {type1} | Type2 = {type2}'.format(
+                            name=name,
+                            type1=type,
+                            type2=type2))
+
 def check_cvedetails(name):
     l = name.split(' ')
     for i in range(len(l)):
@@ -44,6 +57,7 @@ db = json.load(open('./apps.json', encoding='utf-8'))
 apps = db['apps']
 
 
+check_duplicates()
 
 # # web-server / web-appserver
 # for app in apps:
@@ -53,10 +67,6 @@ apps = db['apps']
 #         if 22 in apps[app]['cats'] and 18 not in apps[app]['cats']:
 #             if not is_in_matchstings(app, 'web-appserver') and \
 #                not is_in_matchstings(app, 'web-server'):
-
-#         if 21 in apps[app]['cats'] or 1 in apps[app]['cats']:
-#             if not is_in_matchstings(app, 'web-cms'):
-
 
 #                 #print(app)
 #                 print(
@@ -95,28 +105,54 @@ apps = db['apps']
 #                 pass
 
 
-# web-framework
-for app in apps:
-    if 'cats' in apps[app]:
+# # web-framework
+# for app in apps:
+#     if 'cats' in apps[app]:
 
-        if 18 in apps[app]['cats'] and 25 not in apps[app]['cats'] \
-            and 59 not in apps[app]['cats'] and 12 not in apps[app]['cats']\
-            and '.js' not in app.lower() and 'css' not in app.lower():
-            if not is_in_matchstings(app, 'web-framework') and \
-                not is_in_matchstings(app, 'web-language') and \
-                not is_in_matchstings(app, 'web-server') and \
-                not is_in_matchstings(app, 'web-appserver'):
+#         if 18 in apps[app]['cats']:
+#             if not is_in_matchstings(app, 'web-jslib') and \
+#                 not is_in_matchstings(app, 'web-language') and \
+#                 not is_in_matchstings(app, 'web-server') and \
+#                 not is_in_matchstings(app, 'web-appserver'):
 
 
-                #print(app)
-                print(
+#                 #print(app)
+#                 print(
 
-    """'{product}': {{
-    'wappalyzer': '{product}',
-    }},""".format(product=app)
-                )
-                # print()
-                # check_cvedetails(app)
-                # print()
-                # print()
-                pass
+#     """'{product}': {{
+#     'wappalyzer': '{product}',
+#     }},""".format(product=app)
+#                 )
+#                 # print()
+#                 # check_cvedetails(app)
+#                 # print()
+#                 # print()
+#                 pass
+
+
+# # web-jslib
+# for app in apps:
+#     if 'cats' in apps[app]:
+
+#         if 59 in apps[app]['cats'] or 25 in apps[app]['cats'] \
+#             or 12 in apps[app]['cats']\
+#             or '.js' in app.lower():
+#             if  not is_in_matchstings(app, 'web-language') and \
+#                 not is_in_matchstings(app, 'web-server') and \
+#                 not is_in_matchstings(app, 'web-cms') and \
+#                 not is_in_matchstings(app, 'web-appserver') and \
+#                 not is_in_matchstings(app, 'web-jslib'):
+
+
+#                 #print(app)
+#                 print(
+
+#     """'{product}': {{
+#     'wappalyzer': '{product}',
+#     }},""".format(product=app)
+#                 )
+#                 # print()
+#                 # check_cvedetails(app)
+#                 # print()
+#                 # print()
+#                 pass

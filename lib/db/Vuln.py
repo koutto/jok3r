@@ -4,7 +4,7 @@
 ### Db > Vuln
 ###
 import enum
-from sqlalchemy import ForeignKey, Column, Integer, String, Float, Text
+from sqlalchemy import ForeignKey, Column, Boolean, Integer, String, Float, Text
 from sqlalchemy.orm import relationship
 
 from lib.db.Base import Base
@@ -31,7 +31,7 @@ class Vuln(Base):
 
     def __repr__(self):
         return '<Vuln(name="{name}", ' \
-            'description="{description}", '
+            'description="{description}", ' \
             'location="{location}", ' \
             'reference="{reference}", ' \
             'score="{score}", ' \

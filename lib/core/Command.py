@@ -578,7 +578,7 @@ class Command:
         products = self.services_config[service]['products']
 
         cmd = ''
-        for product_type in products:
+        for product_type in self.context_requirements.products.keys():
             target_products_name_version = target.get_products_name_version(product_type)
             for name, version in target_products_name_version:
                 name = name or ''
@@ -599,9 +599,9 @@ class Command:
 
         if cmd != '':
             self.formatted_cmdline = cmd
- 
 
-     def __replace_tag_product(self, cmd, type, vendor, name, version):
+
+    def __replace_tag_product(self, cmd, type, vendor, name, version):
         """
         Replace tags related to product in command line:
             [<PRODUCT_TYPE>-VENDOR]
@@ -617,16 +617,16 @@ class Command:
         :return: Formatted command line
         :rtype: str
         """
-        pattern = re.compile('\['+product_type+'-VENDOR\]', re.IGNORECASE)
+        pattern = re.compile('\['+type+'-VENDOR\]', re.IGNORECASE)
         tmp = pattern.sub(vendor, cmd)
 
-        pattern = re.compile('\['+product_type+'-NAME\]', re.IGNORECASE)
+        pattern = re.compile('\['+type+'-NAME\]', re.IGNORECASE)
         tmp = pattern.sub(name, tmp)
 
-        pattern = re.compile('\['+product_type+'-VERSION\]', re.IGNORECASE)
+        pattern = re.compile('\['+type+'-VERSION\]', re.IGNORECASE)
         tmp = pattern.sub(version, tmp)
 
-        pattern = re.compile('\['+product_type+'-VERSION_MAJOR\]', re.IGNORECASE)
+        pattern = re.compile('\['+type+'-VERSION_MAJOR\]', re.IGNORECASE)
         tmp = pattern.sub(version.split('.')[0], tmp)
 
         return tmp
