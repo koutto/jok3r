@@ -14,15 +14,19 @@ from lib.utils.VersionUtils import VersionUtils
 
 class ContextUpdater:
 
-    def __init__(self, service):
+    def __init__(self, service, command_output_id=None):
         """
         ContextUpdater is used to update information related to a given service.
-        It is used by smart modules during attack initialization and when processing 
+        It is used by smart modules during attack initialization and when analyzing
         command outputs.
 
         :param Service service: Service model
+        :param int command_output_id: Id of the CommandOutput object storing the 
+            command output from which the analysis is performed. Used when called from
+            SmartPostcheck class, None otherwise.
         """
         self.service = service
+        self.command_output_id = command_output_id
         self.specific_options = list()
         self.usernames = list()
         self.credentials = list()
@@ -35,11 +39,23 @@ class ContextUpdater:
     # Add detected element
 
     def add_option(self, name, value):
+        """
+        Add new Specific Option to the context.
+
+        :param str name: Option name
+        :param str value: Option value
+        """
         self.specific_options.append(Option(name=name, value=value))
 
 
     def add_username(self, username, auth_type=None):
-        # Do not add too times the same username
+        """
+        Add new Username (Credential with no password known) to the context.
+
+        :param str username: Username
+        :param str auth_type: Authentication type for HTTP (None otherwise)
+        """
+        # Do not add two times the same username
         for u in self.usernames:
             if u.type == auth_type and u.username == username and u.password == None:
                 return
@@ -48,10 +64,21 @@ class ContextUpdater:
             auth_type = auth_type.lower()
 
         self.usernames.append(
-            Credential(type=auth_type, username=username, password=None))
+            Credential(
+                type=auth_type, 
+                username=username, 
+                password=None,
+                command_output_id=self.command_output_id))
 
 
     def add_credentials(self, username, password, auth_type=None):
+        """
+        Add new Credential (username and password known) to the context.
+
+        :param str username: Username
+        :param str password: Password ('' for empty password)
+        :param str auth_type: Authentication type for HTTP (None otherwise)        
+        """
         # Do not add too times the same credentials
         for c in self.credentials:
             if c.type == auth_type and c.username == username and c.password == password:
@@ -61,16 +88,53 @@ class ContextUpdater:
             auth_type = auth_type.lower()
             
         self.credentials.append(
-            Credential(type=auth_type, username=username, password=password))
+            Credential(
+                type=auth_type, 
+                username=username, 
+                password=password,
+                command_output_id=self.command_output_id))
 
 
     def add_product(self, type_, name, version):
+        """
+        Add new Product to the context.
+
+        :param str type_: Product type
+        :param str name: Product name
+        :param str version: Product version('' if unknown)
+        """
         self.products.append(
             Product(type=type_, name=name, version=version))
 
 
-    def add_vuln(self, name):
-        self.vulns.append(Vuln(name=name))
+    def add_vuln(self, 
+                 name, 
+                 location,
+                 reference,
+                 score,
+                 link,
+                 exploit_available,
+                 exploited):
+        """
+        Add new Vuln to the context.
+
+        :param str name: Vulnerability name (mandatory)
+        :param str location: Location of vulnerability (optional)
+        :param str reference: Reference of vulnerability (optional)
+        :param float score: CVSS Score (optional)
+        :param str link: Link to vulnerability information (optional)
+        :param bool exploit_available: Indicator of exploit availability (optional)
+        :param bool exploited: Indicator of exploitation of the vulnerability (optional)
+        """
+        self.vulns.append(Vuln(
+            name=name,
+            location=location,
+            reference=reference,
+            score=score,
+            link=link,
+            exploit_available=exploit_available,
+            exploited=exploited,
+            command_output_id=self.command_output_id))
 
 
     def add_os(self, os):
@@ -266,10 +330,12 @@ class ContextUpdater:
     def __update_vulns(self):
         """Update service's vulnerabilities (table "vulns")"""
         for vuln in self.vulns:
-            match_vuln = self.service.get_vuln(vuln.name)
+            match_vuln = self.service.get_vuln(vuln.name, vuln.reference)
             if match_vuln:
                 logger.smartinfo('Detected vulnerability (already in db): {name}'.format(
                     name=vuln.name))
+                # Merge with new vuln, i.e. update missing fields if necessary
+                match_vuln.merge(vuln)
             else:
                 logger.smartsuccess('New vulnerability detected: {name}'.format(
                     name=vuln.name))

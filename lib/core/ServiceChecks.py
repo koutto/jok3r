@@ -277,7 +277,7 @@ class ServiceChecks:
                 j += 1
 
         checks_progress.update()
-        time.sleep(.5)
+        time.sleep(.1)
 
         checks_progress.close()
         return

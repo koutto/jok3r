@@ -8,6 +8,7 @@ import regex
 
 from lib.output.Logger import logger
 from lib.utils.StringUtils import StringUtils
+from lib.utils.VulnsUtils import VulnsUtils
 from lib.smartmodules.matchstrings.MatchStrings import *
 
 
@@ -77,8 +78,8 @@ class MatchstringsProcessor:
                         pattern=pattern))
 
                     if 'user' not in p[pattern]:
-                        logger.smarterror('Invalid matchstring for service={service}, ' \
-                            ' tool={tool}: Missing "user" key'.format(
+                        logger.smarterror('Invalid cred matchstring for ' \
+                            'service={service}, tool={tool}: Missing "user" key'.format(
                                 service=self.service.name,
                                 tool=self.tool_name))
                         continue
@@ -152,7 +153,7 @@ class MatchstringsProcessor:
                         pattern_match = True
                         matchs = m.capturesdict()
                         if 'm1' not in matchs:
-                            logger.smarterror('Invalid matchstring for ' \
+                            logger.smarterror('Invalid cred matchstring for ' \
                                 'service={service}, tool={tool}: Missing match ' \
                                 'group'.format(
                                     service=self.service.name,
@@ -195,14 +196,16 @@ class MatchstringsProcessor:
 
                     # If a pattern has matched, skip the next patterns
                     if pattern_match:
-                        logger.debug('Creds pattern matches (user only)')
+                        logger.debug('Creds pattern matches')
                         return
 
 
     #------------------------------------------------------------------------------------
 
     def detect_specific_options(self):
-        """Detect specific option update from command output"""
+        """
+        Detect specific option update from command output
+        """
         if self.service.name in options_match.keys():
 
             if self.tool_name in options_match[self.service.name].keys():
@@ -232,7 +235,7 @@ class MatchstringsProcessor:
                             if name is None:
                                 continue
                         else:
-                            logger.smarterror('Invalid matchstring for ' \
+                            logger.smarterror('Invalid option matchstring for ' \
                                 'service={service}, tool={tool}: Missing ' \
                                 '"name" key'.format(
                                     service=self.service.name,
@@ -245,7 +248,7 @@ class MatchstringsProcessor:
                             if value is None:
                                 continue
                         else:
-                            logger.smarterror('Invalid matchstring for ' \
+                            logger.smarterror('Invalid option matchstring for ' \
                                 'service={service}, tool={tool}: Missing ' \
                                 '"value" key'.format(
                                     service=self.service.name,
@@ -262,8 +265,9 @@ class MatchstringsProcessor:
         """
         Detect product from command output
         
-        For a given tool, and for a given product, if there are several matchstrings
-        defined, their order is important because it stops after the first match.
+        IMPORTANT: For a given tool, and for a given product, if there are several 
+        matchstrings defined, their order is important because it stops after the 
+        first match.
         """
         if self.service.name in products_match.keys():
 
@@ -309,8 +313,8 @@ class MatchstringsProcessor:
                                     try:
                                         if m.group('version') is not None:
                                             version = m.group('version')
-                                            logger.debug('Version detected: {version}'.format(
-                                                version=version))
+                                            logger.debug('Version detected: ' \
+                                                '{version}'.format(version=version))
                                         else:
                                             version = ''
                                     except:
@@ -365,13 +369,113 @@ class MatchstringsProcessor:
                     # Process each match
                     if mall:
                         for m in mall:
-                            name = self.__replace_tokens_from_matchobj(p[pattern], m)
-                            if name is None:
+                            logger.debug('Vuln pattern matches')
+
+                            # Field "name" (str) - mandatory
+                            if 'name' in p[pattern] and \
+                                    isinstance(p[pattern]['name'], str):
+                                name = self.__replace_tokens_from_matchobj(
+                                    p[pattern]['name'], m)
+                                if name is None:
+                                    continue
+                            else:
+                                logger.smarterror('Invalid vuln matchstring for ' \
+                                    'service={service}, tool={tool}: Missing ' \
+                                    '"name" key'.format(
+                                        service=self.service.name,
+                                        tool=self.tool_name))
                                 continue
 
+                            # Field "location" (str) - optional
+                            if 'location' in p[pattern]:
+                                if not isinstance(p[pattern]['location'], str):
+                                    location = None
+                                else:
+                                    location = self.__replace_tokens_from_matchobj(
+                                        p[pattern]['location'], m)
+                            else:
+                                location = None
+
+                            # Field "reference" (str) - optional
+                            if 'reference' in p[pattern]:
+                                if not isinstance(p[pattern]['reference'], str):
+                                    reference = None
+                                else:
+                                    reference = self.__replace_tokens_from_matchobj(
+                                        p[pattern]['reference'], m)
+                            else:
+                                reference = None
+
+                            # Field "score" (str|float) - optional
+                            if 'score' in p[pattern]:
+                                if isinstance(p[pattern]['score'], float):
+                                    score = p[pattern]['score']
+                                    if score < 0 or score > 10:
+                                        score = None
+                                elif isinstance(p[pattern]['score'], str):
+                                    score = self.__replace_tokens_from_matchobj(
+                                        p[pattern]['score'], m)
+                                    if score is not None:
+                                        score = StringUtils.convert_to_float(score)
+                                else:
+                                    score = None
+                            else:
+                                score = None
+
+                            # Field "link" (str) - optional
+                            if 'link' in p[pattern]:
+                                if not isinstance(p[pattern]['link'], str):
+                                    link = None
+                                else:
+                                    link = self.__replace_tokens_from_matchobj(
+                                        p[pattern]['link'], m)
+                            else:
+                                link = None
+
+                            if not link and reference:
+                                # Try to build link from reference identifier
+                                link = VulnsUtils.get_link_from_reference(reference)
+
+                            elif link and not reference:
+                                # Try to get reference identifier from link
+                                reference = VulnsUtils.get_reference_from_link(link)
+
+                            # Field "exploit_available" (str|bool|int) - optional
+                            if 'exploit_available' in p[pattern]:
+                                if isinstance(p[pattern]['exploit_available'], str):
+                                    if p[pattern]['exploit_available'].lower() in (
+                                        '0', 'none'):
+                                        exploit_available = False
+                                    else:
+                                        exploit_available = True
+                                elif isinstance(p[pattern]['exploit_available'], bool):
+                                    exploit_available = p[pattern]['exploit_available']
+                                elif isinstance(p[pattern]['exploit_available'], int):
+                                    exploit_available = p[pattern]['exploit_available']>0
+                                else:
+                                    exploit_available = None
+                            else:
+                                exploit_available = None
+
+                            # Field "exploited" (bool) - optiona
+                            if 'exploited' in p[pattern]:
+                                if not isinstance(p[pattern]['exploited'], bool):
+                                    exploited = False
+                                else:
+                                    exploited = p[pattern]['exploited']
+                            else:
+                                exploited = False
+
+
                             # Add vulnerability to context
-                            logger.debug('Vuln pattern matches')
-                            self.cu.add_vuln(StringUtils.remove_non_printable_chars(name))    
+                            self.cu.add_vuln(
+                                StringUtils.remove_non_printable_chars(name),
+                                location,
+                                reference,
+                                score,
+                                link,
+                                exploit_available,
+                                exploited)    
 
 
 

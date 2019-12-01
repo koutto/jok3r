@@ -142,3 +142,18 @@ class StringUtils:
                 colored.stylize(a.group('search'), 
                     (colored.fg('light_yellow') + colored.attr('bold')))))
         return results
+
+
+    @staticmethod
+    def convert_to_float(string):
+        """
+        Convert a string to float if possible.
+
+        :param str string: Input string to convert
+        :return: Float number if conversion succeeded, None otherwise
+        :rtype: float|None
+        """
+        try:
+            return float(string)
+        except:
+            return None

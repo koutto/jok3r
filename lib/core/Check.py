@@ -3,6 +3,7 @@
 ###
 ### Core > Check
 ###
+import datetime
 import sys
 from collections import OrderedDict
 
@@ -80,7 +81,6 @@ class Check:
         :param Target target: Target
         :param ArgumentsParser arguments: Arguments from command-line
         :param Session sqlsession: SQLAlchemy session
-        :param SmartModulesLoader smartmodules_loader: Loader of SmartModules
         :return: Status
         :rtype: bool
         """
@@ -88,6 +88,7 @@ class Check:
             return False
 
         i = 1
+        start_time = datetime.datetime.utcnow()
         command_outputs = list()
         for command in self.commands:
 
@@ -154,17 +155,29 @@ class Check:
                                 code=returncode))
                     print()
 
+                    # Clean command output by removing junks
                     output = StringUtils.interpret_ansi_escape_clear_lines(output)
                     outputraw = StringUtils.remove_ansi_escape(output)
-                    command_outputs.append(CommandOutput(
+
+                    # Create new Command Output object, whose id will be passed to
+                    # SmartPostcheck class in order to be able to link potential
+                    # newly found credentials and vulnerabilities to it. Therefore, 
+                    # it will be possible to know from which check and command, a cred
+                    # or a vuln has been detected.
+                    command_output = CommandOutput(
                         cmdline=cmdline, 
                         output=output, 
-                        outputraw=outputraw))
+                        outputraw=outputraw)
+                    sqlsession.add(command_output)
+                    sqlsession.flush()
+
+                    command_outputs.append(command_output)
 
                     # Run smartmodule method on output
                     postcheck = SmartPostcheck(
                         target.service,
                         self.tool.name,
+                        command_output.id,
                         '{0}\n{1}'.format(cmdline, outputraw))
                     postcheck.run()
                     sqlsession.commit()
@@ -179,11 +192,18 @@ class Check:
 
         # Add outputs in database
         if command_outputs:
+            end_time = datetime.datetime.utcnow()
+            duration = end_time - start_time
             results_requester = ResultsRequester(sqlsession)
-            results_requester.add_result(target.service.id, 
-                                         self.name, 
-                                         self.category, 
-                                         command_outputs)
+            results_requester.add_result(
+                target.service.id, 
+                self.name, 
+                self.category,
+                self.tool.name,
+                command_outputs,
+                start_time,
+                end_time,
+                duration)
 
         return True
 

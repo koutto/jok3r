@@ -11,6 +11,7 @@ VERSION_REGEXP = '(?P<version>[0-9.]*[0-9])?'
 # creds_match['http'] = {
 #     'tool-name': {
 #         'found creds: (?P<m1>\S*):(?P<m2>\S*)': {
+#             'meth': 'finditer', # optional
 #             'user': '$1',
 #             'pass': '$2',
 #             'type': 'wordpress'
@@ -20,6 +21,24 @@ VERSION_REGEXP = '(?P<version>[0-9.]*[0-9])?'
 #         }
 #     }
 # }
+#
+# IMPORTANT: A command output might contain several usernames/passwords with the
+# same pattern.
+# 
+# Multiple matching is implemented for each processed regexp.
+# 2 Methods of regexp processing are implemented:
+# - finditer (default): Use re.finditer(pattern, cmd_output, re.IGNORECASE|re.MULTILINE)
+# - search: Use regex.search(pattern, cmd_output, regex.IGNORECASE)
+#   This method is particularly useful when we want to match multiple creds, but with 
+#   a given prefix located before the list of creds (e.g : CMS Detection:\s*Drupal)
+#
+# Example method "search":
+# >>> m = regex.search('WordPress[\s\S]*?(\[v\] Trying Credentials:\s*(?P<user>\S+)\s*
+#                       (?P<password>\S+)\s*\n)+', text)
+# >>> m.capturesdict()
+# {'user': ['Miniwick', 'Miniwick', 'Miniwick', 'Miniwick', 'Miniwick'], 
+# 'password': ['password', 'admin', '123456', 'Password1', 'Miniwick']}
+#
 
 creds_match = dict()
 from lib.smartmodules.matchstrings.creds.AjpCreds import *
@@ -49,6 +68,10 @@ from lib.smartmodules.matchstrings.creds.VncCreds import *
 #       }
 #   }
 # }
+# 
+# Single matching for each processed regexp.
+# Regexp processing using re.search(pattern, cmd_output, re.IGNORECASE|re.MULTILINE)
+#
 
 options_match = dict()
 from lib.smartmodules.matchstrings.options.FtpOptions import *
@@ -79,6 +102,13 @@ from lib.smartmodules.matchstrings.options.TelnetOptions import *
 #             'Tomcat (Manager|Admin)? \(version [VERSION]',
 #          ],
 #      }
+# IMPORTANT: For a given tool, and for a given product, if there are several 
+# matchstrings defined, their order is important because it stops after the 
+# first match.
+#
+# Single matching for each processed regexp.
+# Regexp processing using re.search(pattern, cmd_output, re.IGNORECASE|re.MULTILINE)
+#
 
 products_match = defaultdict(dict)
 from lib.smartmodules.matchstrings.products.AjpServerProducts import *
@@ -109,7 +139,26 @@ from lib.smartmodules.matchstrings.products.SshServerProducts import *
 #         'match string (?P<m1>\S+) lorem ispum': 'MS17-010: $1',
 #     }
 # } 
-
+# vulns_match['http'] = {
+#     'tool-name': {
+#         'match string (?P<m1>\S+) lorem ispum': {
+#             'name': 'AngularJS Client-Side Template Injection (CSTI)',
+#             'location': '$1', # optional
+#             'reference': 'CWE-79', # optional
+#             'score': '5.3', # must be convertible to float, optional
+#             'link': 'https://cwe.mitre.org/data/definitions/79.html', # optional
+#             'exploit_available': True/'true'/'1'/1, # optional
+#             'exploited': True, # optional
+#         },
+#     }
+# } 
+#
+# IMPORTANT: A command output might contain several usernames/passwords with the
+# same pattern.
+#
+# Multiple matching is implemented for each processed regexp.
+# Regexp processing using re.finditer(pattern, cmd_output, re.IGNORECASE|re.MULTILINE)
+#
 vulns_match = dict()
 from lib.smartmodules.matchstrings.vulns.FtpVulns import *
 from lib.smartmodules.matchstrings.vulns.HttpVulns import *
@@ -131,14 +180,18 @@ from lib.smartmodules.matchstrings.vulns.SshVulns import *
 # Sample:
 # os_match = {
 #     'Windows': {
-#		  'banner': [
-#		       'microsoft',
+#         'banner': [
+#              'microsoft',
 #              'windows',
 #          ],
 #          'wappalyzer': [
-# 		       'Windows',
-# 		   ],
+#              'Windows',
+#          ],
 #     }
 # } 
+#
+# Single matching for each processed regexp.
+# Regexp processing using re.search(pattern, cmd_output, re.IGNORECASE)
+#
 os_match = dict()
 from lib.smartmodules.matchstrings.os.OS import *
