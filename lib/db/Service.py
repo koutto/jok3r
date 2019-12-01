@@ -180,6 +180,7 @@ class Service(Base):
     def get_option(self, name):
         """
         Get a specific option related to the service.
+
         :param str name: Option name to look for
         :return: Specific option
         :rtype: Option|None
@@ -195,6 +196,7 @@ class Service(Base):
         """
         Get all options related to the service, except options related to 
         encryption (https, ftps...)
+
         :return: List of Specific options
         :rtype: list(Option)
         """
@@ -210,6 +212,7 @@ class Service(Base):
         """
         Get list of products corresponding to given product type 
         (case insensitive match).
+
         :param str product_type: Product type to look for
         :return: List of Products
         :rtype: list(Product)
@@ -225,6 +228,7 @@ class Service(Base):
     def get_product(self, product_type, product_name):
         """
         Get a product by type and name if existing (case insensitive match).
+
         :param str product_type: Product type to look for
         :param str product_name: Product name to look for
         :return: Matching Product
@@ -238,15 +242,20 @@ class Service(Base):
 
 
     @hybrid_method
-    def get_vuln(self, name):
+    def get_vuln(self, name, reference=None):
         """
-        Get vulnerability matching (exactly) given name.
+        Get vulnerability matching given name or reference.
+
         :param str name: Name of vulnerability to look for
+        :param str reference: Reference of vulnerability to look for
         :return: Vulnerability
         :rtype: Vuln|None
         """
         for vuln in self.vulns:
             if vuln.name.lower() == name.lower():
+                return vuln
+            if reference is not None and \
+               vuln.reference.lower().strip() == reference.lower().strip():
                 return vuln
         return None
 
@@ -255,6 +264,7 @@ class Service(Base):
     def get_credential(self, username, auth_type=None):
         """
         Get credentials with given username.
+
         :param str username: Username to look for
         :param str auth_type: Authentication type (for HTTP service)
         :return: Credential
@@ -270,6 +280,7 @@ class Service(Base):
     def get_nb_credentials(self, single_username=False):
         """
         Get total number of credentials for the service.
+
         :param bool single_username: If True, get the number of single usernames 
             (password unknown). If False, get the number of username/password couples
         :return: Number of selected credentials
@@ -293,6 +304,7 @@ class Service(Base):
         service.
         Note: If only one single check in a category (e.g. recon) has been run for the
         service, it is returned.
+
         :return: List of categories of checks
         :rtype: list({'name': str, 'count': int)
         """

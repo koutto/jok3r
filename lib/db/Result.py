@@ -9,8 +9,6 @@ from sqlalchemy.ext.hybrid import hybrid_method
 
 from lib.db.Base import Base
 from lib.db.CommandOutput import CommandOutput
-from lib.db.Credential import Credential
-from lib.db.Vuln import Vuln
 
 
 class Result(Base):
@@ -28,10 +26,6 @@ class Result(Base):
     service = relationship('Service', back_populates='results')
     command_outputs = relationship('CommandOutput', order_by=CommandOutput.id, 
         back_populates='result', cascade='save-update, merge, delete, delete-orphan')
-    vulns = relationship('Vuln', order_by=Vuln.id, 
-        back_populates='result')
-    credentials = relationship('Credential', order_by=Credential.id, 
-        back_populates='result')
 
 
     #------------------------------------------------------------------------------------

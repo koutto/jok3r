@@ -7,7 +7,8 @@ from sqlalchemy import ForeignKey, Column, Integer, String, Text, DateTime, Bool
 from sqlalchemy.orm import relationship
 
 from lib.db.Base import Base
-
+from lib.db.Credential import Credential
+from lib.db.Vuln import Vuln
 
 class CommandOutput(Base):
     __tablename__ = 'command_outputs'
@@ -18,7 +19,11 @@ class CommandOutput(Base):
     outputraw = Column(Text, nullable=False, default='')
     result_id = Column(Integer, ForeignKey('results.id'))
 
-    result    = relationship('Result', back_populates='command_outputs')
+    result = relationship('Result', back_populates='command_outputs')
+    credentials = relationship('Credential', order_by=Credential.id, 
+        back_populates='result')
+    vulns = relationship('Vuln', order_by=Vuln.id, 
+        back_populates='result')
 
 
     #------------------------------------------------------------------------------------

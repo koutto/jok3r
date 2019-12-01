@@ -19,10 +19,10 @@ class Credential(Base):
     # Password can be NULL when only username is set/known
     password   = Column(String(255), nullable=True) 
     comment    = Column(Text, nullable=False, default='')
-    result_id  = Column(Integer, ForeignKey('results.id'))
+    command_output_id = Column(Integer, ForeignKey('command_outputs.id'))
     service_id = Column(Integer, ForeignKey('services.id'))
 
-    result = relationship('Result', back_populates='credentials')
+    command_output = relationship('CommandOutput', back_populates='credentials')
     service = relationship('Service', back_populates='credentials')
 
 
@@ -38,6 +38,7 @@ class Credential(Base):
             username=self.username,
             password=self.password,
             comment=self.comment,
+            command_output_id=None,
             service_id=None)
 
 
