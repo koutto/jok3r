@@ -245,16 +245,21 @@ class Service(Base):
     def get_vuln(self, name, reference=None):
         """
         Get vulnerability matching given name or reference.
+        IMPORTANT: Reference lookup works only for vulnerabilities with unique
+        reference identified (like CVE-***, MS*** but NOT CWE-*** OSVDB-***).
 
         :param str name: Name of vulnerability to look for
         :param str reference: Reference of vulnerability to look for
         :return: Vulnerability
         :rtype: Vuln|None
         """
+        reference_id_uniques_prefix = ('CVE', 'MS')
         for vuln in self.vulns:
             if vuln.name.lower() == name.lower():
                 return vuln
             if reference is not None and \
+               reference.lower().strip() in list(map(lambda x: x.lower(), 
+                   reference_id_uniques_prefix)) and \
                vuln.reference.lower().strip() == reference.lower().strip():
                 return vuln
         return None

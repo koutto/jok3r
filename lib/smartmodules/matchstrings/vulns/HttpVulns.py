@@ -351,7 +351,7 @@ vulns_match['http'] = {
         '"(?P<m3>(?!The anti-clickjacking|The X-XSS-Protection|'
         'The site uses SSL and Expect-CT header)'
         '.+?)"$': {
-            'name': '$3',
+            'name': '$3 ($2)',
             'reference': '$1',
             'location': '$2',
         },
