@@ -193,7 +193,7 @@ class Check:
         # Add outputs in database
         if command_outputs:
             end_time = datetime.datetime.utcnow()
-            duration = end_time - start_time
+            duration = (end_time - start_time).seconds
             results_requester = ResultsRequester(sqlsession)
             results_requester.add_result(
                 target.service.id, 

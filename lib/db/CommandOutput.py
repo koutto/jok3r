@@ -21,9 +21,9 @@ class CommandOutput(Base):
 
     result = relationship('Result', back_populates='command_outputs')
     credentials = relationship('Credential', order_by=Credential.id, 
-        back_populates='result')
+        back_populates='command_output')
     vulns = relationship('Vuln', order_by=Vuln.id, 
-        back_populates='result')
+        back_populates='command_output')
 
 
     #------------------------------------------------------------------------------------

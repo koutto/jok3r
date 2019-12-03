@@ -23,7 +23,7 @@ class Vuln(Base):
     link              = Column(String(400))
     exploit_available = Column(Boolean, default=False)
     exploited         = Column(Boolean, default=False)
-    command_output_id = Column(Integer, ForeignKey('results.id'))
+    command_output_id = Column(Integer, ForeignKey('command_outputs.id'))
     service_id        = Column(Integer, ForeignKey('services.id'))
 
     command_output = relationship('CommandOutput', back_populates='vulns')
