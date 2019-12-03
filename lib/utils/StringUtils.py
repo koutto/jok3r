@@ -157,3 +157,30 @@ class StringUtils:
             return float(string)
         except:
             return None
+
+
+    @staticmethod
+    def colored_cvss_score(score):
+        """
+        Get CVSS with a nice color based on the score
+
+        :param str|float score: CVSS score (0.0-10.0)
+        :return: String of colored score
+        :rtype: str
+        """
+        score = StringUtils.convert_to_float(score)
+        if score is None:
+            return ''
+
+        if score < 3:
+            color = 'green_3b'
+        elif score <= 5:
+            color = 'yellow_1'
+        elif score <= 7:
+            color = 'orange_1'
+        elif score <= 8.5:
+            color = 'dark_orange'
+        else:
+            color = 'red'
+
+        return colored.stylize(score, colored.fg(color))

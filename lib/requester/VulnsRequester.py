@@ -39,7 +39,8 @@ class VulnsRequester(Requester):
                 'IP',
                 'Service',
                 'Port',
-                'Proto',    
+                'Proto',
+                'CVSS',    
                 'Vulnerability',
             ]
             for r in results:
@@ -48,6 +49,7 @@ class VulnsRequester(Requester):
                     r.service.name,
                     r.service.port,
                     {Protocol.TCP: 'tcp', Protocol.UDP: 'udp'}.get(r.service.protocol),
+                    StringUtils.colored_cvss_score(r.score),
                     StringUtils.wrap(r.name, 140) if truncation else r.name,
                 ])
             Output.table(columns, data, hrules=False)
