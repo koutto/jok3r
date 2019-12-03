@@ -337,8 +337,9 @@ class ContextUpdater:
                 # Merge with new vuln, i.e. update missing fields if necessary
                 match_vuln.merge(vuln)
             else:
-                logger.smartsuccess('New vulnerability detected: {name}'.format(
-                    name=vuln.name))
+                logger.smartsuccess('New vulnerability detected: {name}{ref}'.format(
+                    name=vuln.name,
+                    ref=' ({})'.format(vuln.reference) if vuln.reference else ''))
                 self.service.vulns.append(vuln)
 
 
