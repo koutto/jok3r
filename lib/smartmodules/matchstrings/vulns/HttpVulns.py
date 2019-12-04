@@ -400,6 +400,15 @@ vulns_match['http'] = {
             'exploited': True,
         },
     },
+    'vulners-lookup': {
+        '^(?!ID;CVSS;Title;Description;URL;Type)'
+        '(?P<m1>\S+?);(?P<m2>\S+?);(?P<m3>.+?);(?P<m4>.+?);(?P<m5>.+?);.+?$': {
+            'name': '$3: $4',
+            'reference': '$1',
+            'score': '$2',
+            'link': '$5',        
+        },
+    },
     'vulnx': {
         '\[\?\]\s*(?P<m1>.+?)\s+VULN': {
             'name': 'Vulnerable component: $1',

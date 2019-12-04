@@ -378,6 +378,7 @@ class MatchstringsProcessor:
                                     p[pattern]['name'], m)
                                 if name is None:
                                     continue
+                                name = name.strip()
                             else:
                                 logger.smarterror('Invalid vuln matchstring for ' \
                                     'service={service}, tool={tool}: Missing ' \
