@@ -118,9 +118,11 @@ class ResultsRequester(Requester):
         """
         matching_check = self.sqlsess.query(Result).filter_by(service_id = service_id)\
                                      .filter(Result.check == check).first()
+        ret = None
         if matching_check:
             for output in command_outputs:
                 matching_check.command_outputs.append(output)
+            ret = matching_check
         else:
             result = Result(
                 category=category, 
@@ -132,5 +134,7 @@ class ResultsRequester(Requester):
                 service_id=service_id)
             result.command_outputs = command_outputs
             self.sqlsess.add(result)
+            ret = result
 
         self.sqlsess.commit()
+        return ret

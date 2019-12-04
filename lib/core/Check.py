@@ -90,6 +90,8 @@ class Check:
         i = 1
         start_time = datetime.datetime.utcnow()
         command_outputs = list()
+        results_requester = ResultsRequester(sqlsession)
+        new_result = None
         for command in self.commands:
 
             # Check API key requirement (e.g. Vulners)
@@ -168,10 +170,24 @@ class Check:
                         cmdline=cmdline, 
                         output=output, 
                         outputraw=outputraw)
-                    sqlsession.add(command_output)
-                    sqlsession.flush()
 
-                    command_outputs.append(command_output)
+                    if not new_result:
+                        new_result = results_requester.add_result(
+                            target.service.id, 
+                            self.name, 
+                            self.category,
+                            self.tool.name,
+                            [command_output],
+                            start_time,
+                            datetime.datetime.utcnow(),
+                            (datetime.datetime.utcnow() - start_time).seconds
+                        )
+                    else:
+                        new_result.command_outputs.append(command_output)
+                        now = datetime.datetime.utcnow()
+                        new_result.end_time = now
+                        new_result.duration = (now - start_time).seconds
+                        sqlsession.commit()
 
                     # Run smartmodule method on output
                     postcheck = SmartPostcheck(
@@ -190,20 +206,20 @@ class Check:
             
             i += 1
 
-        # Add outputs in database
-        if command_outputs:
-            end_time = datetime.datetime.utcnow()
-            duration = (end_time - start_time).seconds
-            results_requester = ResultsRequester(sqlsession)
-            results_requester.add_result(
-                target.service.id, 
-                self.name, 
-                self.category,
-                self.tool.name,
-                command_outputs,
-                start_time,
-                end_time,
-                duration)
+        # # Add outputs in database
+        # if command_outputs:
+        #     end_time = datetime.datetime.utcnow()
+        #     duration = (end_time - start_time).seconds
+
+        #     results_requester.add_result(
+        #         target.service.id, 
+        #         self.name, 
+        #         self.category,
+        #         self.tool.name,
+        #         command_outputs,
+        #         start_time,
+        #         end_time,
+        #         duration)
 
         return True
 
