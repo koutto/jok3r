@@ -84,6 +84,25 @@ class Service:
             self.screenshot_thumb = '{}/thumb'.format(url)
 
 
+class CommandOutput:
+    def __init__(self, command_output):
+        self.id = command_output.id
+        self.cmdline = command_output.cmdline
+
+        conv = ansi2html.Ansi2HTMLConverter(
+            inline=True, scheme='solarized', linkify=True)
+        output = conv.convert(command_output.output)
+
+        # Warning: ansi2html generates HTML document with <html>, <style>...
+        # tags. We only keep the content inside <pre> ... </pre>
+        m = re.search('<pre class="ansi2html-content">(?P<output>.*)' \
+            '</pre>\n</body>', output, re.DOTALL)
+        if m:
+            output = m.group('output')
+
+        self.output = output    
+
+
 class Credential:
     def __init__(self, credential):
         self.id = credential.id
@@ -98,7 +117,9 @@ class Credential:
         self.service_port = credential.service.port
         self.service_protocol = credential.service.protocol
         self.service_url = credential.service.url
-
+        self.check = credential.command_output.result.check
+        self.category = credential.command_output.result.category
+        self.tool_used = credential.command_output.result.tool_used
 
 class Product:
     def __init__(self, product):
@@ -119,6 +140,12 @@ class Vuln:
     def __init__(self, vuln):
         self.id = vuln.id
         self.vuln_name = vuln.name
+        self.vuln_location = vuln.location
+        self.vuln_reference = vuln.reference
+        self.vuln_score = vuln.score
+        self.vuln_link = vuln.link
+        self.vuln_exploit_available = vuln.exploit_available
+        self.vuln_exploited = vuln.exploited
         self.host_ip = vuln.service.host.ip
         self.host_hostname = vuln.service.host.hostname
         self.service_id = vuln.service.id
@@ -126,25 +153,10 @@ class Vuln:
         self.service_port = vuln.service.port
         self.service_protocol = vuln.service.protocol
         self.service_url = vuln.service.url
+        self.check = vuln.command_output.result.check
+        self.category = vuln.command_output.result.category
+        self.tool_used = vuln.command_output.result.tool_used
 
-
-class CommandOutput:
-    def __init__(self, command_output):
-        self.id = command_output.id
-        self.cmdline = command_output.cmdline
-
-        conv = ansi2html.Ansi2HTMLConverter(
-            inline=True, scheme='solarized', linkify=True)
-        output = conv.convert(command_output.output)
-
-        # Warning: ansi2html generates HTML document with <html>, <style>...
-        # tags. We only keep the content inside <pre> ... </pre>
-        m = re.search('<pre class="ansi2html-content">(?P<output>.*)' \
-            '</pre>\n</body>', output, re.DOTALL)
-        if m:
-            output = m.group('output')
-
-        self.output = output      
 
 class Result:
     def __init__(self, result):
@@ -153,12 +165,16 @@ class Result:
         self.check = result.check
         check = settings.services[result.service.name]['checks'].get_check(self.check)
         self.check_description = check.description if check else ''
+        self.tool_used = result.tool_used
+        self.start_time = result.start_time
+        self.end_time = result.end_time
+        self.duration = result.duration
         self.command_outputs = list(map(lambda x: CommandOutput(x), result.command_outputs))
 
 
 class ServiceWithAll(Service):
     def __init__(self, service):
         super().__init__(service)
-        self.credentials = service.credentials
-        self.vulns = service.vulns
+        self.credentials = list(map(lambda x: Credential(x), service.credentials))
+        self.vulns = list(map(lambda x: Vuln(x), service.vulns))
         self.results = list(map(lambda x: Result(x), service.results))

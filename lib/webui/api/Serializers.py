@@ -59,6 +59,28 @@ host = api.model('Host', {
     'mission_id': fields.Integer(description='Mission identifier'),
 })
 
+command_output = api.model('Command Output', {
+    'id': fields.Integer(readonly=True, description='The command output unique identifier'),
+    'cmdline': fields.String(description='Command line'),
+    'output': fields.String(description='Command output'),
+    'check': fields.String(description='Security check name'),
+    'category': fields.String(description='Category name'),
+    'tool_used': fields.String(description='Tool used for the check'),
+})
+
+result = api.model('Result', {
+    'id': fields.Integer(readonly=True, description='The result unique identifier'),
+    'category': fields.String(description='Category name'),
+    'check': fields.String(description='Security check name'),
+    'check_description': fields.String(description='Description of the check'),
+    'tool_used': fields.String(description='Tool used for the check'),
+    'start_time': fields.DateTime(description='Start time of check'),
+    'end_time': fields.DateTime(description='End time of check'),
+    'duration': fields.Integer(description='Duration of check (in seconds)'),
+    'command_outputs': fields.List(fields.Nested(command_output)),
+})
+
+
 credential = api.model('Credential', {
     'id': fields.Integer(readonly=True, description='The credential unique identifier'),
     'type': fields.String(description='Credential type'),
@@ -72,6 +94,9 @@ credential = api.model('Credential', {
     'service_port': fields.Integer(description='Port number'),
     'service_protocol': ProtocolString(attribute='protocol', description='Protocol (tcp/udp)', default='tcp', enum=['tcp', 'udp']),
     'service_url': fields.String(description='Service URL'),
+    'check': fields.String(description='Check name'),
+    'category': fields.String(description='Check category'),
+    'tool_used': fields.String(description='Tool used'),
 })
 
 option = api.model('Option', {
@@ -97,6 +122,12 @@ product = api.model('Product', {
 vuln = api.model('Vuln', {
     'id': fields.Integer(readonly=True, description='The vulnerability unique identifier'),
     'vuln_name': fields.String(description='Vulnerability name'),
+    'vuln_location': fields.String(description='Vulnerability location'),
+    'vuln_reference': fields.String(description='Vulnerability reference identifier'),
+    'vuln_score': fields.Float(description='Vulnerability CVSS score'),
+    'vuln_link': fields.String(description='Vulnerability information link'),
+    'vuln_exploit_available': fields.Boolean(description='Boolean indicating if exploit is available', default=False),
+    'vuln_exploited': fields.Boolean(description='Boolean indicating if vulnerability has been exploited', default=False),
     'host_ip': fields.String(description='Host IP address'),
     'host_hostname': fields.String(description='Hostname'),
     'service_id': fields.Integer(description='Service identifier'),
@@ -104,6 +135,9 @@ vuln = api.model('Vuln', {
     'service_port': fields.Integer(description='Port number'),
     'service_protocol': ProtocolString(attribute='protocol', description='Protocol (tcp/udp)', default='tcp', enum=['tcp', 'udp']),
     'service_url': fields.String(description='Service URL'),
+    'check': fields.String(description='Check name'),
+    'category': fields.String(description='Check category'),
+    'tool_used': fields.String(description='Tool used'),
 })
 
 checks_category = api.model('ChecksCategory', {
@@ -140,19 +174,6 @@ service = api.model('Service', {
     'screenshot_thumb': fields.String(description='Web screenshot thumbnail'),
 })
 
-command_output = api.model('Command Output', {
-    'id': fields.Integer(readonly=True, description='The command output unique identifier'),
-    'cmdline': fields.String(description='Command line'),
-    'output': fields.String(description='Command output'),
-})
-
-result = api.model('Result', {
-    'id': fields.Integer(readonly=True, description='The result unique identifier'),
-    'category': fields.String(description='Category name'),
-    'check': fields.String(description='Security check name'),
-    'check_description': fields.String(description='Description of the check'),
-    'command_outputs': fields.List(fields.Nested(command_output)),
-})
 
 service_with_all = api.inherit('Service with all related data', service, {
     'credentials': fields.List(fields.Nested(credential)),
