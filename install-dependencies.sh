@@ -669,6 +669,23 @@ fi
 print_delimiter
 
 # -----------------------------------------------------------------------------
+# Install Go
+
+if ! [ -x "$(command -v go)" ]; then
+    print_blue "[~] Install Go"
+    apt-get install -y golang-go
+    if [ -x "$(command -v go)" ]; then
+        print_green "[+] Go installed successfully"
+    else
+        print_red "[!] An error occured during Go install"
+        exit 1
+    fi   
+else
+    print_green "[+] Go is already installed"
+fi
+print_delimiter
+
+# -----------------------------------------------------------------------------
 # Install Java
 
 if ! [ -x "$(command -v java)" ]; then
