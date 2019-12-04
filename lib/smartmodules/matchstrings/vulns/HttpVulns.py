@@ -187,7 +187,7 @@ vulns_match['http'] = {
     'joomlavs': {
         '\[!\] Title: (?P<m1>.*)\n.*Reference: (?P<m2>.*)': {
             'name': 'Joomla: $1',
-            'reference': '$2',
+            'link': '$2',
         },
     },
 
