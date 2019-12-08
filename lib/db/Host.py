@@ -154,19 +154,17 @@ class Host(Base):
     def get_list_services(self):
         """
         Get list of unique services for this host. 
-        There might be several HTTP services registered on the same port (different 
-        URLs): in this particular case, the corresponding service is returned only once
-        in the list.
+
         :return: List of services
         :rtype: list({'id': int, port': int, 'protocol': str, 'name': str})
         """
         services = list()
         for svc in self.services:
             found = False
-            for svc2 in services:
-                if svc.port == svc2['port']:
-                    found = True
-                    break
+            # for svc2 in services:
+            #     if svc.port == svc2['port']:
+            #         found = True
+            #         break
             if not found:
                 services.append({
                     'id': svc.id,
