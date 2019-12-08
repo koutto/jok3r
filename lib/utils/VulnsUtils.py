@@ -3,6 +3,8 @@
 ###
 ### Utils > VulnsUtils
 ###
+import requests
+
 
 class VulnsUtils:
 
@@ -43,3 +45,32 @@ class VulnsUtils:
             return 'WPVDB-ID:{}'.format(link[link.rindex('/')+1:])
         else:
             return None
+
+
+    @staticmethod
+    def get_cvss_from_reference(reference):
+        """
+        Attempt to get CVSS score from vulnerability identifier, via online 
+        services.
+
+        :param str reference: Vulnerability reference identifier
+        :return: CVSS score if found
+        :rtype: float|None
+        """
+        if not reference or not reference.startswith('CVE-'):
+            return None
+
+        try:
+            r = requests.get(
+                'http://cve.circl.lu/api/cve/{}'.format(reference), 
+                timeout=4)
+            json = r.json()
+            cvss = float(json['cvss'])
+        except:
+            return None
+
+        if cvss < 0 or cvss > 10:
+            return None
+
+        return cvss
+
