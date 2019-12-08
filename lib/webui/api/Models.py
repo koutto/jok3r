@@ -54,6 +54,12 @@ class Service:
         self.name_original = service.name_original
         self.host_ip = service.host.ip 
         self.host_hostname = service.host.hostname
+        self.host_type = service.host.type
+        self.host_os = service.host.os
+        self.host_os_vendor = service.host.os_vendor
+        self.host_os_family = service.host.os_family
+        self.host_vendor = service.host.vendor
+        self.host_comment = service.host.comment
         self.port = service.port
         self.protocol = service.protocol
         self.encrypted = service.is_encrypted()
@@ -101,6 +107,9 @@ class CommandOutput:
             output = m.group('output')
 
         self.output = output    
+        self.check = command_output.result.check
+        self.category = command_output.result.category
+        self.tool_used = command_output.result.tool_used
 
 
 class Credential:
@@ -120,6 +129,7 @@ class Credential:
         self.check = credential.command_output.result.check
         self.category = credential.command_output.result.category
         self.tool_used = credential.command_output.result.tool_used
+        self.command_output_id = credential.command_output.id
 
 class Product:
     def __init__(self, product):
@@ -156,6 +166,7 @@ class Vuln:
         self.check = vuln.command_output.result.check
         self.category = vuln.command_output.result.category
         self.tool_used = vuln.command_output.result.tool_used
+        self.command_output_id = vuln.command_output.id
 
 
 class Result:

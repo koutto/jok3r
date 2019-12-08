@@ -97,6 +97,7 @@ credential = api.model('Credential', {
     'check': fields.String(description='Check name'),
     'category': fields.String(description='Check category'),
     'tool_used': fields.String(description='Tool used'),
+    'command_output_id': fields.Integer(description='Command output identifier'),
 })
 
 option = api.model('Option', {
@@ -138,6 +139,7 @@ vuln = api.model('Vuln', {
     'check': fields.String(description='Check name'),
     'category': fields.String(description='Check category'),
     'tool_used': fields.String(description='Tool used'),
+    'command_output_id': fields.Integer(description='Command output identifier'),
 })
 
 checks_category = api.model('ChecksCategory', {
@@ -151,6 +153,12 @@ service = api.model('Service', {
     'name_original': fields.String(description='Service original name (as given by Nmap/Shodan'),
     'host_ip': fields.String(description='Host IP address'),
     'host_hostname': fields.String(description='Hostname'),
+    'host_type': fields.String(description='Host type'),
+    'host_os': fields.String(description='Host OS name'),
+    'host_os_vendor': fields.String(description='Host OS vendor name'),
+    'host_os_family': fields.String(description='Host OS family'),
+    'host_vendor': fields.String(description='Host device vendor'),
+    'host_comment': fields.String(description='Host comment'),
     'port': fields.Integer(description='Port number'),
     'protocol': ProtocolString(attribute='protocol', description='Protocol (tcp/udp)', default='tcp', enum=['tcp', 'udp']),
     'encrypted': fields.Boolean(description='Boolean indicating if encrypted protocol (SSL/TLS)', default=False),
@@ -227,4 +235,19 @@ tool = api.model('Tool', {
     'is_installed': fields.Boolean(description='Installation status'),
     'last_update': fields.String(description='Last update date (if installed)'),
     'description': fields.String(description='Tool description'),
+})
+
+
+check = api.model('Security Check', {
+    'check_name': fields.String(description='Security check name'),
+    'category': fields.String(description='Category of check'),
+    'service': fields.String(description='Service name targeted by the check'),
+    'description': fields.String(description='Description of the check'),
+    'tool': fields.String(description='Tool used by the check'),
+    'nb_commands': fields.Integer(description='Number of commands run by the check'),
+})
+
+checks_with_supported_services = api.model('Security Checks and supported services', {
+    'services': fields.List(fields.String(description='Service name')),
+    'checks': fields.List(fields.Nested(check)),
 })
