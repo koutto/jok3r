@@ -122,6 +122,10 @@ class ResultsRequester(Requester):
         if matching_check:
             for output in command_outputs:
                 matching_check.command_outputs.append(output)
+            # Update start_time/end_time/duration with the values for the new check
+            matching_check.start_time = start_time
+            matching_check.end_time = end_time
+            matching_check.duration = duration
             ret = matching_check
         else:
             result = Result(

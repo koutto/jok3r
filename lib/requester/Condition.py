@@ -72,7 +72,8 @@ class Condition:
             FilterData.MISSION         : self.__translate_mission,
             FilterData.CHECK_ID        : self.__translate_check_id,
             FilterData.CHECK_NAME      : self.__translate_check_name,
-            FilterData.COMMAND_OUTPUT  : self.__translate_command_output,
+            FilterData.COMMAND_OUTPUT    : self.__translate_command_output,
+            FilterData.COMMAND_OUTPUT_ID : self.__translate_command_output_id, 
             FilterData.VULN_ID         : self.__translate_vuln_id,
             FilterData.VULN            : self.__translate_vuln,
             FilterData.CREDENTIAL_ID   : self.__translate_credential_id,
@@ -299,6 +300,11 @@ class Condition:
     def __translate_command_output(self, value):
         """Translate command output text into LIKE filter"""
         return (CommandOutput.output.ilike('%'+str(value)+'%'))
+
+
+    def __translate_command_output_id(self, value):
+        """Translate command output id into filter"""
+        return (CommandOutput.id == int(value))
 
 
     def __translate_vuln_id(self, value):
