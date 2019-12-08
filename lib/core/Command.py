@@ -67,6 +67,8 @@ Products Tags
 -------------
 [PRODUCT_TYPE-VENDOR]           Product vendor
 [PRODUCT_TYPE-NAME]             Product name
+[PRODUCT_TYPE-CPE]              Product CPE v2.2 (e.g. "cpe:/a:oracle:http_server")
+                                (cf. https://nvd.nist.gov/Products/CPE)
 [PRODUCT_TYPE-VERSION]          Product version number
 [PRODUCT_TYPE-VERSION_MAJOR]    Product major version number (e.g. 5 for 5.1.2)
 
@@ -83,6 +85,7 @@ from tld import get_tld
 
 from lib.core.Config import *
 from lib.core.Constants import *
+from lib.smartmodules.CpeMatchs import cpe_match
 from lib.utils.NetUtils import NetUtils
 from apikeys import API_KEYS
 
@@ -573,6 +576,9 @@ class Command:
 
     def __replace_tags_product(self, target):
         """
+        Replace all tags [<PRODUCT_TYPE>-***] in command line.
+
+        :param Target target: Target
         """
         service = target.get_service_name()
         products = self.services_config[service]['products']
@@ -583,29 +589,54 @@ class Command:
             for name, version in target_products_name_version:
                 name = name or ''
                 version = version or ''
+
+                # If "has_cpe" requirement is set to True, run command only for
+                # products with a corresponding CPE found
+                cpe = ''
+                if self.context_requirements.has_cpe is True:
+                    try:
+                        cpe = cpe_match[name]
+                    except:
+                        continue
+                    if not cpe:
+                        continue
+
+                # If "has_cpe" requirement is set to False, run command only for 
+                # products which do NOT have a corresponding CPE
+                elif self.context_requirements.has_cpe is False:
+                    if (
+                        name in cpe_match and
+                        cpe_match[name] is not None
+                    ):
+                        continue
+
                 # Handle case where name stores vendor name to avoid ambiguity
                 if '/' in name:
                     vendor, name = name.split('/', maxsplit=1)
                 else:
                     vendor = ''
 
-                cmd += self.__replace_tag_product(
+                cmdline_product = self.__replace_tag_product(
                     self.formatted_cmdline,
                     product_type,
                     vendor,
                     name,
+                    cpe,
                     version)
-                cmd += '; '
+                if cmdline_product != self.formatted_cmdline:
+                    cmd += cmdline_product
+                    cmd += '; '
 
         if cmd != '':
             self.formatted_cmdline = cmd
 
 
-    def __replace_tag_product(self, cmd, type, vendor, name, version):
+    def __replace_tag_product(self, cmd, type, vendor, name, cpe, version):
         """
         Replace tags related to product in command line:
             [<PRODUCT_TYPE>-VENDOR]
             [<PRODUCT_TYPE>-NAME]
+            [<PRODUCT_TYPE>-CPE]
             [<PRODUCT_TYPE>-VERSION]
             [<PRODUCT_TYPE>-VERSION_MAJOR]
 
@@ -613,6 +644,8 @@ class Command:
         :param str type: Product type
         :param str vendor: Product vendor
         :param str name: Product name
+        :param str cpe: Product CPE (v2.2) without version number
+            Format: cpe:/a:vendor:name
         :param str version: Product version number
         :return: Formatted command line
         :rtype: str
@@ -622,6 +655,9 @@ class Command:
 
         pattern = re.compile('\['+type+'-NAME\]', re.IGNORECASE)
         tmp = pattern.sub(name, tmp)
+
+        pattern = re.compile('\['+type+'-CPE\]', re.IGNORECASE)
+        tmp = pattern.sub(cpe, tmp)
 
         pattern = re.compile('\['+type+'-VERSION\]', re.IGNORECASE)
         tmp = pattern.sub(version, tmp)

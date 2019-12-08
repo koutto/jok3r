@@ -7,6 +7,7 @@ from collections import defaultdict
 
 from lib.core.Config import *
 from lib.core.Constants import *
+from lib.smartmodules.CpeMatchs import cpe_match
 from lib.utils.VersionUtils import VersionUtils
 from lib.output.Logger import logger
 
@@ -75,7 +76,8 @@ class ContextRequirements:
                  products, 
                  osfamily, 
                  auth_status, 
-                 auth_type=None, 
+                 auth_type=None,
+                 has_cpe=None, 
                  raw='<empty>'):
         """
         Construct ContextRequirements object from information parsed from config file.
@@ -88,7 +90,9 @@ class ContextRequirements:
             e.g. : { 'type': 'vendor/product_name|>7.1'}
         :param str osfamily: Requirement on the OS family
         :param int auth_status: Level of authentication required on the service
-        :param str auth_type: Authentication type (for HTTP only)
+        :param str|None auth_type: Authentication type (for HTTP only)
+        :param bool|None has_cpe: Indicates if at least one of products matching with 
+            context requirements must have a CPE found by Jok3r
         :param str raw: Raw context requirements string as in .conf file (only
             for debugging purpose)
         """
@@ -99,6 +103,7 @@ class ContextRequirements:
         self.osfamily = osfamily.lower() if osfamily else ''
         self.auth_status = auth_status
         self.auth_type = auth_type
+        self.has_cpe = has_cpe
         self.raw_string = raw
         self.is_empty = not self.specific_options \
                         and not self.products \
@@ -190,7 +195,28 @@ class ContextRequirements:
 
             status_prodtype = False
             for name, version in target_products_name_version:
-                status_prodtype |= self.__check_product(prodtype, name, version)
+                # For each product detected on the target, we check if it matches
+                # the constraints enforced on type/name/version.
+                # Moreover, if the "has_cpe" requirement has been provided, additional
+                # check must be performed: 
+                # has_cpe=True (resp False): At least one of product matching requirements
+                #   on type/name/version must have a corresponding CPE found (resp Not 
+                #   found).
+                status_prodtype |= (
+                    self.__check_product(prodtype, name, version) and (
+                    (
+                        self.has_cpe is True and 
+                        name in cpe_match 
+                        and cpe_match[name] is not None
+                    )
+                    or 
+                    (
+                        self.has_cpe is False and (
+                        name not in cpe_match
+                        or cpe_match[name] is None)
+                    )
+                    or self.has_cpe is None
+                ))
 
             status &= status_prodtype
 

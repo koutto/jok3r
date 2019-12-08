@@ -807,6 +807,7 @@ class Settings:
                                        products=None, 
                                        osfamily=None, 
                                        auth_status=None,
+                                       has_cpe=None,
                                        raw='<empty>')
 
         log_prefix = '[{filename}{ext} | Section "{section}"] "context_{i}":'.format(
@@ -944,6 +945,18 @@ class Settings:
                             else:
                                 req_products[cond] = val                
 
+            # At least one of matching product has CPE
+            elif cond == 'has_cpe':
+                if val is None:
+                    logger.warning('{prefix} "has_cpe" context requirement is specified' \
+                        'but no value is provided'.format(prefix=log_prefix))
+                    return None
+                elif not isinstance(val, bool):
+                    logger.warning('{prefix} "has_cpe" context requirements must ' \
+                        'have a boolean value (True/False) or None'.format(
+                            prefix=log_prefix))   
+                    return None 
+
             # Not supported
             else:
                 logger.warning('{prefix} Context requirement "{option}" is not ' \
@@ -956,6 +969,7 @@ class Settings:
                                    osfamily=context.get('os'),
                                    auth_status=context.get('auth_status'),
                                    auth_type=context.get('auth_type'),
+                                   has_cpe=context.get('has_cpe'),
                                    raw=context_str_raw)
 
 
