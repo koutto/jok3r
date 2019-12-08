@@ -46,4 +46,13 @@ vulns_match['oracle'] = {
         },
     },
 
+    'vulners-lookup': {
+        '^(?!ID;CVSS;Title;Description;URL;Type)'
+        '(?P<m1>\S+?);(?P<m2>\S+?);(?P<m3>.+?);(?P<m4>.+?);(?P<m5>.+?);.+?$': {
+            'name': '$4', #'$3: $4',
+            'reference': '$1',
+            'score': '$2',
+            'link': '$5',        
+        },
+    },
 } 

@@ -38,6 +38,7 @@ vulns_match['ssh'] = {
             'exploit_available': True,
         },
     },
+
     'osueta': {
         '\[\+\] User: \S+ exists': {
             'name': 'OpenSSH User Enumeration timing attack',
@@ -48,6 +49,7 @@ vulns_match['ssh'] = {
             'exploited': True,
         },
     },
+
     'ssh-audit': {
         'SSH(-)?1': {
             'name': 'Obsolete SSHv1 detected',
@@ -58,6 +60,7 @@ vulns_match['ssh'] = {
             'reference': '$1',
         },
     },
+
     'ssh-user-enum-cve2018-15473': {
         '\[\+\] \S+ found!': {
             'name': 'OpenSSH user enumeration',
@@ -69,4 +72,13 @@ vulns_match['ssh'] = {
         },
     },
 
+    'vulners-lookup': {
+        '^(?!ID;CVSS;Title;Description;URL;Type)'
+        '(?P<m1>\S+?);(?P<m2>\S+?);(?P<m3>.+?);(?P<m4>.+?);(?P<m5>.+?);.+?$': {
+            'name': '$4', #'$3: $4',
+            'reference': '$1',
+            'score': '$2',
+            'link': '$5',        
+        },
+    },
 } 
