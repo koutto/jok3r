@@ -423,6 +423,10 @@ class MatchstringsProcessor:
                             else:
                                 score = None
 
+                            if score is None and reference is not None:
+                                # Try to get score from online service
+                                score = VulnsUtils.get_cvss_from_reference(reference)
+
                             # Field "link" (str) - optional
                             if 'link' in p[pattern]:
                                 if not isinstance(p[pattern]['link'], str):
