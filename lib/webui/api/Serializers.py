@@ -64,6 +64,7 @@ command_output = api.model('Command Output', {
     'cmdline': fields.String(description='Command line'),
     'output': fields.String(description='Command output'),
     'check': fields.String(description='Security check name'),
+    'check_description': fields.String(description='Description of the check'),
     'category': fields.String(description='Category name'),
     'tool_used': fields.String(description='Tool used for the check'),
 })
@@ -111,6 +112,7 @@ product = api.model('Product', {
     'product_type': fields.String(description='Product type'),
     'product_name': fields.String(description='Product name'),
     'product_version': fields.String(description='Product version'), 
+    'product_cpe': fields.String(description='Product CPEv2.2 if available'),
     'host_ip': fields.String(description='Host IP address'),
     'host_hostname': fields.String(description='Hostname'),
     'service_id': fields.Integer(description='Service identifier'),

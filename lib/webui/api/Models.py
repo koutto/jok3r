@@ -8,6 +8,7 @@ import re
 
 from lib.db.Service import Protocol
 from lib.db.Screenshot import ScreenStatus
+from lib.smartmodules.CpeMatchs import cpe_match
 from lib.webui.api.Api import api, settings
 
 class Mission:
@@ -108,6 +109,9 @@ class CommandOutput:
 
         self.output = output    
         self.check = command_output.result.check
+        check = settings.services[command_output.result.service.name]['checks'].get_check(
+            self.check)
+        self.check_description = check.description if check else ''
         self.category = command_output.result.category
         self.tool_used = command_output.result.tool_used
 
@@ -137,6 +141,12 @@ class Product:
         self.product_type = product.type
         self.product_name = product.name
         self.product_version = product.version
+        cpe = cpe_match.get(product.name)
+        if cpe:
+            self.product_cpe = '{}{}'.format(
+                cpe, ':{}'.format(product.version) if product.version else '')
+        else:
+            self.product_cpe = None
         self.host_ip = product.service.host.ip
         self.host_hostname = product.service.host.hostname
         self.service_id = product.service.id
