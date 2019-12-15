@@ -65,12 +65,15 @@ class DbController(cmd2.Cmd):
         self.allow_cli_args = False
 
         # Delete useless cmd2 built-in commands
-        del cmd2.Cmd.do_edit
-        del cmd2.Cmd.do_load
-        del cmd2.Cmd.do_py
-        del cmd2.Cmd.do_pyscript
-        #del cmd2.Cmd.do_set 
-        del cmd2.Cmd.do_shortcuts
+        try:
+            del cmd2.Cmd.do_edit
+            del cmd2.Cmd.do_load
+            del cmd2.Cmd.do_py
+            del cmd2.Cmd.do_pyscript
+            #del cmd2.Cmd.do_set 
+            del cmd2.Cmd.do_shortcuts
+        except:
+            pass
 
         self.current_mission = 'default'
         self.change_current_mission('default')
