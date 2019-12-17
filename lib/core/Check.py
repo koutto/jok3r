@@ -88,7 +88,7 @@ class Check:
             return False
 
         i = 1
-        start_time = datetime.datetime.utcnow()
+        start_time = datetime.datetime.now()
         command_outputs = list()
         results_requester = ResultsRequester(sqlsession)
         new_result = None
@@ -179,12 +179,12 @@ class Check:
                             self.tool.name,
                             [command_output],
                             start_time,
-                            datetime.datetime.utcnow(),
-                            (datetime.datetime.utcnow() - start_time).seconds
+                            datetime.datetime.now(),
+                            (datetime.datetime.now() - start_time).seconds
                         )
                     else:
                         new_result.command_outputs.append(command_output)
-                        now = datetime.datetime.utcnow()
+                        now = datetime.datetime.now()
                         new_result.end_time = now
                         new_result.duration = (now - start_time).seconds
                         sqlsession.commit()

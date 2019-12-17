@@ -12,9 +12,11 @@ from sqlalchemy.ext.hybrid import hybrid_method
 
 from lib.core.Config import *
 from lib.db.Credential import Credential
+from lib.db.Job import Job
 from lib.db.Option import Option
 from lib.db.Product import Product
 from lib.db.Result import Result
+from lib.db.Screenshot import Screenshot
 from lib.db.Vuln import Vuln
 from lib.db.Base import Base
 
@@ -53,6 +55,8 @@ class Service(Base):
     results       = relationship('Result', order_by=Result.id, 
         back_populates='service', cascade='save-update, merge, delete, delete-orphan')
     vulns         = relationship('Vuln', order_by=Vuln.id, 
+        back_populates='service', cascade='save-update, merge, delete, delete-orphan')
+    jobs          = relationship('Job', order_by=Job.id, 
         back_populates='service', cascade='save-update, merge, delete, delete-orphan')
     screenshot    = relationship('Screenshot', uselist=False, 
         back_populates='service', cascade='save-update, merge, delete, delete-orphan')
