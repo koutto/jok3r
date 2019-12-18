@@ -303,6 +303,7 @@ class JobManager:
         )
         Session.add(job)
         Session.commit()
+        return job
 
 
     def queue_job(self, job_id):

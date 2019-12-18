@@ -89,6 +89,7 @@ class Service:
                 id=service.id)
             self.screenshot = '{}/large'.format(url)
             self.screenshot_thumb = '{}/thumb'.format(url)
+        self.mission = service.host.mission.name
 
 
 class CommandOutput:
@@ -199,3 +200,29 @@ class ServiceWithAll(Service):
         self.credentials = list(map(lambda x: Credential(x), service.credentials))
         self.vulns = list(map(lambda x: Vuln(x), service.vulns))
         self.results = list(map(lambda x: Result(x), service.results))
+
+class Job:
+    def __init__(self, job):
+        self.id = job.id
+        self.attack_profile = job.attack_profile
+        self.checks_selection = job.checks_selection
+        self.categories_only = job.categories_only
+        self.categories_exclude = job.categories_exclude
+        self.nmap_banner_grabbing = job.nmap_banner_grabbing
+        self.web_techno_detection = job.web_techno_detection
+        self.force_recheck = job.force_recheck
+        self.debug_mode = job.debug_mode
+        self.fast_mode = job.fast_mode
+        self.wordlist_users = job.wordlist_users
+        self.wordlist_passwords = job.wordlist_passwords
+        self.wordlist_webpaths = job.wordlist_webpaths
+        self.extra_options = job.extra_options
+        self.status = job.status
+        self.start_time = job.start_time
+        self.end_time = job.end_time
+        self.duration = job.duration
+        self.worker_id = job.worker_id
+        self.exit_code = job.exit_code
+        self.comment = job.comment
+        self.service_id = job.service_id
+        self.service = Service(job.service)

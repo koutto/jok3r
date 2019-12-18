@@ -182,6 +182,7 @@ service = api.model('Service', {
     'host_id': fields.Integer(description='Host identifier'),
     'screenshot': fields.String(description='Web screenshot'),
     'screenshot_thumb': fields.String(description='Web screenshot thumbnail'),
+    'mission': fields.String(description='Mission name'),
 })
 
 
@@ -252,4 +253,30 @@ check = api.model('Security Check', {
 checks_with_supported_services = api.model('Security Checks and supported services', {
     'services': fields.List(fields.String(description='Service name')),
     'checks': fields.List(fields.Nested(check)),
+})
+
+job = api.model('Job', {
+    'id': fields.Integer(readonly=True, description='The service unique identifier'),
+    'attack_profile': fields.String(description='Attack profile'),
+    'checks_selection': fields.String(description='Selection of checks to run (comma-separated)'),
+    'categories_only': fields.String(description='Selection of categories of checks to run (comma-separated)'),
+    'categories_exclude': fields.String(description='Selection of categories of checks to exclude (comma-separated)'),
+    'nmap_banner_grabbing': fields.Boolean(description='Boolean indicating if Nmap banner grabbing is enabled'),
+    'web_techno_detection': fields.Boolean(description='Boolean indicating if Web technologies detection is enabled'),
+    'force_recheck': fields.Boolean(description='Boolean indicating if same checks can be run twice'),
+    'debug_mode': fields.Boolean(description='Boolean indicating if debug mode is enabled'),
+    'fast_mode': fields.Boolean(description='Boolean indicating if fast mode is enabled'),
+    'wordlist_users': fields.String(description='Path to custom wordlist of usernames'),
+    'wordlist_passwords': fields.String(description='Path to custom wordlist of passwords'),
+    'wordlist_webpaths': fields.String(description='Path to custom wordlist for web path discovery'),
+    'extra_options': fields.String(description='Extra options'),
+    'status': fields.String(description='Job status'),
+    'start_time': fields.DateTime(description='Start time of job'),
+    'end_time': fields.DateTime(description='End time of job'),
+    'duration': fields.Integer(description='Duration of job (in seconds)'),
+    'worker_id': fields.Integer(description='Worker identifier'),
+    'exit_code': fields.Integer(description='Exit code returned by the job'),
+    'comment': fields.String(description='Job comment'),
+    'service_id': fields.Integer(description='Target service identifier'),
+    'service': fields.Nested(service),
 })
