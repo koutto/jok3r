@@ -757,6 +757,38 @@ fi
 print_delimiter
 
 # -----------------------------------------------------------------------------
+# Install tmux
+if ! [ -x "$(command -v tmux)" ]; then
+    print_blue "[~] Install Tmux"
+    apt-get install -y tmux
+    if [ -x "$(command -v tmux)" ]; then
+        print_green "[+] Tmux installed successfully"
+    else
+        print_red "[!] An error occured during Tmux install"
+        exit 1
+    fi   
+else
+    print_green "[+] Tmux is already installed"
+fi
+print_delimiter
+
+# -----------------------------------------------------------------------------
+# Install Redis-server
+if ! [ -x "$(command -v redis-server)" ]; then
+    print_blue "[~] Install Redis-server"
+    apt-get install -y redis-server
+    if [ -x "$(command -v redis-server)" ]; then
+        print_green "[+] Redis-server installed successfully"
+    else
+        print_red "[!] An error occured during Redis-server install"
+        exit 1
+    fi   
+else
+    print_green "[+] Redis-server is already installed"
+fi
+print_delimiter
+
+# -----------------------------------------------------------------------------
 
 print_blue "[~] Install Python3 libraries required by Jok3r (if missing)"
 pip3 install -r requirements.txt

@@ -16,8 +16,11 @@ humanfriendly>=4.12.1
 Pillow
 prettytable>=0.7.2
 python-libnmap>=0.7.0
+psutil
+redis>=3.2.1
 regex>=2018.6.9
 requests
+rq>=1.1.0
 selenium
 six>=1.11.0
 SQLAlchemy>=1.2.8
