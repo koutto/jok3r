@@ -21,6 +21,7 @@ from lib.webui.api.endpoints.ResultsApi import ns as results_namespace
 from lib.webui.api.endpoints.CommandOutputApi import ns as command_outputs_namespace
 from lib.webui.api.endpoints.ToolsApi import ns as tools_namespace
 from lib.webui.api.endpoints.ChecksApi import ns as checks_namespace
+from lib.webui.api.endpoints.JobsApi import ns as jobs_namespace
 
 
 app = Flask(__name__, static_url_path="")
@@ -69,6 +70,7 @@ def initialize_app(flask_app):
     api.add_namespace(command_outputs_namespace)
     api.add_namespace(tools_namespace)
     api.add_namespace(checks_namespace)
+    api.add_namespace(jobs_namespace)
     flask_app.register_blueprint(blueprint)
 
 

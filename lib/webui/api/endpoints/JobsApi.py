@@ -99,89 +99,112 @@ class JobListAPI(Resource):
         return JobRestModel(job)
 
 
-# @ns.route('/<int:id>')
-# class JobAPI(Resource):
+@ns.route('/<int:id>')
+class JobAPI(Resource):
 
-#     @ns.doc('get_mission')
-#     @ns.marshal_with(mission)
-#     def get(self, id):
-#         """Get a mission"""
-#         missions_req = MissionsRequester(Session)
-#         filter_ = Filter()
-#         filter_.add_condition(Condition(id, FilterData.MISSION_ID))
-#         missions_req.add_filter(filter_)
-#         m = missions_req.get_first_result()   
-#         if m:
-#             return Mission(m)
-#         else:
-#             raise ApiNoResultFound()
+    @ns.doc('get_job')
+    @ns.marshal_with(job)
+    def get(self, id):
+        """Get a job"""
+        job = Session.query(Job).filter(Job.id == id).first()
+        if job:
+            return JobRestModel(job)
+        else:
+            raise ApiNoResultFound()
 
 
-#     @ns.doc('update_mission')
-#     @ns.expect(mission)
-#     @ns.marshal_with(mission, code=201)
-#     def put(self, id):
-#         """Update a mission name or comment"""
-#         missions_req = MissionsRequester(Session)
-#         filter_ = Filter()
-#         filter_.add_condition(Condition(id, FilterData.MISSION_ID))
-#         missions_req.add_filter(filter_)
-#         m = missions_req.get_first_result()   
-#         if m:
-#             # Rename mission
-#             if 'name' in request.json:
-#                 if request.json['name'] != m.name:
-#                     if not missions_req.rename(m.name, request.json['name']):
-#                         raise ApiException('An error occured when trying to rename ' \
-#                             'mission "{name}"'.format(name=m.name))
-
-#             # Edit comment
-#             if 'comment' in request.json:
-#                 if request.json['comment'] != m.comment:
-#                     if not missions_req.edit_comment(request.json['comment']):
-#                         raise ApiException('An error occured when trying to edit ' \
-#                             'comment for mission "{name}"'.format(name=m.name))
-#             return Mission(m)
-#         else:
-#             raise ApiNoResultFound()
+    @ns.doc('update_job')
+    @ns.expect(job)
+    @ns.marshal_with(job, code=201)
+    def put(self, id):
+        """Update a mission name or comment"""
+        job = Session.query(Job).filter(Job.id == id).first()
+        if job:
+            # Edit comment
+            if 'comment' in request.json:
+                if request.json['comment'] != job.comment:
+                    job.comment = request.json['comment']
+                    Session.commit()
+            return JobRestModel(job)
+        else:
+            raise ApiNoResultFound()
 
 
-#     @ns.doc('delete_mission')
-#     def delete(self, id):
-#         """Delete a mission"""
-#         missions_req = MissionsRequester(Session)
-#         filter_ = Filter()
-#         filter_.add_condition(Condition(id, FilterData.MISSION_ID))
-#         missions_req.add_filter(filter_)
-#         m = missions_req.get_first_result()
-#         if m:
-#             if m.name == 'default':
-#                 raise ApiException('Cannot delete "default" mission')
-
-#             elif missions_req.delete():
-#                 return None, 201
-#             else:
-#                 raise ApiException('An error occured when trying to delete mission ' \
-#                     '"{name}"'.format(name=m.name))
-#         else:
-#             raise ApiNoResultFound()         
+    @ns.doc('delete_job')
+    def delete(self, id):
+        """Delete a job"""
+        job = Session.query(Job).filter(Job.id == id).first()
+        if job:
+            Session.delete(job)
+            return None, 201
+        else:
+            raise ApiNoResultFound()    
 
 
-# @ns.route('/<int:id>/hosts')
-# class MissionHostsAPI(Resource):
 
-#     @ns.doc('list_hosts_in_mission')
-#     @ns.marshal_with(mission_with_hosts)
-#     def get(self, id):
-#         """List all hosts in a mission"""
-#         missions_req = MissionsRequester(Session)
-#         filter_ = Filter()
-#         filter_.add_condition(Condition(id, FilterData.MISSION_ID))
-#         missions_req.add_filter(filter_)
-#         m = missions_req.get_first_result()   
-#         if m:
-#             m = Mission(m)
-#             m.hosts = list(map(lambda x: Host(x), m.hosts))
-#             return m
-#         else:
-#             raise ApiNoResultFound()
+@ns.route('/<int:id>/queue')
+class JobQueueAPI(Resource):
+
+    @ns.doc('queue_job')
+    def get(self, id):
+        """Queue a job"""
+        job = Session.query(Job).filter(Job.id == id).first()
+        if job:
+            if jobmanager.queue_job(id):
+                return None, 201
+            else:
+                raise ApiException('An error occured when trying to queue job ' \
+                    '#{}'.format(id))
+        else:
+            raise ApiNoResultFound() 
+
+
+@ns.route('/<int:id>/cancel')
+class JobCancelAPI(Resource):
+
+    @ns.doc('cancel_job')
+    def get(self, id):
+        """Cancel a job"""
+        job = Session.query(Job).filter(Job.id == id).first()
+        if job:
+            if jobmanager.cancel_job(id):
+                return None, 201
+            else:
+                raise ApiException('An error occured when trying to cancel job ' \
+                    '#{}'.format(id))
+        else:
+            raise ApiNoResultFound() 
+
+
+@ns.route('/<int:id>/stop')
+class JobStopAPI(Resource):
+
+    @ns.doc('stop_job')
+    def get(self, id):
+        """Stop a job"""
+        job = Session.query(Job).filter(Job.id == id).first()
+        if job:
+            if jobmanager.stop_job(id):
+                return None, 201
+            else:
+                raise ApiException('An error occured when trying to stop job ' \
+                    '#{}'.format(id))
+        else:
+            raise ApiNoResultFound() 
+
+
+@ns.route('/<int:id>/restart')
+class JobRestartAPI(Resource):
+
+    @ns.doc('restart_job')
+    def get(self, id):
+        """Restart a job"""
+        job = Session.query(Job).filter(Job.id == id).first()
+        if job:
+            if jobmanager.restart_job(id):
+                return None, 201
+            else:
+                raise ApiException('An error occured when trying to restart job ' \
+                    '#{}'.format(id))
+        else:
+            raise ApiNoResultFound() 
