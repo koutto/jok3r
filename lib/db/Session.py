@@ -9,7 +9,8 @@ import sqlalchemy.ext.declarative
 
 from lib.core.Config import *
 
-engine = sqlalchemy.create_engine('sqlite:///' + DB_FILE)
+
+engine = sqlalchemy.create_engine(DB_STRING)
 #Session = sqlalchemy.orm.sessionmaker(bind=engine)
 
 # Thread-safe sessions

@@ -100,11 +100,16 @@ TOOLBOX_DIR        = TOOL_BASEPATH + '/toolbox'
 DEFAULT_OUTPUT_DIR = 'output'
 WEBSHELLS_DIR      = TOOL_BASEPATH + '/webshells'
 WORDLISTS_DIR      = TOOL_BASEPATH + '/wordlists'
-DB_FILE            = TOOL_BASEPATH + '/local.db'
 DB_HIST_FILE       = TOOL_BASEPATH + '/.dbhistory'
 REPORT_TPL_DIR     = TOOL_BASEPATH + '/lib/reporter/templates'
 REPORT_PATH        = TOOL_BASEPATH + '/reports'
 VIRTUALENVS_DIR    = TOOL_BASEPATH + '/toolbox/virtualenvs'
+
+#----------------------------------------------------------------------------------------
+# Database Settings
+
+#DB_STRING = 'sqlite:///' + TOOL_BASEPATH + '/local.db' # sqlite
+DB_STRING = 'postgres://admin:password@localhost:5432/postgres' # postgres
 
 #----------------------------------------------------------------------------------------
 # Display Settings
