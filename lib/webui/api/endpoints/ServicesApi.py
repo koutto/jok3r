@@ -14,6 +14,7 @@ from lib.core.Constants import FilterData
 from lib.core.Exceptions import ApiException, ApiNoResultFound
 from lib.requester.Condition import Condition
 from lib.requester.Filter import Filter
+from lib.requester.JobsRequester import JobsRequester
 from lib.requester.ServicesRequester import ServicesRequester
 from lib.webui.api.Api import api
 from lib.webui.api.Models import Service
@@ -72,10 +73,15 @@ class ServiceAPI(Resource):
         services_req.add_filter(filter_)
         s = services_req.get_first_result()   
         if s:
-            if services_req.delete():
-                return None, 201
+            jobs_req = JobsRequester(Session)
+            if jobs_req.is_service_with_queued_or_running_jobs(id):
+                raise ApiException('Impossible to delete the service because ' \
+                    'there is currently a queued/running job targeting it')
             else:
-                raise ApiException('An error occured when trying to delete service')
+                if services_req.delete():
+                    return None, 201
+                else:
+                    raise ApiException('An error occured when trying to delete service')
         else:
             raise ApiNoResultFound()     
 

@@ -15,6 +15,7 @@ from lib.db.Credential import Credential
 from lib.db.Host import Host
 from lib.db.Mission import Mission
 from lib.db.Service import Service, Protocol
+from lib.requester.JobsRequester import JobsRequester
 from lib.output.Output import Output
 from lib.output.Logger import logger
 
@@ -464,7 +465,22 @@ class ServicesRequester(Requester):
             logger.error('No matching service')
             return False
         else:
+            jobs_req = JobsRequester(self.sqlsess)
             for r in results:
+                # Service cannot be deleted if it has one (or more) queued/running
+                # jobs currently targeting it
+                if jobs_req.is_service_with_queued_or_running_jobs(r.id):
+                    logger.error('Service {service} host={ip}{hostname} ' \
+                    'port={port}/{proto} cannot be deleted because there is ' \
+                    'a queued or running job currently targeting it'.format(
+                        service  = r.name,
+                        ip       = r.host.ip,
+                        hostname = '('+r.host.hostname+')' if r.host.hostname else '',
+                        port     = r.port,
+                        proto    = {Protocol.TCP: 'tcp', Protocol.UDP: 'udp'}.get(
+                            r.protocol)))
+                    continue
+
                 logger.info('Service {service} host={ip}{hostname} ' \
                     'port={port}/{proto} deleted'.format(
                     service  = r.name,

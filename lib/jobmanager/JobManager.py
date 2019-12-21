@@ -420,6 +420,11 @@ class JobManager:
 
     def restart_job(self, job_id):
         """
+        Restart a finished/canceled/stopped job.
+
+        :param int job_id: Job identifier
+        :return: Status
+        :rtype: bool
         """
         job = self.get_job_from_id(job_id)
         if not job:
@@ -438,7 +443,35 @@ class JobManager:
         job.status = 'created'
         Session.commit()
 
-        return (self.queue_job(job_id) is not None)    
+        return (self.queue_job(job_id) is not None) 
+
+
+    def delete_job(self, job_id):
+        """
+        Delete a finished/canceled/stopped/created job.
+
+        :param int job_id: Job identifier
+        :return: Status
+        :rtype: bool
+        """  
+        job = self.get_job_from_id(job_id)
+        if not job:
+            logger.error('Invalid job id {}'.format(job_id))
+            return False
+
+        if job.status in ('queued', 'running'):
+            logger.error('Job with id={id} cannot be deleted because its status ' \
+                'is "{status}")'.format(
+                    id=job.id,
+                    status=job.status
+                )
+            )
+            return False
+
+        Session.delete(job)
+        Session.commit()
+        return True
+
 
     # ------------------------------------------------------------------------------------
 

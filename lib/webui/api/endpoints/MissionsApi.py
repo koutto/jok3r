@@ -15,6 +15,7 @@ from lib.core.Exceptions import ApiException, ApiNoResultFound
 from lib.importer.NmapResultsParser import NmapResultsParser
 from lib.requester.Condition import Condition
 from lib.requester.Filter import Filter
+from lib.requester.JobsRequester import JobsRequester
 from lib.requester.MissionsRequester import MissionsRequester
 from lib.requester.HostsRequester import HostsRequester
 from lib.webui.api.Api import api, settings
@@ -126,11 +127,16 @@ class MissionAPI(Resource):
             if m.name == 'default':
                 raise ApiException('Cannot delete "default" mission')
 
-            elif missions_req.delete():
-                return None, 201
+            jobs_req = JobsRequester(Session)
+            if jobs_req.is_mission_with_queued_or_running_jobs(id):
+                raise ApiException('Impossible to delete the mission because ' \
+                    'there is currently a queued/running job targeting it')
             else:
-                raise ApiException('An error occured when trying to delete mission ' \
-                    '"{name}"'.format(name=m.name))
+                if missions_req.delete():
+                    return None, 201
+                else:
+                    raise ApiException('An error occured when trying to delete ' \
+                        'mission "{name}"'.format(name=m.name))
         else:
             raise ApiNoResultFound()         
 

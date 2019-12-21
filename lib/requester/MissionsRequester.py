@@ -15,6 +15,7 @@ from lib.db.Screenshot import Screenshot
 from lib.db.Service import Service
 from lib.db.Vuln import Vuln
 from lib.utils.StringUtils import StringUtils
+from lib.requester.JobsRequester import JobsRequester
 from lib.output.Logger import logger
 from lib.output.Output import Output
 
@@ -91,20 +92,31 @@ class MissionsRequester(Requester):
 
     def delete(self):
         """
-        Delete selected missions in database
+        Delete selected mission in database
         :return: Status
         :rtype: bool
         """
-        results = self.get_results()
-        if not results:
+        result = self.get_first_result()
+        if not result:
             logger.error('No mission with this name')
             return False
         else:
-            for r in results:
-                self.sqlsess.delete(r)
-            self.sqlsess.commit()
-            logger.success('Mission deleted')
-            return True
+            # Mission cannot be deleted if it has one (or more) queued/running
+            # jobs currently targeting one of its service
+            jobs_req = JobsRequester(self.sqlsess)
+            if jobs_req.is_mission_with_queued_or_running_jobs(result.id):
+                logger.error('Mission {name} cannot be deleted because ' \
+                    'there is a queued or running job currently targeting ' \
+                    'it'.format(
+                        name=result.name
+                    )
+                )
+                return False
+            else:
+                self.sqlsess.delete(result)
+                self.sqlsess.commit()
+                logger.success('Mission deleted')
+                return True
 
 
     def reset(self):

@@ -8,6 +8,7 @@ from lib.utils.StringUtils import StringUtils
 from lib.db.Host import Host
 from lib.db.Mission import Mission
 from lib.db.Service import Service, Protocol
+from lib.requester.JobsRequester import JobsRequester
 from lib.output.Logger import logger
 from lib.output.Output import Output
 
@@ -153,7 +154,20 @@ class HostsRequester(Requester):
             logger.error('No matching host')
             return False
         else:
+            jobs_req = JobsRequester(self.sqlsess)
             for r in results:
+                # Host cannot be deleted if it has one (or more) queued/running
+                # jobs currently targeting one of its service
+                if jobs_req.is_host_with_queued_or_running_jobs(r.id):
+                    logger.error('Host {ip} {hostname} cannot be deleted because ' \
+                        'there is a queued or running job currently targeting ' \
+                        'it'.format(
+                            ip=r.ip, 
+                            hostname='('+r.hostname+')' if r.hostname else '', 
+                        )
+                    )
+                    continue
+
                 logger.info('Host {ip} {hostname} (and its {nb_services} services) ' \
                     'deleted'.format(
                     ip=r.ip, 
