@@ -96,7 +96,12 @@ class JobManager:
             else:
                 logger.info('Spawning autostart worker script ' \
                     '"rqworker_{}"...'.format(i+1))
-                self.start_worker('rqworker_{}'.format(i+1))
+                if self.start_worker('rqworker_{}'.format(i+1)):
+                    logger.success('Worker "rqworker_{}" is running and ' \
+                        'registered'.format(i+1))
+                else:
+                    logger.error('Worker "rqworker_{}" is not running or ' \
+                        'not registered'.format(i+1))
 
 
     def start_worker(self, worker_name):
@@ -105,10 +110,29 @@ class JobManager:
 
         :param str worker_name: Name of the worker (rqworker_<num>)
         """
+        # Make sure to register death on Redis server if there is already
+        # a running worker with the provided name
+        worker = self.get_worker_by_name(worker_name)
+        if worker:
+            worker.register_death()
+            time.sleep(2)
+
         subprocess.Popen([
             TOOL_BASEPATH + '/lib/jobmanager/start_worker.sh',
             worker_name
         ])
+
+        time.sleep(2)
+        worker = self.get_worker_by_name(worker_name)
+        if worker:
+            try:
+                worker.register_birth()
+            except ValueError:
+                # ValueError: There exists an active worker named 'rqworker_1' already
+                pass
+            return True
+        else:
+            return False        
         # subprocess.Popen([
         #     'tmux',
         #     'new',
@@ -127,7 +151,7 @@ class JobManager:
         """
         for i in range(self.nb_workers):
             if not self.is_worker_autostart_script_running(i+1):
-                logger.info('Autostart worker script for "rqworker_{}" not detected' \
+                logger.info('Autostart worker script for "rqworker_{}" not detected ' \
                     'running. Respawning...'.format(i+1))
                 self.start_worker('rqworker_{}'.format(i+1))         
 
@@ -147,33 +171,69 @@ class JobManager:
         return False
 
 
+    def is_ttyd_autostart_script_running(self, worker_id):
+        """
+        Check if the worker autostart script is running for a given working id.
+
+        :param int worker_id: Worker identifier to check
+        """
+        for proc in psutil.process_iter():
+            cmdline = proc.cmdline()
+            if len(cmdline) == 4:
+                if cmdline[1].endswith('start_ttyd.sh') and \
+                   cmdline[2] == 'rqworker_{}'.format(worker_id):
+                   return True
+        return False
+
+
     def bind_workers_to_ttyd(self):
-        self.kill_all_ttyd()
+        #self.kill_all_ttyd()
         logger.info('Binding rq workers to ttyd...')
         for i in range(self.nb_workers):
-            logger.info('Starting ttyd available at http://localhost:{port} binded to ' \
-                '"rqworker_{id}"...'.format(
-                    port=self.start_port_ttyd+i,
-                    id=i+1
+            if self.is_ttyd_autostart_script_running(i+1):
+                logger.info('Autostart ttyd script for "rqworker_{id}" already ' \
+                    'running and available at http://localhost:{port}'.format(
+                        id=i+1,
+                        port=self.start_port_ttyd+i
+                    )
                 )
-            )
-            subprocess.Popen([
-                TOOL_BASEPATH + '/lib/jobmanager/start_ttyd.sh',
-                TOOL_BASEPATH,
-                'rqworker_{}'.format(i+1),
-                str(self.start_port_ttyd+i)
-            ])
-            # subprocess.Popen([
-            #     WEB_TTY_PATH + WEB_TTY_BINARY,
-            #     '--interface',
-            #     '127.0.0.1',
-            #     '--port',
-            #     str(self.start_port_ttyd+i),
-            #     'tmux',
-            #     'attach',
-            #     '-t',
-            #     'rqworker_{}'.format(i+1)
-            # ])
+            else:
+                logger.info('Starting ttyd available at http://localhost:{port} ' \
+                    'binded to "rqworker_{id}"...'.format(
+                        port=self.start_port_ttyd+i,
+                        id=i+1
+                    )
+                )
+                self.start_ttyd(
+                    'rqworker_{}'.format(i+1),
+                    self.start_port_ttyd+i
+                )
+
+
+    def start_ttyd(self, worker_name, port):
+        """
+        Start ttyd autostart script.
+
+        :param str worker_name: Name of the worker (rqworker_<num>)
+        :param int port: Binding port
+        """
+        subprocess.Popen([
+            TOOL_BASEPATH + '/lib/jobmanager/start_ttyd.sh',
+            worker_name,
+            str(port)
+        ])
+        # subprocess.Popen([
+        #     WEB_TTY_PATH + WEB_TTY_BINARY,
+        #     '--interface',
+        #     '127.0.0.1',
+        #     '--port',
+        #     str(self.start_port_ttyd+i),
+        #     'tmux',
+        #     'attach',
+        #     '-t',
+        #     'rqworker_{}'.format(i+1)
+        # ])
+
 
     # ------------------------------------------------------------------------------------
 
