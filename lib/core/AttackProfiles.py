@@ -34,6 +34,21 @@ class AttackProfile:
         return service.lower() in self.checks
 
 
+    def is_check_supported(self, service, check_name):
+        """
+        Check if the Attack Profile runs the specified check.
+
+        :param str service: Service name for the check
+        :param str check_name: Check name to look for
+        :return: Result of check
+        :rtype: bool
+        """
+        return (
+            self.is_service_supported(service) and
+            check_name in self.checks[service]
+        )
+
+
     def get_checks_for_service(self, service):
         """
         Get the list of check names that must be applied for the given service.
@@ -89,6 +104,22 @@ class AttackProfiles:
             if p.name.lower() == name.lower():
                 return p
         return None
+
+
+    def get_profiles_for_check(self, service, check_name):
+        """
+        Get list of attack profiles that run the specified check.
+
+        :param str service: Service name for the check
+        :param str check_name: Check name to look for
+        :return: List of attack profiles
+        :rtype: list(str)
+        """
+        list_profiles = list()
+        for attack_profile in self.profiles:
+            if attack_profile.is_check_supported(service, check_name):
+                list_profiles.append(attack_profile.name)
+        return list_profiles
 
 
     #------------------------------------------------------------------------------------

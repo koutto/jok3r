@@ -25,6 +25,12 @@ class CheckListAPI(Resource):
         """List all security checks"""
         services_config = settings.services
         list_services = services_config.list_services(multi=False)
+        list_attack_profiles = list()
+        for attack_profile in settings.attack_profiles.profiles:
+            list_attack_profiles.append({
+                'name': attack_profile.name,
+                'description': attack_profile.description,
+            })
         list_checks = list()
 
         for service in list_services:
@@ -39,11 +45,14 @@ class CheckListAPI(Resource):
                             'description': c.description,
                             'tool': c.tool.name,
                             'nb_commands': len(c.commands),
+                            'attack_profiles': settings.attack_profiles.\
+                                get_profiles_for_check(service, c.name),
                         }
                         list_checks.append(check)
 
         return {
             'services': list_services,
+            'attack_profiles': list_attack_profiles,
             'checks': list_checks,
         }
 

@@ -248,10 +248,17 @@ check = api.model('Security Check', {
     'description': fields.String(description='Description of the check'),
     'tool': fields.String(description='Tool used by the check'),
     'nb_commands': fields.Integer(description='Number of commands run by the check'),
+    'attack_profiles': fields.List(fields.String(description='Attack profile supported by the check')),
+})
+
+attack_profile = api.model('Attack Profile', {
+    'name': fields.String(description='Attack profile name'),
+    'description': fields.String(description='Attack profile description'),
 })
 
 checks_with_supported_services = api.model('Security Checks and supported services', {
     'services': fields.List(fields.String(description='Service name')),
+    'attack_profiles': fields.List(fields.Nested(attack_profile)),
     'checks': fields.List(fields.Nested(check)),
 })
 
