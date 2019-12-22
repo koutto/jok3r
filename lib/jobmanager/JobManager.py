@@ -96,12 +96,12 @@ class JobManager:
             else:
                 logger.info('Spawning autostart worker script ' \
                     '"rqworker_{}"...'.format(i+1))
-                if self.start_worker('rqworker_{}'.format(i+1)):
-                    logger.success('Worker "rqworker_{}" is running and ' \
-                        'registered'.format(i+1))
-                else:
-                    logger.error('Worker "rqworker_{}" is not running or ' \
-                        'not registered'.format(i+1))
+                self.start_worker('rqworker_{}'.format(i+1))
+                # logger.success('Worker "rqworker_{}" is running and ' \
+                #     'registered'.format(i+1))
+                # else:
+                #     logger.error('Worker "rqworker_{}" is not running or ' \
+                #         'not registered'.format(i+1))
 
 
     def start_worker(self, worker_name):
@@ -112,27 +112,27 @@ class JobManager:
         """
         # Make sure to register death on Redis server if there is already
         # a running worker with the provided name
-        worker = self.get_worker_by_name(worker_name)
-        if worker:
-            worker.register_death()
-            time.sleep(2)
+        # worker = self.get_worker_by_name(worker_name)
+        # if worker:
+        #     worker.register_death()
+        #     time.sleep(2)
 
         subprocess.Popen([
             TOOL_BASEPATH + '/lib/jobmanager/start_worker.sh',
             worker_name
         ])
 
-        time.sleep(2)
-        worker = self.get_worker_by_name(worker_name)
-        if worker:
-            try:
-                worker.register_birth()
-            except ValueError:
-                # ValueError: There exists an active worker named 'rqworker_1' already
-                pass
-            return True
-        else:
-            return False        
+        # time.sleep(2)
+        # worker = self.get_worker_by_name(worker_name)
+        # if worker:
+        #     try:
+        #         worker.register_birth()
+        #     except ValueError:
+        #         # ValueError: There exists an active worker named 'rqworker_1' already
+        #         pass
+        #     return True
+        # else:
+        #     return False        
         # subprocess.Popen([
         #     'tmux',
         #     'new',
