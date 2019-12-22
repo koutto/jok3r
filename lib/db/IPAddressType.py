@@ -18,7 +18,7 @@ class IPAddressType(types.TypeDecorator):
     way out. 
     """
 
-    impl = types.Integer
+    impl = types.BigInteger
 
     def process_bind_param(self, value, dialect):
         if value:
