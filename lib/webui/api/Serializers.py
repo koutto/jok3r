@@ -260,6 +260,7 @@ checks_with_supported_services = api.model('Security Checks and supported servic
     'services': fields.List(fields.String(description='Service name')),
     'attack_profiles': fields.List(fields.Nested(attack_profile)),
     'checks': fields.List(fields.Nested(check)),
+    'categories': fields.List(fields.String(description='Category of checks')),
 })
 
 job = api.model('Job', {

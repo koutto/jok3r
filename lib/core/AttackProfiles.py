@@ -122,6 +122,20 @@ class AttackProfiles:
         return list_profiles
 
 
+    def is_valid_profile_name(self, profile_name):
+        """
+        Check if a profile name is valid.
+
+        :param str profile_name: Attack profile name to check
+        :return: Status
+        :rtype: bool
+        """
+        for attack_profile in self.profiles:
+            if attack_profile.name == profile_name:
+                return True
+        return False
+
+
     #------------------------------------------------------------------------------------
     # Output Methods
 

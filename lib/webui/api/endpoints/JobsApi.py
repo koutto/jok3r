@@ -53,6 +53,29 @@ class JobListAPI(Resource):
         if not s:
             raise ApiException('Target service provided does not exist in database')
 
+        # Check validity of parameters
+        if (
+            request.json['attack_profile'] and
+            not settings.attack_profiles.is_valid_profile_name(
+                request.json['attack_profile'])
+        ):
+            raise ApiException('Invalid attack profile')
+
+        if request.json['checks_selection']:
+            for check in request.json['checks_selection'].split(','):
+                if not settings.services.is_existing_check(check):
+                    raise ApiException('Invalid check provided: {}'.format(check))
+
+        if request.json['categories_only']:
+            for cat in request.json['categories_only'].split(','):
+                if cat not in settings.services.list_all_categories():
+                    raise ApiException('Invalid category provided: {}'.format(cat))
+
+        if request.json['categories_exclude']:
+            for cat in request.json['categories_exclude'].split(','):
+                if cat not in settings.services.list_all_categories():
+                    raise ApiException('Invalid category provided: {}'.format(cat))
+
         # Put job default configuration for undefined parameters
         if (
             'nmap_banner_grabbing' not in request.json or 
