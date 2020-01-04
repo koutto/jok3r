@@ -23,6 +23,10 @@ class Mission:
         self.users_count = mission.get_nb_credentials(single_username=True)
         self.products_count = mission.get_nb_products()
         self.vulns_count = mission.get_nb_vulns()
+        self.checks_categories = mission.get_checks_categories()
+        self.services_count_repartition = mission.get_nb_services_repartition()
+        self.products_count_repartition = mission.get_nb_products_repartition()
+        self.vulns_count_repartition = mission.get_nb_vulns_repartition()
         self.hosts = mission.hosts
 
 

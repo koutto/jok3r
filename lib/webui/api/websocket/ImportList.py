@@ -51,6 +51,8 @@ def import_list(mission_id, list_targets, options):
             options['nmapBannerGrabbing'] = True
         if 'webTechnoDetection' not in options:
             options['webTechnoDetection'] = True
+        if 'takeScreenshot' not in options:
+            options['takeScreenshot'] = True
 
         # Parse list of target services
         importer = ListImporter(
@@ -64,8 +66,29 @@ def import_list(mission_id, list_targets, options):
             reverse_dns_lookup=options['reverseDnsLookup'],
             html_title_grabbing=True,
             nmap_banner_grabbing=options['nmapBannerGrabbing'],
-            web_technos_detection=options['webTechnoDetection']            
+            web_technos_detection=options['webTechnoDetection'],
+            take_screenshot=options['takeScreenshot']            
         )
+        # emit('log-import-list', {
+        #     'type': 'error',
+        #     'message': 'TESTESTSTSTSST'
+        # })
+        # import time
+        # time.sleep(10)
+        # emit('log-import-list', {
+        #     'type': 'error',
+        #     'message': '2222222TESTESTSTSTSST'
+        # })
+        # time.sleep(20)
+        # emit('log-import-list', {
+        #     'type': 'error',
+        #     'message': '2222222TESTESTSTSTSST'
+        # })
+        # time.sleep(60)
+        # emit('log-import-list', {
+        #     'type': 'error',
+        #     'message': '2222222TESTESTSTSTSST'
+        # })
         emit('import-list-finished', {
             'success': True, 
             'nbServices': nb_new_services

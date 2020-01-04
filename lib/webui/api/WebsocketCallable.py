@@ -3,7 +3,7 @@
 ###
 ### Web-UI > WebSocketCallable (interface)
 ###
-from flask_socketio import emit
+from flask_socketio import SocketIO, emit
 from lib.output.Logger import logger
 
 
@@ -21,7 +21,7 @@ class WebsocketCallable:
         """
         self.called_from_websocket = called_from_websocket
         self.log_label = log_label
-
+        self.socketio = SocketIO(message_queue='redis://')
 
     def log(self, type, message):
         """
@@ -41,7 +41,7 @@ class WebsocketCallable:
         Log only via websocket emit
         """
         if self.called_from_websocket:
-            emit(self.log_label, {
+            self.socketio.emit(self.log_label, {
                 'type': type,
                 'message': message
             })

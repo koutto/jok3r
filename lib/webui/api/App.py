@@ -3,6 +3,9 @@
 ###
 ### Web-UI > API > App main
 ###
+import eventlet
+eventlet.monkey_patch() # VERY IMPORTANT: Must stay at top before all imports
+
 from flask import Flask, Blueprint
 from flask_socketio import SocketIO, emit
 from flask_cors import CORS
@@ -24,10 +27,20 @@ from lib.webui.api.endpoints.ChecksApi import ns as checks_namespace
 from lib.webui.api.endpoints.JobsApi import ns as jobs_namespace
 
 
+
+
 app = Flask(__name__, static_url_path="")
 app.url_map.strict_slashes = False
-socketio = SocketIO(app, cors_allowed_origins='*')
+app.secret_key = '76a823e9ba9b4d7db05b6025886417ef'
 CORS(app)
+#socketio = SocketIO(app, cors_allowed_origins='*', debug=True)
+socketio = SocketIO(app, 
+    message_queue='redis://',  
+    engineio_logger=True,
+    logger=True,
+    cors_allowed_origins='*', 
+    async_mode='eventlet'
+)
 
 import lib.webui.api.websocket.ImportList
 import lib.webui.api.websocket.ImportNmap
@@ -76,7 +89,8 @@ def initialize_app(flask_app):
 
 def run_server():
     initialize_app(app)
-    app.run(debug=FLASK_DEBUG)
+    #app.run(debug=FLASK_DEBUG)
+    socketio.run(app, debug=True)
 
 
 # @app.after_request

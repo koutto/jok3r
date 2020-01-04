@@ -159,7 +159,7 @@ class JobAPI(Resource):
         job = Session.query(Job).filter(Job.id == id).first()
         if job:
             Session.delete(job)
-            return None, 201
+            return None, 200
         else:
             raise ApiNoResultFound()    
 
@@ -174,7 +174,7 @@ class JobQueueAPI(Resource):
         job = Session.query(Job).filter(Job.id == id).first()
         if job:
             if jobmanager.queue_job(id):
-                return None, 201
+                return None, 200
             else:
                 raise ApiException('An error occured when trying to queue job ' \
                     '#{}'.format(id))
@@ -191,7 +191,7 @@ class JobCancelAPI(Resource):
         job = Session.query(Job).filter(Job.id == id).first()
         if job:
             if jobmanager.cancel_job(id):
-                return None, 201
+                return None, 200
             else:
                 raise ApiException('An error occured when trying to cancel job ' \
                     '#{}'.format(id))
@@ -208,7 +208,7 @@ class JobStopAPI(Resource):
         job = Session.query(Job).filter(Job.id == id).first()
         if job:
             if jobmanager.stop_job(id):
-                return None, 201
+                return None, 200
             else:
                 raise ApiException('An error occured when trying to stop job ' \
                     '#{}'.format(id))
@@ -225,7 +225,7 @@ class JobRestartAPI(Resource):
         job = Session.query(Job).filter(Job.id == id).first()
         if job:
             if jobmanager.restart_job(id):
-                return None, 201
+                return None, 200
             else:
                 raise ApiException('An error occured when trying to restart job ' \
                     '#{}'.format(id))

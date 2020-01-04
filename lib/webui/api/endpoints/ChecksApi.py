@@ -54,7 +54,7 @@ class CheckListAPI(Resource):
             'services': list_services,
             'attack_profiles': list_attack_profiles,
             'checks': list_checks,
-            'categories': list(settings.list_all_categories()),
+            'categories': list(services_config.list_all_categories()),
         }
 
 

@@ -26,7 +26,6 @@ except NameError:
 try:
     jobmanager
 except NameError:
-    print('DEFINE')
     jobmanager = JobManager(3, 7000)
 
 # Start shell (ttyd)

@@ -17,6 +17,20 @@ class ProtocolString(fields.Raw):
         }.get(value, 'tcp')
 
 
+checks_category = api.model('ChecksCategory', {
+    'name': fields.String(),
+    'count': fields.Integer(),
+})
+
+services_count_repartition = api.model('ServicesCountRepartition', {
+    'name': fields.String(),
+    'count': fields.Integer(),
+})
+
+products_count_repartition = api.model('ProductsCountRepartition', {
+    'name': fields.String(),
+    'count': fields.Integer(),
+})
 
 mission = api.model('Mission', {
     'id': fields.Integer(readonly=True, description='The mission unique identifier'),
@@ -29,6 +43,10 @@ mission = api.model('Mission', {
     'users_count': fields.Integer(description='Single usernames count'),
     'products_count': fields.Integer(description='Detected products count'),
     'vulns_count': fields.Integer(description='Vulnerabilities count'),
+    'checks_categories': fields.List(fields.Nested(checks_category)),
+    'services_count_repartition': fields.List(fields.Nested(services_count_repartition)),
+    'products_count_repartition': fields.List(fields.Nested(products_count_repartition)),
+    'vulns_count_repartition': fields.List(fields.Integer()),
 })
 
 service_short = api.model('ServiceShort', {
@@ -36,6 +54,7 @@ service_short = api.model('ServiceShort', {
     'port': fields.Integer(description='Port number'),
     'protocol': fields.String(description='Protocol'),
     'name': fields.String(description='Service name'),
+    'url': fields.String(description='URL'),
 })
 
 
@@ -80,7 +99,6 @@ result = api.model('Result', {
     'duration': fields.Integer(description='Duration of check (in seconds)'),
     'command_outputs': fields.List(fields.Nested(command_output)),
 })
-
 
 credential = api.model('Credential', {
     'id': fields.Integer(readonly=True, description='The credential unique identifier'),
@@ -142,11 +160,6 @@ vuln = api.model('Vuln', {
     'category': fields.String(description='Check category'),
     'tool_used': fields.String(description='Tool used'),
     'command_output_id': fields.Integer(description='Command output identifier'),
-})
-
-checks_category = api.model('ChecksCategory', {
-    'name': fields.String(),
-    'count': fields.Integer(),
 })
 
 service = api.model('Service', {
