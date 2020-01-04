@@ -134,7 +134,7 @@ class ServicesConfig:
         categories = set()
         for svc in self.list_services():
             categories.update(self.services[svc]['checks'].categories)
-        return categories
+        return sorted(categories)
 
 
     def get_default_port(self, service):

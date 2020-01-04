@@ -16,6 +16,7 @@ from lib.db.Host import Host
 from lib.db.Mission import Mission
 from lib.db.Service import Service, Protocol
 from lib.requester.JobsRequester import JobsRequester
+from lib.screenshoter.ScreenshotsProcessor import ScreenshotsProcessor
 from lib.output.Output import Output
 from lib.output.Logger import logger
 
@@ -100,7 +101,8 @@ class ServicesRequester(Requester):
                     reverse_dns_lookup=True, 
                     availability_check=True,
                     html_title_grabbing=True,
-                    web_technos_detection=True):
+                    web_technos_detection=True,
+                    take_screenshot=True):
         """
         Add a service into the current mission scope in database.
 
@@ -188,6 +190,14 @@ class ServicesRequester(Requester):
                 self.sqlsess.add(service)
                 self.sqlsess.commit()
 
+                if service.name == 'http' and take_screenshot:
+                    processor = ScreenshotsProcessor(
+                        self.current_mission, 
+                        self.sqlsess
+                    )
+                    if processor is not None:
+                        processor.take_screenshot(service)
+
                 logger.success('Service added: host {ip} | port {port}/{proto} | ' \
                     'service {service}'.format(
                         ip=service.host.ip, 
@@ -219,7 +229,8 @@ class ServicesRequester(Requester):
                 availability_check=True, 
                 nmap_banner_grabbing=True,
                 html_title_grabbing=True,
-                web_technos_detection=True):
+                web_technos_detection=True,
+                take_screenshot=True):
         """
         Add a URL into the current mission scope in database.
 
@@ -298,6 +309,15 @@ class ServicesRequester(Requester):
 
                 self.sqlsess.add(service)
                 self.sqlsess.commit()
+
+                if service.name == 'http' and take_screenshot:
+                    processor = ScreenshotsProcessor(
+                        self.current_mission, 
+                        self.sqlsess
+                    )
+                    if processor is not None:
+                        processor.take_screenshot(service)
+
                 logger.success('Service/URL added: {url}'.format(url=url))
                 return service, 'ok'
 
@@ -312,7 +332,7 @@ class ServicesRequester(Requester):
 
     #------------------------------------------------------------------------------------
 
-    def add_target(self, target):
+    def add_target(self, target, take_screenshot=True):
         """
         Add a new service into the current mission scope in database from a Target 
         object.
@@ -357,6 +377,14 @@ class ServicesRequester(Requester):
             # Add service in db
             self.sqlsess.add(target.service)
             self.sqlsess.commit()
+
+        if target.service.name == 'http' and take_screenshot:
+            processor = ScreenshotsProcessor(
+                self.current_mission, 
+                self.sqlsess
+            )
+            if processor is not None:
+                processor.take_screenshot(target.service)
 
         logger.success('{action}: host {ip} | port {port}/{proto} | ' \
             'service {service}'.format(

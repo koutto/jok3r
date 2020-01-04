@@ -9,6 +9,7 @@ from lib.db.Host import Host
 from lib.db.Mission import Mission
 from lib.db.Service import Service, Protocol
 from lib.requester.JobsRequester import JobsRequester
+from lib.screenshoter.ScreenshotsProcessor import ScreenshotsProcessor
 from lib.output.Logger import logger
 from lib.output.Output import Output
 
@@ -56,7 +57,7 @@ class HostsRequester(Requester):
 
     #------------------------------------------------------------------------------------
     
-    def add_or_merge_host(self, host):
+    def add_or_merge_host(self, host, take_screenshot=True):
         """
         Add/merge new host into the current mission scope in database.
         :param Host host: Host to add (or merge with matching existing one)
@@ -89,6 +90,14 @@ class HostsRequester(Requester):
                     service.host = match_host
                     self.sqlsess.add(service)
 
+                    if service.name == 'http' and take_screenshot:
+                        processor = ScreenshotsProcessor(
+                            self.current_mission, 
+                            self.sqlsess
+                        )
+                        if processor is not None:
+                            processor.take_screenshot(service)
+
                 logger.success('{action} service: host {ip} | port {port}/{proto} | ' \
                     'service {service}'.format(
                     action  = 'Updated' if match_service else 'Added',
@@ -118,6 +127,13 @@ class HostsRequester(Requester):
                     proto   = { Protocol.TCP: 'tcp', Protocol.UDP: 'udp' }.get(
                         service.protocol),
                     service = service.name))
+                if service.name == 'http' and take_screenshot:
+                    processor = ScreenshotsProcessor(
+                        self.current_mission, 
+                        self.sqlsess
+                    )
+                    if processor is not None:
+                        processor.take_screenshot(service)
 
         self.sqlsess.commit()
 

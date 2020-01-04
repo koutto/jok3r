@@ -153,10 +153,10 @@ class Host(Base):
     @hybrid_method
     def get_list_services(self):
         """
-        Get list of unique services for this host. 
+        Get list of services with basic information for this host. 
 
         :return: List of services
-        :rtype: list({'id': int, port': int, 'protocol': str, 'name': str})
+        :rtype: list({'id': int, port': int, 'protocol': str, 'name': str, 'url': str})
         """
         services = list()
         for svc in self.services:
@@ -172,6 +172,7 @@ class Host(Base):
                     'protocol': { Protocol.TCP: 'tcp', Protocol.UDP: 'udp' }.get(
                         svc.protocol, 'tcp'),
                     'name': svc.name,
+                    'url': svc.url,
                 })
         return services
 

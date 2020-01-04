@@ -7,6 +7,9 @@ import time
 
 from lib.db.Session import Session
 from lib.db.Job import Job
+from lib.db.Mission import Mission
+from lib.db.Host import Host
+from lib.db.Service import Service
 from lib.output.Logger import logger
 
 

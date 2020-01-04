@@ -43,7 +43,8 @@ class ListImporter(WebsocketCallable):
             reverse_dns_lookup=True,
             html_title_grabbing=True,
             nmap_banner_grabbing=True,
-            web_technos_detection=True):
+            web_technos_detection=True,
+            take_screenshot=True):
         """
         Parse the list of service to import.
 
@@ -54,6 +55,8 @@ class ListImporter(WebsocketCallable):
             service banner for each service (recommended)
         :param bool web_technos_detection: If set to True, try to detect web technos
             for HTTP service
+        :param bool take_screenshot: If set to True, take web page screenshot for
+            HTTP service
 
         :return: None
         :rtype: None
@@ -92,7 +95,8 @@ class ListImporter(WebsocketCallable):
                         availability_check=not nmap_banner_grabbing,
                         nmap_banner_grabbing=nmap_banner_grabbing,
                         html_title_grabbing=html_title_grabbing,
-                        web_technos_detection=web_technos_detection)
+                        web_technos_detection=web_technos_detection,
+                        take_screenshot=take_screenshot)
 
             # For line with syntax: <IP/HOST>:<PORT>[,<SERVICE>]
             else:
@@ -130,7 +134,8 @@ class ListImporter(WebsocketCallable):
                     reverse_dns_lookup=reverse_dns_lookup, 
                     availability_check=not nmap_banner_grabbing, # done by Nmap
                     html_title_grabbing=html_title_grabbing,
-                    web_technos_detection=web_technos_detection)
+                    web_technos_detection=web_technos_detection,
+                    take_screenshot=take_screenshot)
 
 
             # Handle errors/success

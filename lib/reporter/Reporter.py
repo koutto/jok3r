@@ -75,27 +75,28 @@ class Reporter:
 
         # Generate screenshots 
         processor = ScreenshotsProcessor(self.mission, self.sqlsession)
-        processor.run()
+        if processor is not None:
+            processor.run()
 
-        screens_dir = self.output_path + '/screenshots'
-        if not FileUtils.create_directory(screens_dir):
-            logger.warning('Unable to create screenshots directory: "{path}"'.format(
-                path=screens_dir))
-        else:
-            for service in services:
-                if service.name == 'http' and service.screenshot is not None \
-                        and service.screenshot.status == ScreenStatus.OK:
+            screens_dir = self.output_path + '/screenshots'
+            if not FileUtils.create_directory(screens_dir):
+                logger.warning('Unable to create screenshots directory: "{path}"'.format(
+                    path=screens_dir))
+            else:
+                for service in services:
+                    if service.name == 'http' and service.screenshot is not None \
+                            and service.screenshot.status == ScreenStatus.OK:
 
-                    img_name = 'scren-{ip}-{port}-{id}'.format(
-                        ip=str(service.host.ip),
-                        port=service.port,
-                        id=service.id)
-                    path = screens_dir + '/' + img_name
+                        img_name = 'scren-{ip}-{port}-{id}'.format(
+                            ip=str(service.host.ip),
+                            port=service.port,
+                            id=service.id)
+                        path = screens_dir + '/' + img_name
 
-                    ImageUtils.save_image(
-                        service.screenshot.image, path + '.png')
-                    ImageUtils.save_image(
-                        service.screenshot.thumbnail, path + '.thumb.png')
+                        ImageUtils.save_image(
+                            service.screenshot.image, path + '.png')
+                        ImageUtils.save_image(
+                            service.screenshot.thumbnail, path + '.thumb.png')
 
         # Create index.html
         html = self.__generate_index()
