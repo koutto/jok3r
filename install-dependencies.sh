@@ -70,10 +70,6 @@ if [[ ! $(grep "deb http://http.kali.org/kali kali-rolling main" /etc/apt/source
     dpkg -i kali-archive-keyring_2020.2_all.deb
     rm -f kali-archive-keyring_2020.2_all.deb
     # gpg --keyserver pgpkeys.mit.edu --recv-key  ED444FF07D8D0BF6
-    # gpg --keyserver pgpkeys.mit.edu --recv-key  ED444FF07D8D0BF6
-    # apt-key adv --keyserver hkp://keys.gnupg.net --recv-keys 7D8D0BF6
-    # gpg --keyserver hkp://keys.gnupg.net --recv-key 7D8D0BF6
-    # gpg -a --export ED444FF07D8D0BF6 | sudo apt-key add -
     # apt-key adv --keyserver hkp://keys.gnupg.net --recv-keys 7D8D0BF6
     gpg --keyserver hkp://keys.gnupg.net --recv-key 7D8D0BF6
     gpg -a --export ED444FF07D8D0BF6 | sudo apt-key add -
