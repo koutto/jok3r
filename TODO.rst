@@ -58,7 +58,7 @@ TOOLS/CHECKS TO ADD
 * https://pypi.org/project/SpitzerSec/
 * https://github.com/OJ/gobuster
 
-CVE SELECTION TO ADD TO
+CVE SELECTION TO ADD
 ===============================================================================
 
 F5 BIG-IP vulnerabilities:
