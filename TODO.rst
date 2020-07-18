@@ -53,6 +53,9 @@ TOOLS/CHECKS TO ADD
 * https://github.com/OWASP/Amass
 * https://github.com/inc0d3/moodlescan
 * https://github.com/m4ll0k/WAScan
+* https://github.com/skavngr/rapidscan
+* https://github.com/projectdiscovery/nuclei
+* https://pypi.org/project/SpitzerSec/
 
 
 DOCUMENTATION
