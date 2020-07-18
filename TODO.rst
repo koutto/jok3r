@@ -47,6 +47,13 @@ TOOLS/CHECKS TO ADD
 * Wordpress RCE https://github.com/opsxcq/exploit-CVE-2016-10033
 * https://github.com/peacand/winsharecrawler
 * https://github.com/Bo0oM/fuzz.txt/blob/master/fuzz.txt
+* https://github.com/dwisiswant0/findom-xss
+* https://github.com/devanshbatham/ParamSpider
+* https://github.com/google/tsunami-security-scanner
+* https://github.com/OWASP/Amass
+* https://github.com/inc0d3/moodlescan
+* https://github.com/m4ll0k/WAScan
+
 
 DOCUMENTATION
 ===============================================================================
