@@ -293,7 +293,7 @@ print_delimiter
 
 if ! [ -x "$(command -v virtualenv)" ]; then
     print_blue "[~] Install python virtual environment packages"
-    pip2 install virtualenv
+    #pip2 install virtualenv
     pip3 install virtualenv
     # pip3 install virtualenvwrapper
     # source /usr/local/bin/virtualenvwrapper.sh
@@ -383,14 +383,14 @@ webencodings
 Werkzeug
 "
 
-PIP2FREEZE=$(pip2 freeze)
-for lib in $LIBPY2; do    
-    if [[ ! $(echo $PIP2FREEZE | grep -i $lib) ]]; then
-        echo
-        print_blue "[~] Install Python library ${lib} (py2)"
-        pip2 install $lib
-    fi
-done
+#PIP2FREEZE=$(pip2 freeze)
+#for lib in $LIBPY2; do    
+#    if [[ ! $(echo $PIP2FREEZE | grep -i $lib) ]]; then
+#        echo
+#        print_blue "[~] Install Python library ${lib} (py2)"
+#        pip2 install $lib
+#    fi
+#done
 
 LIBPY3="
 aiohttp
