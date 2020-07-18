@@ -58,6 +58,22 @@ TOOLS/CHECKS TO ADD
 * https://pypi.org/project/SpitzerSec/
 * https://github.com/OJ/gobuster
 
+CVE SELECTION TO ADD TO
+===============================================================================
+
+F5 BIG-IP vulnerabilities:
+
+* CVE-2020-5902
+* CVE-2020-5903
+* CVE-2020-5857
+* CVE-2020-5876
+* CVE-2020-5877
+* CVE-2020-5883
+* CVE-2020-5885
+* CVE-2020-5881
+* CVE-2020-5875
+
+
 DOCUMENTATION
 ===============================================================================
 * Important note: need to be reachable directly from target for exploit with reverse shell !
