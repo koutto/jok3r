@@ -1,6 +1,9 @@
 =========
 Changelog
 =========
+**v3.0 BETA 3** 2020-07-18
+	* Add waf-checker and Pentest1 to attacks profiles
+	* Fix several minor bugs and customizations
 
 **v3.0 BETA 2** 2019-07-09
 	* Fix several bugs after testings
