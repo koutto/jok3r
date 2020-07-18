@@ -56,7 +56,7 @@ TOOLS/CHECKS TO ADD
 * https://github.com/skavngr/rapidscan
 * https://github.com/projectdiscovery/nuclei
 * https://pypi.org/project/SpitzerSec/
-
+* https://github.com/OJ/gobuster
 
 DOCUMENTATION
 ===============================================================================
