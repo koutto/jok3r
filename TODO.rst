@@ -57,6 +57,7 @@ TOOLS/CHECKS TO ADD
 * https://github.com/projectdiscovery/nuclei
 * https://pypi.org/project/SpitzerSec/
 * https://github.com/OJ/gobuster
+* https://github.com/khalilbijjou/WAFNinja.git
 
 CVE SELECTION TO ADD
 ===============================================================================
