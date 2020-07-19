@@ -36,7 +36,7 @@ class FileUtils:
     @staticmethod
     def read(fileName):
         result = ''
-        with open(fileName, 'r') as fd:
+        with open(fileName, 'rb') as fd:
             for line in fd.readlines():
                 result += line
         return result
@@ -45,7 +45,7 @@ class FileUtils:
     @staticmethod
     def write(filename, content):
         try:
-            with open(filename, 'w') as fd:
+            with open(filename, 'wb') as fd:
                 fd.write(content)
         except:
             return False
@@ -55,7 +55,7 @@ class FileUtils:
 
     @staticmethod
     def get_lines(fileName):
-        with open(fileName, 'r') as fd:
+        with open(fileName, 'rb') as fd:
             for line in fd.readlines():
                 yield line.replace('\n', '')
 
