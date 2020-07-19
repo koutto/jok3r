@@ -30,3 +30,6 @@ apikeys.py
 
 # Junk files
 shodan
+
+pentest.sh
+kickoff.sh
