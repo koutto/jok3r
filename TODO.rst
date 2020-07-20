@@ -85,8 +85,6 @@ SERVICES TO ADD
 * NFS
     * nfsshell (sudo apt-get install libreadline-dev ; make)
 * MongoDB
-* RPC
-    * https://github.com/hegusung/RPCScan.git
 * DNS
 * LDAP
 * MDNS
