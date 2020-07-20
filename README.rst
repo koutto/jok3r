@@ -487,6 +487,7 @@ Supported Services & Security Checks
 -  `Oracle (default 1521/tcp)`_
 -  `PostgreSQL (default 5432/tcp)`_
 -  `RDP (default 3389/tcp)`_
+-  `RPC (default 2049/udp)`_
 -  `SMB (default 445/tcp)`_
 -  `SMTP (default 25/tcp)`_
 -  `SNMP (default 161/udp)`_
@@ -761,6 +762,19 @@ RDP (default 3389/tcp)
     | ms12-020 | vulnscan | Check for MS12-020 RCE vulnerability (any Windows before 13 Mar 2012) | metasploit |
     +---------+----------+-----------------------------------------------------------------------+------------+
 
+RPC (default 2049/udp)
+----------------------
+
+.. code-block:: console
+
+    +----------+----------+-----------------------------------------------------------------------+------------+
+    | Name                  | Category | Description                                              | Tool used  |
+    +----------+----------+-----------------------------------------------------------------------+------------+
+    | ls-rpc-srv            | recon    | Listing RPC services                                       | rpcscan  |
+    | ls-nfs-mountpoints    | recon    | Listing NFS mount points                                   | rpcscan  |
+    | ls-nfs-shares         | recon    | Listing NFS shares                                         | rpcscan  |
+    +----------+----------+-----------------------------------------------------------------------+------------+
+ 
 
 SMB (default 445/tcp)
 ---------------------
