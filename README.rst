@@ -770,9 +770,9 @@ RPC (default 2049/udp)
     +----------+----------+-----------------------------------------------------------------------+------------+
     | Name                  | Category | Description                                              | Tool used  |
     +----------+----------+-----------------------------------------------------------------------+------------+
-    | ls-rpc-srv            | recon    | Listing RPC services                                       | rpcscan  |
-    | ls-nfs-mountpoints    | recon    | Listing NFS mount points                                   | rpcscan  |
-    | ls-nfs-shares         | recon    | Listing NFS shares                                         | rpcscan  |
+    | ls-rpc-srv            | recon    | Listing RPC services                                     | rpcscan    |
+    | ls-nfs-mountpoints    | recon    | Listing NFS mount points                                 | rpcscan    |
+    | ls-nfs-shares         | recon    | Listing NFS shares                                       | rpcscan    |
     +----------+----------+-----------------------------------------------------------------------+------------+
  
 
