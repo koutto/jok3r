@@ -395,6 +395,7 @@ Werkzeug
 LIBPY3="
 aiohttp
 ansi2html
+argparse
 asn1crypto
 async-timeout
 asyncio
