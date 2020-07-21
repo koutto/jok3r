@@ -18,10 +18,6 @@
    :target: https://jok3r.readthedocs.io/en/latest/
    :alt: Documentation ReadTheDocs
 
-.. image:: https://img.shields.io/microbadger/image-size/koutto/jok3r.svg
-    :target: https://hub.docker.com/r/koutto/jok3r/
-    :alt: Docker Size
-
 .. image:: https://i.ibb.co/ckZHgMt/Screenshot-at-17-07-08.png
 
 .. raw:: html
