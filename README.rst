@@ -2,7 +2,7 @@
 
    <h1 align="center">
 
-.. image:: ./pictures/logo.png
+.. image:: ./pictures/joker.png
 
 .. raw:: html
 
@@ -17,8 +17,6 @@
 .. image:: https://readthedocs.org/projects/jok3r/badge/?version=latest
    :target: https://jok3r.readthedocs.io/en/latest/
    :alt: Documentation ReadTheDocs
-
-.. image:: https://i.ibb.co/ckZHgMt/Screenshot-at-17-07-08.png
 
 .. raw:: html
 
