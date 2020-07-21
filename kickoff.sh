@@ -35,7 +35,7 @@ print_delimiter
 print_yellow "DP ID?"
 read DP
 print_delimiter
-python3 jok3r.py $DP mission
+python3 jok3r.py db mission
 clear
 print_delimiter
 print_red "Kick-Off launcher"
@@ -44,6 +44,6 @@ print_yellow "Target/IP?"
 print_delimiter
 echo ""
 read URL
-print_blue "Launching WAF detector on $URL and saving on database $DP..."
+print_blue "Launching WAF detector on $URL and saving results on database $DP..."
 sleep 3
 python3 jok3r.py attack -t $URL -s http --add2db $DP --profile waf-checker --fast
