@@ -37,7 +37,6 @@ print_delimiter
 print_green "# Kick-Off launcher                                                                      #"
 print_delimiter
 print_yellow "Target/IP?"
-print_delimiter
 echo ""
 read URL
 print_blue "Launching WAF detector on $URL and saving on database $DP..."
