@@ -31,13 +31,18 @@ print_delimiter() {
 }
 
 clear
-python3 jok3r.py db mission
+print_delimiter
+print_yellow "DP ID?"
+read DP
+print_delimiter
+python3 jok3r.py $DP mission
 clear
 print_green
 print_delimiter
-print_green "# Kick-Off launcher                                                                      #"
+print_green "Kick-Off launcher"
 print_delimiter
 print_yellow "Target/IP?"
+print_delimiter
 echo ""
 read URL
 print_blue "Launching WAF detector on $URL and saving on database $DP..."
