@@ -32,6 +32,7 @@ print_delimiter() {
 
 clear
 python3 jok3r.py db mission
+clear
 print_green
 print_delimiter
 print_green "# Kick-Off launcher                                                                      #"
