@@ -37,9 +37,8 @@ read DP
 print_delimiter
 python3 jok3r.py $DP mission
 clear
-print_green
 print_delimiter
-print_green "Kick-Off launcher"
+print_red "Kick-Off launcher"
 print_delimiter
 print_yellow "Target/IP?"
 print_delimiter
