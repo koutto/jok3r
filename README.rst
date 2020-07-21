@@ -22,8 +22,7 @@
     :target: https://hub.docker.com/r/koutto/jok3r/
     :alt: Docker Size
 
-.. image:: https://img.shields.io/docker/cloud/build/koutto/jok3r.svg
-    :alt: Docker Build Status
+.. image:: https://i.ibb.co/ckZHgMt/Screenshot-at-17-07-08.png
 
 .. raw:: html
 
