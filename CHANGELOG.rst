@@ -1,6 +1,11 @@
 =========
 Changelog
 =========
+**v3.0 BETA 3 Arkham Subversion** 2020-07-21
+	*Add RPC service and tool (disabled by default)
+	*Add initial scheme for F5 BIG IP vulnerability scanner and exploiter
+	*Add/fix/customize some bits here and there
+	
 **v3.0 BETA 3** 2020-07-18
 	* Add waf-checker and Pentest1 to attacks profiles
 	* Fix several minor bugs and customizations

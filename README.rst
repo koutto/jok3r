@@ -7,7 +7,7 @@
 .. raw:: html
 
    <br class="title">
-   Jok3r v3 beta
+   Jok3r v3 beta Arkham SubVersion
    <br>
 
 .. image:: https://img.shields.io/badge/python-3.6-blue.svg
@@ -29,7 +29,6 @@ and bugs might be present.**
 
 **Many tests are going on: see https://github.com/koutto/jok3r/blob/master/tests/TESTS.rst. 
 Ideas, bug reports, contributions are welcome !**
-
 
 .. contents:: 
     :local:
