@@ -95,6 +95,12 @@ SERVICES TO ADD
 * RSH
 * IMAP
 
+Dorking capabilities (Google, shodan, Bing, Censys...)
+#########################################################################################
+# DORKS
+#########################################################################################
+Tools:
+# darkd0rk3r, dorkme, fast-google-dorks-search,gdork,goodork3,google DB tool,googledorker,katana
 
 
 
