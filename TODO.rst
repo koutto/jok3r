@@ -58,6 +58,7 @@ TOOLS/CHECKS TO ADD
 * https://pypi.org/project/SpitzerSec/
 * https://github.com/OJ/gobuster
 * https://github.com/khalilbijjou/WAFNinja.git
+* https://github.com/jas502n/CVE-2020-5902
 
 TOR MONITORING:
 * https://github.com/andreyglauzer/VigilantOnion
