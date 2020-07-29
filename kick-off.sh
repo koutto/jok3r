@@ -52,4 +52,6 @@ python3 jok3r.py attack -t $URL -s http --add2db $DP --profile waf-checker --fas
 #check for CVE-2020-5902 
 print_delimiter
 print_red "Checking for CVE-2020-5902..."
-curl -sk 'https://{URL}/tmui/login.jsp/..;/tmui/util/getTabSet.jsp?tabId=Vulnerable' | grep -q Vulnerable && printf '\033[0;31mVulnerable\n' || printf '\033[0;32mNot Vulnerable\n'
+curl -sk 'https://{URL}/tmui/login.jsp/..;/tmui/util/getTabSet.jsp?tabId=Vulnerable' | grep -q Vulnerable && print_red "Vulnerable" || print_green "Not Vulnerable"
+
+exit 0
