@@ -30,9 +30,8 @@ apikeys.py
 
 # Junk files
 shodan
-
-# Specific work files
 pentest.sh
 kickoff.sh
 kick-off.sh
 knownbugs.txt
+.swp
