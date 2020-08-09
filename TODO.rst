@@ -60,6 +60,7 @@ TOOLS/CHECKS TO ADD
 * https://github.com/khalilbijjou/WAFNinja.git
 * https://github.com/jas502n/CVE-2020-5902
 * https://github.com/D4Vinci/CWFF
+* https://github.com/bhassani/EternalBlueC
 
 TOR MONITORING:
 * https://github.com/andreyglauzer/VigilantOnion
