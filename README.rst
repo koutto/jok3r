@@ -484,7 +484,7 @@ Supported Services & Security Checks
 -  `SMTP (default 25/tcp)`_
 -  `SNMP (default 161/udp)`_
 -  `SSH (default 22/tcp)`_
--  `Telnet (default 21/tcp)`_
+-  `Telnet (default 23/tcp)`_
 -  `VNC (default 5900/tcp)`_
 
 
