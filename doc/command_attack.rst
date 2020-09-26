@@ -54,7 +54,7 @@ The command `attack` is where security checks against targets are started.
 There are 2 modes of attacks:
 
 * Single target
-* Multiple targets from a mission sccope in database
+* Multiple targets from a mission scope in database
 
 
 Single Target Mode
@@ -99,7 +99,7 @@ Multiple Targets Mode
 =====================
 This mode is designed to work with the local database: First you create a mission
 to define the scope of the pentest in the database (see :ref:`command-db`), and then
-you run security checks against all or a subset a targets from the scope:
+you run security checks against all or a subset of targets from the scope:
 
 * Example to run checks against **all targets from the mission "MayhemProject"**, using 
   fast mode (i.e. without asking for any confirmation before targets and checks):
