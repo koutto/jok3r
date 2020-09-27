@@ -12,6 +12,7 @@ BUGS
 IMPROVEMENTS / NEW FEATURES
 ===============================================================================
 * Run custom command
+* New command: kick-off
 * Session / Restore
 * Indicate checks that need a reverse connection (IP reachable from target)
 * Products SMTP (eg Exim) https://en.wikipedia.org/wiki/List_of_mail_server_software
