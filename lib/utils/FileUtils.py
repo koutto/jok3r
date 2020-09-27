@@ -55,7 +55,7 @@ class FileUtils:
 
     @staticmethod
     def get_lines(fileName):
-        with open(fileName, 'rb') as fd:
+        with open(fileName, 'r') as fd:
             for line in fd.readlines():
                 yield line.replace('\n', '')
 
