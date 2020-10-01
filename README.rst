@@ -54,7 +54,7 @@ then spend more time on more interesting and tricky stuff !
 
 It is based upon the observation that there are many hacking open-source tools/scripts  (from various sources)
 targeting common network services available out there, that allow to perform various tasks from
-fingerprinting to exploitation. Therefore, the idea of *Jok3r* is to combine those open-source tools 
+footprinting to exploitation. Therefore, the idea of *Jok3r* is to combine those open-source tools 
 in a smart way to get the more relevant results.
 
 
