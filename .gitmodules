@@ -1,0 +1,3 @@
+[submodule "jok3r-pocs"]
+	path = jok3r-pocs
+	url = https://github.com/koutto/jok3r-pocs
