@@ -2,12 +2,12 @@
 
    <h1 align="center">
 
-.. image:: ./pictures/logo.png
+.. image:: ./pictures/joker.png
 
 .. raw:: html
 
    <br class="title">
-   Jok3r v3 beta
+   Jok3r v3 beta Arkham SubVersion
    <br>
 
 .. image:: https://img.shields.io/badge/python-3.6-blue.svg
@@ -17,13 +17,6 @@
 .. image:: https://readthedocs.org/projects/jok3r/badge/?version=latest
    :target: https://jok3r.readthedocs.io/en/latest/
    :alt: Documentation ReadTheDocs
-
-.. image:: https://img.shields.io/microbadger/image-size/koutto/jok3r.svg
-    :target: https://hub.docker.com/r/koutto/jok3r/
-    :alt: Docker Size
-
-.. image:: https://img.shields.io/docker/cloud/build/koutto/jok3r.svg
-    :alt: Docker Build Status
 
 .. raw:: html
 
@@ -36,7 +29,6 @@ and bugs might be present.**
 
 **Many tests are going on: see https://github.com/koutto/jok3r/blob/master/tests/TESTS.rst. 
 Ideas, bug reports, contributions are welcome !**
-
 
 .. contents:: 
     :local:
@@ -487,11 +479,12 @@ Supported Services & Security Checks
 -  `Oracle (default 1521/tcp)`_
 -  `PostgreSQL (default 5432/tcp)`_
 -  `RDP (default 3389/tcp)`_
+-  `RPC (default 2049/udp)`_
 -  `SMB (default 445/tcp)`_
 -  `SMTP (default 25/tcp)`_
 -  `SNMP (default 161/udp)`_
 -  `SSH (default 22/tcp)`_
--  `Telnet (default 21/tcp)`_
+-  `Telnet (default 23/tcp)`_
 -  `VNC (default 5900/tcp)`_
 
 
@@ -761,6 +754,19 @@ RDP (default 3389/tcp)
     | ms12-020 | vulnscan | Check for MS12-020 RCE vulnerability (any Windows before 13 Mar 2012) | metasploit |
     +---------+----------+-----------------------------------------------------------------------+------------+
 
+RPC (default 2049/udp)
+----------------------
+
+.. code-block:: console
+
+    +----------+----------+-----------------------------------------------------------------------+------------+
+    | Name                  | Category | Description                                              | Tool used  |
+    +----------+----------+-----------------------------------------------------------------------+------------+
+    | ls-rpc-srv            | recon    | Listing RPC services                                     | rpcscan    |
+    | ls-nfs-mountpoints    | recon    | Listing NFS mount points                                 | rpcscan    |
+    | ls-nfs-shares         | recon    | Listing NFS shares                                       | rpcscan    |
+    +----------+----------+-----------------------------------------------------------------------+------------+
+ 
 
 SMB (default 445/tcp)
 ---------------------

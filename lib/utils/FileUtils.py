@@ -45,7 +45,7 @@ class FileUtils:
     @staticmethod
     def write(filename, content):
         try:
-            with open(filename, 'w') as fd:
+            with open(filename, 'wb') as fd:
                 fd.write(content)
         except:
             return False

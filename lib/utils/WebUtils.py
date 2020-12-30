@@ -89,6 +89,7 @@ class WebUtils:
             # r = http.request('GET', url, headers={'User-Agent': USER_AGENT})
             # return (True, r.status, r.getheaders())
             r = requests.get(url, verify=False, allow_redirects=False)
+            # file deepcode ignore TLSCertVerificationDisabled: <False positive>
             return (True, r.status_code, r.headers)
         except Exception as e:
             print(e)

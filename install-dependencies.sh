@@ -66,11 +66,16 @@ if [[ ! $(grep "deb http://http.kali.org/kali kali-rolling main" /etc/apt/source
     cp /etc/apt/sources.list /etc/apt/sources.list.bak
     echo "deb http://http.kali.org/kali kali-rolling main non-free contrib" >> /etc/apt/sources.list
     cd /tmp/
-    wget -k https://http.kali.org/kali/pool/main/k/kali-archive-keyring/kali-archive-keyring_2018.1_all.deb
-    dpkg -i kali-archive-keyring_2018.1_all.deb
-    rm -f kali-archive-keyring_2018.1_all.deb
+    wget -k https://http.kali.org/kali/pool/main/k/kali-archive-keyring/kali-archive-keyring_2020.2_all.deb
+    dpkg -i kali-archive-keyring_2020.2_all.deb
+    rm -f kali-archive-keyring_2020.2_all.deb
+    # gpg --keyserver pgpkeys.mit.edu --recv-key  ED444FF07D8D0BF6
+    # apt-key adv --keyserver hkp://keys.gnupg.net --recv-keys 7D8D0BF6
+    gpg --keyserver hkp://keys.gnupg.net --recv-key 7D8D0BF6
+    gpg -a --export ED444FF07D8D0BF6 | sudo apt-key add -
     apt-get update
     apt-get install -y kali-archive-keyring
+
     if [ $? -eq 0 ]; then
         print_green "[+] Kali repository added with success"
     else
@@ -231,7 +236,7 @@ PACKAGES="
 python
 python2.7
 python3
-python-pip
+#python-pip
 python3-pip
 python-dev
 python3-dev
@@ -253,7 +258,7 @@ for package in $PACKAGES; do
     fi
 done
 
-pip2 install --upgrade pip
+#pip2 install --upgrade pip
 pip3 install --upgrade pip
 # pip3 uninstall -y psycopg2
 # pip3 install psycopg2-binary
@@ -269,12 +274,12 @@ else
     print_red "[!] An error occured during Python2.7 install"
     exit 1
 fi 
-if [ -x "$(command -v pip2)" ]; then
-    print_green "[+] pip2 installed successfully"
-else
-    print_red "[!] An error occured during pip2 install"
-    exit 1
-fi 
+#if [ -x "$(command -v pip2)" ]; then
+#    print_green "[+] pip2 installed successfully"
+#else
+#    print_red "[!] An error occured during pip2 install"
+#    exit 1
+#fi 
 if [ -x "$(command -v pip3)" ]; then
     print_green "[+] pip3 installed successfully"
 else
@@ -288,7 +293,7 @@ print_delimiter
 
 if ! [ -x "$(command -v virtualenv)" ]; then
     print_blue "[~] Install python virtual environment packages"
-    pip2 install virtualenv
+    #pip2 install virtualenv
     pip3 install virtualenv
     # pip3 install virtualenvwrapper
     # source /usr/local/bin/virtualenvwrapper.sh
@@ -378,18 +383,19 @@ webencodings
 Werkzeug
 "
 
-PIP2FREEZE=$(pip2 freeze)
-for lib in $LIBPY2; do    
-    if [[ ! $(echo $PIP2FREEZE | grep -i $lib) ]]; then
-        echo
-        print_blue "[~] Install Python library ${lib} (py2)"
-        pip2 install $lib
-    fi
-done
+#PIP2FREEZE=$(pip2 freeze)
+#for lib in $LIBPY2; do    
+#    if [[ ! $(echo $PIP2FREEZE | grep -i $lib) ]]; then
+#        echo
+#        print_blue "[~] Install Python library ${lib} (py2)"
+#        pip2 install $lib
+#    fi
+#done
 
 LIBPY3="
 aiohttp
 ansi2html
+argparse
 asn1crypto
 async-timeout
 asyncio

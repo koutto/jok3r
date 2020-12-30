@@ -139,6 +139,10 @@ RDP
 ======
 - [x] Standard RDP
 
+RPC
+======
+- [x] Anonymous NFS shares
+
 
 SMB
 ======

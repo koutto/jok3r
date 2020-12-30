@@ -12,6 +12,7 @@ BUGS
 IMPROVEMENTS / NEW FEATURES
 ===============================================================================
 * Run custom command
+* New command: kick-off
 * Session / Restore
 * Indicate checks that need a reverse connection (IP reachable from target)
 * Products SMTP (eg Exim) https://en.wikipedia.org/wiki/List_of_mail_server_software
@@ -47,6 +48,58 @@ TOOLS/CHECKS TO ADD
 * Wordpress RCE https://github.com/opsxcq/exploit-CVE-2016-10033
 * https://github.com/peacand/winsharecrawler
 * https://github.com/Bo0oM/fuzz.txt/blob/master/fuzz.txt
+* https://github.com/dwisiswant0/findom-xss
+* https://github.com/devanshbatham/ParamSpider
+* https://github.com/google/tsunami-security-scanner
+* https://github.com/OWASP/Amass
+* https://github.com/inc0d3/moodlescan
+* https://github.com/m4ll0k/WAScan
+* https://github.com/skavngr/rapidscan
+* https://github.com/projectdiscovery/nuclei
+* https://pypi.org/project/SpitzerSec/
+* https://github.com/OJ/gobuster
+* https://github.com/khalilbijjou/WAFNinja.git
+* https://github.com/jas502n/CVE-2020-5902
+* https://github.com/D4Vinci/CWFF
+* https://github.com/bhassani/EternalBlueC
+
+TOR MONITORING:
+* https://github.com/andreyglauzer/VigilantOnion
+* https://github.com/teal33t/poopak
+* https://github.com/CIRCL/AIL-framework
+* https://github.com/s-rah/onionscan
+* https://github.com/automatingosint/osint_public
+* https://github.com/trandoshan-io
+* https://github.com/itsmehacker/DarkScrape/blob/master/README.md
+* https://github.com/GoSecure/freshonions-torscraper
+* https://github.com/DedSecInside/TorBot
+* https://github.com/AshwinAmbal/DarkWeb-Crawling-Indexing/blob/master/README.md
+* https://github.com/k4m4/onioff
+* https://github.com/MikeMeliz/TorCrawl.py
+* https://github.com/bunseokbot/darklight
+* https://github.com/saidortiz/onion_osint
+* https://github.com/vlall/Darksearch
+* https://github.com/ntddk/onionstack
+* https://github.com/mrrva/illCrawler
+* https://github.com/scresh/Digamma
+* https://github.com/reidjs/onionup/blob/master/README.md
+* https://github.com/desyncr/onionuptime/blob/master/README.md
+
+CVE SELECTION TO ADD
+===============================================================================
+
+F5 BIG-IP vulnerabilities:
+
+* CVE-2020-5902
+* CVE-2020-5903
+* CVE-2020-5857
+* CVE-2020-5876
+* CVE-2020-5877
+* CVE-2020-5883
+* CVE-2020-5885
+* CVE-2020-5881
+* CVE-2020-5875
+
 
 DOCUMENTATION
 ===============================================================================
@@ -58,8 +111,6 @@ SERVICES TO ADD
 * NFS
     * nfsshell (sudo apt-get install libreadline-dev ; make)
 * MongoDB
-* RPC
-    * https://github.com/hegusung/RPCScan.git
 * DNS
 * LDAP
 * MDNS
@@ -70,6 +121,12 @@ SERVICES TO ADD
 * RSH
 * IMAP
 
+Dorking capabilities (Google, shodan, Bing, Censys...)
+#########################################################################################
+# DORKS
+#########################################################################################
+Tools:
+# darkd0rk3r, dorkme, fast-google-dorks-search,gdork,goodork3,google DB tool,googledorker,katana
 
 
 

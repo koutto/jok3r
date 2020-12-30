@@ -78,4 +78,15 @@ run the following commands:
 Manual install
 ==============
 
-TODO
+    .. code-block:: console
+
+    git clone https://github.com/cbk914/jok3r.git
+    cd jok3r
+    chmod +x jok3r.py
+
+* You can install full toolbox or just a few tools targeting a given service.
+See available options with toolbox help command.
+
+    .. code-block:: console
+
+    python3 jok3r.py toolbox -h
