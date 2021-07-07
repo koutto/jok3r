@@ -97,7 +97,6 @@ procps
 smbclient
 sudo
 unixodbc
-unixodbc-dev
 unzip
 wget
 zlib
