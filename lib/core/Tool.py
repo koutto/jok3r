@@ -132,7 +132,7 @@ class Tool:
             logger.info('Delete RVM environment ({ruby}@{name})...'.format(
                 ruby=self.virtualenv,
                 name=self.name))
-            cmd = 'source /usr/local/rvm/scripts/rvm; rvm use {ruby} && ' \
+            cmd = 'source /home/mrgfy/.rvm/scripts/rvm; rvm use {ruby} && ' \
                 'rvm gemset delete {name} --force'.format(
                     ruby=self.virtualenv,
                     name=self.name)
