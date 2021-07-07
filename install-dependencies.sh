@@ -101,8 +101,8 @@ unzip
 wget
 zlib
 "
-for packages in $PACKAGES1; do    
-    if ! pacman -Q -f="${"STATUS"}" "$PACKAGES" 2>/dev/null | grep "ok installed"; then
+for package in $PACKAGES1; do    
+    if ! pacman -Q -f="${"STATUS"}" "$PACKAGES1" 2>/dev/null | grep "ok installed"; then
         echo
         print_blue "[~] Install ${PACKAGES1} ..."
         pacman -S "$PACKAGES1"
@@ -177,7 +177,7 @@ python-psycopg2
 python-shodan
 "
 
-for packages in "$PACKAGES"; do    
+for package in $PACKAGES; do    
     if ! pacman -Q -f="${"STATUS"}" "$PACKAGES" 2>/dev/null | grep "ok installed"; then
         echo
         print_blue "[~] Install ${PACKAGES} ..."
@@ -223,7 +223,7 @@ if ! [ -x "$(command -v virtualenv)" ]; then
     python2.7 -m pip install virtualenv --user
     pip install virtualenv --user
     pip install virtualenvwrapper --user
-    source /usr/bin/virtualenvwrapper.sh
+    . /usr/bin/virtualenvwrapper.sh
     if [ -x "$(command -v virtualenv)" ]; then
         print_green "[+] virtualenv installed successfully"
     else
@@ -312,10 +312,10 @@ Werkzeug
 
 PIP2FREEZE=$(python2.7 -m pip freeze)
 for lib in $LIBPY2; do    
-    if ! echo $PIP2FREEZE | grep -i $lib; then
+    if ! echo "$PIP2FREEZE" | grep -i "$lib"; then
         echo
         print_blue "[~] Install Python library ${lib} (py2)"
-        python2.7 -m pip install $lib --user
+        python2.7 -m pip install "$lib" --user
     fi
 done
 
@@ -433,10 +433,10 @@ yarl
 
 PIP3FREEZE=$(pip freeze)
 for lib in $LIBPY3; do    
-    if ! echo $PIP3FREEZE | grep -i $lib; then
+    if ! echo "$PIP3FREEZE" | grep -i "$lib"; then
         echo
         print_blue "[~] Install Python library ${lib} (py3)"
-        pip install $lib --user
+        pip install "$lib" --user
     fi
 done
 
@@ -480,7 +480,7 @@ print_delimiter
 # Install different versions of Ruby via RVM
 
 if [ -a /home/mrgfy/.rvm/src/rvm/scripts/rvm ]; then
-    source /home/mrgfy/.rvm/src/rvm/scripts/rvm
+    . /home/mrgfy/.rvm/src/rvm/scripts/rvm
 fi
 if ! rvm list | grep ruby-2.4; then
     print_blue "[~] Install Ruby 2.4 (old version)"
@@ -602,7 +602,7 @@ print_delimiter
 
 if ! [ -x "$(command -v geckodriver)" ]; then
     print_blue "[~] Install Geckodriver (for web screenshots)"
-    cd /tmp
+    cd /tmp || return
     MACHINE_TYPE=x86_64
     if [ ${MACHINE_TYPE} == 'x86_64' ]; then
         sudo wget https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux64.tar.gz
