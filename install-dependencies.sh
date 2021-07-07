@@ -102,10 +102,10 @@ wget
 zlib
 "
 for packages in $PACKAGES; do    
-    if ! pacman -Q -f='${installed}' $PACKAGES 2>/dev/null | grep "ok installed"; then
+    if ! pacman -Q -f=""${installed}" $PACKAGES 2>/dev/null | grep "ok installed""; then
         echo
         print_blue "[~] Install ${PACKAGES} ..."
-        pacman -S $PACKAGES
+        pacman -S "$PACKAGES"
     fi
 done
 print_delimiter
