@@ -13,9 +13,9 @@ print_yellow() {
 }
 
 print_red() {
-    BOLD_YELLOW=$(tput bold ; tput setaf 1)
+    BOLD_RED=$(tput bold ; tput setaf 1)
     NORMAL=$(tput sgr0)
-    echo "${BOLD_YELLOW}$1${NORMAL}"
+    echo "${BOLD_RED}$1${NORMAL}"
 }
 
 print_blue() {
@@ -44,50 +44,6 @@ if [ "$EUID" -ne 0 ]; then
     print_red "[!] Must be run as root"
     exit 1
 fi
-
-# Make sure we are on Debian-based OS
-OS=`(lsb_release -sd || grep NAME /etc/*-release) 2> /dev/null`
-print_blue "[~] Detected OS:"
-echo $OS
-if [[ `echo $OS | egrep -i '(kali|debian|ubuntu)'` ]]; then
-    print_green "[+] Debian-based Linux OS detected !"
-else
-    print_red "[!] No Debian-based Linux OS detected (Debian/Ubuntu/Kali). Will not be able to continue !"
-    exit 1
-fi
-echo
-echo
-
-# -----------------------------------------------------------------------------
-# Add Kali repositories if not on Kali (Debian/Ubuntu)
-
-if [[ ! $(grep "deb http://http.kali.org/kali kali-rolling main" /etc/apt/sources.list) ]]; then 
-    print_blue "[~] Add Kali repository (because missing in /etc/apt/sources.list)"
-    cp /etc/apt/sources.list /etc/apt/sources.list.bak
-    echo "deb http://http.kali.org/kali kali-rolling main non-free contrib" >> /etc/apt/sources.list
-    cd /tmp/
-    wget -k https://http.kali.org/kali/pool/main/k/kali-archive-keyring/kali-archive-keyring_2018.1_all.deb
-    dpkg -i kali-archive-keyring_2018.1_all.deb
-    rm -f kali-archive-keyring_2018.1_all.deb
-    apt-get update
-    apt-get install -y kali-archive-keyring
-    if [ $? -eq 0 ]; then
-        print_green "[+] Kali repository added with success"
-    else
-        print_red "[!] Error occured while adding Kali repository"
-        exit 1
-    fi
-else
-    print_blue "[~] Kali repository detected in /etc/apt/sources.list. Updating repositories..."
-    apt-get update
-    if [ $? -eq 0 ]; then
-        print_green "[+] Repositories updated with success"
-    else
-        print_red "[!] Error occured while updating repositories"
-        exit 1
-    fi
-fi
-print_delimiter
 
 # -----------------------------------------------------------------------------
 # Install Git
