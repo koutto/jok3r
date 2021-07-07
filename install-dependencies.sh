@@ -586,7 +586,7 @@ print_delimiter
 
 if ! [ -x "$(command -v firefox)" ]; then
     print_blue "[~] Install Firefox (for HTML reports and web screenshots)"
-    pacman -S firefox-esr
+    pacman -S firefox-esr-bin
     if [ -x "$(command -v firefox)" ]; then
         print_green "[+] Firefox installed successfully"
     else
@@ -603,26 +603,26 @@ print_delimiter
 
 if ! [ -x "$(command -v geckodriver)" ]; then
     print_blue "[~] Install Geckodriver (for web screenshots)"
-    cd /tmp/
-    MACHINE_TYPE=`uname -m`
+    cd /tmp
+    MACHINE_TYPE=x86_64
     if [ ${MACHINE_TYPE} == 'x86_64' ]; then
-        wget https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux64.tar.gz
-        tar -xvf geckodriver-v0.24.0-linux64.tar.gz
-        rm -f geckodriver-v0.24.0-linux64.tar.gz
-        mv geckodriver /usr/sbin
+        sudo wget https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux64.tar.gz
+        sudo tar -xvf geckodriver-v0.24.0-linux64.tar.gz
+        sudo rm -f geckodriver-v0.24.0-linux64.tar.gz
+        sudo mv geckodriver /usr/sbin
         if [ -e /usr/bin/geckodriver ]; then
-            rm /usr/bin/geckodriver
+            sudo rm /usr/bin/geckodriver
         fi
-        ln -s /usr/sbin/geckodriver /usr/bin/geckodriver
+        sudo ln -s /usr/sbin/geckodriver /usr/bin/geckodriver
     else
-        wget https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux32.tar.gz
-        tar -xvf geckodriver-v0.24.0-linux32.tar.gz
-        rm -f geckodriver-v0.24.0-linux32.tar.gz
-        mv geckodriver /usr/sbin
+        sudo wget https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux32.tar.gz
+        sudo tar -xvf geckodriver-v0.24.0-linux32.tar.gz
+        sudo rm -f geckodriver-v0.24.0-linux32.tar.gz
+        sudo mv geckodriver /usr/sbin
         if [ -e /usr/bin/geckodriver ]; then
-            rm /usr/bin/geckodriver
+            sudo rm /usr/bin/geckodriver
         fi
-        ln -s /usr/sbin/geckodriver /usr/bin/geckodriver
+        sudo ln -s /usr/sbin/geckodriver /usr/bin/geckodriver
     fi
     if [ -x "$(command -v geckodriver)" ]; then
         print_green "[+] Geckodriver installed successfully"
@@ -638,23 +638,22 @@ print_delimiter
 # -----------------------------------------------------------------------------
 
 print_blue "[~] Install Python3 libraries required by Jok3r (if missing)"
-pip3 install -r requirements.txt
-pip3 install --upgrade requests
+pip install -r requirements.txt --user
+pip install --upgrade requests --user
 print_delimiter
 
 # -----------------------------------------------------------------------------
 
 print_blue "[~] Disable UserWarning related to psycopg2"
-pip3 uninstall psycopg2-binary -y
-pip3 uninstall psycopg2 -y
-pip3 install psycopg2-binary
+sudo pip uninstall psycopg2-binary
+sudo pip uninstall psycopg2
+sudo pip install psycopg2-binary
 print_delimiter
 
 # -----------------------------------------------------------------------------
 
 print_blue "[~] Cleaning apt cache..."
-apt-get clean
-rm -rf /var/lib/apt/lists/*
+sudo pacman -Scc --noconfirm
 print_delimiter
 
 # -----------------------------------------------------------------------------
