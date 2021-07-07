@@ -165,7 +165,7 @@ print_delimiter
 # Install Python and related packages
 print_blue "[~] Install Python 2.7 + 3 and useful related packages (if missing)"
 
-PACKAGES="
+export PACKAGES="
 python
 python27
 python-pip
