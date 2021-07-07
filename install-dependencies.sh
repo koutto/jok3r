@@ -177,11 +177,11 @@ python-psycopg2
 python-shodan
 "
 
-for package in $PACKAGES; do    
-    if ! pacman -Q -f='${Status}' $PACKAGE 2>/dev/null | grep "ok installed"; then
+for packages in $PACKAGES; do    
+    if ! pacman -Q -f=""${installed}" $PACKAGES 2>/dev/null | grep "ok installed""; then
         echo
-        print_blue "[~] Install ${PACKAGE} ..."
-        pacman -S $PACKAGE 
+        print_blue "[~] Install ${PACKAGES} ..."
+        pacman -S $PACKAGES 
     fi
 done
 
