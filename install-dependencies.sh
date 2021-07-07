@@ -50,7 +50,7 @@ fi
 
 if ! [ -x "$(command -v git)" ]; then
     print_blue "[~] Install git ..."
-    apt-get install -y git
+    pacman -S git
     if [ -x "$(command -v git)" ]; then
         print_green "[+] Git installed successfully"
     else
@@ -68,37 +68,31 @@ print_delimiter
 print_blue "[~] Install various required packages (if missing)"
 
 PACKAGES="
-alien
-apt-transport-https
-apt-utils
 automake
 bc
-build-essential
 curl
 dnsutils
 gawk
 gcc
 gnupg2
 iputils-ping
-libcurl4-openssl-dev
-libffi-dev
-libgmp-dev
-liblzma-dev
-libpq-dev
-libssl-dev
+libcurl-openssl
+libffi
+libgmp-static
+python2-pyliblzma 
+libpqxx
+python2-pyopenssl
 libwhisker2-perl
 libwww-perl
 libxml2
-libxml2-dev
-libxml2-utils
-libxslt1-dev
+python2-libxml
+libxslt
 locales
 locate
 make
 net-tools
 patch
 postgresql
-postgresql-contrib
 procps
 smbclient
 sudo
@@ -106,13 +100,13 @@ unixodbc
 unixodbc-dev
 unzip
 wget
-zlib1g-dev
+zlib
 "
 for package in $PACKAGES; do    
-    if [[ ! $(dpkg-query -W -f='${Status}' $package 2>/dev/null | grep "ok installed") ]]; then
+    if ! pacman -Q -f='${Status}' $PACKAGE 2>/dev/null | grep "ok installed"; then
         echo
-        print_blue "[~] Install ${package} ..."
-        apt-get install -y $package 
+        print_blue "[~] Install ${PACKAGE} ..."
+        pacman -S $PACKAGE
     fi
 done
 print_delimiter
@@ -122,7 +116,7 @@ print_delimiter
 
 if ! [ -x "$(command -v msfconsole)" ]; then
     print_blue "[~] Install Metasploit ..."
-    apt-get install -y metasploit-framework 
+    pacman -S metasploit-framework 
     if [ -x "$(command -v msfconsole)" ]; then
         print_green "[+] Metasploit installed successfully"
     else
@@ -139,7 +133,7 @@ print_delimiter
 
 if ! [ -x "$(command -v nmap)" ]; then
     print_blue "[~] Install Nmap ..."
-    apt-get install -y nmap 
+    pacman -S nmap 
     if [ -x "$(command -v nmap)" ]; then
         print_green "[+] Nmap installed successfully"
     else
@@ -156,7 +150,7 @@ print_delimiter
 
 if ! [ -x "$(command -v tcpdump)" ]; then
     print_blue "[~] Install tcpdump ..."
-    apt-get install -y tcpdump
+    pacman -S tcpdump
     if [ -x "$(command -v tcpdump)" ]; then
         print_green "[+] tcpdump installed successfully"
     else
@@ -169,48 +163,31 @@ fi
 print_delimiter
 
 # -----------------------------------------------------------------------------
-
-# if ! [ -x "$(command -v npm)" ]; then
-#     print_green "[~] Install NodeJS ..."
-#     curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
-#     apt-get install -y nodejs
-# else
-#     print_green "[+] NodeJS is already installed"
-# fi
-# print_delimiter   
-
-# -----------------------------------------------------------------------------
 # Install Python and related packages
 print_blue "[~] Install Python 2.7 + 3 and useful related packages (if missing)"
 
 PACKAGES="
 python
-python2.7
-python3
+python27
 python-pip
-python3-pip
-python-dev
-python3-dev
 python-setuptools
-python3-setuptools
-python3-distutils
 python-ipy
 python-nmap
-python3-pymysql
-python3-psycopg2
-python3-shodan
+python-pymysql
+python-psycopg2
+python-shodan
 "
 
 for package in $PACKAGES; do    
-    if [[ ! $(dpkg-query -W -f='${Status}' $package 2>/dev/null | grep "ok installed") ]]; then
+    if ! pacman -Q -f='${Status}' $PACKAGE 2>/dev/null | grep "ok installed"; then
         echo
-        print_blue "[~] Install ${package} ..."
-        apt-get install -y $package 
+        print_blue "[~] Install ${PACKAGE} ..."
+        pacman -S $PACKAGE 
     fi
 done
 
-pip2 install --upgrade pip
-pip3 install --upgrade pip
+python2.7 -m pip install --upgrade pip
+pip install --upgrade pip
 # pip3 uninstall -y psycopg2
 # pip3 install psycopg2-binary
 if [ -x "$(command -v python2.7)" ]; then
@@ -225,13 +202,13 @@ else
     print_red "[!] An error occured during Python2.7 install"
     exit 1
 fi 
-if [ -x "$(command -v pip2)" ]; then
+if [ -x "$(command -v python2.7 -m pip)" ]; then
     print_green "[+] pip2 installed successfully"
 else
     print_red "[!] An error occured during pip2 install"
     exit 1
 fi 
-if [ -x "$(command -v pip3)" ]; then
+if [ -x "$(command -v pip)" ]; then
     print_green "[+] pip3 installed successfully"
 else
     print_red "[!] An error occured during pip3 install"
@@ -244,10 +221,10 @@ print_delimiter
 
 if ! [ -x "$(command -v virtualenv)" ]; then
     print_blue "[~] Install python virtual environment packages"
-    pip2 install virtualenv
-    pip3 install virtualenv
-    # pip3 install virtualenvwrapper
-    # source /usr/local/bin/virtualenvwrapper.sh
+    python2.7 -m pip install virtualenv --user
+    pip install virtualenv --user
+    pip install virtualenvwrapper --user
+    source /usr/bin/virtualenvwrapper.sh
     if [ -x "$(command -v virtualenv)" ]; then
         print_green "[+] virtualenv installed successfully"
     else
@@ -334,12 +311,12 @@ webencodings
 Werkzeug
 "
 
-PIP2FREEZE=$(pip2 freeze)
+PIP2FREEZE=$(python2.7 -m pip freeze)
 for lib in $LIBPY2; do    
-    if [[ ! $(echo $PIP2FREEZE | grep -i $lib) ]]; then
+    if ! echo $PIP2FREEZE | grep -i $lib; then
         echo
         print_blue "[~] Install Python library ${lib} (py2)"
-        pip2 install $lib
+        python2.7 -m pip install $lib --user
     fi
 done
 
@@ -455,12 +432,12 @@ Werkzeug
 yarl
 "
 
-PIP3FREEZE=$(pip3 freeze)
+PIP3FREEZE=$(pip freeze)
 for lib in $LIBPY3; do    
-    if [[ ! $(echo $PIP3FREEZE | grep -i $lib) ]]; then
+    if ! echo $PIP3FREEZE | grep -i $lib; then
         echo
         print_blue "[~] Install Python library ${lib} (py3)"
-        pip3 install $lib
+        pip install $lib --user
     fi
 done
 
@@ -471,7 +448,7 @@ print_delimiter
 
 if ! [ -x "$(command -v jython)" ]; then
     print_blue "[~] Install Jython"
-    apt-get install -y jython
+    pacman -S jython
     if [ -x "$(command -v jython)" ]; then
         print_green "[+] Jython installed successfully"
     else
@@ -488,7 +465,7 @@ print_delimiter
 
 if ! [ -x "$(command -v ruby)" ]; then
     print_blue "[~] Install Ruby"
-    apt-get install -y ruby ruby-dev
+    pacman -S ruby
     if [ -x "$(command -v ruby)" ]; then
         print_green "[+] Ruby installed successfully"
     else
@@ -501,51 +478,16 @@ fi
 print_delimiter
 
 # -----------------------------------------------------------------------------
-# Install RVM (Ruby Version Manager)
-
-if [ -a /usr/local/rvm/scripts/rvm ]; then
-    source /usr/local/rvm/scripts/rvm
-fi
-
-if ! [ -n "$(command -v rvm)" ]; then
-    print_blue "[~] Install Ruby RVM (Ruby Version Manager)"
-    curl -sSL https://get.rvm.io | bash
-    source /etc/profile.d/rvm.sh
-    if ! grep -q "source /etc/profile.d/rvm.sh" ~/.bashrc
-    then
-        echo "source /etc/profile.d/rvm.sh" >> ~/.bashrc
-    fi
-    # Make sure rvm will be available
-    if ! grep -q "[[ -s /usr/local/rvm/scripts/rvm ]] && source /usr/local/rvm/scripts/rvm" ~/.bashrc
-    then
-        echo "[[ -s /usr/local/rvm/scripts/rvm ]] && source /usr/local/rvm/scripts/rvm" >> ~/.bashrc
-    fi
-    source ~/.bashrc
-    source /usr/local/rvm/scripts/rvm
-    if [ -n "$(command -v rvm)" ]; then
-        print_green "[+] Ruby RVM installed successfully"
-    else
-        print_red "[!] An error occured during Ruby RVM install"
-        exit 1
-    fi   
-else
-    print_green "[+] Ruby RVM is already installed"
-fi
-print_delimiter
-
-# -----------------------------------------------------------------------------
 # Install different versions of Ruby via RVM
 
-if [ -a /usr/local/rvm/scripts/rvm ]; then
-    source /usr/local/rvm/scripts/rvm
+if [ -a /home/mrgfy/.rvm/src/rvm/scripts/rvm ]; then
+    source /home/mrgfy/.rvm/src/rvm/scripts/rvm
 fi
-if [[ ! $(rvm list | grep ruby-2.4) ]]; then
+if ! rvm list | grep ruby-2.4; then
     print_blue "[~] Install Ruby 2.4 (old version)"
-    apt-get install -y ruby-psych
-    apt-get purge -y libssl-dev
-    apt-get install -y libssl1.0-dev
+    pacman -S ruby-psych
     rvm install ruby-2.4
-    if [[ ! $(rvm list | grep ruby-2.4) ]]; then
+    if ! rvm list | grep ruby-2.4; then
         print_red "[!] Ruby 2.4 has not been installed correctly with RVM"
         exit 1
     else
@@ -557,21 +499,20 @@ else
 fi
 print_delimiter
 
-# if ! rvm list | grep -q "ruby-2.5"
-# then
-#     print_green "[~] Install Ruby 2.5 (default)"
-#     rvm install ruby-2.5
-#     rvm --default use 2.5
-#     gem install ffi
-#     rvm list
-# fi
+if ! rvm list | grep -q "ruby-2.5"; then
+    print_green "[~] Install Ruby 2.5 (default)"
+    rvm install ruby-2.5
+    rvm --default use 2.5
+    gem install ffi
+    rvm list
+fi
 
-if [[ ! $(rvm list | grep ruby-2.6) ]]; then
+if ! rvm list | grep ruby-2.6; then
     print_blue "[~] Install Ruby 2.6"
     rvm install ruby-2.6
     rvm --default use ruby-2.6
     gem install ffi
-    if [[ ! $(rvm list | grep ruby-2.6) ]]; then
+    if ! rvm list | grep ruby-2.6; then
         print_red "[!] Ruby 2.6 has not been installed correctly with RVM"
         exit 1
     else
@@ -594,7 +535,7 @@ print_delimiter
 
 if ! [ -x "$(command -v perl)" ]; then
     print_blue "[~] Install Perl"
-    apt-get install -y perl 
+    pacman -S perl 
     if [ -x "$(command -v perl)" ]; then
         print_green "[+] Perl installed successfully"
     else
@@ -611,7 +552,7 @@ print_delimiter
 
 if ! [ -x "$(command -v php)" ]; then
     print_blue "[~] Install PHP"
-    apt-get install -y php
+    pacman -S php
     if [ -x "$(command -v php)" ]; then
         print_green "[+] PHP installed successfully"
     else
@@ -628,7 +569,7 @@ print_delimiter
 
 if ! [ -x "$(command -v java)" ]; then
     print_blue "[~] Install Java"
-    apt-get install -y default-jdk
+    pacman -S default-jdk
     if [ -x "$(command -v jython)" ]; then
         print_green "[+] Java installed successfully"
     else
@@ -645,7 +586,7 @@ print_delimiter
 
 if ! [ -x "$(command -v firefox)" ]; then
     print_blue "[~] Install Firefox (for HTML reports and web screenshots)"
-    apt-get install -y firefox-esr
+    pacman -S firefox-esr
     if [ -x "$(command -v firefox)" ]; then
         print_green "[+] Firefox installed successfully"
     else
