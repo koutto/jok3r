@@ -67,7 +67,7 @@ print_delimiter
 
 print_blue "[~] Install various required packages (if missing)"
 
-PACKAGES="
+PACKAGES1="
 automake
 bc
 curl
@@ -101,11 +101,11 @@ unzip
 wget
 zlib
 "
-for packages in $PACKAGES; do    
+for packages in $PACKAGES1; do    
     if ! pacman -Q -f="${"STATUS"}" "$PACKAGES" 2>/dev/null | grep "ok installed"; then
         echo
-        print_blue "[~] Install ${PACKAGES} ..."
-        pacman -S "$PACKAGES"
+        print_blue "[~] Install ${PACKAGES1} ..."
+        pacman -S "$PACKAGES1"
     fi
 done
 print_delimiter
@@ -165,7 +165,7 @@ print_delimiter
 # Install Python and related packages
 print_blue "[~] Install Python 2.7 + 3 and useful related packages (if missing)"
 
-export PACKAGES="
+PACKAGES="
 python
 python27
 python-pip
@@ -177,7 +177,7 @@ python-psycopg2
 python-shodan
 "
 
-for packages in $PACKAGES; do    
+for packages in "$PACKAGES"; do    
     if ! pacman -Q -f="${"STATUS"}" "$PACKAGES" 2>/dev/null | grep "ok installed"; then
         echo
         print_blue "[~] Install ${PACKAGES} ..."
