@@ -56,8 +56,7 @@ class DbController(cmd2.Cmd):
         self.settings  = settings
         self.sqlsess   = sqlsession
 
-        super().__init__(use_ipython=False, 
-                         persistent_history_file=DB_HIST_FILE, 
+        super().__init__(persistent_history_file=DB_HIST_FILE, 
                          persistent_history_length=500)
 
         #self.cmdqueue.append('alias help "help -v"')
@@ -65,9 +64,9 @@ class DbController(cmd2.Cmd):
 
         # Delete useless cmd2 built-in commands
         del cmd2.Cmd.do_edit
-        del cmd2.Cmd.do_load
+        #del cmd2.Cmd.do_load
         del cmd2.Cmd.do_py
-        del cmd2.Cmd.do_pyscript
+        #del cmd2.Cmd.do_pyscript
         #del cmd2.Cmd.do_set 
         del cmd2.Cmd.do_shortcuts
 
