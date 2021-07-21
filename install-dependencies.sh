@@ -50,7 +50,7 @@ fi
 
 if ! [ -x "$(command -v git)" ]; then
     print_blue "[~] Install git ..."
-    pacman -S git
+    yay -S git
     if [ -x "$(command -v git)" ]; then
         print_green "[+] Git installed successfully"
     else
@@ -103,10 +103,10 @@ zlib
 "
 echo "$PACKAGES1"
 for PACKAGES1 in $PACKAGES1; do    
-    if ! pacman -Q -f="${"STATUS"}" "$PACKAGES1" 2>/dev/null | grep "ok installed"; then
+    if ! yay -Q -f="${"STATUS"}" "$PACKAGES1" 2>/dev/null | grep "ok installed"; then
         echo
         print_blue "[~] Install ${PACKAGES1} ..."
-        pacman -S "$PACKAGES1"
+        yay -S "$PACKAGES1"
     fi
 done
 print_delimiter
@@ -116,7 +116,7 @@ print_delimiter
 
 if ! [ -x "$(command -v msfconsole)" ]; then
     print_blue "[~] Install Metasploit ..."
-    pacman -S metasploit-framework 
+    yay -S metasploit-framework 
     if [ -x "$(command -v msfconsole)" ]; then
         print_green "[+] Metasploit installed successfully"
     else
@@ -133,7 +133,7 @@ print_delimiter
 
 if ! [ -x "$(command -v nmap)" ]; then
     print_blue "[~] Install Nmap ..."
-    pacman -S nmap 
+    yay -S nmap 
     if [ -x "$(command -v nmap)" ]; then
         print_green "[+] Nmap installed successfully"
     else
@@ -150,7 +150,7 @@ print_delimiter
 
 if ! [ -x "$(command -v tcpdump)" ]; then
     print_blue "[~] Install tcpdump ..."
-    pacman -S tcpdump
+    yay -S tcpdump
     if [ -x "$(command -v tcpdump)" ]; then
         print_green "[+] tcpdump installed successfully"
     else
@@ -179,17 +179,17 @@ python-shodan
 "
 echo "$PACKAGES"
 for PACKAGES in $PACKAGES; do    
-    if ! pacman -Q -f="${"STATUS"}" "$PACKAGES" 2>/dev/null | grep "ok installed"; then
+    if ! yay -Q -f="${"STATUS"}" "$PACKAGES" 2>/dev/null | grep "ok installed"; then
         echo
         print_blue "[~] Install ${PACKAGES} ..."
-        pacman -S "$PACKAGES" 
+        yay -S "$PACKAGES" 
     fi
 done
 
-python2.7 -m pip install --upgrade pip
-pip install --upgrade pip
-# pip3 uninstall -y psycopg2
-# pip3 install psycopg2-binary
+python2.7 -m pip install pip --upgrade --force --user
+pip install pip --upgrade --force --user
+pip3 uninstall -y psycopg2
+pip3 install psycopg2-binary --upgrade --force --user
 if [ -x "$(command -v python2.7)" ]; then
     print_green "[+] Python2.7 installed successfully"
 else
@@ -221,9 +221,9 @@ print_delimiter
 
 if ! [ -x "$(command -v virtualenv)" ]; then
     print_blue "[~] Install python virtual environment packages"
-    python2.7 -m pip install virtualenv --user
-    pip install virtualenv --user
-    pip install virtualenvwrapper --user
+    python2.7 -m pip install virtualenv --upgrade --force --user
+    pip install virtualenv --upgrade --force --user
+    pip install virtualenvwrapper --upgrade --force --user
     source /usr/bin/virtualenvwrapper.sh
     if [ -x "$(command -v virtualenv)" ]; then
         print_green "[+] virtualenv installed successfully"
@@ -316,7 +316,7 @@ for lib in $LIBPY2; do
     if ! echo "$PIP2FREEZE" | grep -i "$lib"; then
         echo
         print_blue "[~] Install Python library ${lib} (py2)"
-        python2.7 -m pip install "$lib" --user
+        python2.7 -m pip install "$lib" --upgrade --force --user
     fi
 done
 
@@ -437,7 +437,7 @@ for lib in $LIBPY3; do
     if ! echo "$PIP3FREEZE" | grep -i "$lib"; then
         echo
         print_blue "[~] Install Python library ${lib} (py3)"
-        pip install "$lib" --user
+        pip install "$lib" --upgrade --force --user
     fi
 done
 
@@ -448,7 +448,7 @@ print_delimiter
 
 if ! [ -x "$(command -v jython)" ]; then
     print_blue "[~] Install Jython"
-    pacman -S jython
+    yay -S jython
     if [ -x "$(command -v jython)" ]; then
         print_green "[+] Jython installed successfully"
     else
@@ -465,7 +465,7 @@ print_delimiter
 
 if ! [ -x "$(command -v ruby)" ]; then
     print_blue "[~] Install Ruby"
-    pacman -S ruby
+    yay -S ruby
     if [ -x "$(command -v ruby)" ]; then
         print_green "[+] Ruby installed successfully"
     else
@@ -484,8 +484,8 @@ if [ -a "$HOME"/.rvm/src/rvm/scripts/rvm ]; then
     source "$HOME"/.rvm/src/rvm/scripts/rvm
 fi
 if ! rvm list | grep ruby-2.4; then
-    print_blue "[~] Install Ruby 2.4 (old version)"
-    pacman -S ruby-psych
+    print_blue "[~] Install Ruby 2.4"
+    yay -S ruby-psych
     rvm install ruby-2.4
     if ! rvm list | grep ruby-2.4; then
         print_red "[!] Ruby 2.4 has not been installed correctly with RVM"
@@ -500,9 +500,9 @@ fi
 print_delimiter
 
 if ! rvm list | grep -q "ruby-2.5"; then
-    print_green "[~] Install Ruby 2.5 (default)"
+    print_green "[~] Install Ruby 2.5"
     rvm install ruby-2.5
-    rvm --default use 2.5
+    rvm use 2.5
     gem install ffi
     rvm list
 fi
@@ -510,7 +510,7 @@ fi
 if ! rvm list | grep ruby-2.6; then
     print_blue "[~] Install Ruby 2.6"
     rvm install ruby-2.6
-    rvm --default use ruby-2.6
+    rvm use ruby-2.6
     gem install ffi
     if ! rvm list | grep ruby-2.6; then
         print_red "[!] Ruby 2.6 has not been installed correctly with RVM"
@@ -535,7 +535,7 @@ print_delimiter
 
 if ! [ -x "$(command -v perl)" ]; then
     print_blue "[~] Install Perl"
-    pacman -S perl 
+    yay -S perl 
     if [ -x "$(command -v perl)" ]; then
         print_green "[+] Perl installed successfully"
     else
@@ -552,7 +552,7 @@ print_delimiter
 
 if ! [ -x "$(command -v php)" ]; then
     print_blue "[~] Install PHP"
-    pacman -S php
+    yay -S php
     if [ -x "$(command -v php)" ]; then
         print_green "[+] PHP installed successfully"
     else
@@ -569,7 +569,7 @@ print_delimiter
 
 if ! [ -x "$(command -v java)" ]; then
     print_blue "[~] Install Java"
-    pacman -S default-jdk
+    yay -S default-jdk
     if [ -x "$(command -v jython)" ]; then
         print_green "[+] Java installed successfully"
     else
@@ -586,7 +586,7 @@ print_delimiter
 
 if ! [ -x "$(command -v firefox)" ]; then
     print_blue "[~] Install Firefox (for HTML reports and web screenshots)"
-    pacman -S firefox-esr-bin
+    yay -S firefox-esr-bin
     if [ -x "$(command -v firefox)" ]; then
         print_green "[+] Firefox installed successfully"
     else
@@ -638,22 +638,22 @@ print_delimiter
 # -----------------------------------------------------------------------------
 
 print_blue "[~] Install Python3 libraries required by Jok3r (if missing)"
-pip install -r requirements.txt --user
-pip install --upgrade requests --user
+pip install -r requirements.txt --upgrade --force --user
+pip install --upgrade requests --upgrade --force --user
 print_delimiter
 
 # -----------------------------------------------------------------------------
 
 print_blue "[~] Disable UserWarning related to psycopg2"
-sudo pip uninstall psycopg2-binary
-sudo pip uninstall psycopg2
-sudo pip install psycopg2-binary
+pip uninstall psycopg2-binary --user
+pip uninstall psycopg2 --user
+pip install psycopg2-binary --upgrade --force --user
 print_delimiter
 
 # -----------------------------------------------------------------------------
 
 print_blue "[~] Cleaning apt cache..."
-sudo pacman -Scc --noconfirm
+yay -Scc --noconfirm
 print_delimiter
 
 # -----------------------------------------------------------------------------
