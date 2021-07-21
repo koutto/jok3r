@@ -101,7 +101,7 @@ unzip
 wget
 zlib
 "
-for package in $PACKAGES1; do    
+for PACKAGES1 in $PACKAGES1; do    
     if ! pacman -Q -f="${"STATUS"}" "$PACKAGES1" 2>/dev/null | grep "ok installed"; then
         echo
         print_blue "[~] Install ${PACKAGES1} ..."
@@ -165,7 +165,17 @@ print_delimiter
 # Install Python and related packages
 print_blue "[~] Install Python 2.7 + 3 and useful related packages (if missing)"
 
-PACKAGES="python python27 python-pip python-setuptools python-ipy python-nmap python-pymysql python-psycopg2 python-shodan"
+PACKAGES="
+python 
+python27 
+python-pip 
+python-setuptools 
+python-ipy 
+python-nmap 
+python-pymysql 
+python-psycopg2 
+python-shodan"
+
 echo "$PACKAGES"
 
 for PACKAGES in $PACKAGES; do    
