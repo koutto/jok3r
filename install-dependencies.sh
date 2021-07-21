@@ -19,9 +19,9 @@ print_red() {
 }
 
 print_blue() {
-    BOLD_YELLOW=$(tput bold ; tput setaf 4)
+    BOLD_BLUE=$(tput bold ; tput setaf 4)
     NORMAL=$(tput sgr0)
-    echo "${BOLD_YELLOW}$1${NORMAL}"
+    echo "${BOLD_BLUE}$1${NORMAL}"
 }
 
 print_delimiter() {
