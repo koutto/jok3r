@@ -174,10 +174,9 @@ python-ipy
 python-nmap 
 python-pymysql 
 python-psycopg2 
-python-shodan"
-
+python-shodan
+"
 echo "$PACKAGES"
-
 for PACKAGES in $PACKAGES; do    
     if ! pacman -Q -f="${"STATUS"}" "$PACKAGES" 2>/dev/null | grep "ok installed"; then
         echo
