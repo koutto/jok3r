@@ -224,7 +224,7 @@ if ! [ -x "$(command -v virtualenv)" ]; then
     python2.7 -m pip install virtualenv --user
     pip install virtualenv --user
     pip install virtualenvwrapper --user
-    . /usr/bin/virtualenvwrapper.sh
+    source /usr/bin/virtualenvwrapper.sh
     if [ -x "$(command -v virtualenv)" ]; then
         print_green "[+] virtualenv installed successfully"
     else
@@ -480,8 +480,8 @@ print_delimiter
 # -----------------------------------------------------------------------------
 # Install different versions of Ruby via RVM
 
-if [ -a /home/mrgfy/.rvm/src/rvm/scripts/rvm ]; then
-    . /home/mrgfy/.rvm/src/rvm/scripts/rvm
+if [ -a "$HOME"/.rvm/src/rvm/scripts/rvm ]; then
+    source "$HOME"/.rvm/src/rvm/scripts/rvm
 fi
 if ! rvm list | grep ruby-2.4; then
     print_blue "[~] Install Ruby 2.4 (old version)"
