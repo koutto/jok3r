@@ -101,6 +101,7 @@ unzip
 wget
 zlib
 "
+echo "$PACKAGES1"
 for PACKAGES1 in $PACKAGES1; do    
     if ! pacman -Q -f="${"STATUS"}" "$PACKAGES1" 2>/dev/null | grep "ok installed"; then
         echo
