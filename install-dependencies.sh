@@ -1,5 +1,16 @@
 #!/usr/bin/env bash 
 
+# Setup environment python alias's for virtualenv
+alias python2.7="/opt/jok3r/bin/python2.7"
+alias pip2.7="/opt/jok3r/bin/pip2.7"
+alias python3="/opt/jok3r/bin/python3"
+alias pip="/opt/jok3r/bin/pip3"
+
+# Add python2.7 and Python3(3.9) virtualenv to Jok3r
+# Python
+virtualenv --system-site-package /opt/jok3r -p /usr/bin/python
+source /opt/jok3r/bin/activate
+
 print_green() {
     BOLD_GREEN=$(tput bold ; tput setaf 2)
     NORMAL=$(tput sgr0)
@@ -38,6 +49,7 @@ print_blue "=============================="
 echo
 echo
 print_blue "This script will install Jok3r and all the required dependencies"
+print_delimiter
 
 # -----------------------------------------------------------------------------
 # Install Git
@@ -82,7 +94,7 @@ perl-xml-libxml
 perl-libwhisker2
 libxml2
 libxslt
-locales
+locale
 locate
 make
 net-tools
@@ -163,13 +175,14 @@ print_blue "[~] Install Python 2.7 + 3 and useful related packages (if missing)"
 
 PACKAGES="
 python 
-python27 
+python2 
 python-pip 
 python-setuptools 
 python-ipy 
 python-nmap 
 python-pymysql 
-python-psycopg2 
+python-psycopg2-binary
+python-psycopg2
 python-shodan
 "
 echo "$PACKAGES"
@@ -180,35 +193,6 @@ for PACKAGES in $PACKAGES; do
         yay -S --noconfirm "$PACKAGES" 
     fi
 done
-
-python2.7 -m pip install pip --upgrade --force 
-pip install pip --upgrade --force 
-pip3 uninstall -y psycopg2
-pip3 install psycopg2-binary --upgrade --force 
-if [ -x "$(command -v python2.7)" ]; then
-    print_green "[+] Python2.7 installed successfully"
-else
-    print_red "[!] An error occured during Python2.7 install"
-    exit 1
-fi 
-if [ -x "$(command -v python3)" ]; then
-    print_green "[+] Python3 installed successfully"
-else
-    print_red "[!] An error occured during Python2.7 install"
-    exit 1
-fi 
-if [ -x "$(command -v python2.7 -m pip)" ]; then
-    print_green "[+] pip2 installed successfully"
-else
-    print_red "[!] An error occured during pip2 install"
-    exit 1
-fi 
-if [ -x "$(command -v pip)" ]; then
-    print_green "[+] pip3 installed successfully"
-else
-    print_red "[!] An error occured during pip3 install"
-    exit 1
-fi 
 print_delimiter
 
 # -----------------------------------------------------------------------------
@@ -216,10 +200,10 @@ print_delimiter
 
 if ! [ -x "$(command -v virtualenv)" ]; then
     print_blue "[~] Install python virtual environment packages"
-    python2.7 -m pip install virtualenv --upgrade --force 
-    pip install virtualenv --upgrade --force 
-    pip install virtualenvwrapper --upgrade --force 
-    source /usr/bin/virtualenvwrapper.sh
+    sudo -S python2.7 -m pip install virtualenv --upgrade --force --user
+    sudo -S pip install virtualenv --upgrade --force --user
+    sudo -S pip install virtualenvwrapper --upgrade --force --user
+    #source /usr/bin/virtualenvwrapper.sh
     if [ -x "$(command -v virtualenv)" ]; then
         print_green "[+] virtualenv installed successfully"
     else
@@ -311,7 +295,7 @@ for lib in $LIBPY2; do
     if ! echo "$PIP2FREEZE" | grep -i "$lib"; then
         echo
         print_blue "[~] Install Python library ${lib} (py2)"
-        python2.7 -m pip install "$lib" --upgrade --force 
+        sudo -S python2.7 -m pip install "$lib" --upgrade --force
     fi
 done
 
@@ -369,7 +353,6 @@ ply
 pockets
 prettytable
 prompt-toolkit
-psycopg2
 psycopg2-binary
 pyasn1
 pycparser
@@ -432,10 +415,9 @@ for lib in $LIBPY3; do
     if ! echo "$PIP3FREEZE" | grep -i "$lib"; then
         echo
         print_blue "[~] Install Python library ${lib} (py3)"
-        pip install "$lib" --upgrade --force 
+        sudo -S pip install "$lib" --upgrade --force --user
     fi
 done
-
 print_delimiter
 
 # -----------------------------------------------------------------------------
@@ -475,14 +457,14 @@ print_delimiter
 # -----------------------------------------------------------------------------
 # Install different versions of Ruby via RVM
 
-if [ -a "$HOME"/.rvm/src/rvm/scripts/rvm ]; then
-    source "$HOME"/.rvm/src/rvm/scripts/rvm
-fi
-if ! rvm list | grep ruby-2.4; then
+#if [ -a "$HOME"/.rvm/src/rvm/scripts/rvm ]; then
+#    source "$HOME"/.rvm/src/rvm/scripts/rvm
+#fi
+if ! rvm list | grep ruby-2.4.10; then
     print_blue "[~] Install Ruby 2.4"
     yay -S --noconfirm ruby-psych
-    rvm install ruby-2.4
-    if ! rvm list | grep ruby-2.4; then
+    rvm install ruby-2.4.10
+    if ! rvm list | grep ruby-2.4.10; then
         print_red "[!] Ruby 2.4 has not been installed correctly with RVM"
         exit 1
     else
@@ -494,21 +476,21 @@ else
 fi
 print_delimiter
 
-if ! rvm list | grep -q "ruby-2.5"; then
-    print_green "[~] Install Ruby 2.5"
-    rvm install ruby-2.5
-    rvm use 2.5
+if ! rvm list | grep -q "ruby-2.5.9"; then
+    print_green "[~] Install Ruby 2.5.9"
+    rvm install ruby-2.5.9
+    rvm use ruby-2.5.9
     gem install ffi
     rvm list
 fi
 
-if ! rvm list | grep ruby-2.6; then
-    print_blue "[~] Install Ruby 2.6"
-    rvm install ruby-2.6
-    rvm use ruby-2.6
+if ! rvm list | grep ruby-2.6.6; then
+    print_blue "[~] Install Ruby 2.6.6"
+    rvm install ruby-2.6.6
+    rvm use ruby-2.6.6
     gem install ffi
-    if ! rvm list | grep ruby-2.6; then
-        print_red "[!] Ruby 2.6 has not been installed correctly with RVM"
+    if ! rvm list | grep ruby-2.6.6; then
+        print_red "[!] Ruby 2.6.6 has not been installed correctly with RVM"
         exit 1
     else
         rvm list
@@ -633,17 +615,16 @@ print_delimiter
 # -----------------------------------------------------------------------------
 
 print_blue "[~] Install Python3 libraries required by Jok3r (if missing)"
-pip install -r requirements.txt --upgrade --force 
-pip install --upgrade requests --upgrade --force 
+sudo -S pip install -r requirements.txt --upgrade --force
 print_delimiter
 
 # -----------------------------------------------------------------------------
-
-print_blue "[~] Disable UserWarning related to psycopg2"
-pip uninstall psycopg2-binary 
-pip uninstall psycopg2 
-pip install psycopg2-binary --upgrade --force 
-print_delimiter
+# (Removed)
+#print_blue "[~] Disable UserWarning related to psycopg2"
+#sudo -S pip uninstall psycopg2-binary
+#sudo -S pip uninstall psycopg2
+#sudo -S pip install psycopg2-binary --upgrade --force
+#print_delimiter
 
 # -----------------------------------------------------------------------------
 
