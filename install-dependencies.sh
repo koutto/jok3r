@@ -39,18 +39,12 @@ echo
 echo
 print_blue "This script will install Jok3r and all the required dependencies"
 
-# Make sure we are root !
-if [ "$EUID" -ne 0 ]; then 
-    print_red "[!] Must be run as root"
-    exit 1
-fi
-
 # -----------------------------------------------------------------------------
 # Install Git
 
 if ! [ -x "$(command -v git)" ]; then
     print_blue "[~] Install git ..."
-    yay -S git
+    yay -S --noconfirm git
     if [ -x "$(command -v git)" ]; then
         print_green "[+] Git installed successfully"
     else
@@ -74,18 +68,19 @@ curl
 dnsutils
 gawk
 gcc
-gnupg2
-iputils-ping
-libcurl-openssl
+gnupg
+iputils
+libcurl-openssl-1.0
 libffi
 libgmp-static
-python2-pyliblzma 
 libpqxx
 python2-pyopenssl
-libwhisker2-perl
-libwww-perl
+python-lxml
+python2-pyliblzma
+ruby-httpclient
+perl-xml-libxml
+perl-libwhisker2
 libxml2
-python2-libxml
 libxslt
 locales
 locate
@@ -103,10 +98,10 @@ zlib
 "
 echo "$PACKAGES1"
 for PACKAGES1 in $PACKAGES1; do    
-    if ! yay -Q -f="${"STATUS"}" "$PACKAGES1" 2>/dev/null | grep "ok installed"; then
+    if ! yay -Ql "$PACKAGES1" 2>/dev/null | grep "ok installed"; then
         echo
         print_blue "[~] Install ${PACKAGES1} ..."
-        yay -S "$PACKAGES1"
+        yay -S --noconfirm "$PACKAGES1"
     fi
 done
 print_delimiter
@@ -116,7 +111,7 @@ print_delimiter
 
 if ! [ -x "$(command -v msfconsole)" ]; then
     print_blue "[~] Install Metasploit ..."
-    yay -S metasploit-framework 
+    yay -S --noconfirm metasploit 
     if [ -x "$(command -v msfconsole)" ]; then
         print_green "[+] Metasploit installed successfully"
     else
@@ -133,7 +128,7 @@ print_delimiter
 
 if ! [ -x "$(command -v nmap)" ]; then
     print_blue "[~] Install Nmap ..."
-    yay -S nmap 
+    yay -S --noconfirm nmap 
     if [ -x "$(command -v nmap)" ]; then
         print_green "[+] Nmap installed successfully"
     else
@@ -150,7 +145,7 @@ print_delimiter
 
 if ! [ -x "$(command -v tcpdump)" ]; then
     print_blue "[~] Install tcpdump ..."
-    yay -S tcpdump
+    yay -S --noconfirm tcpdump
     if [ -x "$(command -v tcpdump)" ]; then
         print_green "[+] tcpdump installed successfully"
     else
@@ -179,17 +174,17 @@ python-shodan
 "
 echo "$PACKAGES"
 for PACKAGES in $PACKAGES; do    
-    if ! yay -Q -f="${"STATUS"}" "$PACKAGES" 2>/dev/null | grep "ok installed"; then
+    if ! yay -Ql "$PACKAGES" 2>/dev/null | grep "ok installed"; then
         echo
         print_blue "[~] Install ${PACKAGES} ..."
-        yay -S "$PACKAGES" 
+        yay -S --noconfirm "$PACKAGES" 
     fi
 done
 
-python2.7 -m pip install pip --upgrade --force --user
-pip install pip --upgrade --force --user
+python2.7 -m pip install pip --upgrade --force 
+pip install pip --upgrade --force 
 pip3 uninstall -y psycopg2
-pip3 install psycopg2-binary --upgrade --force --user
+pip3 install psycopg2-binary --upgrade --force 
 if [ -x "$(command -v python2.7)" ]; then
     print_green "[+] Python2.7 installed successfully"
 else
@@ -221,9 +216,9 @@ print_delimiter
 
 if ! [ -x "$(command -v virtualenv)" ]; then
     print_blue "[~] Install python virtual environment packages"
-    python2.7 -m pip install virtualenv --upgrade --force --user
-    pip install virtualenv --upgrade --force --user
-    pip install virtualenvwrapper --upgrade --force --user
+    python2.7 -m pip install virtualenv --upgrade --force 
+    pip install virtualenv --upgrade --force 
+    pip install virtualenvwrapper --upgrade --force 
     source /usr/bin/virtualenvwrapper.sh
     if [ -x "$(command -v virtualenv)" ]; then
         print_green "[+] virtualenv installed successfully"
@@ -316,7 +311,7 @@ for lib in $LIBPY2; do
     if ! echo "$PIP2FREEZE" | grep -i "$lib"; then
         echo
         print_blue "[~] Install Python library ${lib} (py2)"
-        python2.7 -m pip install "$lib" --upgrade --force --user
+        python2.7 -m pip install "$lib" --upgrade --force 
     fi
 done
 
@@ -437,7 +432,7 @@ for lib in $LIBPY3; do
     if ! echo "$PIP3FREEZE" | grep -i "$lib"; then
         echo
         print_blue "[~] Install Python library ${lib} (py3)"
-        pip install "$lib" --upgrade --force --user
+        pip install "$lib" --upgrade --force 
     fi
 done
 
@@ -448,7 +443,7 @@ print_delimiter
 
 if ! [ -x "$(command -v jython)" ]; then
     print_blue "[~] Install Jython"
-    yay -S jython
+    yay -S --noconfirm jython
     if [ -x "$(command -v jython)" ]; then
         print_green "[+] Jython installed successfully"
     else
@@ -465,7 +460,7 @@ print_delimiter
 
 if ! [ -x "$(command -v ruby)" ]; then
     print_blue "[~] Install Ruby"
-    yay -S ruby
+    yay -S --noconfirm ruby
     if [ -x "$(command -v ruby)" ]; then
         print_green "[+] Ruby installed successfully"
     else
@@ -485,7 +480,7 @@ if [ -a "$HOME"/.rvm/src/rvm/scripts/rvm ]; then
 fi
 if ! rvm list | grep ruby-2.4; then
     print_blue "[~] Install Ruby 2.4"
-    yay -S ruby-psych
+    yay -S --noconfirm ruby-psych
     rvm install ruby-2.4
     if ! rvm list | grep ruby-2.4; then
         print_red "[!] Ruby 2.4 has not been installed correctly with RVM"
@@ -535,7 +530,7 @@ print_delimiter
 
 if ! [ -x "$(command -v perl)" ]; then
     print_blue "[~] Install Perl"
-    yay -S perl 
+    yay -S --noconfirm perl 
     if [ -x "$(command -v perl)" ]; then
         print_green "[+] Perl installed successfully"
     else
@@ -552,7 +547,7 @@ print_delimiter
 
 if ! [ -x "$(command -v php)" ]; then
     print_blue "[~] Install PHP"
-    yay -S php
+    yay -S --noconfirm php
     if [ -x "$(command -v php)" ]; then
         print_green "[+] PHP installed successfully"
     else
@@ -569,7 +564,7 @@ print_delimiter
 
 if ! [ -x "$(command -v java)" ]; then
     print_blue "[~] Install Java"
-    yay -S default-jdk
+    yay -S --noconfirm default-jdk
     if [ -x "$(command -v jython)" ]; then
         print_green "[+] Java installed successfully"
     else
@@ -586,7 +581,7 @@ print_delimiter
 
 if ! [ -x "$(command -v firefox)" ]; then
     print_blue "[~] Install Firefox (for HTML reports and web screenshots)"
-    yay -S firefox-esr-bin
+    yay -S --noconfirm firefox-esr-bin
     if [ -x "$(command -v firefox)" ]; then
         print_green "[+] Firefox installed successfully"
     else
@@ -606,23 +601,23 @@ if ! [ -x "$(command -v geckodriver)" ]; then
     cd /tmp || return
     MACHINE_TYPE=x86_64
     if [ ${MACHINE_TYPE} == 'x86_64' ]; then
-        sudo wget https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux64.tar.gz
-        sudo tar -xvf geckodriver-v0.24.0-linux64.tar.gz
-        sudo rm -f geckodriver-v0.24.0-linux64.tar.gz
-        sudo mv geckodriver /usr/sbin
+        sudo -S wget https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux64.tar.gz
+        sudo -S tar -xvf geckodriver-v0.24.0-linux64.tar.gz
+        sudo -S rm -f geckodriver-v0.24.0-linux64.tar.gz
+        sudo -S mv geckodriver /usr/sbin
         if [ -e /usr/bin/geckodriver ]; then
-            sudo rm /usr/bin/geckodriver
+            sudo -S rm /usr/bin/geckodriver
         fi
-        sudo ln -s /usr/sbin/geckodriver /usr/bin/geckodriver
+        sudo -S ln -s /usr/sbin/geckodriver /usr/bin/geckodriver
     else
-        sudo wget https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux32.tar.gz
-        sudo tar -xvf geckodriver-v0.24.0-linux32.tar.gz
-        sudo rm -f geckodriver-v0.24.0-linux32.tar.gz
-        sudo mv geckodriver /usr/sbin
+        sudo -S wget https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux32.tar.gz
+        sudo -S tar -xvf geckodriver-v0.24.0-linux32.tar.gz
+        sudo -S rm -f geckodriver-v0.24.0-linux32.tar.gz
+        sudo -S mv geckodriver /usr/sbin
         if [ -e /usr/bin/geckodriver ]; then
-            sudo rm /usr/bin/geckodriver
+            sudo -S rm /usr/bin/geckodriver
         fi
-        sudo ln -s /usr/sbin/geckodriver /usr/bin/geckodriver
+        sudo -S ln -s /usr/sbin/geckodriver /usr/bin/geckodriver
     fi
     if [ -x "$(command -v geckodriver)" ]; then
         print_green "[+] Geckodriver installed successfully"
@@ -638,16 +633,16 @@ print_delimiter
 # -----------------------------------------------------------------------------
 
 print_blue "[~] Install Python3 libraries required by Jok3r (if missing)"
-pip install -r requirements.txt --upgrade --force --user
-pip install --upgrade requests --upgrade --force --user
+pip install -r requirements.txt --upgrade --force 
+pip install --upgrade requests --upgrade --force 
 print_delimiter
 
 # -----------------------------------------------------------------------------
 
 print_blue "[~] Disable UserWarning related to psycopg2"
-pip uninstall psycopg2-binary --user
-pip uninstall psycopg2 --user
-pip install psycopg2-binary --upgrade --force --user
+pip uninstall psycopg2-binary 
+pip uninstall psycopg2 
+pip install psycopg2-binary --upgrade --force 
 print_delimiter
 
 # -----------------------------------------------------------------------------
