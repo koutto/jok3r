@@ -37,12 +37,7 @@ print_blue " Jok3r - Installation Script  "
 print_blue "=============================="
 echo
 echo
-
-# Make sure we are root !
-if [ "$EUID" -ne 0 ]; then 
-    print_red "[!] Must be run as root"
-    exit 1
-fi
+print_delimiter
 
 # -----------------------------------------------------------------------------
 
@@ -59,7 +54,8 @@ print_delimiter
 # -----------------------------------------------------------------------------
 
 print_blue "[~] Running Jok3r full toolbox install (in non-interactive mode)..."
-python3 jok3r.py toolbox --install-all --auto
+source bin/activate
+python3 jok3r.py toolbox --install-all
 if ! $? -eq 0 ; then
     print_green "[+] Jok3r toolbox install exited with success returncode"
 else
