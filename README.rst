@@ -7,7 +7,7 @@
 .. raw:: html
 
    <br class="title">
-   Jok3r v3 beta
+   MrGFY fork/port to Arch linux(using yay not pacman) Jok3r v3 beta !!IMPORTANT!! clone this to /opt not /usr/share !!IMPORTANT!!
    <br>
 
 .. image:: https://img.shields.io/badge/python-3.6-blue.svg
