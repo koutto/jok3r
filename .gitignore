@@ -30,3 +30,9 @@ apikeys.py
 
 # Junk files
 shodan
+
+# Python virtualenv stuff
+bin/*
+lib/python*
+include/*
+install-dependencies.sh.save
