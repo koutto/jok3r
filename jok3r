@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+cd /usr/share/jok3r
+exec python jok3r.py "$@"
