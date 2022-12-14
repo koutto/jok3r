@@ -2,12 +2,12 @@
 
    <h1 align="center">
 
-.. image:: ./pictures/logo.png
+.. image:: https://i.imgur.com/q6Ln3nM.png
 
 .. raw:: html
 
    <br class="title">
-   Jok3r v3 beta
+   Jok3r v3 Alpha Arch, Arch GNU/Linux Variant.
    <br>
 
 .. image:: https://img.shields.io/badge/python-3.6-blue.svg
@@ -17,13 +17,6 @@
 .. image:: https://readthedocs.org/projects/jok3r/badge/?version=latest
    :target: https://jok3r.readthedocs.io/en/latest/
    :alt: Documentation ReadTheDocs
-
-.. image:: https://img.shields.io/microbadger/image-size/koutto/jok3r.svg
-    :target: https://hub.docker.com/r/koutto/jok3r/
-    :alt: Docker Size
-
-.. image:: https://img.shields.io/docker/cloud/build/koutto/jok3r.svg
-    :alt: Docker Build Status
 
 .. raw:: html
 
