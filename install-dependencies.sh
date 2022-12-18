@@ -113,8 +113,8 @@ print_delimiter
 
 print_blue "[~] Install various required packages (if missing)"
 
-PACKAGES="curl dnsutils gawk gcc gnupg iputils openssl libffi gmp4 lrzip xz perl-libwhisker2 perl-libwww libxml2
-python2-libxml2 libxslt mlocate make inetutils patch postgresql postgresql-libs procps samba unixodbc unzip wget zlib python python-pip"
+PACKAGES="curl dnsutils gawk gcc gnupg iputils openssl libffi lrzip xz perl-libwhisker2 perl-libwww libxml2
+ libxslt mlocate make inetutils patch postgresql postgresql-libs procps samba unixodbc unzip wget zlib python python-pip"
 
 for package in $PACKAGES; do
     if ! [[ -x "$(pacman -Ss "$package" | grep "installed")" ]]; then
