@@ -218,9 +218,9 @@ done
 
 python3.6 -m ensurepip
 pip2.7 install --upgrade pip
-pip3 install --upgrade pip
-# python3.6 -m pip uninstall -y psycopg2
-# python3.6 -m pip install psycopg2-binary
+pip3.6 install --upgrade pip
+# pip3.6 uninstall -y psycopg2
+# pip3.6 install psycopg2-binary
 if [ -x "$(command -v python2.7)" ]; then
     print_green "[+] python2.7 installed successfully"
 else
@@ -238,10 +238,10 @@ else
     print_red "[!] An error occured during Python3.6 install"
     exit 1
 fi
-if [ -x "$(command -v python3.6 -m pip)" ]; then
-    print_green "[+] python3.6 -m pip installed successfully"
+if [ -x "$(command -v pip3.6)" ]; then
+    print_green "[+] pip3.6 installed successfully"
 else
-    print_red "[!] An error occured during python3.6 -m pip install"
+    print_red "[!] An error occured during pip3.6 install"
     exit 1
 fi
 print_delimiter
@@ -251,9 +251,9 @@ print_delimiter
 
 if ! [ -x "$(command -v virtualenv)" ]; then
     print_blue "[~] Install python virtual environment packages"
-    python2.7 -m pip install virtualenv
-    python3.6 -m pip install virtualenv
-    # python3.6 -m pip install virtualenvwrapper
+    pip2.7 install virtualenv
+    pip3.6 install virtualenv
+    # pip3.6 install virtualenvwrapper
     # source /usr/local/bin/virtualenvwrapper.sh
     if [ -x "$(command -v virtualenv)" ]; then
         print_green "[+] virtualenv installed successfully"
@@ -278,23 +278,23 @@ print_blue "[~] Install common Python libraries..."
 
 LIBPY2="argcomplete asn1crypto bcrypt beautifulsoup4 bs4 certifi cffi chardet colorama colorlog configparser cryptography cssselect dnspython entrypoints enum34 Flask future futures gpg html-similarity html5lib humanize ipaddress IPy keyring keyrings.alt ldap3 ldapdomaindump lxml macholib MarkupSafe maxminddb paramiko parsel passlib pluginbase proxy-db py2-ipaddress pyasn1 pycparser pycrypto pycryptodomex pycurl PyGObject pymssql PyNaCl pyOpenSSL pystache python-nmap pyxdg requests requests-mock scapy SecretStorage six termcolor urllib3 virtualenv w3lib webencodings Werkzeug"
 
-python2.7 -m pip FREEZE="$(python2.7 -m pip freeze)"
+pip2.7 FREEZE="$(pip2.7 freeze)"
 for lib in $LIBPY2; do
-    if [[ ! "$(python2.7 -m pip FREEZE | grep -i "$lib")" = 0 ]]; then
+    if ! [[ -x "$(pip2.7 FREEZE | grep -i "$lib")" ]]; then
         echo
         print_blue "[~] Install Python library ${lib} (py2)"
-        python2.7 -m pip install "$lib"
+        pip2.7 install "$lib"
     fi
 done
 
 LIBPY3="aiohttp ansi2html asn1crypto async-timeout asyncio attrs Babel bcrypt beautifulsoup4 blessed bs4 cement Cerberus certifi cffi chardet cmd2 colorama colored colorlog cryptography dnspython docutils enlighten entrypoints Flask future html5lib humanfriendly idna imagesize inflect ipparser itsdangerous keyring keyrings.alt ldap3 ldapdomaindump logutils lxml MarkupSafe multidict netaddr ntlm-auth packaging paramiko pbr Pillow pluginbase ply pockets prettytable prompt-toolkit psycopg2 psycopg2-binary pyasn1 pycparser pycrypto pycryptodomex pycurl Pygments PyGObject pymongo PyMySQL PyNaCl pyodbc pyOpenSSL pyparsing pyperclip pysmi pysnmp PySocks python-libnmap python-memcached pytz pyxdg PyYAML redis regex requests requests-ntlm requests-toolbelt SecretStorage selenium shodan six snowballstemmer soupsieve Sphinx sphinx-better-theme sphinxcontrib-napoleon sphinxcontrib-websupport SQLAlchemy SQLAlchemy-Utils stem stevedore tabulate termcolor tld tqdm urllib3 veryprettytable virtualenv virtualenv-clone virtualenvwrapper wcwidth webencodings Werkzeug yarl"
 
-python3.6 -m pip FREEZE="$(python3.6 -m pip freeze)"
+pip3.6 FREEZE="$(pip3.6 freeze)"
 for lib in $LIBPY3; do
-    if [[ ! "$(python3.6 -m pip FREEZE | grep -i "$lib")" = 0 ]]; then
+    if ! [[ -x "$(pip3.6 FREEZE | grep -i "$lib")" ]]; then
         echo
         print_blue "[~] Install Python library ${lib} (py3)"
-        python3.6 -m pip install "$lib"
+        pip3.6 install "$lib"
     fi
 done
 
