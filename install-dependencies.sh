@@ -279,17 +279,19 @@ print_blue "[~] Install common Python libraries..."
 LIBPY2="argcomplete asn1crypto bcrypt beautifulsoup4 bs4 certifi cffi chardet colorama colorlog configparser cryptography cssselect dnspython entrypoints enum34 Flask future futures gpg html-similarity html5lib humanize ipaddress IPy keyring keyrings.alt ldap3 ldapdomaindump lxml macholib MarkupSafe maxminddb paramiko parsel passlib pluginbase proxy-db py2-ipaddress pyasn1 pycparser pycrypto pycryptodomex pycurl PyGObject pymssql PyNaCl pyOpenSSL pystache python-nmap pyxdg requests requests-mock scapy SecretStorage six termcolor urllib3 virtualenv w3lib webencodings Werkzeug"
 
 for lib in $LIBPY2; do
-    if pip2.7 freeze | grep -i "$lib" 2>/dev/null; then
+    if ! [[ -x "$(pip2.7 freeze 2>/dev/null | grep -i "$lib" 2>/dev/null)" ]]; then
         echo
         print_blue "[~] Install Python library ${lib} (py2)"
         pip2.7 install "$lib" 2>/dev/null
+    else
+        print_red "[!] There was an error installing python modules"
     fi
 done
 
 LIBPY3="aiohttp ansi2html asn1crypto async-timeout asyncio attrs Babel bcrypt beautifulsoup4 blessed bs4 cement Cerberus certifi cffi chardet cmd2 colorama colored colorlog cryptography dnspython docutils enlighten entrypoints Flask future html5lib humanfriendly idna imagesize inflect ipparser itsdangerous keyring keyrings.alt ldap3 ldapdomaindump logutils lxml MarkupSafe multidict netaddr ntlm-auth packaging paramiko pbr Pillow pluginbase ply pockets prettytable prompt-toolkit psycopg2 psycopg2-binary pyasn1 pycparser pycrypto pycryptodomex pycurl Pygments PyGObject pymongo PyMySQL PyNaCl pyodbc pyOpenSSL pyparsing pyperclip pysmi pysnmp PySocks python-libnmap python-memcached pytz pyxdg PyYAML redis regex requests requests-ntlm requests-toolbelt SecretStorage selenium shodan six snowballstemmer soupsieve Sphinx sphinx-better-theme sphinxcontrib-napoleon sphinxcontrib-websupport SQLAlchemy SQLAlchemy-Utils stem stevedore tabulate termcolor tld tqdm urllib3 veryprettytable virtualenv virtualenv-clone virtualenvwrapper wcwidth webencodings Werkzeug yarl"
 
 for lib in $LIBPY3; do
-    if pip3.6 freeze | grep -i "$lib" 2>/dev/null; then
+    if ! [[ -x "$(pip3.6 freeze 2>/dev/null | grep -i "$lib" 2>/dev/null)" ]]; then
         echo
         print_blue "[~] Install Python library ${lib} (py3)"
         pip3.6 install "$lib" 2>/dev/null
