@@ -373,7 +373,6 @@ if ! [[ -x "$(command -v rvm)" ]]; then
         print_green "[+] Ruby RVM installed successfully"
     else
         print_red "[!] An error occured during Ruby RVM install"
-        exit 1
     fi
 else
     print_green "[+] Ruby RVM is already installed"
@@ -394,9 +393,8 @@ if ! [[ -x "$(rvm list | grep -q "ruby-2.4.4")" ]]; then
     rvm install ruby-2.4.4
     if ! [[ -x "$(rvm list | grep "ruby-2.4.4")" ]]; then
         print_red "[!] Ruby 2.4.4 has not been installed correctly with RVM"
-        exit 1
         else
-            if [[ "$(rvm list | grep -q -e "ruby-2.4.4")" ]]; then
+            if "$(rvm list | grep -q -e "ruby-2.4.4")"; then
                 print_green "[+] Ruby 2.4.4 has been successfully installed with RVM"
             else
                 print_blue "[+] Ruby 2.4.4 is already installed"
@@ -421,7 +419,6 @@ if [[ ! "$(rvm list | grep -q "ruby-2.6.6")" = 0 ]]; then
     gem install ffi
     if [[ ! "$(rvm list | grep "ruby-2.6.6")" = 0 ]]; then
         print_red "[!] Ruby 2.6.6 has not been installed correctly with RVM"
-        exit 1
     else
         rvm list
         print_green "[+] Ruby 2.6.6 has been successfully installed with RVM"
