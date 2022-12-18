@@ -113,7 +113,8 @@ print_delimiter
 
 print_blue "[~] Install various required packages (if missing)"
 
-PACKAGES="{curl,dnsutils,gawk,gcc,gnupg2,iputils-ping,libcurl4-openssl-dev,libffi-dev,libgmp-dev,liblzma-dev,libpq-dev,libssl-dev,libwhisker2-perl,libwww-perl,libxml2,libxml2-dev,libxml2-utils,libxslt1-dev,locales,locate,make,net-tools,patch,postgresql,postgresql-contrib,procps,smbclient,unixodbc,unixodbc-dev,unzip,wget,zlib1g-dev}"
+PACKAGES="curl dnsutils gawk gcc gnupg2 iputils openssl libffi libgmp lzma libpq libwhisker2-perl libwww-perl libxml2
+ libxslt mlocate make inetutils patch postgresql postgresql-libs procps samba unixodbc unzip wget zlib"
 
 for package in $PACKAGES; do
     if [[ "$(pacman -Ss "$package" | grep "installed")" -eq 0 ]]; then
