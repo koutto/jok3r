@@ -61,7 +61,7 @@ echo
 # -----------------------------------------------------------------------------
 # Add Kali repositories if not on Kali (Debian/Ubuntu)
 
-if [[ ! "$(grep -q "blackarch" /etc/pacman.conf)" = 0 ]]; then
+if ! [[ -x "$(grep -q "blackarch" /etc/pacman.conf)" ]]; then
     print_blue "[~] Add BlackArch repository (because missing in /etc/pacman.conf)"
     # Run https://blackarch.org/strap.sh as root and follow the instructions.
     curl -O https://blackarch.org/strap.sh
@@ -73,7 +73,7 @@ if [[ ! "$(grep -q "blackarch" /etc/pacman.conf)" = 0 ]]; then
     ./strap.sh
     # Enable multilib following https://wiki.archlinux.org/index.php/Official_repositories#Enabling_multilib and run:
     pacman -Syu
-    if [ "$(grep -q "blackarch" /etc/pacman.conf)" = 0 ]; then
+    if ! [[ -x "$(grep -q "blackarch" /etc/pacman.conf)" ]]; then
         print_green "[+] BlackArch repository added with success"
     else
         print_red "[!] Error occured while adding BlackArch repository"
