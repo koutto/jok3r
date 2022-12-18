@@ -387,20 +387,21 @@ if [ -a /usr/local/rvm/scripts/rvm ]; then
     #shellcheck disable=SC1091
     source /usr/local/rvm/scripts/rvm
 fi
-if [[ ! "$(rvm list | grep -q "ruby-2.4.4")" = 0 ]]; then
+if ! [[ -x "$(rvm list | grep -q "ruby-2.4.4")" ]]; then
     print_blue "[~] Install Ruby 2.4.4 (old version)"
     pacman -S --needed --noconfirm ruby-psych
     pacman -S --needed --noconfirm openssl
     rvm install ruby-2.4.4
-    if [[ ! "$(rvm list | grep "ruby-2.4.4")" = 0 ]]; then
+    if ! [[ -x "$(rvm list | grep "ruby-2.4.4")" ]]; then
         print_red "[!] Ruby 2.4.4 has not been installed correctly with RVM"
         exit 1
-    else
-        rvm list
-        print_green "[+] Ruby 2.4.4 has been successfully installed with RVM"
+        else
+            if [[ "$(rvm list | grep -q "ruby-2.4.4")" ]]; then
+                print_green "[+] Ruby 2.4.4 has been successfully installed with RVM"
+            else
+                print_blue "[+] Ruby 2.4.4 is already installed"
+            fi
     fi
-else
-    print_green "[+] Ruby 2.4.4 is already installed"
 fi
 print_delimiter
 
