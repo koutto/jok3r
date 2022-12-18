@@ -46,15 +46,15 @@ if [ "$EUID" -ne 0 ]; then
 fi
 
 # Make sure we are on Debian-based OS
-OS="$(lsb_release -sd || grep NAME /etc/*-release) 2> /dev/null)"
-print_blue "[~] Detected OS:"
-echo "$OS"
-if [[ "$(echo $OS | grep -q '(arch|arco|blackarch|archstrike|manjaro)')" ]]; then
-    print_green "[+] Arch-based Linux OS detected !"
-else
-    print_red "[!] No Arch-based Linux OS detected Arch, Arco, Blackarch, Archstrike or Manjaro. Will not be able to continue."
-    exit 1
-fi
+#OS="$(lsb_release -sd || grep NAME /etc/*-release) 2> /dev/null)"
+#print_blue "[~] Detected OS:"
+#echo "$OS"
+#if [[ "$(echo $OS | grep -q '(arch|arco|blackarch|archstrike|manjaro)')" ]]; then
+#    print_green "[+] Arch-based Linux OS detected !"
+#else
+#    print_red "[!] No Arch-based Linux OS detected Arch, Arco, Blackarch, Archstrike or Manjaro. Will not be able to continue."
+#    exit 1
+#fi
 echo
 echo
 
@@ -82,7 +82,7 @@ if [[ ! "$(grep -q "blackarch" /etc/pacman.conf)" -eq 0 ]]; then
 else
     print_blue "[~] BlackArch repository detected in /etc/pacman-conf. Updating repositories..."
     pacman -Syu
-    if [ "$(grep -q "blackarch" /etc/pacman.conf)" -eq 0 ]; then
+    if grep -q "blackarch" /etc/pacman.conf -eq 0; then
         print_green "[+] Repositories updated with success"
     else
         print_red "[!] Error occured while updating repositories"
@@ -503,9 +503,9 @@ print_delimiter
 
 if ! [ -x "$(command -v geckodriver)" ]; then
     print_blue "[~] Install Geckodriver (for web screenshots)"
-    cd /tmp/
-    MACHINE_TYPE=`uname -m`
-    if [ ${MACHINE_TYPE} == 'x86_64' ]; then
+    cd /tmp/ || exit 1
+    MACHINE_TYPE="$(uname -m)"
+    if [ "$MACHINE_TYPE" == 'x86_64' ]; then
         wget https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux64.tar.gz
         tar -xvf geckodriver-v0.24.0-linux64.tar.gz
         rm -f geckodriver-v0.24.0-linux64.tar.gz
