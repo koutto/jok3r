@@ -206,7 +206,7 @@ print_delimiter
 # Install Python and related packages
 print_blue "[~] Install Python 2.7 + 3 and useful related packages (if missing)"
 
-PACKAGES="python2 python-setuptools python-distutils-extra python-ipy python2-python-nmap python-pymysql python-psycopg2 python-shodan"
+PACKAGES="python2 python2-pip python-setuptools python-distutils-extra python-ipy python2-python-nmap python-pymysql python-psycopg2 python-shodan"
 
 for package in $PACKAGES; do
     if ! [[ -x "$(pacman -Ss "$package" | grep "installed")" ]]; then
