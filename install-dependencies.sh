@@ -217,14 +217,19 @@ for package in $PACKAGES; do
 done
 
 python3.6 -m ensurepip
-pip2 install --upgrade pip
+pip2.7 install --upgrade pip
 pip3 install --upgrade pip
 # python3.6 -m pip uninstall -y psycopg2
 # python3.6 -m pip install psycopg2-binary
 if [ -x "$(command -v python2.7)" ]; then
-    print_green "[+] Python2.7 installed successfully"
+    print_green "[+] python2.7 installed successfully"
 else
     print_red "[!] An error occured during Python2.7 install"
+fi
+if [ -x "$(command -v pip2.7)" ]; then
+    print_green "[+] pip2.7 installed successfully"
+else
+    print_red "[!] An error occured during pip2.7 install"
     exit 1
 fi
 if [ -x "$(command -v python3.6)" ]; then
