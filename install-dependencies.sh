@@ -396,7 +396,7 @@ if ! [[ -x "$(rvm list | grep -q "ruby-2.4.4")" ]]; then
         print_red "[!] Ruby 2.4.4 has not been installed correctly with RVM"
         exit 1
         else
-            if [[ "$(rvm list | grep -q "ruby-2.4.4")" ]]; then
+            if [[ "$(rvm list | grep -q -e "ruby-2.4.4")" ]]; then
                 print_green "[+] Ruby 2.4.4 has been successfully installed with RVM"
             else
                 print_blue "[+] Ruby 2.4.4 is already installed"
