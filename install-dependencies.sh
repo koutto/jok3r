@@ -114,15 +114,29 @@ print_delimiter
 print_blue "[~] Install various required packages (if missing)"
 
 PACKAGES="curl dnsutils gawk gcc gnupg2 iputils openssl libffi libgmp lzma libpq libwhisker2-perl libwww-perl libxml2
- libxslt mlocate make inetutils patch postgresql postgresql-libs procps samba unixodbc unzip wget zlib"
+ libxslt mlocate make inetutils patch postgresql postgresql-libs procps samba unixodbc unzip wget zlib python python3 python36 python-pip"
 
 for package in $PACKAGES; do
-    if [[ "$(pacman -Ss "$package" | grep "installed")" = 0 ]]; then
+    if ! [[ -x "$(pacman -Ss "$package" | grep "installed")" ]]; then
         echo
         print_blue "[~] Install ${package} ..."
         pacman -S --needed --noconfirm "$package"
     fi
 done
+print_delimiter
+
+# -----------------------------------------------------------------------------
+# Install python3.6
+
+print_blue "[~] Install Python3.6"
+
+if ! [ -x "$(command -v python3.6)" ]; then
+    echo
+    wget https://aur.archlinux.org/cgit/aur.git/snapshot/python36.tar.gz
+    tar -xzvvf python36.tar.gz
+    cd python36 || exit 1
+    runuser "$USER" -c makepkg -si --noconfirm --needed
+fi
 print_delimiter
 
 # -----------------------------------------------------------------------------
