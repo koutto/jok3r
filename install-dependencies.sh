@@ -113,12 +113,13 @@ print_delimiter
 
 print_blue "[~] Install various required packages (if missing)"
 
-PACKAGES="curl dnsutils gawk gcc gnupg2 iputils openssl libffi libgmp lzma libpq libwhisker2-perl libwww-perl libxml2
- libxslt mlocate make inetutils patch postgresql postgresql-libs procps samba unixodbc unzip wget zlib python python36 python-pip"
+PACKAGES="curl dnsutils gawk gcc gnupg iputils openssl libffi gmp4 lrzip xz perl-libwhisker2 perl-libwww libxml2
+python2-libxml2 libxslt mlocate make inetutils patch postgresql postgresql-libs procps samba unixodbc unzip wget zlib python python-pip"
 
 for package in $PACKAGES; do
     if ! [[ -x "$(pacman -Ss "$package" | grep "installed")" ]]; then
         echo
+        touch /var/log/journal/%m 2>/dev/null
         print_blue "[~] Install ${package} ..."
         pacman -S --needed --noconfirm "$package"
     fi
@@ -205,7 +206,7 @@ print_delimiter
 # Install Python and related packages
 print_blue "[~] Install Python 2.7 + 3 and useful related packages (if missing)"
 
-PACKAGES="python2 python-setuptools python-distutils python-ipy python-nmap python-pymysql python-psycopg2 python-shodan"
+PACKAGES="python2 python-setuptools python-distutils-extra python-ipy python2-python-nmap python-pymysql python-psycopg2 python-shodan"
 
 for package in $PACKAGES; do
     if [[ ! "$(pacman -Ss "$package" | grep "installed")" = 0 ]]; then
