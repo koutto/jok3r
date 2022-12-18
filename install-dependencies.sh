@@ -129,7 +129,7 @@ print_delimiter
 
 if ! [ -x "$(command -v msfconsole)" ]; then
     print_blue "[~] Install Metasploit ..."
-    pacman -S --needed --noconfirm metasploit-framework
+    pacman -S --needed --noconfirm metasploit
     if [ -x "$(command -v msfconsole)" ]; then
         print_green "[+] Metasploit installed successfully"
     else
