@@ -114,7 +114,7 @@ print_delimiter
 print_blue "[~] Install various required packages (if missing)"
 
 PACKAGES="curl dnsutils gawk gcc gnupg2 iputils openssl libffi libgmp lzma libpq libwhisker2-perl libwww-perl libxml2
- libxslt mlocate make inetutils patch postgresql postgresql-libs procps samba unixodbc unzip wget zlib python python3 python36 python-pip"
+ libxslt mlocate make inetutils patch postgresql postgresql-libs procps samba unixodbc unzip wget zlib python python36 python-pip"
 
 for package in $PACKAGES; do
     if ! [[ -x "$(pacman -Ss "$package" | grep "installed")" ]]; then
@@ -205,7 +205,7 @@ print_delimiter
 # Install Python and related packages
 print_blue "[~] Install Python 2.7 + 3 and useful related packages (if missing)"
 
-PACKAGES="python python2 python-pip python36 python-setuptools python-distutils python-ipy python-nmap python-pymysql python-psycopg2 python-shodan"
+PACKAGES="python2 python-setuptools python-distutils python-ipy python-nmap python-pymysql python-psycopg2 python-shodan"
 
 for package in $PACKAGES; do
     if [[ ! "$(pacman -Ss "$package" | grep "installed")" = 0 ]]; then
@@ -218,7 +218,7 @@ done
 python2.7 -m ensurepip
 python3.6 -m ensurepip
 python2.7 -m pip install --upgrade pip
-python3.6 -m python3.6 -m pip install --upgrade pip
+python3.6 -m pip install --upgrade pip
 # python3.6 -m pip uninstall -y psycopg2
 # python3.6 -m pip install psycopg2-binary
 if [ -x "$(command -v python2.7)" ]; then
@@ -227,7 +227,7 @@ else
     print_red "[!] An error occured during Python2.7 install"
     exit 1
 fi
-if [ -x "$(command -v python3)" ]; then
+if [ -x "$(command -v python3.6)" ]; then
     print_green "[+] python3.6 installed successfully"
 else
     print_red "[!] An error occured during Python3.6 install"
