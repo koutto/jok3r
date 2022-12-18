@@ -9,7 +9,7 @@
    <br class="title">
    Jok3r v3 Alpha Arch, Arch GNU/Linux Variant.
    <br>
-
+https://www.jok3r-framework.com/
 .. image:: https://img.shields.io/badge/python-3.6-blue.svg
     :target: https://www.python.org/downloads/release/python-366/
     :alt: Python 3.6
@@ -24,30 +24,30 @@
    <h3 align="center">Network & Web Pentest Automation Framework</h3>
    <p align="center"><a href="https://www.jok3r-framework.com/">www.jok3r-framework.com</a></p>
 
-**WARNING: Project is still in version 3 BETA. It is still under active development 
+**WARNING: Project is still in version 3 BETA. It is still under active development
 and bugs might be present.**
 
-**Many tests are going on: see https://github.com/koutto/jok3r/blob/master/tests/TESTS.rst. 
+**Many tests are going on: see https://github.com/koutto/jok3r/blob/master/tests/TESTS.rst.
 Ideas, bug reports, contributions are welcome !**
 
 
-.. contents:: 
+.. contents::
     :local:
     :depth: 1
 
 =============
 Overview
 =============
-*Jok3r* is a Python3 CLI application which is aimed at **helping penetration testers 
-for network infrastructure and web black-box security tests**. 
+*Jok3r* is a Python3 CLI application which is aimed at **helping penetration testers
+for network infrastructure and web black-box security tests**.
 
-The goal is to save as much time as possible during network/web pentests by automating as 
-many security tests as possible in order to quickly identify low-hanging fruits vulnerabilities, and 
+The goal is to save as much time as possible during network/web pentests by automating as
+many security tests as possible in order to quickly identify low-hanging fruits vulnerabilities, and
 then spend more time on more interesting and tricky stuff !
 
 It is based upon the observation that there are many hacking open-source tools/scripts  (from various sources)
 targeting common network services available out there, that allow to perform various tasks from
-fingerprinting to exploitation. Therefore, the idea of *Jok3r* is to combine those open-source tools 
+fingerprinting to exploitation. Therefore, the idea of *Jok3r* is to combine those open-source tools
 in a smart way to get the more relevant results.
 
 
@@ -96,12 +96,12 @@ Local Database & Reporting
 Demos
 ============
 
-* **Example 1: Scan a JAVA-RMI (JMX) service:** 
+* **Example 1: Scan a JAVA-RMI (JMX) service:**
 
 .. image:: pictures/video-01.png
    :target: https://www.youtube.com/watch?v=FlbeBj5FPtI
 
-* **Example 2: Scan a Joomla website:** 
+* **Example 2: Scan a Joomla website:**
 
 .. image:: pictures/video-02.png
    :target: https://www.youtube.com/watch?v=z4cf_8EQ59Q
@@ -122,13 +122,13 @@ Architecture
 ============
 Installation
 ============
-**IMPORTANT: The recommended way to use Jok3r is by pulling the Docker Image so you will not have 
+**IMPORTANT: The recommended way to use Jok3r is by pulling the Docker Image so you will not have
 to worry about dependencies issues and installing the various hacking tools of the toolbox.
 Everything is tested from the Docker container available on Docker Hub !**
 
 .. image:: https://raw.githubusercontent.com/koutto/jok3r/master/pictures/docker-logo.png
 
-A Docker image is available on Docker Hub and automatically re-built at each update: 
+A Docker image is available on Docker Hub and automatically re-built at each update:
 https://hub.docker.com/r/koutto/jok3r/. It is initially based on official Kali
 Linux Docker image (kalilinux/kali-linux-docker).
 
@@ -266,10 +266,10 @@ Create a new mission in local database:
     [+] Mission "mayhem" successfully added
     [*] Selected mission is now mayhem
 
-    jok3rdb[mayhem]> 
+    jok3rdb[mayhem]>
 
 
-**Single target:** 
+**Single target:**
 
 * Run all security checks against an URL in interactive mode and add results to the "mayhem" mission:
 
@@ -292,7 +292,7 @@ Create a new mission in local database:
     python3 jok3r.py attack -t 192.168.1.142:21 -s ftp --cat-only recon,vulnscan --add2db mayhem
 
 
-**Multiple targets:** 
+**Multiple targets:**
 
 * Search only for "easy wins" (critical vulns & easy to exploit) on all services registered in mission "mayhem":
 
@@ -396,7 +396,7 @@ You begin a pentest with several servers in the scope. Here is a typical example
     [+] Mission "mayhem" successfully added
     [*] Selected mission is now mayhem
 
-    jok3rdb[mayhem]> 
+    jok3rdb[mayhem]>
 
 3. You import your results from *Nmap* scan in the database:
 
@@ -417,14 +417,14 @@ You begin a pentest with several servers in the scope. Here is a typical example
 
     [...]
 
-5. Now, you can run security checks against some targets in the scope. For example, if you 
+5. Now, you can run security checks against some targets in the scope. For example, if you
    want to run checks against all Java-RMI services in the scope, you can run the following command:
 
 .. code-block:: console
 
     python3 jok3r.py attack -m mayhem -f "service=java-rmi" --fast
 
-6. You can view the full results from the security checks either in live when the tools are 
+6. You can view the full results from the security checks either in live when the tools are
    executed or later from the database using the following command:
 
 .. code-block:: console
@@ -463,7 +463,7 @@ Documentation writing in progress...
 
 
 =====================================
-Supported Services & Security Checks 
+Supported Services & Security Checks
 =====================================
 
 **Updated on: 12/07/2019**

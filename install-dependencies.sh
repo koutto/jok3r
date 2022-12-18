@@ -1,4 +1,4 @@
-#!/usr/bin/env bash 
+#!/usr/bin/env bash
 
 print_green() {
     BOLD_GREEN=$(tput bold ; tput setaf 2)
@@ -13,15 +13,15 @@ print_yellow() {
 }
 
 print_red() {
-    BOLD_YELLOW=$(tput bold ; tput setaf 1)
+    BOLD_RED=$(tput bold ; tput setaf 1)
     NORMAL=$(tput sgr0)
-    echo "${BOLD_YELLOW}$1${NORMAL}"
+    echo "${BOLD_RED}$1${NORMAL}"
 }
 
 print_blue() {
-    BOLD_YELLOW=$(tput bold ; tput setaf 4)
+    BOLD_BLUE=$(tput bold ; tput setaf 4)
     NORMAL=$(tput sgr0)
-    echo "${BOLD_YELLOW}$1${NORMAL}"
+    echo "${BOLD_BLUE}$1${NORMAL}"
 }
 
 print_delimiter() {
@@ -40,19 +40,19 @@ echo
 print_blue "This script will install Jok3r and all the required dependencies"
 
 # Make sure we are root !
-if [ "$EUID" -ne 0 ]; then 
+if [ "$EUID" -ne 0 ]; then
     print_red "[!] Must be run as root"
     exit 1
 fi
 
 # Make sure we are on Debian-based OS
-OS=`(lsb_release -sd || grep NAME /etc/*-release) 2> /dev/null`
+OS="$(lsb_release -sd || grep NAME /etc/*-release) 2> /dev/null)"
 print_blue "[~] Detected OS:"
 echo $OS
-if [[ `echo $OS | egrep -i '(kali|debian|ubuntu)'` ]]; then
-    print_green "[+] Debian-based Linux OS detected !"
+if [[ "$(echo $OS | grep -Ei '(arch|arco|blackarch|archstrike|manjaro)')" ]]; then
+    print_green "[+] Arch-based Linux OS detected !"
 else
-    print_red "[!] No Debian-based Linux OS detected (Debian/Ubuntu/Kali). Will not be able to continue !"
+    print_red "[!] No Arch-based Linux OS detected Arch, Arco, Blackarch, Archstrike or Manjaro. Will not be able to continue."
     exit 1
 fi
 echo
@@ -61,26 +61,28 @@ echo
 # -----------------------------------------------------------------------------
 # Add Kali repositories if not on Kali (Debian/Ubuntu)
 
-if [[ ! $(grep "deb http://http.kali.org/kali kali-rolling main" /etc/apt/sources.list) ]]; then 
-    print_blue "[~] Add Kali repository (because missing in /etc/apt/sources.list)"
-    cp /etc/apt/sources.list /etc/apt/sources.list.bak
-    echo "deb http://http.kali.org/kali kali-rolling main non-free contrib" >> /etc/apt/sources.list
-    cd /tmp/
-    wget -k https://http.kali.org/kali/pool/main/k/kali-archive-keyring/kali-archive-keyring_2018.1_all.deb
-    dpkg -i kali-archive-keyring_2018.1_all.deb
-    rm -f kali-archive-keyring_2018.1_all.deb
-    apt-get update
-    apt-get install -y kali-archive-keyring
-    if [ $? -eq 0 ]; then
-        print_green "[+] Kali repository added with success"
+if [[ ! "$(grep -q "blackarch" /etc/pacman.conf)" -eq 0 ]]; then
+    print_blue "[~] Add BlackArch repository (because missing in /etc/pacman.conf)"
+    # Run https://blackarch.org/strap.sh as root and follow the instructions.
+    curl -O https://blackarch.org/strap.sh
+    # Verify the SHA1 sum
+    echo 5ea40d49ecd14c2e024deecf90605426db97ea0c strap.sh | sha1sum -c
+    # Set execute bit
+    chmod +x strap.sh
+    # Run strap.sh
+    ./strap.sh
+    # Enable multilib following https://wiki.archlinux.org/index.php/Official_repositories#Enabling_multilib and run:
+    pacman -Syu
+    if [ "$(grep -q "blackarch" /etc/pacman.conf)" -eq 0 ]; then
+        print_green "[+] BlackArch repository added with success"
     else
-        print_red "[!] Error occured while adding Kali repository"
+        print_red "[!] Error occured while adding BlackArch repository"
         exit 1
     fi
 else
-    print_blue "[~] Kali repository detected in /etc/apt/sources.list. Updating repositories..."
-    apt-get update
-    if [ $? -eq 0 ]; then
+    print_blue "[~] BlackArch repository detected in /etc/pacman-conf. Updating repositories..."
+    pacman -Syu
+    if [ "$(grep -q "blackarch" /etc/pacman.conf)" -eq 0 ]; then
         print_green "[+] Repositories updated with success"
     else
         print_red "[!] Error occured while updating repositories"
@@ -94,7 +96,7 @@ print_delimiter
 
 if ! [ -x "$(command -v git)" ]; then
     print_blue "[~] Install git ..."
-    apt-get install -y git
+    pacman -S --needed --noconfirm git
     if [ -x "$(command -v git)" ]; then
         print_green "[+] Git installed successfully"
     else
@@ -107,56 +109,17 @@ fi
 print_delimiter
 
 # -----------------------------------------------------------------------------
-# Install various required packages 
+# Install various required packages
 
 print_blue "[~] Install various required packages (if missing)"
 
-PACKAGES="
-alien
-apt-transport-https
-apt-utils
-automake
-bc
-build-essential
-curl
-dnsutils
-gawk
-gcc
-gnupg2
-iputils-ping
-libcurl4-openssl-dev
-libffi-dev
-libgmp-dev
-liblzma-dev
-libpq-dev
-libssl-dev
-libwhisker2-perl
-libwww-perl
-libxml2
-libxml2-dev
-libxml2-utils
-libxslt1-dev
-locales
-locate
-make
-net-tools
-patch
-postgresql
-postgresql-contrib
-procps
-smbclient
-sudo
-unixodbc
-unixodbc-dev
-unzip
-wget
-zlib1g-dev
-"
-for package in $PACKAGES; do    
-    if [[ ! $(dpkg-query -W -f='${Status}' $package 2>/dev/null | grep "ok installed") ]]; then
+PACKAGES="{curl,dnsutils,gawk,gcc,gnupg2,iputils-ping,libcurl4-openssl-dev,libffi-dev,libgmp-dev,liblzma-dev,libpq-dev,libssl-dev,libwhisker2-perl,libwww-perl,libxml2,libxml2-dev,libxml2-utils,libxslt1-dev,locales,locate,make,net-tools,patch,postgresql,postgresql-contrib,procps,smbclient,unixodbc,unixodbc-dev,unzip,wget,zlib1g-dev}"
+
+for package in $PACKAGES; do
+    if [[ "$(pacman -Ss "$package" | grep "installed")" -eq 0 ]]; then
         echo
         print_blue "[~] Install ${package} ..."
-        apt-get install -y $package 
+        pacman -S --needed --noconfirm "$package"
     fi
 done
 print_delimiter
@@ -166,30 +129,30 @@ print_delimiter
 
 if ! [ -x "$(command -v msfconsole)" ]; then
     print_blue "[~] Install Metasploit ..."
-    apt-get install -y metasploit-framework 
+    pacman -S --needed --noconfirm metasploit-framework
     if [ -x "$(command -v msfconsole)" ]; then
         print_green "[+] Metasploit installed successfully"
     else
         print_red "[!] An error occured during Metasploit install"
         exit 1
-    fi        
+    fi
 else
     print_green "[+] Metasploit is already installed"
 fi
 print_delimiter
 
 # -----------------------------------------------------------------------------
-# Install Nmap 
+# Install Nmap
 
 if ! [ -x "$(command -v nmap)" ]; then
     print_blue "[~] Install Nmap ..."
-    apt-get install -y nmap 
+    pacman -S --needed --noconfirm nmap
     if [ -x "$(command -v nmap)" ]; then
         print_green "[+] Nmap installed successfully"
     else
         print_red "[!] An error occured during Nmap install"
         exit 1
-    fi   
+    fi
 else
     print_green "[+] Nmap is already installed"
 fi
@@ -200,13 +163,13 @@ print_delimiter
 
 if ! [ -x "$(command -v tcpdump)" ]; then
     print_blue "[~] Install tcpdump ..."
-    apt-get install -y tcpdump
+    pacman -S --needed --noconfirm tcpdump
     if [ -x "$(command -v tcpdump)" ]; then
         print_green "[+] tcpdump installed successfully"
     else
         print_red "[!] An error occured during tcpdump install"
         exit 1
-    fi   
+    fi
 else
     print_green "[+] tcpdump is already installed"
 fi
@@ -217,70 +180,56 @@ print_delimiter
 # if ! [ -x "$(command -v npm)" ]; then
 #     print_green "[~] Install NodeJS ..."
 #     curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
-#     apt-get install -y nodejs
+#     pacman -S --needed --noconfirm nodejs
 # else
 #     print_green "[+] NodeJS is already installed"
 # fi
-# print_delimiter   
+# print_delimiter
 
 # -----------------------------------------------------------------------------
 # Install Python and related packages
 print_blue "[~] Install Python 2.7 + 3 and useful related packages (if missing)"
 
-PACKAGES="
-python
-python2.7
-python3
-python-pip
-python3-pip
-python-dev
-python3-dev
-python-setuptools
-python3-setuptools
-python3-distutils
-python-ipy
-python-nmap
-python3-pymysql
-python3-psycopg2
-python3-shodan
-"
+PACKAGES="python python2 python-pip python36 python-setuptools python-distutils python-ipy python-nmap python-pymysql python-psycopg2 python-shodan"
 
-for package in $PACKAGES; do    
-    if [[ ! $(dpkg-query -W -f='${Status}' $package 2>/dev/null | grep "ok installed") ]]; then
+for package in $PACKAGES; do
+    if [[ ! "$(pacman -Ss "$package" | grep "installed")" -eq 0 ]]; then
         echo
         print_blue "[~] Install ${package} ..."
-        apt-get install -y $package 
+        pacman -S --needed --noconfirm "$package"
     fi
 done
 
-pip2 install --upgrade pip
-pip3 install --upgrade pip
-# pip3 uninstall -y psycopg2
-# pip3 install psycopg2-binary
+python2.7 -m ensurepip
+python3.6 -m ensurepip
+python2.7 -m pip install --upgrade pip
+python3.6 -m python3.6 -m pip install --upgrade pip
+# python3.6 -m pip uninstall -y psycopg2
+# python3.6 -m pip install psycopg2-binary
 if [ -x "$(command -v python2.7)" ]; then
     print_green "[+] Python2.7 installed successfully"
 else
     print_red "[!] An error occured during Python2.7 install"
     exit 1
-fi 
+fi
 if [ -x "$(command -v python3)" ]; then
-    print_green "[+] Python3 installed successfully"
+    print_green "[+] python3.6 installed successfully"
 else
     print_red "[!] An error occured during Python2.7 install"
     exit 1
-fi 
-if [ -x "$(command -v pip2)" ]; then
-    print_green "[+] pip2 installed successfully"
+fi
+if [ -x "$(command -v python2.7 -m pip)" ]; then
+    print_green "[+] python2.7 -m pip installed successfully"
 else
-    print_red "[!] An error occured during pip2 install"
+    print_red "[!] An error occured during python2.7 -m pip install"
     exit 1
-fi 
-if [ -x "$(command -v pip3)" ]; then
-    print_green "[+] pip3 installed successfully"
+fi
+if [ -x "$(command -v python3.6 -m pip)" ]; then
+    print_green "[+] python3.6 -m pip installed successfully"
 else
-    print_red "[!] An error occured during pip3 install"
+    print_red "[!] An error occured during python3.6 -m pip install"
     exit 1
-fi 
+fi
 print_delimiter
 
 # -----------------------------------------------------------------------------
@@ -288,9 +237,9 @@ print_delimiter
 
 if ! [ -x "$(command -v virtualenv)" ]; then
     print_blue "[~] Install python virtual environment packages"
-    pip2 install virtualenv
-    pip3 install virtualenv
-    # pip3 install virtualenvwrapper
+    python2.7 -m pip install virtualenv
+    python3.6 -m pip install virtualenv
+    # python3.6 -m pip install virtualenvwrapper
     # source /usr/local/bin/virtualenvwrapper.sh
     if [ -x "$(command -v virtualenv)" ]; then
         print_green "[+] virtualenv installed successfully"
@@ -308,203 +257,30 @@ print_delimiter
 # We decide to add system-wide install of common Python libraries even if
 # most of Python tools are then installed inside virtualenv, because it appears
 # that a lot of projects/tools do not embed correct requirements.txt or
-# setup.py. Then virtualenv for Python projects are created with 
+# setup.py. Then virtualenv for Python projects are created with
 # --system-site-package option which allows to access those libraries.
 
 print_blue "[~] Install common Python libraries..."
 
-LIBPY2="
-argcomplete
-asn1crypto
-bcrypt
-beautifulsoup4
-bs4
-certifi
-cffi
-chardet
-colorama
-colorlog
-configparser
-cryptography
-cssselect
-dnspython
-entrypoints
-enum34
-Flask
-future
-futures
-gpg
-html-similarity
-html5lib
-humanize
-ipaddress
-IPy
-keyring
-keyrings.alt
-ldap3
-ldapdomaindump
-lxml
-macholib
-MarkupSafe
-maxminddb
-paramiko
-parsel
-passlib
-pluginbase
-proxy-db
-py2-ipaddress
-pyasn1
-pycparser
-pycrypto
-pycryptodomex
-pycurl
-PyGObject
-pymssql
-PyNaCl
-pyOpenSSL
-pystache
-python-nmap
-pyxdg
-requests
-requests-mock
-scapy
-SecretStorage
-six
-termcolor
-urllib3
-virtualenv
-w3lib
-webencodings
-Werkzeug
-"
+LIBPY2="argcomplete asn1crypto bcrypt beautifulsoup4 bs4 certifi cffi chardet colorama colorlog configparser cryptography cssselect dnspython entrypoints enum34 Flask future futures gpg html-similarity html5lib humanize ipaddress IPy keyring keyrings.alt ldap3 ldapdomaindump lxml macholib MarkupSafe maxminddb paramiko parsel passlib pluginbase proxy-db py2-ipaddress pyasn1 pycparser pycrypto pycryptodomex pycurl PyGObject pymssql PyNaCl pyOpenSSL pystache python-nmap pyxdg requests requests-mock scapy SecretStorage six termcolor urllib3 virtualenv w3lib webencodings Werkzeug"
 
-PIP2FREEZE=$(pip2 freeze)
-for lib in $LIBPY2; do    
-    if [[ ! $(echo $PIP2FREEZE | grep -i $lib) ]]; then
+python2.7 -m pip FREEZE="$(python2.7 -m pip freeze)"
+for lib in $LIBPY2; do
+    if [[ ! "$(python2.7 -m pip FREEZE | grep -i "$lib")" -eq 0 ]]; then
         echo
         print_blue "[~] Install Python library ${lib} (py2)"
-        pip2 install $lib
+        python2.7 -m pip install "$lib"
     fi
 done
 
-LIBPY3="
-aiohttp
-ansi2html
-asn1crypto
-async-timeout
-asyncio
-attrs
-Babel
-bcrypt
-beautifulsoup4
-blessed
-bs4
-cement
-Cerberus
-certifi
-cffi
-chardet
-cmd2
-colorama
-colored
-colorlog
-cryptography
-dnspython
-docutils
-enlighten
-entrypoints
-Flask
-future
-html5lib
-humanfriendly
-idna
-imagesize
-inflect
-ipparser
-itsdangerous
-keyring
-keyrings.alt
-ldap3
-ldapdomaindump
-logutils
-lxml
-MarkupSafe
-multidict
-netaddr
-ntlm-auth
-packaging
-paramiko
-pbr
-Pillow
-pluginbase
-ply
-pockets
-prettytable
-prompt-toolkit
-psycopg2
-psycopg2-binary
-pyasn1
-pycparser
-pycrypto
-pycryptodomex
-pycurl
-Pygments
-PyGObject
-pymongo
-PyMySQL
-PyNaCl
-pyodbc
-pyOpenSSL
-pyparsing
-pyperclip
-pysmi
-pysnmp
-PySocks
-python-libnmap
-python-memcached
-pytz
-pyxdg
-PyYAML
-redis
-regex
-requests
-requests-ntlm
-requests-toolbelt
-SecretStorage
-selenium
-shodan
-six
-snowballstemmer
-soupsieve
-Sphinx
-sphinx-better-theme
-sphinxcontrib-napoleon
-sphinxcontrib-websupport
-SQLAlchemy
-SQLAlchemy-Utils
-stem
-stevedore
-tabulate
-termcolor
-tld
-tqdm
-urllib3
-veryprettytable
-virtualenv
-virtualenv-clone
-virtualenvwrapper
-wcwidth
-webencodings
-Werkzeug
-yarl
-"
+LIBPY3="aiohttp ansi2html asn1crypto async-timeout asyncio attrs Babel bcrypt beautifulsoup4 blessed bs4 cement Cerberus certifi cffi chardet cmd2 colorama colored colorlog cryptography dnspython docutils enlighten entrypoints Flask future html5lib humanfriendly idna imagesize inflect ipparser itsdangerous keyring keyrings.alt ldap3 ldapdomaindump logutils lxml MarkupSafe multidict netaddr ntlm-auth packaging paramiko pbr Pillow pluginbase ply pockets prettytable prompt-toolkit psycopg2 psycopg2-binary pyasn1 pycparser pycrypto pycryptodomex pycurl Pygments PyGObject pymongo PyMySQL PyNaCl pyodbc pyOpenSSL pyparsing pyperclip pysmi pysnmp PySocks python-libnmap python-memcached pytz pyxdg PyYAML redis regex requests requests-ntlm requests-toolbelt SecretStorage selenium shodan six snowballstemmer soupsieve Sphinx sphinx-better-theme sphinxcontrib-napoleon sphinxcontrib-websupport SQLAlchemy SQLAlchemy-Utils stem stevedore tabulate termcolor tld tqdm urllib3 veryprettytable virtualenv virtualenv-clone virtualenvwrapper wcwidth webencodings Werkzeug yarl"
 
-PIP3FREEZE=$(pip3 freeze)
-for lib in $LIBPY3; do    
-    if [[ ! $(echo $PIP3FREEZE | grep -i $lib) ]]; then
+python3.6 -m pip FREEZE="$(python3.6 -m pip freeze)"
+for lib in $LIBPY3; do
+    if [[ ! "$(python3.6 -m pip FREEZE | grep -i "$lib")" -eq 0 ]]; then
         echo
         print_blue "[~] Install Python library ${lib} (py3)"
-        pip3 install $lib
+        python3.6 -m pip install "$lib"
     fi
 done
 
@@ -515,13 +291,13 @@ print_delimiter
 
 if ! [ -x "$(command -v jython)" ]; then
     print_blue "[~] Install Jython"
-    apt-get install -y jython
+    pacman -S --needed --noconfirm jython
     if [ -x "$(command -v jython)" ]; then
         print_green "[+] Jython installed successfully"
     else
         print_red "[!] An error occured during Jython install"
         exit 1
-    fi   
+    fi
 else
     print_green "[+] Jython is already installed"
 fi
@@ -532,13 +308,13 @@ print_delimiter
 
 if ! [ -x "$(command -v ruby)" ]; then
     print_blue "[~] Install Ruby"
-    apt-get install -y ruby ruby-dev
+    pacman -S --needed --noconfirm ruby
     if [ -x "$(command -v ruby)" ]; then
         print_green "[+] Ruby installed successfully"
     else
         print_red "[!] An error occured during Ruby install"
         exit 1
-    fi   
+    fi
 else
     print_green "[+] Ruby is already installed"
 fi
@@ -548,30 +324,34 @@ print_delimiter
 # Install RVM (Ruby Version Manager)
 
 if [ -a /usr/local/rvm/scripts/rvm ]; then
+    #shellcheck disable=SC1091
     source /usr/local/rvm/scripts/rvm
 fi
 
-if ! [ -n "$(command -v rvm)" ]; then
+if [ -n "$(command -v rvm)" ]; then
     print_blue "[~] Install Ruby RVM (Ruby Version Manager)"
     curl -sSL https://get.rvm.io | bash
+    #shellcheck disable=SC1091
     source /etc/profile.d/rvm.sh
     if ! grep -q "source /etc/profile.d/rvm.sh" ~/.bashrc
     then
         echo "source /etc/profile.d/rvm.sh" >> ~/.bashrc
     fi
     # Make sure rvm will be available
-    if ! grep -q "[[ -s /usr/local/rvm/scripts/rvm ]] && source /usr/local/rvm/scripts/rvm" ~/.bashrc
+    if ! grep -q "[[ -s /usr/share/rvm/scripts/rvm ]] && source /usr/share/rvm/scripts/rvm" ~/.bashrc
     then
-        echo "[[ -s /usr/local/rvm/scripts/rvm ]] && source /usr/local/rvm/scripts/rvm" >> ~/.bashrc
+        echo "[[ -s /usr/share/rvm/scripts/rvm ]] && source /usr/share/rvm/scripts/rvm" >> ~/.bashrc
     fi
+    #shellcheck disable=SC1090
     source ~/.bashrc
+    #shellcheck disable=SC1091
     source /usr/local/rvm/scripts/rvm
     if [ -n "$(command -v rvm)" ]; then
         print_green "[+] Ruby RVM installed successfully"
     else
         print_red "[!] An error occured during Ruby RVM install"
         exit 1
-    fi   
+    fi
 else
     print_green "[+] Ruby RVM is already installed"
 fi
@@ -581,23 +361,23 @@ print_delimiter
 # Install different versions of Ruby via RVM
 
 if [ -a /usr/local/rvm/scripts/rvm ]; then
+    #shellcheck disable=SC1091
     source /usr/local/rvm/scripts/rvm
 fi
-if [[ ! $(rvm list | grep ruby-2.4) ]]; then
-    print_blue "[~] Install Ruby 2.4 (old version)"
-    apt-get install -y ruby-psych
-    apt-get purge -y libssl-dev
-    apt-get install -y libssl1.0-dev
+if [[ ! "$(rvm list | grep -q "ruby-2.4.4")" -eq 0 ]]; then
+    print_blue "[~] Install Ruby 2.4.4 (old version)"
+    pacman -S --needed --noconfirm ruby-psych
+    pacman -S --needed --noconfirm openssl
     rvm install ruby-2.4
-    if [[ ! $(rvm list | grep ruby-2.4) ]]; then
-        print_red "[!] Ruby 2.4 has not been installed correctly with RVM"
+    if [[ ! "$(rvm list | grep "ruby-2.4.4")" -eq 0 ]]; then
+        print_red "[!] Ruby 2.4.4 has not been installed correctly with RVM"
         exit 1
     else
         rvm list
-        print_green "[+] Ruby 2.4 has been successfully installed with RVM"
+        print_green "[+] Ruby 2.4.4 has been successfully installed with RVM"
     fi
 else
-    print_green "[+] Ruby 2.4 is already installed"
+    print_green "[+] Ruby 2.4.4 is already installed"
 fi
 print_delimiter
 
@@ -610,20 +390,20 @@ print_delimiter
 #     rvm list
 # fi
 
-if [[ ! $(rvm list | grep ruby-2.6) ]]; then
-    print_blue "[~] Install Ruby 2.6"
-    rvm install ruby-2.6
-    rvm --default use ruby-2.6
+if [[ ! "$(rvm list | grep -q "ruby-2.6.6")" -eq 0 ]]; then
+    print_blue "[~] Install Ruby 2.6.6"
+    rvm install ruby-2.6.6
+    rvm --default use ruby-2.6.6
     gem install ffi
-    if [[ ! $(rvm list | grep ruby-2.6) ]]; then
-        print_red "[!] Ruby 2.6 has not been installed correctly with RVM"
+    if [[ ! "$(rvm list | grep "ruby-2.6.6")" -eq 0 ]]; then
+        print_red "[!] Ruby 2.6.6 has not been installed correctly with RVM"
         exit 1
     else
         rvm list
-        print_green "[+] Ruby 2.6 has been successfully installed with RVM"
+        print_green "[+] Ruby 2.6.6 has been successfully installed with RVM"
     fi
 else
-    print_green "[+] Ruby 2.6 is already installed"
+    print_green "[+] Ruby 2.6.6 is already installed"
 fi
 print_delimiter
 
@@ -638,13 +418,13 @@ print_delimiter
 
 if ! [ -x "$(command -v perl)" ]; then
     print_blue "[~] Install Perl"
-    apt-get install -y perl 
+    pacman -S --needed --noconfirm perl
     if [ -x "$(command -v perl)" ]; then
         print_green "[+] Perl installed successfully"
     else
         print_red "[!] An error occured during Perl install"
         exit 1
-    fi   
+    fi
 else
     print_green "[+] Perl is already installed"
 fi
@@ -655,47 +435,64 @@ print_delimiter
 
 if ! [ -x "$(command -v php)" ]; then
     print_blue "[~] Install PHP"
-    apt-get install -y php
+    pacman -S --needed --noconfirm php
     if [ -x "$(command -v php)" ]; then
         print_green "[+] PHP installed successfully"
     else
         print_red "[!] An error occured during PHP install"
         exit 1
-    fi   
+    fi
 else
     print_green "[+] PHP is already installed"
 fi
 print_delimiter
 
 # -----------------------------------------------------------------------------
-# Install Java
+# Install Java jdk8-openjdk
 
-if ! [ -x "$(command -v java)" ]; then
-    print_blue "[~] Install Java"
-    apt-get install -y default-jdk
-    if [ -x "$(command -v jython)" ]; then
-        print_green "[+] Java installed successfully"
+if ! [ -x "$(command -v jdk8-openjdk)" ]; then
+    print_blue "[~] Install Java tools"
+    pacman -S --needed --noconfirm jdk8-openjdk
+    if [ -x "$(command -v jdk8-openjdk)" ]; then
+        print_green "[+] Java jdk8-openjdk installed successfully"
     else
-        print_red "[!] An error occured during Java install"
+        print_red "[!] An error occured during Java jdk8-openjdk install"
         exit 1
-    fi   
+    fi
 else
-    print_green "[+] Java is already installed"
+    print_green "[+] Java jdk8-openjdk is already installed"
 fi
 print_delimiter
 
-# -----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
+# Install Java jre8-openjdk
+
+if ! [ -x "$(command -v jre8-openjdk)" ]; then
+    print_blue "[~] Install Java tools jre8-openjdk"
+    pacman -S --needed --noconfirm jre8-openjdk
+    if [ -x "$(command -v jre8-openjdk)" ]; then
+        print_green "[+] Java jre8-openjdk installed successfully"
+    else
+        print_red "[!] An error occured during Java jre8-openjdk install"
+        exit 1
+    fi
+else
+    print_green "[+] Java jre8-openjdk is already installed"
+fi
+print_delimiter
+
+# ----------------------------------------------------------------------------
 # Install Firefox
 
 if ! [ -x "$(command -v firefox)" ]; then
     print_blue "[~] Install Firefox (for HTML reports and web screenshots)"
-    apt-get install -y firefox-esr
+    pacman -S --needed --noconfirm firefox-esr
     if [ -x "$(command -v firefox)" ]; then
         print_green "[+] Firefox installed successfully"
     else
         print_red "[!] An error occured during Firefox install"
         exit 1
-    fi   
+    fi
 else
     print_green "[+] Firefox is already installed"
 fi
@@ -732,7 +529,7 @@ if ! [ -x "$(command -v geckodriver)" ]; then
     else
         print_red "[!] An error occured during Geckodriver install"
         exit 1
-    fi   
+    fi
 else
     print_green "[+] Geckodriver is already installed"
 fi
@@ -740,17 +537,17 @@ print_delimiter
 
 # -----------------------------------------------------------------------------
 
-print_blue "[~] Install Python3 libraries required by Jok3r (if missing)"
-pip3 install -r requirements.txt
-pip3 install --upgrade requests
+print_blue "[~] Install python3.6 libraries required by Jok3r (if missing)"
+python3.6 -m pip install -r requirements.txt
+python3.6 -m pip install --upgrade requests
 print_delimiter
 
 # -----------------------------------------------------------------------------
 
 print_blue "[~] Disable UserWarning related to psycopg2"
-pip3 uninstall psycopg2-binary -y
-pip3 uninstall psycopg2 -y
-pip3 install psycopg2-binary
+python3.6 -m pip uninstall psycopg2-binary -y
+python3.6 -m pip uninstall psycopg2 -y
+python3.6 -m pip install psycopg2-binary
 print_delimiter
 
 # -----------------------------------------------------------------------------
