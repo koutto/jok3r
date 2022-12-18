@@ -1,5 +1,6 @@
 {
     "svn.ignoreMissingSvnWarning": true,
     "editor.tabCompletion": "on",
-    "diffEditor.codeLens": true
+    "diffEditor.codeLens": true,
+    "git.ignoreLimitWarning": true
 }
