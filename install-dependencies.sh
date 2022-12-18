@@ -218,7 +218,7 @@ done
 
 python3.6 -m ensurepip
 python2.7 -m pip install --upgrade pip
-python3.6 -m pip install --upgrade pip
+pip3 install --upgrade pip
 # python3.6 -m pip uninstall -y psycopg2
 # python3.6 -m pip install psycopg2-binary
 if [ -x "$(command -v python2.7)" ]; then
