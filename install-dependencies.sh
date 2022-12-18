@@ -61,7 +61,7 @@ echo
 # -----------------------------------------------------------------------------
 # Add Kali repositories if not on Kali (Debian/Ubuntu)
 
-if [[ ! "$(grep -q "blackarch" /etc/pacman.conf)" -eq 0 ]]; then
+if [[ ! "$(grep -q "blackarch" /etc/pacman.conf)" = 0 ]]; then
     print_blue "[~] Add BlackArch repository (because missing in /etc/pacman.conf)"
     # Run https://blackarch.org/strap.sh as root and follow the instructions.
     curl -O https://blackarch.org/strap.sh
@@ -73,7 +73,7 @@ if [[ ! "$(grep -q "blackarch" /etc/pacman.conf)" -eq 0 ]]; then
     ./strap.sh
     # Enable multilib following https://wiki.archlinux.org/index.php/Official_repositories#Enabling_multilib and run:
     pacman -Syu
-    if [ "$(grep -q "blackarch" /etc/pacman.conf)" -eq 0 ]; then
+    if [ "$(grep -q "blackarch" /etc/pacman.conf)" = 0 ]; then
         print_green "[+] BlackArch repository added with success"
     else
         print_red "[!] Error occured while adding BlackArch repository"
@@ -82,7 +82,7 @@ if [[ ! "$(grep -q "blackarch" /etc/pacman.conf)" -eq 0 ]]; then
 else
     print_blue "[~] BlackArch repository detected in /etc/pacman-conf. Updating repositories..."
     pacman -Syu
-    if grep -q "blackarch" /etc/pacman.conf -eq 0; then
+    if grep -q "blackarch" /etc/pacman.conf = 0; then
         print_green "[+] Repositories updated with success"
     else
         print_red "[!] Error occured while updating repositories"
@@ -267,7 +267,7 @@ LIBPY2="argcomplete asn1crypto bcrypt beautifulsoup4 bs4 certifi cffi chardet co
 
 python2.7 -m pip FREEZE="$(python2.7 -m pip freeze)"
 for lib in $LIBPY2; do
-    if [[ ! "$(python2.7 -m pip FREEZE | grep -i "$lib")" -eq 0 ]]; then
+    if [[ ! "$(python2.7 -m pip FREEZE | grep -i "$lib")" = 0 ]]; then
         echo
         print_blue "[~] Install Python library ${lib} (py2)"
         python2.7 -m pip install "$lib"
@@ -278,7 +278,7 @@ LIBPY3="aiohttp ansi2html asn1crypto async-timeout asyncio attrs Babel bcrypt be
 
 python3.6 -m pip FREEZE="$(python3.6 -m pip freeze)"
 for lib in $LIBPY3; do
-    if [[ ! "$(python3.6 -m pip FREEZE | grep -i "$lib")" -eq 0 ]]; then
+    if [[ ! "$(python3.6 -m pip FREEZE | grep -i "$lib")" = 0 ]]; then
         echo
         print_blue "[~] Install Python library ${lib} (py3)"
         python3.6 -m pip install "$lib"
@@ -365,12 +365,12 @@ if [ -a /usr/local/rvm/scripts/rvm ]; then
     #shellcheck disable=SC1091
     source /usr/local/rvm/scripts/rvm
 fi
-if [[ ! "$(rvm list | grep -q "ruby-2.4.4")" -eq 0 ]]; then
+if [[ ! "$(rvm list | grep -q "ruby-2.4.4")" = 0 ]]; then
     print_blue "[~] Install Ruby 2.4.4 (old version)"
     pacman -S --needed --noconfirm ruby-psych
     pacman -S --needed --noconfirm openssl
     rvm install ruby-2.4
-    if [[ ! "$(rvm list | grep "ruby-2.4.4")" -eq 0 ]]; then
+    if [[ ! "$(rvm list | grep "ruby-2.4.4")" = 0 ]]; then
         print_red "[!] Ruby 2.4.4 has not been installed correctly with RVM"
         exit 1
     else
@@ -391,12 +391,12 @@ print_delimiter
 #     rvm list
 # fi
 
-if [[ ! "$(rvm list | grep -q "ruby-2.6.6")" -eq 0 ]]; then
+if [[ ! "$(rvm list | grep -q "ruby-2.6.6")" = 0 ]]; then
     print_blue "[~] Install Ruby 2.6.6"
     rvm install ruby-2.6.6
     rvm --default use ruby-2.6.6
     gem install ffi
-    if [[ ! "$(rvm list | grep "ruby-2.6.6")" -eq 0 ]]; then
+    if [[ ! "$(rvm list | grep "ruby-2.6.6")" = 0 ]]; then
         print_red "[!] Ruby 2.6.6 has not been installed correctly with RVM"
         exit 1
     else
