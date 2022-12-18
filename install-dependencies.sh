@@ -72,7 +72,7 @@ if ! [[ -x "$(grep -q "blackarch" /etc/pacman.conf)" ]]; then
     # Run strap.sh
     ./strap.sh
     # Enable multilib following https://wiki.archlinux.org/index.php/Official_repositories#Enabling_multilib and run:
-    pacman -Syu
+    pacman -Syu --needed --noconfirm
     if ! [[ -x "$(grep -q "blackarch" /etc/pacman.conf)" ]]; then
         print_green "[+] BlackArch repository added with success"
     else
@@ -81,7 +81,7 @@ if ! [[ -x "$(grep -q "blackarch" /etc/pacman.conf)" ]]; then
     fi
 else
     print_blue "[~] BlackArch repository detected in /etc/pacman-conf. Updating repositories..."
-    pacman -Syu
+    pacman -Syu --needed --noconfirm
     if grep -q "blackarch" /etc/pacman.conf = 0; then
         print_green "[+] Repositories updated with success"
     else
