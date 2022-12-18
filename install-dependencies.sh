@@ -59,7 +59,7 @@ echo
 echo
 
 # -----------------------------------------------------------------------------
-# Add Kali repositories if not on Kali (Debian/Ubuntu)
+# Add BlackArch repository
 
 if ! [[ -x "$(grep -q "blackarch" /etc/pacman.conf)" ]]; then
     print_blue "[~] Add BlackArch repository (because missing in /etc/pacman.conf)"
@@ -209,14 +209,13 @@ print_blue "[~] Install Python 2.7 + 3 and useful related packages (if missing)"
 PACKAGES="python2 python-setuptools python-distutils-extra python-ipy python2-python-nmap python-pymysql python-psycopg2 python-shodan"
 
 for package in $PACKAGES; do
-    if [[ ! "$(pacman -Ss "$package" | grep "installed")" = 0 ]]; then
+    if ! [[ -x "$(pacman -Ss "$package" | grep "installed")" ]]; then
         echo
         print_blue "[~] Install ${package} ..."
         pacman -S --needed --noconfirm "$package"
     fi
 done
 
-python2.7 -m ensurepip
 python3.6 -m ensurepip
 python2.7 -m pip install --upgrade pip
 python3.6 -m pip install --upgrade pip
@@ -232,12 +231,6 @@ if [ -x "$(command -v python3.6)" ]; then
     print_green "[+] python3.6 installed successfully"
 else
     print_red "[!] An error occured during Python3.6 install"
-    exit 1
-fi
-if [ -x "$(command -v python2.7 -m pip)" ]; then
-    print_green "[+] python2.7 -m pip installed successfully"
-else
-    print_red "[!] An error occured during python2.7 -m pip install"
     exit 1
 fi
 if [ -x "$(command -v python3.6 -m pip)" ]; then
