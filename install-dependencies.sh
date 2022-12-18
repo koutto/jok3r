@@ -48,8 +48,8 @@ fi
 # Make sure we are on Debian-based OS
 OS="$(lsb_release -sd || grep NAME /etc/*-release) 2> /dev/null)"
 print_blue "[~] Detected OS:"
-echo $OS
-if [[ "$(echo $OS | grep -Ei '(arch|arco|blackarch|archstrike|manjaro)')" ]]; then
+echo "$OS"
+if [[ "$(echo $OS | grep -q '(arch|arco|blackarch|archstrike|manjaro)')" ]]; then
     print_green "[+] Arch-based Linux OS detected !"
 else
     print_red "[!] No Arch-based Linux OS detected Arch, Arco, Blackarch, Archstrike or Manjaro. Will not be able to continue."
