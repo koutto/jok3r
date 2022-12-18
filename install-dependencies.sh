@@ -345,9 +345,9 @@ if [ -a /usr/local/rvm/scripts/rvm ]; then
     source /usr/local/rvm/scripts/rvm
 fi
 
-if [ -n "$(command -v rvm)" ]; then
+if ! [[ -x "$(command -v rvm)" ]]; then
     print_blue "[~] Install Ruby RVM (Ruby Version Manager)"
-    curl -sSL https://get.rvm.io | bash
+    curl -sSL https://get.rvm.io | bash -
     #shellcheck disable=SC1091
     source /etc/profile.d/rvm.sh
     if ! grep -q "source /etc/profile.d/rvm.sh" ~/.bashrc
@@ -355,14 +355,20 @@ if [ -n "$(command -v rvm)" ]; then
         echo "source /etc/profile.d/rvm.sh" >> ~/.bashrc
     fi
     # Make sure rvm will be available
-    if ! grep -q "[[ -s /usr/share/rvm/scripts/rvm ]] && source /usr/share/rvm/scripts/rvm" ~/.bashrc
+    #shellcheck disable=SC1091
+    if ! [[ -x /usr/local/rvm/scripts/rvm ]] && source /usr/local/rvm/scripts/rvm ~/.bashrc
     then
-        echo "[[ -s /usr/share/rvm/scripts/rvm ]] && source /usr/share/rvm/scripts/rvm" >> ~/.bashrc
+        echo '[[ -s /usr/local/rvm/scripts/rvm ]] && source /usr/local/rvm/scripts/rvm' >> ~/.bashrc
     fi
+    sed -i '/--user-install//d' /etc/gemrc 2>/dev/null
     #shellcheck disable=SC1090
     source ~/.bashrc
     #shellcheck disable=SC1091
     source /usr/local/rvm/scripts/rvm
+    #shellcheck disable=SC1091
+    source /etc/profile.d/rvm.sh
+    useradd -aG root rvm
+    useradd -aG "$USER" rvm
     if [ -n "$(command -v rvm)" ]; then
         print_green "[+] Ruby RVM installed successfully"
     else
