@@ -308,6 +308,7 @@ print_delimiter
 if ! [ -x "$(command -v jython)" ]; then
     print_blue "[~] Install Jython"
     pacman -S --needed --noconfirm jython
+    export PATH="/opt/jython/bin:$PATH"
     if [ -x "$(command -v jython)" ]; then
         print_green "[+] Jython installed successfully"
     else
