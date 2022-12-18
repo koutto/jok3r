@@ -117,7 +117,7 @@ PACKAGES="curl dnsutils gawk gcc gnupg2 iputils openssl libffi libgmp lzma libpq
  libxslt mlocate make inetutils patch postgresql postgresql-libs procps samba unixodbc unzip wget zlib"
 
 for package in $PACKAGES; do
-    if [[ "$(pacman -Ss "$package" | grep "installed")" -eq 0 ]]; then
+    if [[ "$(pacman -Ss "$package" | grep "installed")" = 0 ]]; then
         echo
         print_blue "[~] Install ${package} ..."
         pacman -S --needed --noconfirm "$package"
