@@ -194,7 +194,7 @@ print_blue "[~] Install Python 2.7 + 3 and useful related packages (if missing)"
 PACKAGES="python python2 python-pip python36 python-setuptools python-distutils python-ipy python-nmap python-pymysql python-psycopg2 python-shodan"
 
 for package in $PACKAGES; do
-    if [[ ! "$(pacman -Ss "$package" | grep "installed")" -eq 0 ]]; then
+    if [[ ! "$(pacman -Ss "$package" | grep "installed")" = 0 ]]; then
         echo
         print_blue "[~] Install ${package} ..."
         pacman -S --needed --noconfirm "$package"
@@ -216,7 +216,7 @@ fi
 if [ -x "$(command -v python3)" ]; then
     print_green "[+] python3.6 installed successfully"
 else
-    print_red "[!] An error occured during Python2.7 install"
+    print_red "[!] An error occured during Python3.6 install"
     exit 1
 fi
 if [ -x "$(command -v python2.7 -m pip)" ]; then
