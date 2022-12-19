@@ -77,7 +77,7 @@ if ! [[ -x "$(grep -q "blackarch" /etc/pacman.conf)" ]]; then
         print_green "[+] BlackArch repository added with success"
     else
         print_red "[!] Error occured while adding BlackArch repository"
-        exit 1
+
     fi
 else
     print_blue "[~] BlackArch repository detected in /etc/pacman-conf. Updating repositories..."
@@ -86,7 +86,7 @@ else
         print_green "[+] Repositories updated with success"
     else
         print_red "[!] Error occured while updating repositories"
-        exit 1
+
     fi
 fi
 print_delimiter
@@ -101,7 +101,7 @@ if ! [ -x "$(command -v git)" ]; then
         print_green "[+] Git installed successfully"
     else
         print_red "[!] An error occured during Git install"
-        exit 1
+
     fi
 else
     print_green "[+] Git is already installed"
@@ -135,7 +135,7 @@ if ! [ -x "$(command -v python3.6)" ]; then
     echo
     wget https://aur.archlinux.org/cgit/aur.git/snapshot/python36.tar.gz
     tar -xzvvf python36.tar.gz
-    cd python36 || exit 1
+    cd python36 || exit 0
     runuser "$USER" -c makepkg -si --noconfirm --needed
 fi
 print_delimiter
@@ -150,7 +150,7 @@ if ! [ -x "$(command -v msfconsole)" ]; then
         print_green "[+] Metasploit installed successfully"
     else
         print_red "[!] An error occured during Metasploit install"
-        exit 1
+
     fi
 else
     print_green "[+] Metasploit is already installed"
@@ -167,7 +167,7 @@ if ! [ -x "$(command -v nmap)" ]; then
         print_green "[+] Nmap installed successfully"
     else
         print_red "[!] An error occured during Nmap install"
-        exit 1
+
     fi
 else
     print_green "[+] Nmap is already installed"
@@ -184,7 +184,7 @@ if ! [ -x "$(command -v tcpdump)" ]; then
         print_green "[+] tcpdump installed successfully"
     else
         print_red "[!] An error occured during tcpdump install"
-        exit 1
+
     fi
 else
     print_green "[+] tcpdump is already installed"
@@ -259,7 +259,7 @@ if ! [ -x "$(command -v virtualenv)" ]; then
         print_green "[+] virtualenv installed successfully"
     else
         print_red "[!] An error occured during virtualenv install"
-        exit 1
+
     fi
 else
     print_green "[+] Python virtualenv is already installed"
@@ -313,7 +313,7 @@ if ! [ -x "$(command -v jython)" ]; then
         print_green "[+] Jython installed successfully"
     else
         print_red "[!] An error occured during Jython install"
-        exit 1
+
     fi
 else
     print_green "[+] Jython is already installed"
@@ -330,7 +330,7 @@ if ! [ -x "$(command -v ruby)" ]; then
         print_green "[+] Ruby installed successfully"
     else
         print_red "[!] An error occured during Ruby install"
-        exit 1
+
     fi
 else
     print_green "[+] Ruby is already installed"
@@ -444,7 +444,7 @@ if ! [ -x "$(command -v perl)" ]; then
         print_green "[+] Perl installed successfully"
     else
         print_red "[!] An error occured during Perl install"
-        exit 1
+
     fi
 else
     print_green "[+] Perl is already installed"
@@ -461,7 +461,7 @@ if ! [ -x "$(command -v php)" ]; then
         print_green "[+] PHP installed successfully"
     else
         print_red "[!] An error occured during PHP install"
-        exit 1
+
     fi
 else
     print_green "[+] PHP is already installed"
@@ -478,7 +478,6 @@ if ! [ -x "$(command -v jdk8-openjdk)" ]; then
         print_green "[+] Java jdk8-openjdk installed successfully"
     else
         print_red "[!] An error occured during Java jdk8-openjdk install"
-        exit 1
     fi
 else
     print_green "[+] Java jdk8-openjdk is already installed"
@@ -495,7 +494,6 @@ if ! [ -x "$(command -v jre8-openjdk)" ]; then
         print_green "[+] Java jre8-openjdk installed successfully"
     else
         print_red "[!] An error occured during Java jre8-openjdk install"
-        exit 1
     fi
 else
     print_green "[+] Java jre8-openjdk is already installed"
@@ -512,7 +510,7 @@ if ! [ -x "$(command -v firefox)" ]; then
         print_green "[+] Firefox installed successfully"
     else
         print_red "[!] An error occured during Firefox install"
-        exit 1
+
     fi
 else
     print_green "[+] Firefox is already installed"
@@ -524,7 +522,7 @@ print_delimiter
 
 if ! [ -x "$(command -v geckodriver)" ]; then
     print_blue "[~] Install Geckodriver (for web screenshots)"
-    cd /tmp/ || exit 1
+    cd /tmp/ || exit 0
     MACHINE_TYPE="$(uname -m)"
     if [ "$MACHINE_TYPE" == 'x86_64' ]; then
         wget https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux64.tar.gz
@@ -549,7 +547,7 @@ if ! [ -x "$(command -v geckodriver)" ]; then
         print_green "[+] Geckodriver installed successfully"
     else
         print_red "[!] An error occured during Geckodriver install"
-        exit 1
+
     fi
 else
     print_green "[+] Geckodriver is already installed"
