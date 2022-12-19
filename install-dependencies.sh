@@ -119,7 +119,7 @@ PACKAGES="curl dnsutils gawk gcc gnupg iputils openssl libffi lrzip xz perl-libw
 for package in $PACKAGES; do
     if ! [[ -x "$(pacman -Ss "$package" | grep "installed")" ]]; then
         echo
-        touch /var/log/journal/%m 2>/dev/null
+        #touch /var/log/journal/%m 2>/dev/null
         print_blue "[~] Install ${package} ..."
         pacman -S --needed --noconfirm "$package"
     fi
@@ -136,8 +136,8 @@ if ! [[ -x "$(command -v python3.6 | grep -q 3 )" ]]; then
     wget https://aur.archlinux.org/cgit/aur.git/snapshot/python36.tar.gz
     tar -xzvvf python36.tar.gz
     cd python36 || echo "Error" && sleep 2
-    read -r -p "Enter your username. python must be installed as user not root: " U
-    runuser "$U" -c echo "$(makepkg -si)Successfully Installed"
+    #read -r -p "Enter your username. python must be installed as user not root: " U
+    runuser "$USER" -c "makepkg -si"
     print_green "[+] Python3.6 installed successfully"
 else
     print_red "[!] There was an error installing python3.6"
