@@ -338,7 +338,7 @@ print_delimiter
 # -----------------------------------------------------------------------------
 # Install RVM (Ruby Version Manager)
 
-if ! [[ -x "$(grep -q /usr/local/rvm/scripts/rvm)" ]]; then
+if ! [[ -x "$(grep /usr/local/rvm/scripts/rvm)" ]]; then
     #shellcheck disable=SC1091
     source /usr/local/rvm/scripts/rvm
 fi
