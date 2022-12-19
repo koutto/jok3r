@@ -341,8 +341,7 @@ print_delimiter
 if ! [[ -x "$(command -v rvm)" ]]; then
     print_blue "[~] Install Ruby RVM (Ruby Version Manager)"
     curl -sSL https://get.rvm.io | bash -
-    #shellcheck disable=SC1091
-    source /etc/profile.d/rvm.sh
+
     if ! [[ -x "$(grep -q -e rvm.sh ~/.bashrc)" ]]; then
         echo "source /etc/profile.d/rvm.sh" >> ~/.bashrc
         #shellcheck disable=SC1090
@@ -350,8 +349,7 @@ if ! [[ -x "$(command -v rvm)" ]]; then
     fi
     # Make sure rvm will be available
     #shellcheck disable=SC1091
-    if ! [[ -x /usr/local/rvm/scripts/rvm ]] && source /usr/local/rvm/scripts/rvm
-    then
+    if ! [[ -x /usr/local/rvm/scripts/rvm ]] && source /usr/local/rvm/scripts/rvm; then
         echo '[[ -s /usr/local/rvm/scripts/rvm ]] && source /usr/local/rvm/scripts/rvm' >> ~/.bashrc
     fi
     sed -i '/--user-install//d' /etc/gemrc 2>/dev/null
@@ -380,15 +378,15 @@ if ! [[ -x /usr/local/rvm/scripts/rvm ]]; then
     #shellcheck disable=SC1091
     source /usr/local/rvm/scripts/rvm
 fi
-if ! [[ -x "$(rvm list | grep -e "ruby-2.4.10")" ]]; then
+if ! [[ -x "$(rvm list | grep -e "ruby-2.4")" ]]; then
     print_blue "[~] Install Ruby 2.4.10 (old version)"
     pacman -S --needed --noconfirm ruby-psych
     pacman -S --needed --noconfirm openssl
     rvm install ruby-2.4.10
-    if ! [[ -x "$(rvm list | grep "ruby-2.4.10")" ]]; then
+    if ! [[ -x "$(rvm list | grep "ruby-2.4")" ]]; then
         print_red "[!] Ruby 2.4.10 has not been installed correctly with RVM"
         else
-            if ! [[ -x "$(rvm list | grep -q -e "ruby-2.4.10")" ]]; then
+            if ! [[ -x "$(rvm list | grep -q -e "ruby-2.4")" ]]; then
                 print_green "[+] Ruby 2.4.10 has been successfully installed with RVM"
             else
                 print_blue "[+] Ruby 2.4.10 is already installed"
@@ -406,18 +404,18 @@ print_delimiter
 #     rvm list
 # fi
 
-if ! [[ -x "$(rvm list | grep -q "ruby-2.6.6")" ]]; then
-    print_blue "[~] Install Ruby 2.6.6"
-    rvm install ruby-2.6.6
-    rvm --default use ruby-2.6.6
+if ! [[ -x "$(rvm list | grep -q "ruby-2.6")" ]]; then
+    print_blue "[~] Install Ruby 2.6"
+    rvm install ruby-2.6
+    rvm --default use ruby-2.6
     gem install ffi
-    if ! [[ -x "$(rvm list | grep "ruby-2.6.6")" ]]; then
-        print_red "[!] Ruby 2.6.6 has not been installed correctly with RVM"
+    if ! [[ -x "$(rvm list | grep "ruby-2.6")" ]]; then
+        print_red "[!] Ruby 2.6 has not been installed correctly with RVM"
     else
-        print_green "[+] Ruby 2.6.6 has been successfully installed with RVM"
+        print_green "[+] Ruby 2.6 has been successfully installed with RVM"
     fi
 else
-    print_green "[+] Ruby 2.6.6 is already installed"
+    print_green "[+] Ruby 2.6 is already installed"
 fi
 print_delimiter
 
