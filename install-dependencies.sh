@@ -338,11 +338,6 @@ print_delimiter
 # -----------------------------------------------------------------------------
 # Install RVM (Ruby Version Manager)
 
-if ! [[ -x "$(grep /usr/local/rvm/scripts/rvm)" ]]; then
-    #shellcheck disable=SC1091
-    source /usr/local/rvm/scripts/rvm
-fi
-
 if ! [[ -x "$(command -v rvm)" ]]; then
     print_blue "[~] Install Ruby RVM (Ruby Version Manager)"
     curl -sSL https://get.rvm.io | bash -
