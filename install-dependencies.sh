@@ -224,35 +224,32 @@ pip2.7 install --upgrade pip 2>/dev/null
 pip3.6 install --upgrade pip 2>/dev/null
 # pip3.6 uninstall -y psycopg2
 # pip3.6 install psycopg2-binary
-if [ -x "$(command -v python2.7)" ]; then
+if ! [[ -x "$(command -v python2.7)" ]]; then
     print_green "[+] python2.7 installed successfully"
 else
     print_red "[!] An error occured during Python2.7 install"
 fi
-if [ -x "$(command -v pip2.7)" ]; then
+if ! [[ -x "$(command -v pip2.7)" ]]; then
     print_green "[+] pip2.7 installed successfully"
 else
     print_red "[!] An error occured during pip2.7 install"
-    exit 1
 fi
-if [ -x "$(command -v python3.6)" ]; then
+if ! [[ -x "$(command -v python3.6)" ]]; then
     print_green "[+] python3.6 installed successfully"
 else
     print_red "[!] An error occured during Python3.6 install"
-    exit 1
 fi
-if [ -x "$(command -v pip3.6)" ]; then
+if ! [[ -x "$(command -v pip3.6)" ]]; then
     print_green "[+] pip3.6 installed successfully"
 else
     print_red "[!] An error occured during pip3.6 install"
-    exit 1
 fi
 print_delimiter
 
 # -----------------------------------------------------------------------------
 # Install Python virtualenv
 
-if ! [ -x "$(command -v virtualenv)" ]; then
+if ! [[ -x "$(command -v virtualenv)" ]]; then
     print_blue "[~] Install python virtual environment packages"
     pip2.7 install virtualenv 2>/dev/null
     pip3.6 install virtualenv 2>/dev/null
