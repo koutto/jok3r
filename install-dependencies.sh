@@ -131,12 +131,16 @@ print_delimiter
 
 print_blue "[~] Install Python3.6"
 
-if ! [ -x "$(command -v python3.6)" ]; then
+if ! [[ -x "$(command -v python3.6 | grep -q 3 )" ]]; then
     echo
     wget https://aur.archlinux.org/cgit/aur.git/snapshot/python36.tar.gz
     tar -xzvvf python36.tar.gz
-    cd python36 || exit 0
-    runuser "$USER" -c makepkg -si --noconfirm --needed
+    cd python36 || echo "Error" && sleep 2
+    read -r -p "Enter your username. python must be installed as user not root: " U
+    runuser "$U" -c makepkg -si --noconfirm --needed
+    print_green "[+] Python3.6 installed successfully"
+else
+    print_red "[!] There was an error installing python3.6"
 fi
 print_delimiter
 
