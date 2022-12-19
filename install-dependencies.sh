@@ -184,7 +184,6 @@ if ! [ -x "$(command -v tcpdump)" ]; then
         print_green "[+] tcpdump installed successfully"
     else
         print_red "[!] An error occured during tcpdump install"
-
     fi
 else
     print_green "[+] tcpdump is already installed"
@@ -259,7 +258,6 @@ if ! [ -x "$(command -v virtualenv)" ]; then
         print_green "[+] virtualenv installed successfully"
     else
         print_red "[!] An error occured during virtualenv install"
-
     fi
 else
     print_green "[+] Python virtualenv is already installed"
@@ -276,7 +274,7 @@ print_delimiter
 
 print_blue "[~] Install common Python libraries..."
 
-LIBPY2="argcomplete asn1crypto bcrypt beautifulsoup4 bs4 certifi cffi chardet colorama colorlog configparser cryptography cssselect dnspython entrypoints enum34 Flask future futures gpg html-similarity html5lib humanize ipaddress IPy keyring keyrings.alt ldap3 ldapdomaindump lxml macholib MarkupSafe maxminddb paramiko parsel passlib pluginbase proxy-db py2-ipaddress pyasn1 pycparser pycrypto pycryptodomex pycurl pymssql PyNaCl pyOpenSSL pystache python-nmap pyxdg requests requests-mock scapy SecretStorage six termcolor urllib3 virtualenv w3lib webencodings Werkzeug"
+LIBPY2="argcomplete asn1crypto bcrypt beautifulsoup4 bs4 certifi cffi chardet colored colorama colorlog configparser cryptography cssselect dnspython entrypoints enum34 Flask future futures gpg html-similarity html5lib humanize ipaddress IPy keyring keyrings.alt ldap3 ldapdomaindump lxml macholib MarkupSafe maxminddb paramiko parsel passlib pluginbase proxy-db py2-ipaddress pyasn1 pycparser pycrypto pycryptodomex pycurl pymssql PyNaCl pyOpenSSL pystache python-nmap pyxdg requests requests-mock scapy SecretStorage six termcolor urllib3 virtualenv w3lib webencodings Werkzeug"
 
 for lib in $LIBPY2; do
     if ! [[ -x "$(pip2.7 freeze 2>/dev/null | grep -i "$lib" 2>/dev/null)" ]]; then
@@ -288,7 +286,7 @@ for lib in $LIBPY2; do
     fi
 done
 
-LIBPY3="aiohttp ansi2html asn1crypto async-timeout asyncio attrs Babel bcrypt beautifulsoup4 blessed bs4 cement Cerberus certifi cffi chardet cmd2 colorama colored colorlog cryptography dnspython docutils enlighten entrypoints Flask future html5lib humanfriendly idna imagesize inflect ipparser itsdangerous keyring keyrings.alt ldap3 ldapdomaindump logutils lxml MarkupSafe multidict netaddr ntlm-auth packaging paramiko pbr Pillow pluginbase ply pockets prettytable prompt-toolkit psycopg2 psycopg2-binary pyasn1 pycparser pycrypto pycryptodomex pycurl Pygments pymongo PyMySQL PyNaCl pyodbc pyOpenSSL pyparsing pyperclip pysmi pysnmp PySocks python-libnmap python-memcached pytz pyxdg PyYAML redis regex requests requests-ntlm requests-toolbelt SecretStorage selenium shodan six snowballstemmer soupsieve Sphinx sphinx-better-theme sphinxcontrib-napoleon sphinxcontrib-websupport SQLAlchemy SQLAlchemy-Utils stem stevedore tabulate termcolor tld tqdm urllib3 veryprettytable virtualenv virtualenv-clone virtualenvwrapper wcwidth webencodings Werkzeug yarl"
+LIBPY3="aiohttp ansi2html asn1crypto async-timeout asyncio attrs Babel bcrypt beautifulsoup4 blessed bs4 cement Cerberus certifi cffi chardet cmd2 colorama colored colorlog cryptography dnspython docutils enlighten entrypoints Flask future html5lib humanfriendly idna imagesize inflect ipparser itsdangerous keyring keyrings.alt ldap3 ldapdomaindump logutils lxml MarkupSafe multidict netaddr ntlm-auth packaging paramiko pbr Pillow pluginbase ply pockets prettytable prompt-toolkit psycopg2 psycopg2-binary pyasn1 pycparser pycrypto pycryptodomex pycurl Pygments pymongo PyMySQL PyNaCl pyodbc pyOpenSSL pyparsing pyperclip pysmi pysnmp PySocks python-libnmap python-memcached pytz pyxdg PyYAML redis regex requests requests-ntlm requests-toolbelt SecretStorage selenium shodan six snowballstemmer soupsieve Sphinx sphinx-better-theme sphinxcontrib-napoleon sphinxcontrib-websupport SQLAlchemy SQLAlchemy-Utils stem stevedore tabulate termcolor tld tqdm urllib3 veryprettytable virtualenv virtualenv-clone virtualenvwrapper wcwidth webencodings Werkzeug colored yarl"
 
 for lib in $LIBPY3; do
     if ! [[ -x "$(pip3.6 freeze 2>/dev/null | grep -i "$lib" 2>/dev/null)" ]]; then
@@ -313,7 +311,6 @@ if ! [ -x "$(command -v jython)" ]; then
         print_green "[+] Jython installed successfully"
     else
         print_red "[!] An error occured during Jython install"
-
     fi
 else
     print_green "[+] Jython is already installed"
@@ -369,7 +366,7 @@ if ! [[ -x "$(command -v rvm)" ]]; then
     source /etc/profile.d/rvm.sh
     useradd -aG root rvm
     useradd -aG "$USER" rvm
-    if [ -n "$(command -v rvm)" ]; then
+    if ! [[ -x "$(command -v rvm)" ]]; then
         print_green "[+] Ruby RVM installed successfully"
     else
         print_red "[!] An error occured during Ruby RVM install"
@@ -382,7 +379,7 @@ print_delimiter
 # -----------------------------------------------------------------------------
 # Install different versions of Ruby via RVM
 
-if [ -a /usr/local/rvm/scripts/rvm ]; then
+if ! [[ -x /usr/local/rvm/scripts/rvm ]]; then
     #shellcheck disable=SC1091
     source /usr/local/rvm/scripts/rvm
 fi
@@ -394,7 +391,7 @@ if ! [[ -x "$(rvm list | grep -q "ruby-2.4.4")" ]]; then
     if ! [[ -x "$(rvm list | grep "ruby-2.4.4")" ]]; then
         print_red "[!] Ruby 2.4.4 has not been installed correctly with RVM"
         else
-            if "$(rvm list | grep -q -e "ruby-2.4.4")"; then
+            if ! [[ -x "$(rvm list | grep -q -e "ruby-2.4.4")" ]]; then
                 print_green "[+] Ruby 2.4.4 has been successfully installed with RVM"
             else
                 print_blue "[+] Ruby 2.4.4 is already installed"
@@ -403,7 +400,7 @@ if ! [[ -x "$(rvm list | grep -q "ruby-2.4.4")" ]]; then
 fi
 print_delimiter
 
-# if ! rvm list | grep -q "ruby-2.5"
+# if ! [[ -x rvm list | grep -q "ruby-2.5" ]];
 # then
 #     print_green "[~] Install Ruby 2.5 (default)"
 #     rvm install ruby-2.5
@@ -412,15 +409,14 @@ print_delimiter
 #     rvm list
 # fi
 
-if [[ ! "$(rvm list | grep -q "ruby-2.6.6")" = 0 ]]; then
+if ! [[ -x "$(rvm list | grep -q "ruby-2.6.6")" ]]; then
     print_blue "[~] Install Ruby 2.6.6"
     rvm install ruby-2.6.6
     rvm --default use ruby-2.6.6
     gem install ffi
-    if [[ ! "$(rvm list | grep "ruby-2.6.6")" = 0 ]]; then
+    if ! [[ -x "$(rvm list | grep "ruby-2.6.6")" ]]; then
         print_red "[!] Ruby 2.6.6 has not been installed correctly with RVM"
     else
-        rvm list
         print_green "[+] Ruby 2.6.6 has been successfully installed with RVM"
     fi
 else
@@ -437,14 +433,13 @@ print_delimiter
 # -----------------------------------------------------------------------------
 # Install Perl
 
-if ! [ -x "$(command -v perl)" ]; then
+if ! [[ -x "$(command -v perl)" ]]; then
     print_blue "[~] Install Perl"
     pacman -S --needed --noconfirm perl
-    if [ -x "$(command -v perl)" ]; then
+    if ! [[ -x "$(command -v perl)" ]]; then
         print_green "[+] Perl installed successfully"
     else
         print_red "[!] An error occured during Perl install"
-
     fi
 else
     print_green "[+] Perl is already installed"
@@ -461,7 +456,6 @@ if ! [ -x "$(command -v php)" ]; then
         print_green "[+] PHP installed successfully"
     else
         print_red "[!] An error occured during PHP install"
-
     fi
 else
     print_green "[+] PHP is already installed"
@@ -510,7 +504,6 @@ if ! [ -x "$(command -v firefox)" ]; then
         print_green "[+] Firefox installed successfully"
     else
         print_red "[!] An error occured during Firefox install"
-
     fi
 else
     print_green "[+] Firefox is already installed"
@@ -547,7 +540,6 @@ if ! [ -x "$(command -v geckodriver)" ]; then
         print_green "[+] Geckodriver installed successfully"
     else
         print_red "[!] An error occured during Geckodriver install"
-
     fi
 else
     print_green "[+] Geckodriver is already installed"
@@ -564,16 +556,7 @@ print_delimiter
 # -----------------------------------------------------------------------------
 
 print_blue "[~] Disable UserWarning related to psycopg2"
-python3.6 -m pip uninstall psycopg2-binary -y
-python3.6 -m pip uninstall psycopg2 -y
 python3.6 -m pip install psycopg2-binary
-print_delimiter
-
-# -----------------------------------------------------------------------------
-
-print_blue "[~] Cleaning apt cache..."
-apt-get clean
-rm -rf /var/lib/apt/lists/*
 print_delimiter
 
 # -----------------------------------------------------------------------------
