@@ -137,7 +137,7 @@ if ! [[ -x "$(command -v python3.6 | grep -q 3 )" ]]; then
     tar -xzvvf python36.tar.gz
     cd python36 || echo "Error" && sleep 2
     read -r -p "Enter your username. python must be installed as user not root: " U
-    runuser "$U" -c makepkg -si
+    runuser "$U" -c echo "$(makepkg -si)Successfully Installed"
     print_green "[+] Python3.6 installed successfully"
 else
     print_red "[!] There was an error installing python3.6"
