@@ -361,8 +361,8 @@ if ! [[ -x "$(command -v rvm)" ]]; then
     source /usr/local/rvm/scripts/rvm
     #shellcheck disable=SC1091
     source /etc/profile.d/rvm.sh
-    useradd -aG root rvm
-    useradd -aG "$USER" rvm
+    usermod -aG root rvm
+    usermod -aG "$USER" rvm
     if ! [[ -x "$(command -v rvm)" ]]; then
         print_green "[+] Ruby RVM installed successfully"
     else
