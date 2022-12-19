@@ -40,7 +40,7 @@ echo
 print_blue "This script will install Jok3r and all the required dependencies"
 
 # Make sure we are root !
-if [[ "$EUID" == "0" ]]; then
+if ! [[ "$EUID" == "0" ]]; then
     print_red "[!] Must be run as root"
     exit 1
 fi
