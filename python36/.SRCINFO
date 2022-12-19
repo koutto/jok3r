@@ -1,0 +1,29 @@
+pkgbase = python36
+	pkgdesc = Major release 3.6 of the Python high-level programming language
+	pkgver = 3.6.15
+	pkgrel = 5
+	url = http://www.python.org/
+	arch = i686
+	arch = x86_64
+	arch = arm
+	arch = pentium4
+	license = custom
+	makedepends = tk
+	makedepends = sqlite
+	makedepends = bluez-libs
+	makedepends = mpdecimal
+	depends = expat
+	depends = bzip2
+	depends = gdbm
+	depends = openssl
+	depends = libffi
+	depends = zlib
+	optdepends = tk: for tkinter
+	optdepends = sqlite
+	provides = python=3.6.15
+	source = http://www.python.org/ftp/python/3.6.15/Python-3.6.15.tar.xz
+	source = alignment.patch
+	sha256sums = 6e28d7cdd6dd513dd190e49bca3972e20fcf455090ccf2ef3f1a227614135d91
+	sha256sums = SKIP
+
+pkgname = python36
