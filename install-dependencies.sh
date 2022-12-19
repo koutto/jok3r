@@ -251,6 +251,7 @@ print_delimiter
 
 if ! [[ -x "$(command -v virtualenv)" ]]; then
     print_blue "[~] Install python virtual environment packages"
+    pacman -S --noconfirn --needed python-virtualenv
     pip2.7 install virtualenv 2>/dev/null
     pip3.6 install virtualenv 2>/dev/null
     # pip3.6 install virtualenvwrapper
