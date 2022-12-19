@@ -220,29 +220,29 @@ for package in $PACKAGES; do
 done
 
 python3.6 -m ensurepip 2>/dev/null
-pip2.7 install --upgrade pip 2>/dev/null
-pip3.6 install --upgrade pip 2>/dev/null
-# pip3.6 uninstall -y psycopg2
-# pip3.6 install psycopg2-binary
+pip2 install --upgrade pip 2>/dev/null
+pip3 install --upgrade pip 2>/dev/null
+# pip3 uninstall -y psycopg2
+# pip3 install psycopg2-binary
 if ! [[ -x "$(command -v python2.7)" ]]; then
     print_green "[+] python2.7 installed successfully"
 else
     print_red "[!] An error occured during Python2.7 install"
 fi
-if ! [[ -x "$(command -v pip2.7)" ]]; then
-    print_green "[+] pip2.7 installed successfully"
+if ! [[ -x "$(command -v pip2)" ]]; then
+    print_green "[+] pip2 installed successfully"
 else
-    print_red "[!] An error occured during pip2.7 install"
+    print_red "[!] An error occured during pip2 install"
 fi
 if ! [[ -x "$(command -v python3.6)" ]]; then
     print_green "[+] python3.6 installed successfully"
 else
     print_red "[!] An error occured during Python3.6 install"
 fi
-if ! [[ -x "$(command -v pip3.6)" ]]; then
-    print_green "[+] pip3.6 installed successfully"
+if ! [[ -x "$(command -v pip3)" ]]; then
+    print_green "[+] pip3 installed successfully"
 else
-    print_red "[!] An error occured during pip3.6 install"
+    print_red "[!] An error occured during pip3 install"
 fi
 print_delimiter
 
@@ -252,9 +252,9 @@ print_delimiter
 if ! [[ -x "$(command -v virtualenv)" ]]; then
     print_blue "[~] Install python virtual environment packages"
     pacman -S --noconfirm --needed python-virtualenv
-    pip2.7 install virtualenv 2>/dev/null
-    pip3.6 install virtualenv 2>/dev/null
-    # pip3.6 install virtualenvwrapper
+    pip2 install virtualenv 2>/dev/null
+    pip3 install virtualenv 2>/dev/null
+    # pip3 install virtualenvwrapper
     # source /usr/local/bin/virtualenvwrapper.sh
     if ! [[ -x "$(command -v virtualenv)" ]]; then
         print_green "[+] virtualenv installed successfully"
@@ -279,10 +279,10 @@ print_blue "[~] Install common Python libraries..."
 LIBPY2="argcomplete asn1crypto bcrypt beautifulsoup4 bs4 certifi cffi chardet colored colorama colorlog configparser cryptography cssselect dnspython entrypoints enum34 Flask future futures gpg html-similarity html5lib humanize ipaddress IPy keyring keyrings.alt ldap3 ldapdomaindump lxml macholib MarkupSafe maxminddb paramiko parsel passlib pluginbase proxy-db py2-ipaddress pyasn1 pycparser pycrypto pycryptodomex pycurl pymssql PyNaCl pyOpenSSL pystache python-nmap pyxdg requests requests-mock scapy SecretStorage six termcolor urllib3 virtualenv w3lib webencodings Werkzeug"
 
 for lib in $LIBPY2; do
-    if ! [[ -x "$(pip2.7 freeze 2>/dev/null | grep -i "$lib" 2>/dev/null)" ]]; then
+    if ! [[ -x "$(pip2 freeze 2>/dev/null | grep -i "$lib" 2>/dev/null)" ]]; then
         echo
         print_blue "[~] Install Python library ${lib} (py2)"
-        pip2.7 install "$lib" 2>/dev/null
+        pip2 install "$lib" 2>/dev/null
     else
         print_red "[!] There was an error installing python modules"
     fi
@@ -291,10 +291,10 @@ done
 LIBPY3="aiohttp ansi2html asn1crypto async-timeout asyncio attrs Babel bcrypt beautifulsoup4 blessed bs4 cement Cerberus certifi cffi chardet cmd2 colorama colored colorlog cryptography dnspython docutils enlighten entrypoints Flask future html5lib humanfriendly idna imagesize inflect ipparser itsdangerous keyring keyrings.alt ldap3 ldapdomaindump logutils lxml MarkupSafe multidict netaddr ntlm-auth packaging paramiko pbr Pillow pluginbase ply pockets prettytable prompt-toolkit psycopg2 psycopg2-binary pyasn1 pycparser pycrypto pycryptodomex pycurl Pygments pymongo PyMySQL PyNaCl pyodbc pyOpenSSL pyparsing pyperclip pysmi pysnmp PySocks python-libnmap python-memcached pytz pyxdg PyYAML redis regex requests requests-ntlm requests-toolbelt SecretStorage selenium shodan six snowballstemmer soupsieve Sphinx sphinx-better-theme sphinxcontrib-napoleon sphinxcontrib-websupport SQLAlchemy SQLAlchemy-Utils stem stevedore tabulate termcolor tld tqdm urllib3 veryprettytable virtualenv virtualenv-clone virtualenvwrapper wcwidth webencodings Werkzeug colored yarl"
 
 for lib in $LIBPY3; do
-    if ! [[ -x "$(pip3.6 freeze 2>/dev/null | grep -i "$lib" 2>/dev/null)" ]]; then
+    if ! [[ -x "$(pip3 freeze 2>/dev/null | grep -i "$lib" 2>/dev/null)" ]]; then
         echo
         print_blue "[~] Install Python library ${lib} (py3)"
-        pip3.6 install "$lib" 2>/dev/null
+        pip3 install "$lib" 2>/dev/null
     else
         print_red "[!] There was an error installing python modules"
     fi
@@ -545,8 +545,8 @@ print_delimiter
 # -----------------------------------------------------------------------------
 
 print_blue "[~] Install python3.6 libraries required by Jok3r (if missing)"
-python3.6 -m pip install -r requirements.txt
-python3.6 -m pip install --upgrade requests
+pip3 install -r requirements.txt
+pip3 install --upgrade requests
 wget https://files.pythonhosted.org/packages/f3/d6/00203998f27ab30b2417998006ad0608f236740bb129494dd7c5621861e1/colored-1.4.4.tar.gz
 tar -zxvvf colored-1.4.4.tar.gz
 cd colored-1.4.4 || echo "Error, Something Failed"
@@ -558,7 +558,7 @@ print_delimiter
 # -----------------------------------------------------------------------------
 
 print_blue "[~] Disable UserWarning related to psycopg2"
-python3.6 -m pip install --upgrade --force colored psycopg2-binary
+pip3 install --upgrade --force colored psycopg2-binary
 print_delimiter
 
 # -----------------------------------------------------------------------------

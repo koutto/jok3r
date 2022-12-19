@@ -1,0 +1,10 @@
+/dist
+/build
+*.pyc
+__pycache__
+.pipy
+*.egg-info/
+*.sh
+.ropeproject
+MANIFEST
+.venv*

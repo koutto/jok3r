@@ -1,0 +1,13 @@
+include setup.py
+include colored/__init__.py
+include colored/back.py
+include colored/colored.py
+include colored/colors.py
+include colored/fore.py
+include colored/hex.py
+include colored/style.py
+include CHANGES.md
+include LICENSE.txt
+include README.rst
+recursive-include tests *.py
+recursive-include docs *.txt
