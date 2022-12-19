@@ -325,13 +325,13 @@ print_delimiter
 if ! [[ -x "$(command -v ruby | grep -q ruby)" ]]; then
     print_blue "[~] Install Ruby"
     pacman -S --needed --noconfirm ruby
-    if ! [[ -x "$(command -v ruby | grep -q ruby)" ]]; then
-        print_green "[+] Ruby installed successfully"
-    else
-        print_red "[!] An error occured during Ruby install"
-    fi
-else
-    print_green "[+] Ruby is already installed"
+        if ! [[ -x "$(command -v ruby | grep -q ruby)" ]]; then
+            print_green "[+] Ruby installed successfully"
+        else
+            print_red "[!] An error occured during Ruby install"
+        fi
+        else
+            print_green "[+] Ruby is already installed"
 fi
 print_delimiter
 
