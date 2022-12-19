@@ -330,8 +330,8 @@ if ! [[ -x "$(command -v ruby | grep -q ruby)" ]]; then
         else
             print_red "[!] An error occured during Ruby install"
         fi
-        else
-            print_green "[+] Ruby is already installed"
+    else
+        print_green "[+] Ruby is already installed"
 fi
 print_delimiter
 
