@@ -547,6 +547,12 @@ print_delimiter
 print_blue "[~] Install python3.6 libraries required by Jok3r (if missing)"
 python3.6 -m pip install -r requirements.txt
 python3.6 -m pip install --upgrade requests
+wget https://files.pythonhosted.org/packages/f3/d6/00203998f27ab30b2417998006ad0608f236740bb129494dd7c5621861e1/colored-1.4.4.tar.gz
+tar -zxvvf colored-1.4.4.tar.gz
+cd colored-1.4.4 || echo "Error, Something Failed"
+python3.6 setup.py install
+cd || echo "Error"
+
 print_delimiter
 
 # -----------------------------------------------------------------------------
