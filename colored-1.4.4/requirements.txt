@@ -1,3 +1,0 @@
-# Python 3
-# Linux, Windows OS
-
